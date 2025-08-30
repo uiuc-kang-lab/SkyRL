@@ -41,6 +41,11 @@ class SQLEnv(BaseTextEnv):
                 self.db_path,
                 "bird/train/train_databases",
             )
+        elif self.task == "bird-dev":
+            self.db_path = os.path.join(
+                self.db_path,
+                "dev/dev_databases",
+            )
         else:
             raise NotImplementedError
 

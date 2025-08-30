@@ -37,6 +37,15 @@ class PromptDataset:
         self.dataframe: datasets.Dataset = datasets.concatenate_datasets(dataframes)
 
         logger.info(f"dataset len: {len(self.dataframe)}")
+        
+        # calculate the max length of the prompts
+        lengths = self.dataframe.map(
+            lambda doc: {"len": len(self.tokenizer.apply_chat_template(doc[self.prompt_key], add_generation_prompt=True))},
+            num_proc=self.num_workers,
+            desc="Calculating prompt lengths",
+        )["len"]
+        max_length = max(lengths)
+        logger.info(f"Max prompt length in dataset: {max_length} tokens")
 
         # filter out too long prompts
         tokenizer = self.tokenizer
