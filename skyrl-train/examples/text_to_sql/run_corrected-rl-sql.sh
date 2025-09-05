@@ -9,14 +9,14 @@ set -x
 # change these paths to your own
 DATA_DIR="$HOME/noisy-rl/data"
 DB_PATH="$HOME/noisy-rl/data"
-CKPT_PATH="$HOME/ckpts/sql-debug"
-EXPORT_PATH="$HOME/exports/debug-sql"
+CKPT_PATH="$HOME/ckpts/skyrl_corrected_sql_7B_ckpt"
+EXPORT_PATH="$HOME/exports/skyrl_corrected_sql_7B_export"
 
 echo "Using data from $DATA_DIR"
 
-NUM_GPUS=1
-NUM_INFERENCE_ENGINES=1
-TP_SIZE=1
+NUM_GPUS=8
+NUM_INFERENCE_ENGINES=2
+TP_SIZE=4
 MAX_INPUT_LENGTH=29000
 MAX_GENERATE_LENGTH=3000
 TRAIN_BATCH_SIZE=64
@@ -25,7 +25,7 @@ uv run --isolated --extra vllm -m skyrl_train.entrypoints.main_base \
   trainer.algorithm.advantage_estimator="grpo" \
   data.train_data="['$DATA_DIR/train_-1_0.0_42.parquet']" \
   data.val_data="['$DATA_DIR/test_-1_0.0_42.parquet']" \
-  trainer.policy.model.path="Qwen/Qwen2.5-Coder-0.5B-Instruct" \
+  trainer.policy.model.path="Qwen/Qwen2.5-Coder-7B-Instruct" \
   trainer.epochs=300 \
   trainer.placement.colocate_all=true \
   trainer.strategy=fsdp2 \
@@ -41,13 +41,14 @@ uv run --isolated --extra vllm -m skyrl_train.entrypoints.main_base \
   trainer.micro_forward_batch_size_per_gpu=8 \
   trainer.micro_train_batch_size_per_gpu=1 \
   trainer.max_prompt_length=6000 \
+  trainer.export_path=$EXPORT_PATH \
   generator.max_input_length=$MAX_INPUT_LENGTH \
   generator.sampling_params.max_generate_length=$MAX_GENERATE_LENGTH \
   trainer.policy.optimizer_config.lr=1.0e-6 \
   trainer.policy_mini_batch_size=64 \
   trainer.algorithm.use_kl_loss=false \
   trainer.ckpt_interval=60 \
-  trainer.hf_save_interval=30 \
+  trainer.hf_save_interval=60 \
   trainer.dump_data_batch=true \
   trainer.export_path=$EXPORT_PATH \
   generator.backend=vllm \
@@ -67,7 +68,7 @@ uv run --isolated --extra vllm -m skyrl_train.entrypoints.main_base \
   environment.skyrl_gym.text2sql.db_path=$DB_PATH \
   trainer.logger="wandb" \
   trainer.project_name="noisy-rl" \
-  trainer.run_name="debug" \
+  trainer.run_name="clean-longrun" \
   trainer.resume_mode=latest \
   trainer.ckpt_path=$CKPT_PATH \
   trainer.eval_batch_size=1024 \

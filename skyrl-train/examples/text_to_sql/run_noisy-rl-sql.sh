@@ -10,6 +10,7 @@ set -x
 DATA_DIR="$HOME/noisy-rl/data"
 DB_PATH="$HOME/noisy-rl/data"
 CKPT_PATH="$HOME/ckpts/skyrl_noisy_sql_7B_ckpt"
+EXPORT_PATH="$HOME/exports/skyrl_noisy_sql_7B_export"
 
 echo "Using data from $DATA_DIR"
 
@@ -25,7 +26,7 @@ uv run --isolated --extra vllm -m skyrl_train.entrypoints.main_base \
   data.train_data="['$DATA_DIR/train_-1_1.0_42.parquet']" \
   data.val_data="['$DATA_DIR/test_-1_1.0_42.parquet']" \
   trainer.policy.model.path="Qwen/Qwen2.5-Coder-7B-Instruct" \
-  trainer.epochs=30 \
+  trainer.epochs=300 \
   trainer.placement.colocate_all=true \
   trainer.strategy=fsdp2 \
   trainer.policy.fsdp_config.cpu_offload=false \
@@ -45,9 +46,10 @@ uv run --isolated --extra vllm -m skyrl_train.entrypoints.main_base \
   trainer.policy.optimizer_config.lr=1.0e-6 \
   trainer.policy_mini_batch_size=64 \
   trainer.algorithm.use_kl_loss=false \
-  trainer.ckpt_interval=60 \
-  trainer.hf_save_interval=30 \
+  trainer.ckpt_interval=150 \
+  trainer.hf_save_interval=150 \
   trainer.dump_data_batch=true \
+  trainer.export_path=$EXPORT_PATH \
   generator.backend=vllm \
   generator.run_engines_locally=true \
   generator.weight_sync_backend=nccl \
@@ -65,7 +67,7 @@ uv run --isolated --extra vllm -m skyrl_train.entrypoints.main_base \
   environment.skyrl_gym.text2sql.db_path=$DB_PATH \
   trainer.logger="wandb" \
   trainer.project_name="noisy-rl" \
-  trainer.run_name="noisy" \
+  trainer.run_name="noisy-longrun" \
   trainer.resume_mode=latest \
   trainer.ckpt_path=$CKPT_PATH \
   trainer.eval_batch_size=1024 \
