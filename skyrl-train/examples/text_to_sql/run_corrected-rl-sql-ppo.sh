@@ -69,7 +69,7 @@ uv run --isolated --extra vllm -m skyrl_train.entrypoints.main_base \
   environment.skyrl_gym.text2sql.db_path=$DB_PATH \
   trainer.logger="wandb" \
   trainer.project_name="noisy-rl" \
-  trainer.run_name="noisy-longrun" \
+  trainer.run_name="corrected-ppo" \
   trainer.resume_mode=latest \
   trainer.ckpt_path=$CKPT_PATH \
   trainer.eval_batch_size=1024 \
