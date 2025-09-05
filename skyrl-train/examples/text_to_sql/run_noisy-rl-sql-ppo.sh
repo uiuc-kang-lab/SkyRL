@@ -14,7 +14,7 @@ EXPORT_PATH="$HOME/exports/skyrl_noisy_sql_7B_export"
 
 echo "Using data from $DATA_DIR"
 
-NUM_GPUS=4
+NUM_GPUS=8
 NUM_INFERENCE_ENGINES=2
 TP_SIZE=4
 MAX_INPUT_LENGTH=29000
