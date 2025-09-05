@@ -48,8 +48,8 @@ uv run --isolated --extra vllm -m skyrl_train.entrypoints.main_base \
   trainer.policy_mini_batch_size=64 \
   trainer.critic_mini_batch_size=64 \
   trainer.algorithm.use_kl_loss=false \
-  trainer.ckpt_interval=30 \
-  trainer.hf_save_interval=150 \
+  trainer.ckpt_interval=100 \
+  trainer.hf_save_interval=100 \
   trainer.dump_data_batch=true \
   trainer.export_path=$EXPORT_PATH \
   generator.backend=vllm \

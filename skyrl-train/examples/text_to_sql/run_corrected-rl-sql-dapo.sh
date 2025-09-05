@@ -75,8 +75,8 @@ uv run --isolated --extra vllm -m examples.algorithms.dapo.main_dapo \
   trainer.policy_mini_batch_size=64 \
   trainer.algorithm.use_kl_loss=$USE_KL_LOSS \
   trainer.algorithm.clip_ratio_c=$CLIP_RATIO_C \
-  trainer.ckpt_interval=150 \
-  trainer.hf_save_interval=150 \
+  trainer.ckpt_interval=100 \
+  trainer.hf_save_interval=100 \
   trainer.dump_data_batch=true \
   trainer.export_path=$EXPORT_PATH \
   generator.backend=vllm \
