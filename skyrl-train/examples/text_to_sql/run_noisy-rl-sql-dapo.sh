@@ -30,11 +30,10 @@ OVERLONG_BUFFER_PENALTY_FACTOR=1.0
 USE_KL_LOSS=false
 TEMPERATURE=1.0
 TOP_P=1.0
-EVAL_TOP_P=0.7
 CLIP_RATIO_C=10.0
 
-NUM_GPUS=8
-NUM_INFERENCE_ENGINES=2
+NUM_GPUS=4
+NUM_INFERENCE_ENGINES=1
 TP_SIZE=4
 MAX_INPUT_LENGTH=29000
 MAX_GENERATE_LENGTH=3000
@@ -92,7 +91,6 @@ uv run --isolated --extra vllm -m examples.algorithms.dapo.main_dapo \
   generator.sampling_params.temperature=$TEMPERATURE \
   generator.sampling_params.top_p=$TOP_P \
   generator.sampling_params.stop='["</sql>", "</solution>"]' \
-  generator.eval_sampling_params.top_p=$EVAL_TOP_P \
   generator.eval_sampling_params.stop='["</sql>", "</solution>"]' \
   environment.skyrl_gym.text2sql.db_path=$DB_PATH \
   trainer.logger="wandb" \
