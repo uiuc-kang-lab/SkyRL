@@ -9,8 +9,8 @@ set -x
 # change these paths to your own
 DATA_DIR="$HOME/noisy-rl/data"
 DB_PATH="$HOME/noisy-rl/data"
-CKPT_PATH="$HOME/ckpts/skyrl_noisy_sql_7B_dapo_ckpt"
-EXPORT_PATH="$HOME/exports/skyrl_noisy_sql_7B_dapo_export"
+CKPT_PATH="$HOME/ckpts/skyrl_corrected_sql_7B_dapo_ckpt"
+EXPORT_PATH="$HOME/exports/skyrl_corrected_sql_7B_dapo_export"
 
 echo "Using data from $DATA_DIR"
 
