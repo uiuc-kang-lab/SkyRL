@@ -48,8 +48,8 @@ uv run --isolated --extra vllm -m skyrl_train.entrypoints.main_base \
   trainer.policy_mini_batch_size=64 \
   trainer.critic_mini_batch_size=64 \
   trainer.algorithm.use_kl_loss=false \
-  trainer.ckpt_interval=100 \
-  trainer.hf_save_interval=100 \
+  trainer.ckpt_interval=10 \
+  trainer.hf_save_interval=-1 \
   trainer.dump_data_batch=true \
   trainer.export_path=$EXPORT_PATH \
   generator.backend=vllm \
@@ -72,6 +72,7 @@ uv run --isolated --extra vllm -m skyrl_train.entrypoints.main_base \
   trainer.run_name="noisy-ppo" \
   trainer.resume_mode=latest \
   trainer.ckpt_path=$CKPT_PATH \
+  trainer.max_ckpts_to_keep=1 \
   trainer.eval_batch_size=1024 \
   trainer.eval_before_train=true \
   trainer.eval_interval=5 \
