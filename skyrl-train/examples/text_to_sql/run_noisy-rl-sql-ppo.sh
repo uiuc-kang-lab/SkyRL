@@ -15,8 +15,8 @@ EXPORT_PATH="$HOME/exports/skyrl_noisy_sql_7B_ppo_export"
 echo "Using data from $DATA_DIR"
 
 NUM_GPUS=4
-NUM_INFERENCE_ENGINES=1
-TP_SIZE=4
+NUM_INFERENCE_ENGINES=4
+TP_SIZE=1
 MAX_INPUT_LENGTH=29000
 MAX_GENERATE_LENGTH=3000
 TRAIN_BATCH_SIZE=64
@@ -30,14 +30,12 @@ uv run --isolated --extra vllm -m skyrl_train.entrypoints.main_base \
   trainer.epochs=300 \
   trainer.placement.colocate_all=true \
   trainer.strategy=fsdp2 \
-  trainer.policy.fsdp_config.cpu_offload=false \
-  trainer.ref.fsdp_config.cpu_offload=true \
-  trainer.policy.optimizer_config.max_grad_norm=0.5 \
-  trainer.policy.sequence_parallel_size=1 \
   trainer.placement.policy_num_gpus_per_node=$NUM_GPUS \
+  trainer.placement.ref_num_gpus_per_node=$NUM_GPUS \
   trainer.placement.critic_num_gpus_per_node=$NUM_GPUS \
   generator.num_inference_engines=$NUM_INFERENCE_ENGINES \
   generator.inference_engine_tensor_parallel_size=$TP_SIZE \
+  trainer.update_epochs_per_batch=1 \
   trainer.train_batch_size=$TRAIN_BATCH_SIZE \
   trainer.micro_forward_batch_size_per_gpu=8 \
   trainer.micro_train_batch_size_per_gpu=1 \
@@ -47,7 +45,7 @@ uv run --isolated --extra vllm -m skyrl_train.entrypoints.main_base \
   trainer.policy.optimizer_config.lr=1.0e-6 \
   trainer.policy_mini_batch_size=64 \
   trainer.critic_mini_batch_size=64 \
-  trainer.algorithm.use_kl_loss=false \
+  trainer.algorithm.use_kl_loss=true \
   trainer.ckpt_interval=100 \
   trainer.hf_save_interval=-1 \
   trainer.dump_data_batch=true \
