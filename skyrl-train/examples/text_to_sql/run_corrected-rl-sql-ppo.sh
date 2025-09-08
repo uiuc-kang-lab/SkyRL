@@ -48,7 +48,7 @@ uv run --isolated --extra vllm -m skyrl_train.entrypoints.main_base \
   trainer.algorithm.use_kl_loss=true \
   trainer.ckpt_interval=100 \
   trainer.hf_save_interval=-1 \
-  trainer.dump_data_batch=true \
+  trainer.dump_data_batch=false \
   trainer.export_path=$EXPORT_PATH \
   generator.backend=vllm \
   generator.run_engines_locally=true \
