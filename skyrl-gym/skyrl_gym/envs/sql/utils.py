@@ -9,7 +9,7 @@ import re
 import sqlite3
 from func_timeout import func_timeout, FunctionTimedOut
 import sys
-
+import random
 
 THINK_START, THINK_END = "<think>", "</think>"
 SQL_START, SQL_END = "<sql>", "</sql>"
@@ -81,7 +81,7 @@ def execute_sql_wrapper_single(db_file, sql, timeout, output_str):
     return res
 
 
-def calculate_reward_single(completion, reference, db_file, timeout=30):
+def calculate_reward_single(completion, reference, db_file, timeout=30, random_perturb=False):
     reward = 0.0
     num_comparisons = 0
 
@@ -99,15 +99,22 @@ def calculate_reward_single(completion, reference, db_file, timeout=30):
     _, _, gt_results, _, _ = ref
 
     if pred_results is not None and gt_results is not None and pred_results == gt_results:
-        reward = 1.0
+        if random_perturb:
+            if random.random() < 0.5:
+                reward = 1.0
+            else:
+                print("Randomly perturbing the reward to 0")
+                reward = 0.0
+        else:
+            reward = 1.0
     else:
         reward = 0.0
     return reward
 
 
-def compute_score_single(completion, reference, db_file):
+def compute_score_single(completion, reference, db_file, random_perturb=False):
     try:
-        res = calculate_reward_single(completion, reference, db_file)
+        res = calculate_reward_single(completion, reference, db_file, random_perturb=random_perturb)
         return res
     except Exception as e:
         print(f"Unexpected error: {e}; Setting reward as 0")

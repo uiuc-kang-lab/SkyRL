@@ -25,6 +25,7 @@ class SQLEnv(BaseTextEnv):
         self.db_id = extras["db_id"]
         self.gold_sql = extras["reward_spec"]["ground_truth"]
         self.task = extras["data"]
+        self.random_perturb = env_config.random_perturb
 
         if self.task == "synsql":
             self.db_path = os.path.join(
@@ -84,7 +85,7 @@ class SQLEnv(BaseTextEnv):
         if done:
             # Concat all chat history into a single string and compute reward
             chat_history_str = "".join([item["content"] for item in self.chat_history])
-            return compute_score_single(chat_history_str, self.gold_sql, self.db_file)
+            return compute_score_single(chat_history_str, self.gold_sql, self.db_file, random_perturb=self.random_perturb)
         else:
             # No reward for intermediate steps for SQL tasks
             return 0
