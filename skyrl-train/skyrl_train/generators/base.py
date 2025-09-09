@@ -22,7 +22,7 @@ class GeneratorOutput(TypedDict):
 
 class GeneratorInterface(ABC):
     @abstractmethod
-    async def generate(self, input_batch: GeneratorInput) -> GeneratorOutput:
+    async def generate(self, input_batch: GeneratorInput, mode: str = "train") -> GeneratorOutput:
         """Generate trajectories for the input batch.
 
         Returns outputs in the same order as the input batch.

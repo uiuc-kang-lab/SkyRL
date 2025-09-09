@@ -104,6 +104,7 @@ class SkyRLGymGenerator(GeneratorInterface):
         max_tokens: int,
         max_input_length: int,
         sampling_params: Optional[Dict[str, Any]] = None,
+        mode: str = "train",
     ) -> AgentLoopOutput:
         """
         Multi-turn generation loop that executes a single trajectory.
@@ -135,6 +136,10 @@ class SkyRLGymGenerator(GeneratorInterface):
         # Create a new environment instance
         env_extras["max_turns"] = self.max_turns  # TODO(shu): move this to config
         env_config = self.skyrl_gym_cfg.get(env_class, DictConfig({}))
+        env_config = copy.deepcopy(env_config)
+        if mode != "eval":
+            print("Setting random_perturb to False for eval mode.")
+            env_config.random_perturb = False
         env = skyrl_gym.make(env_class, env_config=env_config, extras=env_extras)
 
         trajectory_id = uuid4().hex
@@ -357,7 +362,7 @@ class SkyRLGymGenerator(GeneratorInterface):
 
         return generator_output
 
-    async def generate(self, input_batch: GeneratorInput) -> GeneratorOutput:
+    async def generate(self, input_batch: GeneratorInput, mode: str = "train") -> GeneratorOutput:
         """
         Generate trajectories for the input batch.
 
@@ -390,6 +395,7 @@ class SkyRLGymGenerator(GeneratorInterface):
                     max_tokens,
                     max_input_length,
                     sampling_params=sampling_params,
+                    mode=mode,
                 )
             )
 
