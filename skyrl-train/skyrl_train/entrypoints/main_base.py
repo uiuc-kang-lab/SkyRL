@@ -97,6 +97,13 @@ class BasePPOExp:
             trust_remote_code=True,
             use_fast=not self.cfg.trainer.disable_fast_tokenizer,
         )
+        # if the model does not have a chat template, we set the default chat template
+        if not hasattr(tokenizer, "chat_template") or tokenizer.chat_template is None:
+            from skyrl_train.utils.utils import get_default_chat_template
+            tokenizer.chat_template = get_default_chat_template(self.cfg.trainer.policy.model.path)
+            logger.info(f"Using default chat template for model {self.cfg.trainer.policy.model.path}")
+        else:
+            logger.info(f"Using model provided chat template for model {self.cfg.trainer.policy.model.path}: {tokenizer.chat_template}")
         tokenizer.padding_side = padding_side
         if tokenizer.pad_token is None:
             tokenizer.pad_token = tokenizer.eos_token
@@ -113,6 +120,7 @@ class BasePPOExp:
             self.cfg.data.train_data,
             self.tokenizer,
             self.cfg.trainer.max_prompt_length,
+            noise_level=self.cfg.data.noise_level,
             num_processors=8,
         )
         # make sure the dataset is large enough to train on

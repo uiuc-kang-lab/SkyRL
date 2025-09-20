@@ -100,10 +100,11 @@ def calculate_reward_single(completion, reference, db_file, timeout=30, random_p
 
     if pred_results is not None and gt_results is not None and pred_results == gt_results:
         if random_perturb:
-            if random.random() < 0.5:
+            if random.random() < 0.8:
+                print("Original reward 1.0, keeping it as 1.0")
                 reward = 1.0
             else:
-                print("Randomly perturbing the reward to 0")
+                print("Original reward 1.0, changing it to 0.0")
                 reward = 0.0
         else:
             reward = 1.0
