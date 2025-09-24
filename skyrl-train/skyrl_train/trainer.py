@@ -261,7 +261,7 @@ class RayPPOTrainer:
                 with Timer("step", self.all_timings):
 
                     # 0. truncate data to have even shards
-                    rand_prompts = self._remove_tail_data(rand_prompts)
+                    rand_prompts, n_repeat = self._remove_pad_tail_data(rand_prompts)
                     generator_input, uids = self._prepare_generator_input(
                         self.cfg.generator.n_samples_per_prompt, rand_prompts
                     )
@@ -380,7 +380,7 @@ class RayPPOTrainer:
                 logger.info("Saved final model.")
         logger.info("Training done!")
 
-    def _remove_tail_data(self, entries: List[Any]) -> List[Any]:
+    def _remove_pad_tail_data(self, entries: List[Any]) -> List[Any]:
         """Remove tail data to have even shards"""
         dp_size = self.policy_model.actor_infos[0].rank.dp_size
         if self.critic_model is not None:
@@ -389,7 +389,22 @@ class RayPPOTrainer:
             dp_size = math.lcm(dp_size, self.ref_model.actor_infos[0].rank.dp_size)
         if self.reward_model is not None:
             dp_size = math.lcm(dp_size, self.reward_model.actor_infos[0].rank.dp_size)
-        return entries[: (len(entries) // dp_size) * dp_size]
+        if dp_size <= len(entries):
+            print(f"Truncating {len(entries) % dp_size} entries to have even shards with data parallel size {dp_size}")
+            return entries[: (len(entries) // dp_size) * dp_size], 0
+        else:
+            n_to_add = dp_size - (len(entries) % dp_size)
+            print(f"Warning: number of entries {len(entries)} is smaller than data parallel size {dp_size}, repeating {n_to_add} entries")
+            return entries + entries[:n_to_add], n_to_add
+
+    def _remove_repeated_tail_data(self, generator_output: GeneratorOutput, n_repeat: int) -> GeneratorOutput:
+        """Remove the repeated data in the tail of generator output"""
+        if n_repeat > 0:
+            print(f"Removing {n_repeat} repeated entries in the tail of generator output")
+            for key in generator_output:
+                if isinstance(generator_output[key], list):
+                    generator_output[key] = generator_output[key][:-n_repeat]
+        return generator_output
 
     def _prepare_generator_input(
         self, n_samples_per_prompt: int, rand_prompts: List[Any], sampling_params: Optional[Dict[str, Any]] = None
@@ -726,6 +741,7 @@ class RayPPOTrainer:
             be awake (i.e. on GPU).
         - after calling this method, the same model placement still holds.
         """
+
         generator_output: GeneratorOutput = await self.generator.generate(input_batch, mode=mode)
 
         # add rollout metrics to self.all_metrics
