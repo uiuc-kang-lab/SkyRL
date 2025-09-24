@@ -49,6 +49,8 @@ class PromptDataset:
                         example["reward_spec"]["ground_truth"] = str(noisy_answer)
                     elif noise_model == "randomly_remove":
                         example["reward_spec"]["ground_truth"] = deepcopy(example["reward_spec"]["insufficient_tests"])
+                    elif noise_model == "randomly_replace":
+                        example["reward_spec"]["ground_truth"] = deepcopy(example["reward_spec"]["wrong_answer"])
                     else:
                         raise ValueError(f"Unknown noise model: {noise_model}")
                 return example
