@@ -138,7 +138,6 @@ class SkyRLGymGenerator(GeneratorInterface):
         env_config = self.skyrl_gym_cfg.get(env_class, DictConfig({}))
         env_config = copy.deepcopy(env_config)
         if mode == "eval":
-            print("Setting random_perturb to False for eval mode.")
             env_config.random_perturb = False
         env = skyrl_gym.make(env_class, env_config=env_config, extras=env_extras)
 
