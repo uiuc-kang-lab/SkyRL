@@ -47,6 +47,8 @@ class SQLEnv(BaseTextEnv):
                 self.db_path,
                 "dev/dev_databases",
             )
+        elif self.task == "bird-sanity-check":
+            self.db_path = self.db_path
         else:
             raise NotImplementedError
 
