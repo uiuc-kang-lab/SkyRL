@@ -53,7 +53,7 @@ def extract_solution(solution_str, method="strict"):
 #             final_answer = None
 #     return final_answer
 
-def compute_score(solution_str, ground_truth, method="strict", format_score=0, score=1):
+def compute_score(solution_str, ground_truth, method="strict", format_score=0, score=1, random_perturb=False):
     """The scoring function for GSM8k.
 
     Reference: Trung, Luong, et al. "Reft: Reasoning with reinforced fine-tuning." Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers). 2024.
@@ -69,7 +69,19 @@ def compute_score(solution_str, ground_truth, method="strict", format_score=0, s
     if answer is None:
         return 0
     else:
+        if random_perturb:
+            import hashlib
+            # hash the ground truth string to get a random number between 0 and 1
+            hash_object = hashlib.md5(str(ground_truth).encode())
+            hash_int = int(hash_object.hexdigest(), 16)
+            random_value = (hash_int % 100) / 100.0
+            # if random_value < 0.1, swap format score and score
+            if random_value < 0.5:
+                format_score, score = score, format_score
+
         if answer == ground_truth:
+            print(f"Answer: {answer} (ground truth = {ground_truth}): correct; gets score {score}.")
             return score
         else:
+            print(f"Answer: {answer} (ground truth = {ground_truth}): wrong; gets score {format_score}.")
             return format_score
