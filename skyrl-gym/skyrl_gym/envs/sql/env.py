@@ -20,12 +20,20 @@ class SQLEnv(BaseTextEnv):
         assert "db_id" in extras, "db_id field is required"
         assert "reward_spec" in extras, "reward_spec field is required"
         assert "data" in extras, "data field is required"
+        assert "question_id" in extras, "question_id field is required"
 
         self.db_path = env_config.db_path
         self.db_id = extras["db_id"]
         self.gold_sql = extras["reward_spec"]["ground_truth"]
         self.task = extras["data"]
+        self.question_id = extras["question_id"]
+        self.grading_method = extras["reward_spec"]["method"]
         self.random_perturb = env_config.random_perturb
+        self.db_modification_script_path = env_config["db_modification_scripts_path"]
+        if os.path.exists(f"{self.db_modification_script_path}/{self.question_id}.sql"):
+            self.db_modification_script = f"{self.db_modification_script_path}/{self.question_id}.sql"
+        else:
+            self.db_modification_script = None
 
         if self.task == "synsql":
             self.db_path = os.path.join(
@@ -37,11 +45,13 @@ class SQLEnv(BaseTextEnv):
                 self.db_path,
                 "spider/database",
             )
-        elif self.task == "bird":
-            self.db_path = os.path.join(
-                self.db_path,
-                "bird/train/train_databases",
-            )
+        elif self.task == "bird-platinum":
+            # self.db_path = os.path.join(
+                # self.db_path,
+                # "bird/train/train_databases",
+
+            # )
+            self.db_path = self.db_path
         elif self.task == "bird-dev":
             self.db_path = os.path.join(
                 self.db_path,
@@ -81,13 +91,13 @@ class SQLEnv(BaseTextEnv):
         # Format <tool>tool_name</tool><input>tool_input</input>
         tool_group_name = self.tool_group.get_name()
         tool_name = self.tool_group.get_tool_names()[0]
-        return tool_group_name, tool_name, (self.db_id, tool_input, self.max_turns - self.turns)
+        return tool_group_name, tool_name, (self.db_id, tool_input, self.max_turns - self.turns, self.db_modification_script)
 
     def _get_reward(self, action: str, done: bool) -> float:
         if done:
             # Concat all chat history into a single string and compute reward
             chat_history_str = "".join([item["content"] for item in self.chat_history])
-            return compute_score_single(chat_history_str, self.gold_sql, self.db_file, random_perturb=self.random_perturb)
+            return compute_score_single(chat_history_str, self.gold_sql, self.db_file, db_modification_script=self.db_modification_script, grading_method=self.grading_method)
         else:
             # No reward for intermediate steps for SQL tasks
             return 0

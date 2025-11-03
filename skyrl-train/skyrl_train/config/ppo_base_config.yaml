@@ -140,6 +140,8 @@ trainer:
   use_sample_packing: true
   eval_batch_size: 1024
   eval_before_train: true
+  eval_only: false
+  eval_retries: 1
   eval_interval: 5 # Set to -1 to disable evaluation.
   # max prompt length in training dataset
   max_prompt_length: 512

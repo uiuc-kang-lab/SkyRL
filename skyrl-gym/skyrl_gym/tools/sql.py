@@ -12,12 +12,19 @@ class SQLCodeExecutorToolGroup(ToolGroup):
         super().__init__(name="SQLCodeExecutorToolGroup")
 
     @tool
-    def sql(self, db_id, sql, turns_left, timeout=5) -> str:
-        def _execute_sql(db_file, sql):
+    def sql(self, db_id, sql, turns_left, db_modification_script, timeout=5) -> str:
+        def _execute_sql(db_file, sql, db_modification_script):
             try:
                 conn = sqlite3.connect(db_file)
                 cursor = conn.cursor()
-                conn.execute("BEGIN TRANSACTION;")
+                # if db_modification_script:
+                #     with open(db_modification_script, "r") as f:
+                #         modification_sql = f.read()
+                #     try:
+                #         cursor.executescript(modification_sql)
+                #     except Exception as e:
+                #         print(f"WARNING executing DB modification script failed: {e}, db file: {db_file}")
+                # # conn.execute("BEGIN TRANSACTION;")
                 cursor.execute(sql)
                 execution_res = frozenset(cursor.fetchall())
                 conn.rollback()
@@ -28,9 +35,9 @@ class SQLCodeExecutorToolGroup(ToolGroup):
                 conn.close()
                 return f"Error executing SQL: {str(e)}, db file: {db_file}"
 
-        def _execute_sql_wrapper(db_file, sql, timeout=5) -> str:
+        def _execute_sql_wrapper(db_file, sql, db_modification_script, timeout=5) -> str:
             try:
-                res = func_timeout(timeout, _execute_sql, args=(db_file, sql))
+                res = func_timeout(timeout, _execute_sql, args=(db_file, sql, db_modification_script))
                 if isinstance(res, frozenset):
                     df = pd.DataFrame(res)
                     res = df.to_string(index=False)
@@ -59,6 +66,6 @@ class SQLCodeExecutorToolGroup(ToolGroup):
             obs = "Your previous action is invalid. Follow the format of outputting thinking process and sql tool, and try again."
         else:
             db_file = os.path.join(self.db_path, db_id, db_id + ".sqlite")
-            obs = _execute_sql_wrapper(db_file, sql, timeout)
+            obs = _execute_sql_wrapper(db_file, sql, db_modification_script, timeout)
 
         return f"\n\n<observation>{obs}\n{reminder_text}</observation>\n\n"

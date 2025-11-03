@@ -163,6 +163,7 @@ class RayPPOTrainer:
             concat_env_extras.extend(generator_input["env_extras"])
             concat_uids.extend(uids)
         concat_generator_outputs: GeneratorOutput = concatenate_generator_outputs(generator_outputs)
+        concat_generator_extra_metadata = sum([output["extra_metadata"] for output in generator_outputs], [])
 
         # Extract data_sources from env_extras
         concat_data_sources = [env_extra.get("data_source") for env_extra in concat_env_extras]
@@ -198,6 +199,7 @@ class RayPPOTrainer:
                     concat_all_envs,
                     concat_env_extras,
                     eval_metrics,
+                    concat_generator_extra_metadata
                 )
 
         # 5. Restore self.all_metrics
@@ -245,6 +247,10 @@ class RayPPOTrainer:
             # Policy model is backloaded to GPU after eval
             if self.cfg.trainer.placement.colocate_all:
                 self.policy_model.backload_to_gpu()
+
+        if self.cfg.trainer.eval_only:
+            logger.info("Eval only mode, exiting after eval...")
+            return
 
         # setup for dynamic sampling
         keep_sampling = False

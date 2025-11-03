@@ -424,8 +424,16 @@ def initialize_ray(cfg: DictConfig):
         sync_registries,
     )
 
+    # find all the files with an extension of .out in the current directory only
+    excludes = []
+    for file in os.listdir("."):
+        if file.endswith(".out"):
+            excludes.append(file)
+
+    print(f"Excluding files from ray runtime env: {excludes}")
+
     env_vars = prepare_runtime_environment(cfg)
-    ray.init(runtime_env={"env_vars": env_vars}, address="local")
+    ray.init(runtime_env={"env_vars": env_vars, "excludes": excludes}, address="local", _temp_dir="/data/daniel_kang_group/tmp")
 
     # create the named ray actors for the registries to make available to all workers
     sync_registries()

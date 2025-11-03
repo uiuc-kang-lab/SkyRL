@@ -34,6 +34,7 @@ class AgentLoopOutput:
     loss_mask: List[int]
     prompt_ids: List[int]
     rollout_logprobs: Optional[List[float]]
+    extra_metadata: Optional[Dict[str, Any]] = None
 
 
 class SkyRLGymGenerator(GeneratorInterface):
@@ -279,6 +280,7 @@ class SkyRLGymGenerator(GeneratorInterface):
             loss_mask=loss_mask,
             prompt_ids=prompt_ids,
             rollout_logprobs=rollout_logprobs,
+            extra_metadata=env_step_output.get("metadata", {})
         )
 
     async def generate_batched(
@@ -324,12 +326,14 @@ class SkyRLGymGenerator(GeneratorInterface):
         truncated_responses = []
         rewards = []
         loss_masks = []
+        extra_metadata = []
         truncated_logprobs: Optional[List[List[float]]] = [] if logprobs is not None else None
 
         for i, (response, response_ids, env) in enumerate(zip(responses, all_response_ids, envs)):
             # step on environment and compute reward
             env_step_output: BaseTextEnvStepOutput = env.step(response)
             reward = env_step_output["reward"]
+            extra_metadata.append(env_step_output.get("metadata", {}))
             rewards.append(reward)
 
             if len(response_ids) > max_tokens:
@@ -357,6 +361,7 @@ class SkyRLGymGenerator(GeneratorInterface):
             "stop_reasons": stop_reasons,
             "rollout_metrics": rollout_metrics,
             "rollout_logprobs": truncated_logprobs,
+            "extra_metadata": extra_metadata
         }
 
         return generator_output
@@ -410,6 +415,7 @@ class SkyRLGymGenerator(GeneratorInterface):
         stop_reasons = [output.stop_reason for output in all_outputs]
         loss_masks = [output.loss_mask for output in all_outputs]
         prompt_token_ids = [output.prompt_ids for output in all_outputs]
+        extra_metadata = [output.extra_metadata for output in all_outputs]
 
         if sampling_params is not None:
             # sampling params will be a dict in the format of the inference engine backend
@@ -440,6 +446,7 @@ class SkyRLGymGenerator(GeneratorInterface):
             "stop_reasons": stop_reasons,
             "rollout_metrics": rollout_metrics,
             "rollout_logprobs": rollout_logprobs,
+            "extra_metadata": extra_metadata
         }
 
         return generator_output

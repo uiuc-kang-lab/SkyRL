@@ -18,6 +18,7 @@ class GeneratorOutput(TypedDict):
     stop_reasons: Optional[List[str]]
     rollout_metrics: Optional[Dict[str, Any]]
     rollout_logprobs: Optional[List[List[float]]]
+    extra_metadata: Optional[List[Dict[str, Any]]]
 
 
 class GeneratorInterface(ABC):

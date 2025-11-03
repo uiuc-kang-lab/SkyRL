@@ -40,7 +40,7 @@ class PromptDataset:
             # loop over the items in the dataset
             def add_noise(example):
                 import random
-                if example["noise_spec"]["param"] < self.noise_level:
+                if float(example["noise_spec"]["param"]) < self.noise_level:
                     if noise_model == "randomly_generate":
                         ground_truth = int(example["reward_spec"]["ground_truth"])
                         min_noise = max(0, ground_truth - 3)

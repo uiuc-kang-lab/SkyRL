@@ -10,6 +10,8 @@ import sqlite3
 from func_timeout import func_timeout, FunctionTimedOut
 import sys
 import random
+from copy import deepcopy
+from skyrl_gym.envs.sql.grading import grade
 
 THINK_START, THINK_END = "<think>", "</think>"
 SQL_START, SQL_END = "<sql>", "</sql>"
@@ -42,28 +44,38 @@ def verify_format_and_extract(output: str):
 
     return True, thoughts, solution_text.strip(), None
 
+def remove_null_rows(results):
+    return [row for row in results if not all(col is None for col in row)]
 
-def execute_sql_single(db_file, sql):
+def execute_sql_single(db_file, sql, db_modification_script):
     try:
-        conn = sqlite3.connect(db_file)
+        conn = sqlite3.connect(db_file, autocommit=False)
         cursor = conn.cursor()
-        conn.execute("BEGIN TRANSACTION;")
+        # if db_modification_script:
+        #     with open(db_modification_script, "r") as f:
+        #         modification_sql = f.read()
+        #     try:
+        #         cursor.executescript(modification_sql)
+        #     except Exception as e:
+        #         print(f"WARNING executing DB modification script failed: {e}, db file: {db_file}")
+        # conn.execute("BEGIN TRANSACTION;")
         cursor.execute(sql)
-        execution_res = frozenset(cursor.fetchall())
+        execution_res = deepcopy(cursor.fetchall())
+        execution_res = remove_null_rows(execution_res)
         conn.rollback()
         conn.close()
         # print('Successfully executed')
         return db_file, sql, execution_res, 1
-    except Exception:
-        # print(f"Error executing SQL: {e}, db file: {db_file}")
+    except Exception as e:
+        print(f"Error executing SQL: {e}, db file: {db_file}")
         conn.rollback()
         conn.close()
         return db_file, sql, None, 0
 
 
-def execute_sql_wrapper_single(db_file, sql, timeout, output_str):
+def execute_sql_wrapper_single(db_file, sql, timeout, output_str, db_modification_script=None):
     try:
-        res = func_timeout(timeout, execute_sql_single, args=(db_file, sql))
+        res = func_timeout(timeout, execute_sql_single, args=(db_file, sql, db_modification_script))
     except KeyboardInterrupt:
         sys.exit(0)
     except FunctionTimedOut:
@@ -71,7 +83,7 @@ def execute_sql_wrapper_single(db_file, sql, timeout, output_str):
         print("-" * 30)
         res = (db_file, sql, None, 0)
     except Exception:
-        # print(f"Error executing SQL: {e}, db_file: {db_file}")
+        print(f"Error executing SQL: {e}, db_file: {db_file}")
         res = (db_file, sql, None, 0)
 
     # Append the output to the tuple
@@ -81,7 +93,7 @@ def execute_sql_wrapper_single(db_file, sql, timeout, output_str):
     return res
 
 
-def calculate_reward_single(completion, reference, db_file, timeout=30, random_perturb=False):
+def calculate_reward_single(completion, reference, db_file, timeout=60, db_modification_script=None, grading_method="multiset"):
     reward = 0.0
     num_comparisons = 0
 
@@ -92,30 +104,34 @@ def calculate_reward_single(completion, reference, db_file, timeout=30, random_p
     else:
         num_comparisons += 1
 
-    pred = execute_sql_wrapper_single(db_file, pred_sql, timeout, completion)
-    ref = execute_sql_wrapper_single(db_file, reference, timeout, completion)
+    pred = execute_sql_wrapper_single(db_file, pred_sql, timeout, completion, db_modification_script)
+    ref = execute_sql_wrapper_single(db_file, reference, timeout, completion, db_modification_script)
+
+    # print(f"Pred SQL: {pred_sql}")
+    # print(f"Ref SQL: {reference}")
 
     _, _, pred_results, _, _ = pred
     _, _, gt_results, _, _ = ref
 
-    if pred_results is not None and gt_results is not None and pred_results == gt_results:
-        if random_perturb:
-            if random.random() < 0.8:
-                print("Original reward 1.0, keeping it as 1.0")
-                reward = 1.0
-            else:
-                print("Original reward 1.0, changing it to 0.0")
-                reward = 0.0
-        else:
+    if pred_results is not None and gt_results is not None:
+        is_correct, _ = grade(gt_results, pred_results, grading_method=grading_method)
+        # print(f"Grading method: {grading_method}")
+        # print(f"Grading results: {is_correct}")
+        # print(f"Grading message: {message}")
+
+
+        if is_correct:
             reward = 1.0
+        else:
+            reward = 0.0
     else:
         reward = 0.0
     return reward
 
 
-def compute_score_single(completion, reference, db_file, random_perturb=False):
+def compute_score_single(completion, reference, db_file, db_modification_script=None, grading_method="multiset"):
     try:
-        res = calculate_reward_single(completion, reference, db_file, random_perturb=random_perturb)
+        res = calculate_reward_single(completion, reference, db_file, db_modification_script=db_modification_script, grading_method=grading_method)
         return res
     except Exception as e:
         print(f"Unexpected error: {e}; Setting reward as 0")
