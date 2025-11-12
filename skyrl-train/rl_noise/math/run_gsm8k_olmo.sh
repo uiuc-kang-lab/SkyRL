@@ -11,7 +11,7 @@ set -x
 # default parameters
 BASE_DIR=$HOME
 CLIP_RATIO_C=10.0
-NUM_GPUS=8
+NUM_GPUS=4
 INFERENCE_BACKEND="vllm"
 TIS_IMP_RATIO_CAP=2.0
 USE_TIS=true
@@ -56,11 +56,12 @@ if [ -z "$MODEL_NAME" ]; then
 fi
 MODEL_SHORT_NAME=$(echo $MODEL_NAME | awk -F'/' '{print $NF}')
 
-  # data.train_data="['$DATA_DIR/train_wrong-answers_Qwen2.5-1.5B-Instruct.parquet']" \
 uv run --isolated --extra $INFERENCE_BACKEND -m skyrl_train.entrypoints.main_base \
   data.train_data="['$DATA_DIR/train.parquet']" \
   data.val_data="['$DATA_DIR/validation.parquet']" \
   data.noise_level=$NOISE_LEVEL \
+  trainer.bf16=true \
+  trainer.flash_attn=true \
   trainer.algorithm.advantage_estimator="grpo" \
   trainer.algorithm.use_tis=$USE_TIS \
   trainer.algorithm.tis_imp_ratio_cap=$TIS_IMP_RATIO_CAP \
@@ -69,6 +70,7 @@ uv run --isolated --extra $INFERENCE_BACKEND -m skyrl_train.entrypoints.main_bas
   trainer.strategy=fsdp2 \
   trainer.placement.policy_num_gpus_per_node=$NUM_GPUS \
   trainer.placement.ref_num_gpus_per_node=$NUM_GPUS \
+  trainer.gradient_checkpointing=false \
   generator.num_inference_engines=$NUM_GPUS \
   generator.inference_engine_tensor_parallel_size=1 \
   trainer.epochs=5 \
@@ -78,8 +80,8 @@ uv run --isolated --extra $INFERENCE_BACKEND -m skyrl_train.entrypoints.main_bas
   trainer.update_epochs_per_batch=1 \
   trainer.train_batch_size=64 \
   trainer.policy_mini_batch_size=64 \
-  trainer.micro_forward_batch_size_per_gpu=16 \
-  trainer.micro_train_batch_size_per_gpu=16 \
+  trainer.micro_forward_batch_size_per_gpu=4 \
+  trainer.micro_train_batch_size_per_gpu=4 \
   trainer.ckpt_interval=50 \
   trainer.max_ckpts_to_keep=1 \
   trainer.max_prompt_length=512 \
@@ -98,5 +100,5 @@ uv run --isolated --extra $INFERENCE_BACKEND -m skyrl_train.entrypoints.main_bas
   trainer.project_name="rl-noise-gsm8k" \
   trainer.run_name="$RUN_NAME" \
   trainer.resume_mode=null \
-  trainer.ckpt_path="$BASE_DIR/ckpts/$RUN_NAME" \
+  trainer.ckpt_path="$BASE_DIR/ckpts/gsm8k-$MODEL_SHORT_NAME" \
   $@

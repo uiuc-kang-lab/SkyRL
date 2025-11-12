@@ -11,10 +11,10 @@ set -x
 # default parameters
 BASE_DIR=$HOME
 CLIP_RATIO_C=10.0
-NUM_GPUS=8
+NUM_GPUS=4
 INFERENCE_BACKEND="vllm"
 TIS_IMP_RATIO_CAP=2.0
-USE_TIS=true
+USE_TIS=false
 NOISE_LEVEL=0.0
 
 while [[ "$1" == --* ]]; do
@@ -30,6 +30,9 @@ while [[ "$1" == --* ]]; do
             ;;
         --run_name=*)
             RUN_NAME="${1#*=}" 
+            ;;
+        --batch_size=*)
+            BATCH_SIZE="${1#*=}" 
             ;;
         --debug)
             DEBUG="true"
@@ -56,7 +59,6 @@ if [ -z "$MODEL_NAME" ]; then
 fi
 MODEL_SHORT_NAME=$(echo $MODEL_NAME | awk -F'/' '{print $NF}')
 
-  # data.train_data="['$DATA_DIR/train_wrong-answers_Qwen2.5-1.5B-Instruct.parquet']" \
 uv run --isolated --extra $INFERENCE_BACKEND -m skyrl_train.entrypoints.main_base \
   data.train_data="['$DATA_DIR/train.parquet']" \
   data.val_data="['$DATA_DIR/validation.parquet']" \
@@ -76,21 +78,21 @@ uv run --isolated --extra $INFERENCE_BACKEND -m skyrl_train.entrypoints.main_bas
   trainer.eval_before_train=true \
   trainer.eval_interval=5 \
   trainer.update_epochs_per_batch=1 \
-  trainer.train_batch_size=64 \
-  trainer.policy_mini_batch_size=64 \
-  trainer.micro_forward_batch_size_per_gpu=16 \
-  trainer.micro_train_batch_size_per_gpu=16 \
+  trainer.train_batch_size=$BATCH_SIZE \
+  trainer.policy_mini_batch_size=$BATCH_SIZE \
+  trainer.micro_forward_batch_size_per_gpu=$BATCH_SIZE \
+  trainer.micro_train_batch_size_per_gpu=$BATCH_SIZE \
   trainer.ckpt_interval=50 \
   trainer.max_ckpts_to_keep=1 \
   trainer.max_prompt_length=512 \
   generator.sampling_params.max_generate_length=1024 \
   trainer.policy.optimizer_config.lr=1.0e-6 \
-  trainer.algorithm.use_kl_loss=true \
+  trainer.algorithm.use_kl_loss=false \
   generator.backend=$INFERENCE_BACKEND \
   generator.run_engines_locally=true \
   generator.weight_sync_backend=nccl \
   generator.async_engine=true \
-  generator.batched=true \
+  generator.batched=false \
   environment.env_class=gsm8k \
   generator.n_samples_per_prompt=8 \
   generator.gpu_memory_utilization=0.8 \
@@ -98,5 +100,5 @@ uv run --isolated --extra $INFERENCE_BACKEND -m skyrl_train.entrypoints.main_bas
   trainer.project_name="rl-noise-gsm8k" \
   trainer.run_name="$RUN_NAME" \
   trainer.resume_mode=null \
-  trainer.ckpt_path="$BASE_DIR/ckpts/$RUN_NAME" \
+  trainer.ckpt_path="$BASE_DIR/ckpts/gsm8k-$MODEL_SHORT_NAME" \
   $@

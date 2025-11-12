@@ -70,7 +70,7 @@ uv run --isolated --extra $INFERENCE_BACKEND -m skyrl_train.entrypoints.main_bas
   trainer.placement.ref_num_gpus_per_node=$NUM_GPUS \
   generator.num_inference_engines=$NUM_GPUS \
   generator.inference_engine_tensor_parallel_size=1 \
-  trainer.epochs=5 \
+  trainer.epochs=20 \
   trainer.eval_batch_size=256 \
   trainer.eval_before_train=true \
   trainer.eval_interval=5 \

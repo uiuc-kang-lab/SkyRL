@@ -11,7 +11,7 @@ set -x
 # default parameters
 BASE_DIR=$HOME
 CLIP_RATIO_C=10.0
-NUM_GPUS=8
+NUM_GPUS=4
 INFERENCE_BACKEND="vllm"
 TIS_IMP_RATIO_CAP=2.0
 USE_TIS=true
@@ -42,7 +42,7 @@ while [[ "$1" == --* ]]; do
     shift # Move to the next argument
 done
 
-DATA_DIR="$BASE_DIR/data/gsm8k"
+DATA_DIR="$BASE_DIR/data/gsm8k-gpt"
 # if debug, set logger to console
 if [ "$DEBUG" = "true" ]; then
   LOGGER="console"
@@ -56,7 +56,6 @@ if [ -z "$MODEL_NAME" ]; then
 fi
 MODEL_SHORT_NAME=$(echo $MODEL_NAME | awk -F'/' '{print $NF}')
 
-  # data.train_data="['$DATA_DIR/train_wrong-answers_Qwen2.5-1.5B-Instruct.parquet']" \
 uv run --isolated --extra $INFERENCE_BACKEND -m skyrl_train.entrypoints.main_base \
   data.train_data="['$DATA_DIR/train.parquet']" \
   data.val_data="['$DATA_DIR/validation.parquet']" \
@@ -95,8 +94,8 @@ uv run --isolated --extra $INFERENCE_BACKEND -m skyrl_train.entrypoints.main_bas
   generator.n_samples_per_prompt=8 \
   generator.gpu_memory_utilization=0.8 \
   trainer.logger="$LOGGER" \
-  trainer.project_name="rl-noise-gsm8k" \
+  trainer.project_name="rl-noise-gsm8k-gpt" \
   trainer.run_name="$RUN_NAME" \
   trainer.resume_mode=null \
-  trainer.ckpt_path="$BASE_DIR/ckpts/$RUN_NAME" \
+  trainer.ckpt_path="$BASE_DIR/ckpts/gsm8k-gpt-$MODEL_SHORT_NAME" \
   $@
