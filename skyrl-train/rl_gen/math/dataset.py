@@ -104,6 +104,22 @@ def prepare_eurus_data():
 
     return dataset
 
+def prepare_eurus_valid_data():
+    dataset = datasets.load_dataset('PRIME-RL/Eurus-2-RL-Data', split='validation')
+    # select data with ability = 'math'
+    dataset = dataset.filter(lambda x: x['ability'] == 'math')
+    print(f"size of eurus valid math dataset: {len(dataset)}")
+    dataset = dataset.map(function=make_map_fn("validation", "eurus_math"), with_indices=True)
+    
+    # show a few examples
+    print("="*100)
+    print("Sample examples from EURUS validation dataset:")
+    for i in range(3):
+        for key, value in dataset[i].items():
+            print(f"{key}: {value}")
+        print("\n")
+    return dataset
+
 def prepare_aime2024_data():
     dataset = load_dataset("HuggingFaceH4/aime_2024", split="train")
     
@@ -204,6 +220,7 @@ def main():
     os.makedirs(args.output_dir, exist_ok=True)
 
     train_dataset = prepare_eurus_data()
+    valid_dataset = prepare_eurus_valid_data()
     test_datasets = {
         "aime2024": prepare_aime2024_data(),
         "aime2025": prepare_aime2025_data(),
@@ -216,6 +233,9 @@ def main():
     train_output_path = os.path.join(args.output_dir, "deepscaler_train.parquet")
     train_dataset.to_parquet(train_output_path)
     print(f"Train dataset saved to {train_output_path}")
+    valid_output_path = os.path.join(args.output_dir, "deepscaler_valid.parquet")
+    valid_dataset.to_parquet(valid_output_path)
+    print(f"Valid dataset saved to {valid_output_path}")
 
     for name, dataset in test_datasets.items():
         test_output_path = os.path.join(args.output_dir, f"{name}_test.parquet")
