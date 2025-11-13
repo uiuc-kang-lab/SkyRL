@@ -240,6 +240,7 @@ def grade_call_based(code: str, all_inputs: list, all_outputs: list, fn_name: st
 
     total_execution = 0
     all_results = []
+    gen_in_outs = []
     for idx, (gt_inp, gt_out) in enumerate(zip(all_inputs, all_outputs)):
         signal.alarm(timeout)
         faulthandler.enable()
@@ -256,6 +257,7 @@ def grade_call_based(code: str, all_inputs: list, all_outputs: list, fn_name: st
                 prediction = list(prediction)
 
             tmp_result = prediction == gt_out
+            gen_in_outs.append((gt_inp, prediction))
 
             # handle floating point comparisons
 
@@ -294,7 +296,7 @@ def grade_call_based(code: str, all_inputs: list, all_outputs: list, fn_name: st
             signal.alarm(0)
             faulthandler.disable()
 
-    return all_results, {"execution time": total_execution}
+    return all_results, {"execution time": total_execution, "gen_in_outs": gen_in_outs}
 
 
 def grade_stdio(
@@ -321,6 +323,7 @@ def grade_stdio(
 
     all_results = []
     total_execution_time = 0
+    gen_in_outs = []
     for idx, (gt_inp, gt_out) in enumerate(zip(all_inputs, all_outputs)):
         signal.alarm(timeout)
         faulthandler.enable()
@@ -387,6 +390,7 @@ def grade_stdio(
 
             ## CASE 1: exact match
             if stripped_prediction_line == stripped_gt_out_line:
+                gen_in_outs.append((gt_inp, stripped_gt_out_line, prediction, "correct"))
                 continue
 
             ## CASE 2: element-wise comparision
@@ -635,7 +639,7 @@ def lcb_check_correctness(sample, generation, timeout=6, debug=False):
         return False
     # print(result[0], metadata_list)
     # Check if all elements in result[0] are True
-    return all(x is True for x in result[0])
+    return all(x is True for x in result[0]), list(metadata_list)
 
 
 def extract_code_from_model(model_response: str):
@@ -657,8 +661,9 @@ def extract_code_from_model(model_response: str):
 def compute_score(model_response, tests):
     output_code = extract_code_from_model(model_response)
     if output_code is None:
-        return output_code, 0.0
-    is_correct = lcb_check_correctness(tests, output_code, debug=False)
+        return output_code, 0.0, [{}]
+    is_correct, metadata_list = lcb_check_correctness(tests, output_code, debug=False)
+
 
     reward = 1.0 if is_correct else 0.0
-    return output_code, reward
+    return output_code, reward, metadata_list

@@ -75,7 +75,7 @@ def fetch_live_code_bench_system_prompt(prompt: str, starter_code: str = None):
     return prompt
 
 
-def process_example(example: Dict[str, Any], idx: int, dataset_name: str, split: str) -> Optional[Dict[str, Any]]:
+def process_example(example: Dict[str, Any], idx: int, dataset_name: str, split: str, n_test_keep: int=10) -> Optional[Dict[str, Any]]:
     """Process a single dataset example.
 
     Args:
@@ -101,7 +101,6 @@ def process_example(example: Dict[str, Any], idx: int, dataset_name: str, split:
                 assert isinstance(test, dict), "Test is not a dict"
                 test["metadata"] = example["metadata"]
 
-    n_test_keep = len(tests) // 2
     insufficient_tests = random.sample(tests, n_test_keep)
     insufficient_tests = json.dumps(insufficient_tests) 
 
@@ -130,7 +129,7 @@ def process_example(example: Dict[str, Any], idx: int, dataset_name: str, split:
     return data
 
 
-def process_dataset(dataset_name: str, split: str, dataset_dir: str, local_dir: str, max_rows: Optional[int] = None):
+def process_dataset(dataset_name: str, split: str, dataset_dir: str, local_dir: str, max_rows: Optional[int] = None, n_test_keep: int=10):
     """Process a dataset for a given split.
 
     Args:
@@ -147,7 +146,7 @@ def process_dataset(dataset_name: str, split: str, dataset_dir: str, local_dir: 
     # Process examples
     processed_data = []
     for idx, example in enumerate(raw_data):
-        processed_example = process_example(example, idx, dataset_name, split)
+        processed_example = process_example(example, idx, dataset_name, split, n_test_keep)
         if processed_example is not None:
             processed_data.append(processed_example)
 
@@ -159,12 +158,12 @@ def process_dataset(dataset_name: str, split: str, dataset_dir: str, local_dir: 
     df = pd.DataFrame(processed_data)
     # save df into 8 json files
     for i in range(8):
-        part_json_path = os.path.join(local_dir, f"{split}_{dataset_name}_part{i}.json")
+        part_json_path = os.path.join(local_dir, f"{split}_{dataset_name}_test{n_test_keep}_part{i}.json")
         if i != 7:
             part_df = df.iloc[i * (len(df) // 8):(i + 1) * (len(df) // 8)]
         else:
             part_df = df.iloc[i * (len(df) // 8):]
-        print(f"Writing {len(part_df)} rows to {split}_{dataset_name}_part{i}.json")
+        print(f"Writing {len(part_df)} rows to {split}_{dataset_name}_test{n_test_keep}_part{i}.json")
         part_df.to_json(part_json_path, orient="records")
 
 
@@ -189,6 +188,11 @@ if __name__ == "__main__":
         default=None,
         help="Maximum number of rows to include in output files (truncate if set).",
     )
+    parser.add_argument(
+        "--n_test_keep",
+        type=int,
+        default=10,
+    )
     args = parser.parse_args()
 
     local_dir = args.local_dir
@@ -204,10 +208,10 @@ if __name__ == "__main__":
 
 
     # Process train dataset
-    train_data = process_dataset(LIVECODEBENCH, "train", args.dataset_dir, local_dir, args.max_rows)
+    train_data = process_dataset(LIVECODEBENCH, "train", args.dataset_dir, local_dir, args.max_rows, args.n_test_keep)
 
     # Process test dataset
-    val_data = process_dataset(LIVECODEBENCH, "test", args.dataset_dir, local_dir, args.max_rows)
+    val_data = process_dataset(LIVECODEBENCH, "test", args.dataset_dir, local_dir, args.max_rows, args.n_test_keep)
 
     # Save combined train dataset
     # all_train_df = pd.DataFrame(train_data)

@@ -14,7 +14,7 @@ USE_TIS=true
 NOISE_LEVEL=0.0
 
 while [[ "$1" == --* ]]; do
-case "$1" in
+    case "$1" in
         --model=*)
             MODEL_NAME="${1#*=}" 
             ;;
@@ -47,21 +47,24 @@ else
 fi
 MODEL_SHORT_NAME=$(echo $MODEL_NAME | awk -F'/' '{print $NF}')
 
+#   "data.train_data=["${DATA_DIR}/train_livecodebench_part0.json"]" \
+#   "data.val_data=["${DATA_DIR}/test_livecodebench_part0.json"]" \
+
 # NOTE (sumanthrh): micro_train_batch_size and micro_forward_batch_size can be tuned
 uv run --isolated --extra vllm -m skyrl_train.entrypoints.main_base \
   trainer.algorithm.advantage_estimator="grpo" \
   trainer.algorithm.use_tis=$USE_TIS \
   trainer.algorithm.tis_imp_ratio_cap=$TIS_IMP_RATIO_CAP \
-  "data.train_data=["${DATA_DIR}/train_livecodebench_part0.json", "${DATA_DIR}/train_livecodebench_part1.json", "${DATA_DIR}/train_livecodebench_part2.json", "${DATA_DIR}/train_livecodebench_part3.json", "${DATA_DIR}/train_livecodebench_part4.json", "${DATA_DIR}/train_livecodebench_part5.json", "${DATA_DIR}/train_livecodebench_part6.json", "${DATA_DIR}/train_livecodebench_part7.json"]" \
+  "data.train_data=["${DATA_DIR}/train_livecodebench_part0_noise.json", "${DATA_DIR}/train_livecodebench_part1_noise.json", "${DATA_DIR}/train_livecodebench_part2_noise.json", "${DATA_DIR}/train_livecodebench_part3_noise.json", "${DATA_DIR}/train_livecodebench_part4_noise.json", "${DATA_DIR}/train_livecodebench_part5_noise.json", "${DATA_DIR}/train_livecodebench_part6_noise.json", "${DATA_DIR}/train_livecodebench_part7_noise.json"]" \
   "data.val_data=["${DATA_DIR}/test_livecodebench_part0.json", "${DATA_DIR}/test_livecodebench_part1.json", "${DATA_DIR}/test_livecodebench_part2.json", "${DATA_DIR}/test_livecodebench_part3.json", "${DATA_DIR}/test_livecodebench_part4.json", "${DATA_DIR}/test_livecodebench_part5.json", "${DATA_DIR}/test_livecodebench_part6.json", "${DATA_DIR}/test_livecodebench_part7.json"]" \
   data.noise_level=$NOISE_LEVEL \
   trainer.policy.model.path=$MODEL_NAME \
   trainer.placement.colocate_all=true \
   trainer.strategy=fsdp2 \
   trainer.policy.optimizer_config.max_grad_norm=0.5 \
-  trainer.placement.policy_num_gpus_per_node=$NUM_GPUS \
-  trainer.placement.ref_num_gpus_per_node=$NUM_GPUS \
-  generator.num_inference_engines=$NUM_GPUS \
+  trainer.placement.policy_num_gpus_per_node=4 \
+  trainer.placement.ref_num_gpus_per_node=4 \
+  generator.num_inference_engines=4 \
   generator.inference_engine_tensor_parallel_size=1 \
   trainer.policy_mini_batch_size=2 \
   trainer.train_batch_size=16 \
@@ -82,7 +85,7 @@ uv run --isolated --extra vllm -m skyrl_train.entrypoints.main_base \
   generator.async_engine=true \
   generator.batched=true \
   environment.env_class=lcb \
-  environment.skyrl_gym.max_env_workers=8 \
+  environment.skyrl_gym.max_env_workers=12 \
   generator.n_samples_per_prompt=8 \
   generator.gpu_memory_utilization=0.7 \
   generator.sampling_params.temperature=0.6 \
@@ -91,8 +94,8 @@ uv run --isolated --extra vllm -m skyrl_train.entrypoints.main_base \
   trainer.project_name="rl-noise-code" \
   trainer.run_name=$RUN_NAME \
   trainer.resume_mode=latest \
-  trainer.eval_batch_size=64 \
-  trainer.eval_before_train=false \
+  trainer.eval_batch_size=256 \
+  trainer.eval_before_train=true \
   trainer.eval_interval=20 \
   trainer.ckpt_path="$BASE_DIR/ckpts/code-$RUN_NAME" \
   trainer.export_path="$BASE_DIR/exports/code_$RUN_NAME" \

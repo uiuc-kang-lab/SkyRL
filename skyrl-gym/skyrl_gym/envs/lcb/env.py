@@ -22,11 +22,12 @@ class LCBEnv(BaseTextEnv):
         self.tests = json.loads(extras["reward_spec"]["ground_truth"])
 
     def _get_reward(self, action: str) -> float:
-        return compute_score(action, self.tests)
+        parsed_code, reward, _ = compute_score(action, self.tests)
+        return reward
 
     def step(self, action: str) -> BaseTextEnvStepOutput:
         done = True
-        parsed_code, reward = compute_score(action, self.tests)
+        parsed_code, reward, metadata_list = compute_score(action, self.tests)
 
         # RL on LCB w/ single-turn
-        return BaseTextEnvStepOutput(observations=[], reward=reward, done=done, metadata={"parsed_code": parsed_code})
+        return BaseTextEnvStepOutput(observations=[], reward=reward, done=done, metadata={"parsed_code": parsed_code, "metadata_list": metadata_list})
