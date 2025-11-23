@@ -32,18 +32,32 @@ SkyRL is a full-stack RL library designed for modularity and extensibility.
    :maxdepth: 2
    :caption: Examples
 
+   examples/megatron
    examples/ppo
+   examples/lora
    examples/llm_as_a_judge
    examples/remote_server
    examples/training_backends
    examples/multi_turn_text2sql
    examples/search
    examples/flash_rl
+   examples/mini_swe_agent
+   examples/openenv
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Platforms
+
+   platforms/overview
+   platforms/anyscale
+   platforms/runpod
+   platforms/skypilot
 
 .. toctree::
    :maxdepth: 2
    :caption: Recipes
-
+   
+   recipes/overview
    recipes/skyrl-sql
    recipes/searchr1
 
@@ -79,6 +93,7 @@ SkyRL is a full-stack RL library designed for modularity and extensibility.
    api/env
    api/registry
    api/tools
+   api/constants
 
 .. toctree::
    :maxdepth: 2

@@ -3,7 +3,6 @@
 
 import os
 import random
-import shutil
 from collections import defaultdict
 from datetime import timedelta
 from typing import List, Union, Optional
@@ -22,11 +21,11 @@ from torch.optim import Optimizer
 from deepspeed.runtime.zero.offload_config import OffloadDeviceEnum
 
 from skyrl_train.distributed.strategy import DistributedStrategy
-from skyrl_train.models import Actor
+from skyrl_train.model_wrapper import HFModelWrapper
 from skyrl_train.distributed.utils import get_optimizer_grouped_parameters, ModelOrModelOptimPair
+from skyrl_train.utils.io import io
 
 from safetensors.torch import save_file
-from deepspeed.utils.zero_to_fp32 import get_fp32_state_dict_from_zero_checkpoint
 
 
 def _z3_params_to_fetch(param_list):
@@ -43,7 +42,6 @@ class DeepspeedStrategy(DistributedStrategy):
         deepspeed_config,
         seed: int = 42,
         micro_train_batch_size_per_gpu=1,
-        train_batch_size=1,
         zero_stage=3,
         bf16=True,
     ) -> None:
@@ -51,7 +49,6 @@ class DeepspeedStrategy(DistributedStrategy):
 
         self.deepspeed_config = deepspeed_config
         self.stage = zero_stage
-        self.train_batch_size = train_batch_size
         self.micro_train_batch_size_per_gpu = micro_train_batch_size_per_gpu
         self.bf16 = bf16
         self.seed = seed
@@ -74,10 +71,9 @@ class DeepspeedStrategy(DistributedStrategy):
         # Initializes the distributed backend which will take care of sychronizing nodes/GPUs
         deepspeed.init_distributed(timeout=timeout)
         self.world_size = dist.get_world_size()
-        self.accumulated_gradient = self.train_batch_size // self.micro_train_batch_size_per_gpu // self.world_size
 
     def create_optimizer(self, model, offload_after_step=True, **kwargs) -> Optimizer:
-        if isinstance(model, Actor):
+        if isinstance(model, HFModelWrapper):
             model = model.model
         # TODO (sumanthrh): Support this
         if not offload_after_step:
@@ -91,7 +87,7 @@ class DeepspeedStrategy(DistributedStrategy):
 
     def offload_to_cpu(self, model, pin_memory=True, non_blocking=True):
         """This function guaratees the memory are all released (only torch context cache <100M will remain)."""
-        if isinstance(model, Actor):
+        if isinstance(model, HFModelWrapper):
             model = model.model
 
         if model.config["zero_optimization"]["offload_optimizer"]["device"] == "cpu":
@@ -120,7 +116,7 @@ class DeepspeedStrategy(DistributedStrategy):
 
     def backload_to_gpu(self, model, non_blocking=True):
         # NOTE: this function reloads the weights, ensuring the calculation
-        if isinstance(model, Actor):
+        if isinstance(model, HFModelWrapper):
             model = model.model
         else:
             model = model
@@ -136,7 +132,7 @@ class DeepspeedStrategy(DistributedStrategy):
         raise NotImplementedError("Zero stage < 3 is not supported")
 
     def backward(self, loss: torch.Tensor, model: nn.Module, optimizer: optim.Optimizer, **kwargs) -> None:
-        if isinstance(model, Actor):
+        if isinstance(model, HFModelWrapper):
             model = model.model
         model.backward(loss)
 
@@ -149,7 +145,7 @@ class DeepspeedStrategy(DistributedStrategy):
         name="model",
         **kwargs,
     ) -> Optional[Float[torch.Tensor, "1"]]:
-        if isinstance(model, Actor):
+        if isinstance(model, HFModelWrapper):
             model = model.model
         model.step()
 
@@ -167,17 +163,17 @@ class DeepspeedStrategy(DistributedStrategy):
         return ret[0] if len(ret) == 1 else ret
 
     def _ds_init_train_model(self, model, optim, scheduler):
-        is_actor = isinstance(model, Actor)
+        is_wrapped = isinstance(model, HFModelWrapper)
         ds_config = self.get_ds_train_config()
 
         engine, optim, _, scheduler = deepspeed.initialize(
-            model=model.model if is_actor else model,
+            model=model.model if is_wrapped else model,
             optimizer=optim,
             lr_scheduler=scheduler,
             config=ds_config,
             dist_init_required=True,
         )
-        if is_actor:
+        if is_wrapped:
             model.model = engine
         else:
             model = engine
@@ -187,71 +183,32 @@ class DeepspeedStrategy(DistributedStrategy):
     def _ds_init_eval_model(self, model):
         if not model:
             return model
-        is_actor = isinstance(model, Actor)
+        is_wrapped = isinstance(model, HFModelWrapper)
         ds_config = self.get_ds_eval_config()
 
         engine, *_ = deepspeed.initialize(
-            model=model.model if is_actor else model,
+            model=model.model if is_wrapped else model,
             config=ds_config,
             dist_init_required=True,
         )
-        if is_actor:
+        if is_wrapped:
             model.model = engine
         else:
             model = engine
         return model
 
-    def all_reduce(self, data, op="mean"):
-        assert op in ("mean", "max", "sum")
-        if isinstance(data, dict):
-            ret = {}
-            for k, v in data.items():
-                ret[k] = self.all_reduce(v, op)
-            return ret
-        else:
-            is_tensor = True
-            if not isinstance(data, torch.Tensor):
-                data = torch.Tensor([data])
-                is_tensor = False
-            is_cpu_tensor = data.device.type == "cpu"
-
-            if is_cpu_tensor:
-                data = data.to(torch.cuda.current_device())
-            if op == "mean":
-                data /= self.world_size
-            dist.all_reduce(data, op=dist.ReduceOp.MAX if op == "max" else dist.ReduceOp.SUM)
-            if is_cpu_tensor:
-                data = data.cpu()
-            return data.item() if not is_tensor else data
-
-    def all_gather(self, data):
-        if isinstance(data, dict):
-            ret = {}
-            for k, v in data.items():
-                ret[k] = self.all_gather(v)
-            return ret
-        else:
-            if not isinstance(data, torch.Tensor):
-                data = torch.Tensor([data])
-            is_cpu_tensor = data.device.type == "cpu"
-
-            ret = [torch.zeros_like(data).to(torch.cuda.current_device()) for _ in range(self.world_size)]
-            dist.all_gather(ret, data.to(torch.cuda.current_device()))
-            return torch.cat(ret).cpu() if is_cpu_tensor else torch.cat(ret)
-
     def _unwrap_model(self, model) -> nn.Module:
-        if isinstance(model, Actor):
+        if isinstance(model, HFModelWrapper):
             return self._unwrap_model(model.model)
         elif hasattr(model, "module"):
             return model.module
         else:
             return model
 
-    def save_ckpt(
+    def save_checkpoint(
         self,
         model,
         ckpt_dir,
-        global_step,
         node_local_rank,
         optimizer=None,
         scheduler=None,
@@ -259,31 +216,33 @@ class DeepspeedStrategy(DistributedStrategy):
         tag=None,
         tokenizer=None,
     ):
-        if isinstance(model, Actor):
+        if isinstance(model, HFModelWrapper):
             model = model.model
 
         assert isinstance(model, deepspeed.DeepSpeedEngine)
 
         if node_local_rank == 0:
-            os.makedirs(ckpt_dir, exist_ok=True)
+            io.makedirs(ckpt_dir, exist_ok=True)
 
         dist.barrier()
 
         extra_state_dict = {
             "client_state": client_state,
             "deepspeed_config": OmegaConf.to_container(self.deepspeed_config),
-            "global_step": global_step,
             "rng": self.get_rng_state(),  # Add RNG state for reproducibility
         }
 
-        model.save_checkpoint(ckpt_dir, tag=tag, client_state=extra_state_dict)
+        # Use context manager to handle local vs cloud paths
+        with io.local_work_dir(ckpt_dir) as work_dir:
+            model.save_checkpoint(work_dir, tag=tag, client_state=extra_state_dict)
 
-        # Save HuggingFace config and tokenizer
-        if self.is_rank_0():
-            config_save_model = self._unwrap_model(model)
-            self.save_hf_configs(config_save_model, ckpt_dir, tokenizer)
+            # Save HuggingFace config and tokenizer
+            if self.is_rank_0():
+                config_save_model = self._unwrap_model(model)
+                hf_dir = os.path.join(work_dir, "huggingface")
+                self.save_hf_configs(config_save_model.config, hf_dir, tokenizer)
 
-    def load_ckpt(
+    def load_checkpoint(
         self,
         model,
         ckpt_dir,
@@ -293,20 +252,22 @@ class DeepspeedStrategy(DistributedStrategy):
         load_module_strict=True,
         load_optimizer_states=True,
         load_lr_scheduler_states=True,
-        load_module_only=False,
     ):
-        if isinstance(model, Actor):
+        if isinstance(model, HFModelWrapper):
             model = model.model
 
         assert isinstance(model, deepspeed.DeepSpeedEngine)
-        load_path, states = model.load_checkpoint(
-            ckpt_dir,
-            tag,
-            load_module_strict=load_module_strict,
-            load_optimizer_states=load_optimizer_states,
-            load_lr_scheduler_states=load_lr_scheduler_states,  # DeepSpeed handles this automatically
-            load_module_only=load_module_only,
-        )
+
+        # Use context manager to handle local vs cloud paths
+        with io.local_read_dir(ckpt_dir) as read_dir:
+            load_path, states = model.load_checkpoint(
+                read_dir,
+                tag,
+                load_module_strict=load_module_strict,
+                load_optimizer_states=load_optimizer_states,
+                load_lr_scheduler_states=load_lr_scheduler_states,  # DeepSpeed handles this automatically
+            )
+
         if load_path is None:
             raise Exception(f"[deepspeed] failed to resume from checkpoint {ckpt_dir}")
 
@@ -320,58 +281,61 @@ class DeepspeedStrategy(DistributedStrategy):
 
     def save_hf_model(self, model: nn.Module, output_dir: str, tokenizer=None, **kwargs) -> None:
         """
-        Save only the model weights into a single HuggingFace‐compatible `model.safetensors`
-        by doing a temporary DeepSpeed checkpoint → FP32 state_dict → safetensors.
+        Multi-node safe: gather full FP32 state dict on rank 0 via ZeRO collectives,
+        then write a single model.safetensors alongside config/tokenizer.
         """
-        # Unwrap Actor if necessary
-        if isinstance(model, Actor):
-            model = model.model
-        assert isinstance(model, deepspeed.DeepSpeedEngine), "Expected a DeepSpeedEngine"
+        # Unwrap model and assert DS engine
+        if isinstance(model, HFModelWrapper):
+            engine = model.model
+        else:
+            engine = model
+        assert isinstance(engine, deepspeed.DeepSpeedEngine), "Expected a DeepSpeedEngine"
 
-        # Rank 0 makes directories or writes files
-        rank = dist.get_rank() if dist.is_initialized() else 0
-        if rank == 0:
-            os.makedirs(output_dir, exist_ok=True)
-        if dist.is_initialized():
+        # Underlying HF model for config/tokenizer
+        unwrapped_model = self._unwrap_model(engine)
+
+        # Dist info
+        is_dist = dist.is_initialized()
+        rank = dist.get_rank() if is_dist else 0
+        stage3 = getattr(engine, "zero_optimization_stage", lambda: 0)() == 3
+
+        # Barrier before collecting
+        if is_dist:
             dist.barrier()
 
-        # Create a temporary DS checkpoint folder (only on rank 0)
-        temp_ckpt_dir = os.path.join(output_dir, "temp_deepspeed_ckpt")
+        # Collect full FP32 state dict on rank 0
+        full_state_dict = {}
+        for name, param in unwrapped_model.named_parameters():
+            # Materialize full param on rank 0 only
+            with deepspeed.zero.GatheredParameters([param], modifier_rank=0, enabled=stage3):
+                if rank == 0:
+                    full_state_dict[name] = param.detach().to(torch.float32).cpu()
+
+        # Buffers (usually small; not ZeRO-sharded)
         if rank == 0:
-            os.makedirs(temp_ckpt_dir, exist_ok=True)
-        if dist.is_initialized():
+            for name, buf in unwrapped_model.named_buffers():
+                full_state_dict[name] = buf.detach().to(torch.float32).cpu()
+
+            # Handle tied embeddings (keep only input embeddings)
+            if getattr(unwrapped_model.config, "tie_word_embeddings", False) and "lm_head.weight" in full_state_dict:
+                full_state_dict.pop("lm_head.weight", None)
+
+            # Only rank 0 writes; use io.local_work_dir for local→remote sync
+            with io.local_work_dir(output_dir) as work_dir:
+                save_file(full_state_dict, os.path.join(work_dir, "model.safetensors"))
+                unwrapped_model.config.save_pretrained(work_dir)
+                if tokenizer is not None:
+                    tokenizer.save_pretrained(work_dir)
+
+        # Final barrier so others wait for upload to complete
+        if is_dist:
             dist.barrier()
 
-        # Use DeepSpeed to write a ZeRO checkpoint. The parameter shards will land
-        # under temp_ckpt_dir/model_conversion/mp_rank_XX/…
-        model.save_checkpoint(temp_ckpt_dir, tag="model_conversion")
-        if dist.is_initialized():
-            dist.barrier()
-
-        if rank == 0:
-            # Gather all shards from that DS checkpoint into one CPU FP32 state_dict
-            fp32_state_dict = get_fp32_state_dict_from_zero_checkpoint(temp_ckpt_dir, tag="model_conversion")
-
-            # Handle tied embeddings if needed (e.g. Qwen2‐0.5B)
-            unwrapped_model = self._unwrap_model(model)
-            if getattr(unwrapped_model.config, "tie_word_embeddings", False) and "lm_head.weight" in fp32_state_dict:
-                fp32_state_dict.pop("lm_head.weight", None)
-
-            # Write the single-file safetensors
-            safetensors_path = os.path.join(output_dir, "model.safetensors")
-            save_file(fp32_state_dict, safetensors_path)
-
-            # Save the config.json so we can re-create the same architecture later
-            unwrapped_model.config.save_pretrained(output_dir)
-
-            # If a tokenizer was passed, save it here too
-            if tokenizer is not None:
-                tokenizer.save_pretrained(output_dir)
-
-            # Clean up the temporary checkpoint folder
-            shutil.rmtree(temp_ckpt_dir, ignore_errors=True)
-
-        dist.barrier()
+    def _set_bf16_config(self, ds_config):
+        # torch_autocast.enabled should be set in the config file
+        # Set DeepSpeed's bf16 config only if torch_autocast is disabled.
+        if not ds_config["torch_autocast"]["enabled"]:
+            ds_config["bf16"] = {"enabled": self.bf16}
 
     def get_ds_train_config(self):
         ds_config = OmegaConf.to_container(self.deepspeed_config)
@@ -381,7 +345,7 @@ class DeepspeedStrategy(DistributedStrategy):
             ds_config["zero_optimization"]["stage3_max_live_parameters"] = 0
             ds_config["zero_optimization"]["stage3_max_reuse_distance"] = 0
         ds_config["steps_per_print"] = 100
-        ds_config["bf16"] = {"enabled": self.bf16}
+        self._set_bf16_config(ds_config)
 
         # these need to be specified for deepspeed setup, but we manually handle
         # gradient accumulation in the training loop
@@ -393,7 +357,7 @@ class DeepspeedStrategy(DistributedStrategy):
     def get_ds_eval_config(self):
         ds_config = OmegaConf.to_container(self.deepspeed_config)
         ds_config["steps_per_print"] = 100
-        ds_config["bf16"] = {"enabled": self.bf16}
+        self._set_bf16_config(ds_config)
         ds_config["train_micro_batch_size_per_gpu"] = self.micro_train_batch_size_per_gpu
         ds_config["gradient_accumulation_steps"] = 1
 

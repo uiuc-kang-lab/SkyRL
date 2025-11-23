@@ -1,4 +1,4 @@
-from typing import List, Any, Dict, Optional
+from typing import List
 import ray
 import vllm
 from skyrl_train.inference_engines.vllm.vllm_engine import VLLMInferenceEngine
@@ -34,14 +34,12 @@ def create_ray_wrapped_inference_engines_flashrl(
     vllm_v1_disable_multiproc: bool,
     enable_prefix_caching: bool,
     enforce_eager: bool,
-    max_model_len: int,
     shared_pg=None,
     gpu_memory_utilization=None,
     inference_engine_enable_sleep=False,
     async_engine=False,
     max_num_batched_tokens=8192,
     max_num_seqs=1024,
-    sampling_params: Optional[Dict[str, Any]] = None,
     tokenizer=None,
     backend="vllm",
 ) -> List[InferenceEngineInterface]:
@@ -49,6 +47,7 @@ def create_ray_wrapped_inference_engines_flashrl(
     Create a list of RayWrappedInferenceEngine instances wrapping Ray actor handles to InferenceEngineInterface instances.
     """
     from skyrl_train.utils import ray_noset_visible_devices, get_all_env_variables, get_ray_pg_ready_with_timeout
+    from skyrl_train.utils.constants import SKYRL_RAY_PG_TIMEOUT_IN_S
 
     assert not async_engine, "`async_engine` is not supported for FlashRL"
 
@@ -71,7 +70,7 @@ def create_ray_wrapped_inference_engines_flashrl(
         # Create a big placement group to ensure that all inference engines are packed
         bundles = [{"GPU": 1, "CPU": 1} for _ in range(num_inference_engines * tensor_parallel_size)]
         shared_pg = placement_group(bundles, strategy="PACK")
-        get_ray_pg_ready_with_timeout(shared_pg, timeout=30)
+        get_ray_pg_ready_with_timeout(shared_pg, timeout=SKYRL_RAY_PG_TIMEOUT_IN_S)
 
     for i in range(num_inference_engines):
         bundle_indices = None
@@ -97,7 +96,6 @@ def create_ray_wrapped_inference_engines_flashrl(
                 tensor_parallel_size=tensor_parallel_size,
                 seed=seed + i,
                 distributed_executor_backend=distributed_executor_backend,
-                max_model_len=max_model_len,
                 enable_prefix_caching=enable_prefix_caching,
                 dtype=model_dtype,
                 trust_remote_code=True,
@@ -109,7 +107,6 @@ def create_ray_wrapped_inference_engines_flashrl(
                 noset_visible_devices=noset_visible_devices,
                 max_num_batched_tokens=max_num_batched_tokens,
                 max_num_seqs=max_num_seqs,
-                sampling_params=sampling_params,
                 tokenizer=tokenizer,
                 # only need the logprobs for the chosen token if any
                 max_logprobs=1,

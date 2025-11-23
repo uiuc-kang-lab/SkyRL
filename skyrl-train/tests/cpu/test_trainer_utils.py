@@ -14,6 +14,7 @@ from skyrl_train.utils.trainer_utils import (
     handle_filter_sampling,
     filter_generator_output,
     validate_generator_output,
+    build_dataloader,
 )
 from skyrl_train.generators.base import GeneratorInput, GeneratorOutput
 from typing import Union
@@ -25,8 +26,14 @@ import re
 
 from unittest.mock import Mock, patch, mock_open
 import json
+from tests.cpu.util import example_dummy_config
 
 BasicType = Union[int, float, str, bool, type(None)]
+
+
+@pytest.fixture
+def dummy_config():
+    return example_dummy_config()
 
 
 def test_run_on_node_local_rank_0():
@@ -61,7 +68,7 @@ def test_cleanup_old_checkpoints():
         setup_mock_ckpts(tmpdir, checkpoint_steps=checkpoint_steps)
 
         # 2. Execute
-        cleanup_old_checkpoints(tmpdir, max_ckpts_to_keep=2, current_global_step=11)
+        cleanup_old_checkpoints(tmpdir, max_checkpoints=2)
 
         # 3. Verify
         remaining_dirs = sorted(os.listdir(tmpdir))
@@ -75,14 +82,15 @@ def test_cleanup_old_checkpoints():
         checkpoint_steps = [1, 2, 10, 11]
         setup_mock_ckpts(tmpdir, checkpoint_steps=checkpoint_steps)
 
-        # 2. Execute - remove all checkpoints
-        cleanup_old_checkpoints(tmpdir, max_ckpts_to_keep=0, current_global_step=11)
+        # 2. Execute
+        cleanup_old_checkpoints(tmpdir, max_checkpoints=0)
 
         # 3. Verify
         remaining_dirs = sorted(os.listdir(tmpdir))
+
         assert len(remaining_dirs) == 0, "Cleanup should have removed all checkpoints"
 
-    # 3. Test cleanup with `current_global_step` less than the highest global step in the folder
+    # Test cleanup with `current_global_step` less than the highest global step in the folder
     # This means that the folder contains checkpoints from a previous run.
     with tempfile.TemporaryDirectory() as tmpdir:
         # 1. Setup
@@ -90,7 +98,7 @@ def test_cleanup_old_checkpoints():
         setup_mock_ckpts(tmpdir, checkpoint_steps=checkpoint_steps)
 
         # 2. Execute
-        cleanup_old_checkpoints(tmpdir, max_ckpts_to_keep=2, current_global_step=2)
+        cleanup_old_checkpoints(tmpdir, max_checkpoints=4)
 
         remaining_dirs = sorted(os.listdir(tmpdir))
         assert len(remaining_dirs) == 4, "Cleanup should not have removed any checkpoints"
@@ -99,7 +107,7 @@ def test_cleanup_old_checkpoints():
 def test_cleanup_does_not_run_when_not_needed():
     """
     Verify that cleanup does not remove any checkpoints if the total number
-    is less than or equal to max_ckpts_to_keep.
+    is less than or equal to max_checkpoints.
     """
     with tempfile.TemporaryDirectory() as tmpdir:
         # 1. Setup
@@ -107,7 +115,7 @@ def test_cleanup_does_not_run_when_not_needed():
         setup_mock_ckpts(tmpdir, checkpoint_steps=checkpoint_steps)
 
         # 2. Execute
-        cleanup_old_checkpoints(tmpdir, max_ckpts_to_keep=5, current_global_step=4)
+        cleanup_old_checkpoints(tmpdir, max_checkpoints=5)
 
         # 3. Verify
         remaining_dirs = sorted(os.listdir(tmpdir))
@@ -116,7 +124,7 @@ def test_cleanup_does_not_run_when_not_needed():
 
 def test_cleanup_with_negative_max_checkpoints():
     """
-    Verify that cleanup is disabled when max_ckpts_to_keep is -1
+    Verify that cleanup is disabled when max_checkpoints is -1
     """
     with tempfile.TemporaryDirectory() as tmpdir:
         # 1. Setup
@@ -124,11 +132,11 @@ def test_cleanup_with_negative_max_checkpoints():
         setup_mock_ckpts(tmpdir, checkpoint_steps=checkpoint_steps)
 
         # 2. Execute
-        cleanup_old_checkpoints(tmpdir, max_ckpts_to_keep=-1, current_global_step=5)
+        cleanup_old_checkpoints(tmpdir, max_checkpoints=-1)
 
         # 3. Verify
         remaining_dirs = sorted(os.listdir(tmpdir))
-        assert len(remaining_dirs) == 5, "Cleanup should be disabled when max_ckpts_to_keep is -1"
+        assert len(remaining_dirs) == 5, "Cleanup should be disabled when max_checkpoints is -1"
 
 
 def test_validate_consistency_for_latest_checkpoint():
@@ -666,15 +674,15 @@ def test_validate_generator_output_valid_case():
     )
 
     # Should not raise any exceptions
-    validate_generator_output(input_batch, generator_output)
+    validate_generator_output(len(input_batch["prompts"]), generator_output)
 
     # per trajectory rewards should work too
     generator_output["rewards"] = [0.5, 0.6, 0.7]
-    validate_generator_output(input_batch, generator_output)
+    validate_generator_output(len(input_batch["prompts"]), generator_output)
 
     # valid rollout logprobs
     generator_output["rollout_logprobs"] = [[0.11, 0.12, 0.13], [0.2, 0.3], [0.4]]
-    validate_generator_output(input_batch, generator_output)
+    validate_generator_output(len(input_batch["prompts"]), generator_output)
 
 
 def test_validate_generator_output_empty_response_ids():
@@ -691,7 +699,7 @@ def test_validate_generator_output_empty_response_ids():
     )
 
     with pytest.raises(RuntimeError, match="No outputs generated"):
-        validate_generator_output(input_batch, generator_output)
+        validate_generator_output(len(input_batch["prompts"]), generator_output)
 
 
 def test_validate_generator_output_mismatched_prompts_responses():
@@ -713,7 +721,7 @@ def test_validate_generator_output_mismatched_prompts_responses():
     )
 
     with pytest.raises(AssertionError, match=re.escape("Mismatch between prompts (3) and responses (2)")):
-        validate_generator_output(input_batch, generator_output)
+        validate_generator_output(len(input_batch["prompts"]), generator_output)
 
 
 def test_validate_generator_output_all_loss_masked():
@@ -733,7 +741,7 @@ def test_validate_generator_output_all_loss_masked():
 
     # Capture log output to verify warning is issued
     with patch("skyrl_train.utils.trainer_utils.logger") as mock_logger:
-        validate_generator_output(input_batch, generator_output)
+        validate_generator_output(len(input_batch["prompts"]), generator_output)
         mock_logger.warning.assert_called_once_with(
             "All outputs are loss masked, which may lead to NaN loss, please check your generation logic!!"
         )
@@ -755,7 +763,7 @@ def test_validate_generator_output_mismatched_list_lengths():
     )
 
     with pytest.raises(AssertionError, match="Generator output rewards length must be equal to response_ids length"):
-        validate_generator_output(input_batch, generator_output)
+        validate_generator_output(len(input_batch["prompts"]), generator_output)
 
 
 def test_validate_generator_output_element_length_mismatch():
@@ -778,12 +786,12 @@ def test_validate_generator_output_element_length_mismatch():
     )
 
     with pytest.raises(AssertionError, match="Response ids and loss masks must have the same length"):
-        validate_generator_output(input_batch, generator_output)
+        validate_generator_output(len(input_batch["prompts"]), generator_output)
 
     generator_output["loss_masks"] = [[1, 1, 1], [1, 1], [1]]  # add correct loss masks
     generator_output["rewards"] = [[0.5, 0.6], [0.8], [1.0, 2.0]]  # add incorrect rewards
     with pytest.raises(AssertionError, match="Token rewards and response ids must have the same length"):
-        validate_generator_output(input_batch, generator_output)
+        validate_generator_output(len(input_batch["prompts"]), generator_output)
 
     generator_output = GeneratorOutput(
         prompt_token_ids=[[1, 2, 3], [4, 5, 6], [7, 8, 9]],
@@ -795,4 +803,88 @@ def test_validate_generator_output_element_length_mismatch():
     )
 
     with pytest.raises(AssertionError, match="Response ids and rollout logprobs must have the same length"):
-        validate_generator_output(input_batch, generator_output)
+        validate_generator_output(len(input_batch["prompts"]), generator_output)
+
+
+def test_build_dataloader_seeding(dummy_config):
+    """Test that build_dataloader correctly seeds the dataloader for reproducible shuffling."""
+
+    # Create a dataset with multiple distinct items to test shuffling
+    class MultiItemDataset:
+        def __init__(self, size=10):
+            self.data = [f"item_{i}" for i in range(size)]
+
+        def __len__(self):
+            return len(self.data)
+
+        def __getitem__(self, idx):
+            return self.data[idx]
+
+        def collate_fn(self, batch):
+            return batch
+
+    dataset = MultiItemDataset(size=20)
+
+    # Test 1: Same seed should produce same shuffling
+    config1 = dummy_config.copy()
+    config1.trainer.seed = 42
+    config1.trainer.train_batch_size = 5
+
+    config2 = dummy_config.copy()
+    config2.trainer.seed = 42  # Same seed
+    config2.trainer.train_batch_size = 5
+
+    # Build dataloaders
+    dataloader1 = build_dataloader(config1, dataset, is_train=True)
+    dataloader2 = build_dataloader(config2, dataset, is_train=True)
+
+    # Get first batch from each dataloader
+    first_batch1 = next(iter(dataloader1))
+    first_batch2 = next(iter(dataloader2))
+
+    # With same seed, first batches should be identical
+    assert (
+        first_batch1 == first_batch2
+    ), f"Same seed should produce same first batch, got {first_batch1} vs {first_batch2}"
+
+    # Test 2: Different seeds should produce different shuffling
+    config3 = dummy_config.copy()
+    config3.trainer.seed = 123  # Different seed
+    config3.trainer.train_batch_size = 5
+
+    dataloader3 = build_dataloader(config3, dataset, is_train=True)
+    first_batch3 = next(iter(dataloader3))
+
+    # With different seed, first batch should be different
+    # Note: There's a tiny chance they could be the same by random chance, but very unlikely with 20 items
+    assert (
+        first_batch1 != first_batch3
+    ), f"Different seeds should produce different first batches, but both gave {first_batch1}"
+
+
+def test_validate_generator_output_invalid_rewards():
+    """Test validate_generator_output raises AssertionError when rewards is neither List[float-like] nor List[List[float-like]]."""
+    input_batch = GeneratorInput(
+        prompts=["prompt1", "prompt2"], env_classes=["env1", "env2"], env_extras=None, sampling_params=None
+    )
+
+    generator_output = GeneratorOutput(
+        prompt_token_ids=[[1, 2, 3], [4, 5, 6]],
+        response_ids=[[7, 8], [9, 10]],
+        rewards=[[0.5, 0.6], 0.7],
+        loss_masks=[[1, 1], [1, 0]],
+        stop_reasons=["eos", "eos"],
+        rollout_logprobs=None,
+    )
+
+    with pytest.raises(
+        AssertionError,
+        match=re.escape("rewards must be `List[float]` or `List[List[float]]`"),
+    ):
+        validate_generator_output(len(input_batch["prompts"]), generator_output)
+
+    generator_output["rewards"] = [0.5, 0.7]
+    validate_generator_output(len(input_batch["prompts"]), generator_output)
+
+    generator_output["rewards"] = [[0.5, 0.6], [0.7, 0.8]]
+    validate_generator_output(len(input_batch["prompts"]), generator_output)

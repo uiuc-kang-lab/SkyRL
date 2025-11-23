@@ -5,7 +5,7 @@ from skyrl_train.inference_engines.base import (
     InferenceEngineOutput,
     NamedWeightsUpdateRequest,
 )
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Any, Dict
 import json
 from transformers import PreTrainedTokenizerBase
 
@@ -22,15 +22,31 @@ class RemoteInferenceEngine(InferenceEngineInterface):
         engine_backend: str,
         tokenizer: PreTrainedTokenizerBase,
         tp_size: Optional[int] = None,
-        sampling_params: Optional[Dict[str, Any]] = None,
+        pp_size: Optional[int] = None,
+        dp_size: Optional[int] = None,
+        ep_size: Optional[int] = None,
     ):
         """Initialize the InferenceEngine."""
         self.url = f"http://{url}"
         self.model_name = model_name
         self.engine_backend = engine_backend
-        self.tp_size = tp_size
-        self.sampling_params = sampling_params if sampling_params is not None else {}
+        self._tp_size = tp_size
+        self._pp_size = pp_size
+        self._dp_size = dp_size
+        self._ep_size = ep_size
         self.tokenizer = tokenizer
+
+    def tp_size(self) -> int:
+        return self._tp_size
+
+    def pp_size(self) -> int:
+        return self._pp_size
+
+    def dp_size(self) -> int:
+        return self._dp_size
+
+    def ep_size(self) -> int:
+        return self._ep_size
 
     async def generate(self, input_batch: InferenceEngineInput) -> InferenceEngineOutput:
         # 1. Prepare inputs
@@ -42,7 +58,7 @@ class RemoteInferenceEngine(InferenceEngineInterface):
             prompts is None and prompt_token_ids is not None
         ), "RemoteInferenceEngine only accepts `prompt_token_ids`, not `prompts`."
 
-        sampling_params = request_sampling_params if request_sampling_params is not None else self.sampling_params
+        sampling_params = request_sampling_params if request_sampling_params is not None else {}
         if "n" in sampling_params and sampling_params["n"] > 1:
             raise ValueError(
                 "n is not supported yet for remote inference engines. "
@@ -106,6 +122,30 @@ class RemoteInferenceEngine(InferenceEngineInterface):
             responses=outputs, stop_reasons=finish_reasons, response_ids=output_ids, response_logprobs=None
         )
 
+    async def chat_completion(self, request_payload: Dict[str, Any]) -> Dict[str, Any]:
+        body = request_payload.get("json", {})
+        # NOTE(Charlie): cannot reuse payload["headers"] since we are posting a new request.
+        # Otherwise will lead to json decode error.
+        headers = {"Content-Type": "application/json"}
+        response = None
+        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=None)) as session:
+            request_url = f"{self.url}/v1/chat/completions"
+            async with session.post(request_url, json=body, headers=headers) as resp:
+                response = await resp.json()
+
+        return response
+
+    async def completion(self, request_payload: Dict[str, Any]) -> Dict[str, Any]:
+        body = request_payload.get("json", {})
+        headers = {"Content-Type": "application/json"}
+        response = None
+        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=None)) as session:
+            request_url = f"{self.url}/v1/completions"
+            async with session.post(request_url, json=body, headers=headers) as resp:
+                response = await resp.json()
+
+        return response
+
     async def wake_up(self, *args: Any, **kwargs: Any):
         async with aiohttp.ClientSession() as session:
             resp = await session.post(f"{self.url}/wake_up", json={"tags": kwargs.get("tags", 1)})
@@ -113,6 +153,8 @@ class RemoteInferenceEngine(InferenceEngineInterface):
 
     async def sleep(self, *args: Any, **kwargs: Any):
         async with aiohttp.ClientSession() as session:
+            # TODO(Charlie): this is vLLM's API, not SGLang (which uses tags). Fix when need to
+            # support sleeping with remote engines.
             resp = await session.post(f"{self.url}/sleep", json={"level": kwargs.get("level", 1)})
             return await resp.json()
 
@@ -204,6 +246,9 @@ class RemoteInferenceEngine(InferenceEngineInterface):
             resp = await session.post(f"{self.url}/destroy_weights_update_group")
             return await resp.json()
 
+    async def abort_generation(self) -> None:
+        raise NotImplementedError("Abort generation is not supported for remote inference engines.")
+
 
 def create_remote_inference_engines(
     urls: List[str],
@@ -211,7 +256,9 @@ def create_remote_inference_engines(
     engine_backend: str,
     tokenizer: PreTrainedTokenizerBase,
     tensor_parallel_size: Optional[int] = None,
-    sampling_params: Optional[Dict[str, Any]] = None,
+    pipeline_parallel_size: Optional[int] = None,
+    data_parallel_size: Optional[int] = None,
+    expert_parallel_size: Optional[int] = None,
 ):
     return [
         RemoteInferenceEngine(
@@ -220,7 +267,9 @@ def create_remote_inference_engines(
             tokenizer=tokenizer,
             engine_backend=engine_backend,
             tp_size=tensor_parallel_size,
-            sampling_params=sampling_params,
+            pp_size=pipeline_parallel_size,
+            dp_size=data_parallel_size,
+            ep_size=expert_parallel_size,
         )
         for url in urls
     ]

@@ -12,22 +12,22 @@ from skyrl_train.inference_engines.utils import get_sampling_params_for_backend
 from skyrl_train.generators.skyrl_gym_generator import SkyRLGymGenerator
 from skyrl_train.generators.base import GeneratorInput
 from tests.gpu.utils import Timer, get_test_generator_input
-from omegaconf import DictConfig
+from omegaconf import DictConfig, OmegaConf
 from skyrl_train.utils.utils import initialize_ray
 from skyrl_gym.envs import register
 from skyrl_gym.envs.base_text_env import BaseTextEnv, BaseTextEnvStepOutput
 from typing import Any, Dict
-import hydra
-from skyrl_train.entrypoints.main_base import config_dir
+from loguru import logger
+from skyrl_train.config.utils import get_default_config
+
+OBSERVATION_PROMPT = "give me another solution"
 
 
 def get_test_actor_config() -> DictConfig:
     """Get base config with test-specific overrides."""
-    with hydra.initialize_config_dir(config_dir=config_dir):
-        cfg = hydra.compose(config_name="ppo_base_config")
-        cfg.generator.backend = "vllm"
-
-        return cfg
+    default_cfg = get_default_config()
+    default_cfg.generator.backend = "vllm"
+    return default_cfg
 
 
 # Setup for formatting tests
@@ -43,7 +43,7 @@ class TestEnv(BaseTextEnv):
         self.turns += 1
         done = self.turns >= self.max_turns
         return BaseTextEnvStepOutput(
-            observations=[{"role": "user", "content": f"turn {self.turns}"}] if not done else [],
+            observations=[{"role": "user", "content": f"{OBSERVATION_PROMPT} {self.turns}"}] if not done else [],
             reward=0,
             done=done,
             metadata={},
@@ -93,63 +93,64 @@ async def run_generator_end_to_end(
         vllm_v1_disable_multiproc=True,
         enable_prefix_caching=True,
         enforce_eager=True,
-        max_model_len=max_input_length + max_generate_length,
         shared_pg=None,
         gpu_memory_utilization=0.8,
         inference_engine_enable_sleep=True,
         async_engine=use_async_engine,
-        max_num_batched_tokens=8192,
+        max_num_batched_tokens=32768,
         max_num_seqs=1024,
         tokenizer=tokenizer,
-        sampling_params=get_sampling_params_for_backend(
-            "vllm",
-            DictConfig(
-                {
-                    "temperature": 1.0,
-                    "top_p": 1.0,
-                    "top_k": -1,
-                    "max_generate_length": max_generate_length,
-                    "min_p": 0.0,
-                    "logprobs": None,
-                }
-            ),
-        ),
+        sleep_level=1,  # in unit tests that do not explicitly sync weights, we do not discard weights
     )
-
-    inference_engine_client = InferenceEngineClient(
-        inference_engines,
-        tokenizer,
-    )
-
-    await inference_engine_client.wake_up()
 
     # Create a mock generator config
-    generator_cfg = DictConfig(
+    default_cfg = get_default_config()
+    OmegaConf.update(
+        default_cfg,
+        "generator",
         {
             "sampling_params": {
                 "max_generate_length": max_generate_length,
                 "logprobs": None,
             },
+            "append_eos_token_after_stop_str_in_multi_turn": True,  # for search
             "max_input_length": max_input_length,
             "batched": batched,
             "max_turns": max_turns,
             "zero_reward_on_non_stop": False,
             "use_conversation_multi_turn": use_conversation_multi_turn,
             "apply_overlong_filtering": False,
-        }
+            "backend": "vllm",
+            "enable_http_endpoint": False,
+            "http_endpoint_host": "127.0.0.1",
+            "http_endpoint_port": 8000,
+        },
     )
 
-    env_cfg = DictConfig(
+    generator_cfg = default_cfg.generator
+    OmegaConf.update(
+        default_cfg,
+        "environment.skyrl_gym",
         {
             "search": {
                 "log_requests": True,
                 "search_url": "http://127.0.0.1:8000/retrieve",
-                "topk": 3,
-                "timeout": 30,
             },
             "max_env_workers": max_env_workers,
-        }
+        },
     )
+    env_cfg = default_cfg.environment.skyrl_gym
+
+    cfg = get_test_actor_config()
+    cfg.trainer.policy.model.path = model
+    cfg.generator = generator_cfg
+    inference_engine_client = InferenceEngineClient(
+        inference_engines,
+        tokenizer,
+        cfg,
+    )
+
+    await inference_engine_client.wake_up()
 
     generator = SkyRLGymGenerator(
         generator_cfg=generator_cfg,
@@ -166,6 +167,21 @@ async def run_generator_end_to_end(
         max_prompt_length=max_prompt_length,
         data_path=data_path,
         env_class=env_class,
+    )
+    # Attach request-time sampling params into the generator input
+    input_batch["sampling_params"] = get_sampling_params_for_backend(
+        "vllm",
+        DictConfig(
+            {
+                "temperature": 1.0,
+                "top_p": 1.0,
+                "top_k": -1,
+                "max_generate_length": max_generate_length,
+                "min_p": 0.0,
+                "logprobs": None,
+                "stop": ["</search>", "</answer>"] if env_class == "search" else None,
+            }
+        ),
     )
 
     with Timer(f"generate_responses_async_engine_{use_async_engine}"):
@@ -279,9 +295,9 @@ async def test_generator_formatting_use_conversation_multi_turn(model_name):
             num_inference_engines=1,
             tensor_parallel_size=1,
             model=model_name,
-            max_prompt_length=1000,
-            max_input_length=3000,
-            max_generate_length=1000,
+            max_prompt_length=3000,
+            max_input_length=10000,
+            max_generate_length=3000,
             env_class="test_env",
             num_prompts=2,
             max_turns=3,
@@ -291,25 +307,42 @@ async def test_generator_formatting_use_conversation_multi_turn(model_name):
         for i, resp_ids in enumerate(generator_output["response_ids"]):
             loss_mask = generator_output["loss_masks"][i]
             prompt_token_ids = generator_output["prompt_token_ids"][i]
+            stop_reason = generator_output["stop_reasons"][i]
             masked_out_resp_ids = [resp_ids[j] for j in range(len(resp_ids)) if loss_mask[j] == 0]
             masked_in_resp_ids = [resp_ids[j] for j in range(len(resp_ids)) if loss_mask[j] == 1]
 
             masked_out_resp_str = tokenizer.decode(masked_out_resp_ids)
             masked_in_resp_str = tokenizer.decode(masked_in_resp_ids)
 
-            assert "turn 1" in masked_out_resp_str, "turn 1 observation should be loss masked out"
-            assert "turn 2" in masked_out_resp_str, "turn 2 observation should be loss masked out"
             assert (
                 MODEL_TO_GENERATION_PROMPT[model_name] in masked_out_resp_str
                 and MODEL_TO_GENERATION_PROMPT[model_name] not in masked_in_resp_str
             ), "generation prompts should be loss masked out"
 
-            # count number of eos tokens in masked_in_resp_ids
-            # NOTE: this could fail if the stop reason is "length" where model fails to generate eos
-            assert (
-                sum(1 for _ in masked_in_resp_ids if _ == tokenizer.eos_token_id) == 3
-            )  # 1 eos for each assistant response
-            assert sum(1 for _ in resp_ids if _ == tokenizer.eos_token_id) == 5  # 2 user eos, 3 assistant eos
+            # Observations and EOS expectations only strictly apply when the model finished turns
+            if stop_reason == "stop":
+                assert (
+                    f"{OBSERVATION_PROMPT} 1" in masked_out_resp_str
+                ), f'"{OBSERVATION_PROMPT} 1" observation should be loss masked out'
+                assert (
+                    f"{OBSERVATION_PROMPT} 2" in masked_out_resp_str
+                ), f'"{OBSERVATION_PROMPT} 2" observation should be loss masked out'
+                # TODO(Charlie): add more rigorous tests that is robust to stop_reason being length.
+                # Either make GeneratorOutput return stop reason for each turn, or change the way we manage
+                # max generation length.
+                num_resp_eos = sum(1 for _ in masked_in_resp_ids if _ == tokenizer.eos_token_id)
+                num_total_eos = sum(1 for _ in resp_ids if _ == tokenizer.eos_token_id)
+                common_msg = "Could be due to stop_reason is length in some of the turns."
+                # count number of eos tokens in masked_in_resp_ids: 1 eos per assistant response (3 turns)
+                if num_resp_eos != 3:
+                    logger.warning(f"Got {num_resp_eos} eos tokens in masked_in_resp_ids, expected 3. {common_msg}")
+                # total eos in full response: 2 user eos + 3 assistant eos
+                if num_total_eos != 5:
+                    logger.warning(f"Got {num_total_eos} eos tokens in resp_ids, expected 5. {common_msg}")
+            else:
+                # On length stops, the model may not produce EOS at the end of each assistant turn.
+                # Only check that generation prompts are masked out.
+                logger.warning(f"Got stop reason {stop_reason}, so we did not fully check the response")
             if model_name == "Qwen/Qwen3-0.6B":
                 assert (
                     sum(1 for _ in prompt_token_ids if _ == tokenizer.eos_token_id) == 1
@@ -338,7 +371,7 @@ async def test_generator_formatting_no_use_conversation_multi_turn(model_name):
             num_inference_engines=1,
             tensor_parallel_size=1,
             model=model_name,
-            max_prompt_length=1000,
+            max_prompt_length=3000,
             max_input_length=10000,
             max_generate_length=3000,
             env_class="test_env",
@@ -358,8 +391,12 @@ async def test_generator_formatting_no_use_conversation_multi_turn(model_name):
             masked_out_resp_str = tokenizer.decode(masked_out_resp_ids)
             masked_in_resp_str = tokenizer.decode(masked_in_resp_ids)
 
-            assert "turn 1" in masked_out_resp_str, "turn 1 observation should be loss masked out"
-            assert "turn 2" in masked_out_resp_str, "turn 2 observation should be loss masked out"
+            assert (
+                f"{OBSERVATION_PROMPT} 1" in masked_out_resp_str
+            ), f'"{OBSERVATION_PROMPT} 1" observation should be loss masked out'
+            assert (
+                f"{OBSERVATION_PROMPT} 2" in masked_out_resp_str
+            ), f'"{OBSERVATION_PROMPT} 2" observation should be loss masked out'
             assert (
                 prompt_str.count(MODEL_TO_GENERATION_PROMPT[model_name])
                 + resp_str.count(MODEL_TO_GENERATION_PROMPT[model_name])

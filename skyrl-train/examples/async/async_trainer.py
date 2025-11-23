@@ -9,7 +9,8 @@ from skyrl_train.utils.ppo_utils import normalize_advantages_dict
 from skyrl_train.training_batch import TrainingInputBatch
 from skyrl_train.generators.base import GeneratorOutput
 from skyrl_train.utils.trainer_utils import ResumeMode
-from skyrl_train.weights_manager import InferenceWeightsManager
+from skyrl_train.generators.utils import prepare_generator_input
+from skyrl_train.inference_engines.utils import get_sampling_params_for_backend
 
 
 class AsyncRayPPOTrainer(RayPPOTrainer):
@@ -18,13 +19,7 @@ class AsyncRayPPOTrainer(RayPPOTrainer):
         """
         Main training loop for PPO
         """
-        assert not self.cfg.trainer.placement.colocate_all, "colocate_all is not supported for async training"
-
-        self.weights_manager = InferenceWeightsManager(self.policy_model, self.inference_engine_client, False)
-        # With non-colocated training, the eval weights manager is no-op, but we keep it for consistency
-        self.eval_weights_manager = InferenceWeightsManager(
-            self.policy_model, self.inference_engine_client, False, no_sync=True
-        )
+        assert not self.colocate_all, "colocate_all is not supported for async training"
 
         self.global_step = 0
 
@@ -34,22 +29,26 @@ class AsyncRayPPOTrainer(RayPPOTrainer):
                 self.load_checkpoints()
                 logger.info(f"Resumed training from global_step {self.global_step}")
 
-        # create rank0 policy model and inference_engines groups, then broadcast weights to inference_engines
-        with Timer("setup_policy_and_generator"):
-            self.setup_policy_and_generator()
+        # Initialize weight sync state
+        with Timer("init_weight_sync_state"):
+            self.init_weight_sync_state()
+
+        # sync weights to inference engines
+        with Timer("sync_weights_to_inference_engines"):
+            await self.async_sync_policy_weights_to_inference_engines()
 
         # Eval before training
         if self.cfg.trainer.eval_interval > 0 and self.cfg.trainer.eval_before_train:
-            with self.eval_weights_manager:
-                with Timer("eval", self.all_timings):
-                    eval_metrics = await self.eval()
-                    self.tracker.log(eval_metrics, step=self.global_step)
+            with Timer("eval", self.all_timings):
+                eval_metrics = await self.eval()
+                self.tracker.log(eval_metrics, step=self.global_step)
 
         # main training loop
         pbar = tqdm(total=self.total_training_steps, initial=self.global_step, desc="Training Step Progress")
+        start_epoch = self.global_step // len(self.train_dataloader)
         # Start from step 1
         self.global_step += 1
-        for epoch in range(self.cfg.trainer.epochs):
+        for epoch in range(start_epoch, self.cfg.trainer.epochs):
             # while this is just off by one, you can image a more general queue based approach
             # where the generation buffer holds a list of objects that the trainer can read from
             # bit by bit.
@@ -70,7 +69,7 @@ class AsyncRayPPOTrainer(RayPPOTrainer):
 
                     # sync weights
                     async with Timer("sync_weights", self.all_timings):
-                        await self.weights_manager.async_sync_policy_weights_to_inference_engines()
+                        await self.async_sync_policy_weights_to_inference_engines()
 
                     self.sync_finished.set()
                     self.generation_ack.clear()
@@ -87,10 +86,9 @@ class AsyncRayPPOTrainer(RayPPOTrainer):
                     self.global_step % self.cfg.trainer.eval_interval == 0
                     or self.global_step == self.total_training_steps
                 ):
-                    with self.eval_weights_manager:
-                        with Timer("eval", self.all_timings):
-                            eval_metrics = await self.eval()
-                            self.all_metrics.update(eval_metrics)
+                    with Timer("eval", self.all_timings):
+                        eval_metrics = await self.eval()
+                        self.all_metrics.update(eval_metrics)
                 if self.cfg.trainer.ckpt_interval > 0 and self.global_step % self.cfg.trainer.ckpt_interval == 0:
                     with Timer("save_checkpoints", self.all_timings):
                         self.save_checkpoints()
@@ -143,7 +141,7 @@ class AsyncRayPPOTrainer(RayPPOTrainer):
         with Timer("compute_advantages_and_returns", self.all_timings):
             training_input = self.compute_advantages_and_returns(training_input)
             # remove some unwanted keys
-            for key in ["custom_rewards", "rm_rewards"]:
+            for key in ["rewards"]:
                 training_input.pop(key)
             training_input.metadata.pop("uids")
 
@@ -166,8 +164,13 @@ class AsyncRayPPOTrainer(RayPPOTrainer):
             for i, rand_prompts in enumerate(self.train_dataloader):
                 # truncate data to have even shards
                 rand_prompts = self._remove_tail_data(rand_prompts)
-                generator_input, uids = self._prepare_generator_input(
-                    self.cfg.generator.n_samples_per_prompt, rand_prompts
+                generator_input, uids = prepare_generator_input(
+                    rand_prompts,
+                    self.cfg.generator.n_samples_per_prompt,
+                    get_sampling_params_for_backend(self.cfg.generator.backend, self.cfg.generator.sampling_params),
+                    self.cfg.environment.env_class,
+                    "train",
+                    self.global_step,
                 )
 
                 # generation phase
@@ -191,3 +194,8 @@ class AsyncRayPPOTrainer(RayPPOTrainer):
             logger.error(f"Generator errored out with exception: {e}")
             logger.error(f"Traceback: \n{traceback.format_exc()}")
             sys.exit(1)
+
+    async def async_sync_policy_weights_to_inference_engines(self):
+        return await self.policy_model.async_run_method(
+            "pass_through", "broadcast_to_inference_engines", self.inference_engine_client
+        )

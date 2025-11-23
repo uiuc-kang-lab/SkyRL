@@ -4,8 +4,9 @@ import pickle
 import base64
 import torch
 import os
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Dict, Any
 import ray
+from loguru import logger
 import multiprocessing as mp
 
 import sglang.srt.entrypoints.engine
@@ -179,10 +180,6 @@ class SGLangInferenceEngine(InferenceEngineInterface):
             )
         self.tokenizer = kwargs.pop("tokenizer", None)
 
-        # Extract sampling params
-        sampling_params_dict = kwargs.pop("sampling_params", None)
-        self.sampling_params = sampling_params_dict or {}
-
         # Unused kwargs
         _ = kwargs.pop("num_gpus", 1)
 
@@ -196,11 +193,18 @@ class SGLangInferenceEngine(InferenceEngineInterface):
 
         # Create the SGLang engine (signal handler issue is now fixed by patching)
         self.engine = Engine(**kwargs)
-        print(f"Created SGLang engine with kwargs: {kwargs}")
+        logger.info(f"Created SGLang engine with kwargs: {kwargs}")
 
     def tp_size(self):
-        """Return the tensor parallel size."""
         return self._tp_size
+
+    def pp_size(self):
+        # Pipeline parallelism not supported for SGLang
+        return 1
+
+    def dp_size(self):
+        # TODO(tgriggs): EP/DP not yet supported for SGLang
+        return 1
 
     def _preprocess_prompts(self, input_batch: InferenceEngineInput):
         """Preprocess prompts for SGLang generation."""
@@ -212,8 +216,8 @@ class SGLangInferenceEngine(InferenceEngineInterface):
             prompts is None and prompt_token_ids is not None
         ), "SGLangInferenceEngine only accepts `prompt_token_ids`, not `prompts`."
 
-        # Use request sampling params if provided, otherwise use defaults
-        sampling_params = request_sampling_params if request_sampling_params is not None else self.sampling_params
+        # Use request sampling params if provided.
+        sampling_params = request_sampling_params if request_sampling_params is not None else {}
 
         return prompt_token_ids, sampling_params
 
@@ -240,6 +244,14 @@ class SGLangInferenceEngine(InferenceEngineInterface):
         token_ids_prompts, sampling_params = self._preprocess_prompts(input_batch)
         outputs = await self.engine.async_generate(input_ids=token_ids_prompts, sampling_params=sampling_params)
         return self._postprocess_outputs(outputs)
+
+    async def chat_completion(self, request_payload: Dict[str, Any]) -> Dict[str, Any]:
+        # TODO(charlie): implement this in the future
+        raise NotImplementedError()
+
+    async def completion(self, request_payload: Dict[str, Any]) -> Dict[str, Any]:
+        # TODO(charlie): implement this in the future
+        raise NotImplementedError()
 
     async def init_weight_update_communicator(
         self, master_addr, master_port, rank_offset, world_size, group_name, backend, override_existing: bool = False
@@ -318,7 +330,7 @@ class SGLangInferenceEngine(InferenceEngineInterface):
         obj = ResumeMemoryOccupationReqInput(tags=tags)
         # Call the underlying async method for the same reason as in `init_weight_update_communicator`
         await self.engine.tokenizer_manager.resume_memory_occupation(obj, None)
-        print(
+        logger.info(
             f"From SGLang engine -- Free GPU memory after wake up with tags {tags if tags is not None else 'None'}: "
             + f"{torch.cuda.mem_get_info()[0] / 1024**2:.1f} MB"
         )
@@ -328,7 +340,7 @@ class SGLangInferenceEngine(InferenceEngineInterface):
         obj = ReleaseMemoryOccupationReqInput(tags=tags)
         # Call the underlying async method for the same reason as in `init_weight_update_communicator`
         await self.engine.tokenizer_manager.release_memory_occupation(obj, None)
-        print(
+        logger.info(
             f"From SGLang engine -- Free GPU memory after sleep with tags {tags if tags is not None else 'None'}: "
             + f"{torch.cuda.mem_get_info()[0] / 1024**2:.1f} MB"
         )
@@ -341,6 +353,9 @@ class SGLangInferenceEngine(InferenceEngineInterface):
         """Reset prefix cache in SGLang engine."""
         # Call the underlying async method for the same reason as in `init_weight_update_communicator`
         return await self.engine.tokenizer_manager.flush_cache()
+
+    async def abort_generation(self) -> None:
+        raise NotImplementedError("Abort generation is not supported for SGLang inference engines.")
 
 
 SGLangRayActor = ray.remote(SGLangInferenceEngine)
