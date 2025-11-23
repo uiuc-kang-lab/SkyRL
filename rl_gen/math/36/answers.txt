@@ -1,0 +1,126 @@
+1
+13
+Okay, so I need to find the tens and units digits of the sum S, which is the sum of factorials from 1! up to 2012!. Then, I have to compute 10a + b, where a is the tens digit and b is the units digit. Let me break this down step by step.
+
+First, I recall that factorials grow very quickly. For example, 1! = 1, 2! = 2, 3! = 6, and so on. But as the numbers get larger, the factorials become huge. However, when we add them up, the later terms might contribute nothing to the last few digits because they have more trailing zeros.
+
+I remember that for any n ≥ 5, n! ends with at least one trailing zero. That's because 5! = 120, which has a zero, and since every multiple of 5 contributes a zero, and there are multiple such numbers, the factorial gains more zeros. So, from 5! onwards, each factorial has at least one zero at the end.
+
+Given that, when summing from 1! to 2012!, the sum S will have the same last digit as the sum of the last digits of each factorial from 1! to 2012!. But actually, since each factorial beyond 4! contributes more than one zero, the last two digits might become zero from a certain point onward.
+
+Let me think: starting from 5!, each factorial has at least one zero, so the last digit is zero. But for the tens digit, we need to see if there are any contributions beyond that. For example, 5! = 120, which contributes a zero in the units place and a 2 in the tens place. Similarly, 6! = 720, which contributes a 2 in the tens place. Wait, but actually, when summing, each factorial beyond 4! contributes to the higher digits, but the last two digits might become zero from 10! onwards because 10! has two zeros at the end.
+
+Wait, no, 10! has two zeros, so the last two digits are zero. Similarly, 11! and beyond will also have at least two zeros, so their last two digits are zero. Therefore, when summing from 1! to 2012!, the sum S will have its last two digits as zero because from 10! onwards, each factorial contributes zeros in the last two digits, and adding them up won't change the last two digits from being zero.
+
+But let me verify this. Let's compute the sum modulo 100 to find the last two digits. If S mod 100 = 0, then the last two digits are zero. Otherwise, they are some other digits.
+
+So, S = 1! + 2! + 3! + 4! + 5! + ... + 2012!
+
+We can compute each factorial modulo 100 and sum them up.
+
+Let's compute each term modulo 100:
+
+1! = 1 mod 100 = 1
+2! = 2 mod 100 = 2
+3! = 6 mod 100 = 6
+4! = 24 mod 100 = 24
+5! = 120 mod 100 = 20
+6! = 720 mod 100 = 20 (since 720 - 7*100 = 20)
+7! = 5040 mod 100 = 40 (5040 - 50*100 = 40)
+8! = 40320 mod 100 = 20 (40320 - 403*100 = 20)
+9! = 362880 mod 100 = 80 (362880 - 3628*100 = 80)
+10! = 3628800 mod 100 = 0 (since 10! has two zeros at the end)
+Similarly, 11! and beyond will also have at least two zeros at the end, so their modulo 100 is 0.
+
+So, from 5! to 10!, the modulo 100 of the factorials are:
+
+5! = 20
+6! = 20
+7! = 40
+8! = 20
+9! = 80
+10! = 0
+
+And from 11! to 2012!, all are 0 mod 100.
+
+Now, let's sum these up:
+
+1! = 1
+2! = 2
+3! = 6
+4! = 24
+5! = 20
+6! = 20
+7! = 40
+8! = 20
+9! = 80
+10! = 0
+11! to 2012! = 0
+
+Now, summing these modulo 100:
+
+Start from 1!:
+
+1 + 2 = 3
+3 + 6 = 9
+9 + 24 = 33
+33 + 20 = 53
+53 + 20 = 73
+73 + 40 = 113 → 113 mod 100 = 13
+13 + 20 = 33
+33 + 80 = 113 → 13
+13 + 0 = 13
+13 + 0 = 13
+
+So, the total sum S mod 100 is 13. Therefore, the last two digits of S are 13, so a = 1 and b = 3. Therefore, 10a + b = 10*1 + 3 = 13.
+
+Wait, but let me double-check the sum:
+
+1! = 1
+2! = 2 → total 3
+3! = 6 → total 9
+4! = 24 → total 33
+5! = 20 → total 53
+6! = 20 → total 73
+7! = 40 → total 113 → 13 mod 100
+8! = 20 → total 33
+9! = 80 → total 113 → 13 mod 100
+10! = 0 → total remains 13
+11! to 2012! = 0 → total remains 13
+
+Yes, so S mod 100 = 13, so a=1, b=3, and 10a + b = 13.
+
+Wait, but the problem says "the tens and units digits are a and b, respectively." So, if the last two digits are 13, then a=1 and b=3, so 10a + b = 13.
+
+But let me think again: when summing from 1! to 2012!, the sum S mod 100 is 13, so the last two digits are 13. Therefore, a=1, b=3, and the answer is 13.
+
+But wait, let me confirm the sum modulo 100 again, because sometimes it's easy to make a mistake in adding.
+
+Let's list the contributions:
+
+1! = 1
+2! = 2 → total 3
+3! = 6 → total 9
+4! = 24 → total 33
+5! = 20 → total 53
+6! = 20 → total 73
+7! = 40 → total 113 → 13 mod 100
+8! = 20 → total 33
+9! = 80 → total 113 → 13 mod 100
+10! = 0 → total remains 13
+11! to 2012! = 0 → total remains 13
+
+Yes, that's correct. So, the last two digits are 13, so a=1, b=3, and 10a + b = 13.
+
+Wait, but the problem says "the tens and units digits are a and b, respectively." So, if the last two digits are 13, then a=1 (tens place) and b=3 (units place). Therefore, 10a + b = 10*1 + 3 = 13.
+
+But let me think if there's any possibility that the sum might have more than two digits, and the tens digit is affected by higher factorials. But as we saw, from 10! onwards, each factorial has at least two zeros at the end, so their contributions to the last two digits are zero. Therefore, the sum S mod 100 is determined solely by the sum of 1! to 9!, which we calculated as 13 mod 100.
+
+Therefore, the answer is 13.
+</think>
+
+The tens and units digits of the sum \( S = \sum_{i = 1}^{2012} i! \) are 1 and 3, respectively. Therefore, \( 10a + b = 10 \times 1 + 3 = 13 \).
+
+\[
+\boxed{13}
+\]<｜end▁of▁sentence｜>

@@ -1,0 +1,598 @@
+0
+Okay, I've got this problem to solve. Let's try to understand it step by step.
+
+So, the problem is about making an array non-decreasing using the least number of magic tricks. Each trick allows us to choose a subset S of the array's indices and set each a_u in S to b_{a_u}. The array a starts with some initial values, and we can perform these tricks as many times as needed. The goal is to find the minimum number of tricks required to make the array non-decreasing, or return -1 if it's impossible.
+
+Hmm, let's break this down.
+
+First, let's understand what a magic trick does. When we choose a subset S and assign b_{a_u} to each u in S, it's as if we're replacing the value of a_u with b_{a_u}. But wait, that's not exactly right. Because a_u is initially given, and when we choose a trick, we set a_u to b_{a_u} if it's in S. So, each trick can potentially change a_u to a value from b, but only if a_u is in S.
+
+Wait, no. Let me re-read the problem statement. Oh right, the trick is: choose a subset S, and for each u in S, assign a_u with b_{a_u}. So, the initial a_u is a number between 1 and m. When we select u to be in S, we set a_u to b_{a_u}, which is another number between 1 and m. So, each trick can change a_u to any value in 1..m, based on the current a_u.
+
+Wait, but wait: the trick is that for each u in S, a_u is set to b_{a_u}. So, for example, if a_u is x, then after the trick, a_u becomes b_x. So, it's a deterministic change based on the current a_u.
+
+Hmm, that's an important point. So, each trick can change a value in the array, but the change is determined by the current value. So, the array's values are changing in response to the tricks.
+
+So, the problem is to find the minimal number of such changes to make the array non-decreasing. Each change is a trick, which affects some subset of the array's elements.
+
+But how do we model this? It's a bit tricky because each trick can affect multiple elements, and the order of tricks matters. But since we can perform tricks as many times as needed, perhaps there's a way to model the minimal number of steps.
+
+Let me think about the desired outcome. The array must be non-decreasing, so for each i, a_i <= a_{i+1}. So, the final array after some tricks must satisfy this condition.
+
+What's the minimal way to achieve this? Well, perhaps we can process the array from right to left, ensuring that each element is as small as possible, given the constraints from the previous elements.
+
+Alternatively, perhaps we can model this as a graph problem, where each state represents the current array, and edges represent applying a trick. But that's probably too slow for the given constraints.
+
+Wait, maybe there's a smarter way. Let's think about the constraints each element must satisfy. For each position i, after all the tricks, a_i must be <= a_{i+1}. So, for each i, a_i can be at most the minimal value that satisfies a_i <= a_{i+1}, considering the possible changes.
+
+But wait, each a_i can be changed multiple times. So, perhaps for each a_i, we can determine all possible values it can take, given the constraints from the previous elements.
+
+Wait, perhaps it's helpful to model each a_i as a possible value after any number of tricks. But since each trick can change a_i based on its current value, the possible values for a_i are constrained by the previous a_{i-1}.
+
+So, let's think about processing the array from left to right. For each position i, the a_i can be set to some value, but it must be <= a_{i+1}.
+
+Wait, no. Because we process the array from right to left. Let me think again.
+
+Suppose we process the array from right to left. For each position i, after considering the constraints from i+1, we determine the possible range of values a_i can take. Then, we can determine what changes are needed for a_i to be in that range.
+
+Wait, perhaps that's a good approach. Let's formalize this.
+
+We'll process the array from right to left. For each i, we'll determine the minimal number of tricks needed to make a_i <= a_{i+1}, considering the constraints from the right.
+
+But how do we model the possible values of a_i after any number of tricks?
+
+Each trick can change a_i to b_{a_i_prev}, where a_i_prev is the current value of a_i before the trick. So, each trick can potentially change a_i to any value in the image of b over the possible values of a_i.
+
+Wait, but each trick can only change a_i to b_{a_i}, which is a fixed value based on a_i's current value. So, for a given a_i, the possible values after a trick are the set {b_x | x is a possible value of a_i before the trick}.
+
+So, each trick can change a_i to any of the values in the set {b_x | x is in the possible values of a_i before the trick}.
+
+Hmm, this suggests that each trick can potentially expand or restrict the possible values of a_i.
+
+But considering all possible subsets S for each trick is computationally infeasible. So, we need a smarter approach.
+
+Wait, perhaps for each position i, the possible values of a_i after some tricks are the set of all possible x such that x is in the image of b over the possible values of a_i.
+
+Wait, but each trick can be applied any number of times, so the possible values for a_i are the closure under applying b. So, for a_i, after any number of tricks, it can be any value in the set {b^k(x) | x is the initial a_i, and k is the number of tricks applied on a_i}.
+
+Wait, this is getting complicated. Let's think differently.
+
+Since each trick can change a_i to b_{a_i}, but a_i is a variable, perhaps for each a_i, the possible values it can take after any number of tricks is the set of all possible x such that x is in the image of b over the possible x's of a_i.
+
+But since we can apply as many tricks as we like, this set can be built up by repeatedly applying b to the current value.
+
+Wait, but that's not quite right. Each trick can be applied any number of times. So, for a_i, the possible values after any number of tricks are all the values that can be obtained by applying b any number of times to the initial a_i, but only through the subset S chosen in each trick.
+
+Wait, but each trick can choose any subset S, so for each trick, a_i can be set to any of the values in the image of b over the current a_i.
+
+So, for each a_i, the possible values after any number of tricks is the set of all possible x such that x is in the closure of a_i under the function b^k, for any k >= 0.
+
+So, for a_i, the possible values are all x in the set {b^k(a_i) | k >= 0}.
+
+Therefore, when processing from right to left, for each i, the maximum allowed value is a_{i+1}, and the minimal allowed value is the minimal x such that x <= a_{i+1} and x is in the possible values of a_i.
+
+Wait, no. Because a_i must be <= a_{i+1}. So, for i, the maximum possible value is a_{i+1}, but a_i can be any value in the possible set for a_i that is <= a_{i+1}.
+
+But wait, that's not necessarily the case. Because a_i can be set to any value in its possible set, as long as it is <= a_{i+1}.
+
+So, for each i, the possible values for a_i are the intersection of the possible set for a_i and the interval [1, a_{i+1}].
+
+So, the minimal number of tricks needed is determined by how much we can constrain a_i's possible values.
+
+But how do we model this? Perhaps we can process each position, determine the minimal and maximal possible values for a_i, and see if they can be adjusted to become non-decreasing.
+
+Wait, perhaps we can model this by considering for each i, the minimal and maximal possible value of a_i after all possible tricks, under the constraint that a_i <= a_{i+1}.
+
+But I'm not sure. Let's think of the problem as a graph where each state is the possible value of a_i, and edges represent possible tricks. But that's not feasible for large n.
+
+Another approach: since each trick can change a_i to any value in the image of b, perhaps the minimal number of tricks is determined by how much we can adjust a_i to the maximum possible value that is <= a_{i+1}.
+
+Wait, perhaps for each i, the maximum value that a_i can be set to is the minimum between the current possible maximum (which is the maximum value in its possible set) and a_{i+1}.
+
+So, for each i, the maximum possible a_i is min(max_possible_a_i, a_{i+1}).
+
+If this is possible, then the a_i can be set to that maximum, which would be the minimal possible a_i given the constraints.
+
+But wait, what about the other elements? Because setting a_i to this value could affect the possible values of a_{i-1}, which in turn affects a_{i-2}, and so on.
+
+So, perhaps we can process the array from right to left, keeping track of the maximum possible value for each a_i, and ensuring that it is <= the next element.
+
+Let me outline the steps:
+
+1. For each test case, read n, m, the initial array a, and the array b.
+
+2. For each position i, compute the possible values that a_i can take after any number of tricks. This is the set of all x such that x is in the image of b over the initial a_i, and possibly through any number of tricks.
+
+Wait, but how do we compute this set? Because each trick can change a_i to any of b_x, where x is the current a_i.
+
+So, the possible values for a_i after any number of tricks is the closure of the initial a_i under the function b^k, where k is the number of times b is applied.
+
+Wait, but each application is a trick. So, for each a_i, the possible values are the set of all x that can be obtained by repeatedly applying b to it, but each application is a trick.
+
+Wait, no. Because each trick can choose any subset S, so for a_i, each trick can change its value to b_{current a_i}.
+
+So, the possible values for a_i after any number of tricks are all the values that can be obtained by applying b any number of times, starting from the initial a_i.
+
+Wait, that's an important observation. Because each trick can be applied any number of times, and each time it can choose any subset S, including the entire array or a subset. So, each trick can change a_i to any of the values in the image of b applied to a_i.
+
+So, for a_i, the possible values after any number of tricks are the closure of a_i under the function b. That is, it's the set {b(x) | x is in the closure of a_i under b's function}.
+
+Wait, no, perhaps it's the set of all x that can be reached by applying b any number of times starting from a_i.
+
+So, for example, if a_i is x, then after one trick, it can be b_x. After another trick, it can be b_{b_x}, and so on.
+
+So, the possible values for a_i are the set {x_0, x_1, x_2, ...}, where x_0 = a_i, x_{k+1} = b_{x_k}.
+
+So, this is similar to the concept of a functional graph, where each node points to b[x].
+
+Therefore, the possible values for a_i are the set of all nodes that can be reached by repeatedly applying b.
+
+So, for each a_i, the possible values are the set of all x such that x is in the closure of a_i under the function b.
+
+So, the first step is to compute for each i the set of possible values for a_i.
+
+Once we have that, we can process the array from right to left, ensuring that each a_i is <= a_{i+1}, and compute the minimal number of tricks needed.
+
+Now, let's think about how to compute the possible values for each a_i.
+
+We can model this as a graph where each node is a possible value (from 1 to m), and there's an edge from x to b[x]. Then, the possible values for a_i are all the nodes reachable from a_i in this graph, including a_i itself.
+
+So, for each a_i, we can compute its possible set as the closure of a_i under the function b.
+
+This can be done efficiently by, for each a_i, following the chain of b until we reach a cycle.
+
+Wait, but for each a_i, which can be up to 1e6, this can be time-consuming if done naively. So, we need a way to precompute for all possible a_i's their possible sets.
+
+So, the plan is:
+
+1. For each test case, read n, m, a, b.
+
+2. For each i, compute the possible set of values for a_i. Let's call this set P_i.
+
+3. Process the array from right to left (i from n-1 downto 0). For each i, determine the minimal number of tricks needed to make a_i <= a_{i+1}, given that a_i can be set to any value in P_i, and a_{i+1} can be set to any value in P_{i+1}.
+
+Wait, no. Because a_{i+1} is already in P_{i+1}, so in the processing, we can set a_i to any value in P_i, and then a_{i+1} is set to any value in P_{i+1}, but we have to ensure that a_i <= a_{i+1}.
+
+Wait, but a_i can be set to any value in P_i, and a_{i+1} can be set to any value in P_{i+1}. So, for a_i to be <= a_{i+1}, we need to choose a value x in P_i such that x <= y, where y is in P_{i+1}.
+
+So, the minimal number of tricks is determined by how much we can constrain x.
+
+So, for each i, the maximum possible x is min(max(P_i), a_{i+1}), but a_{i+1} is determined after processing. So, this seems tricky.
+
+Alternatively, perhaps we can model the process as follows:
+
+For each i from n-1 downto 0:
+
+- We can choose x in P_i, and set a_i to x.
+
+- Then, a_{i+1} can be set to any y in P_{i+1}.
+
+- We need x <= y.
+
+- So, the minimal number of tricks is the minimal number needed to choose x such that x is <= y, where y is in P_{i+1}.
+
+Wait, but y is a_{i+1}, which is a value in P_{i+1}, which is determined after processing. So, this approach might not work.
+
+Hmm, perhaps another way is to process the array from right to left, keeping track of the maximum possible value for a_i, given the constraints from the right.
+
+So, for each i, we can compute the minimal number of tricks needed to make a_i <= a_{i+1}, given that a_i can be set to any value in P_i.
+
+Let's denote for each i, the maximum possible value that a_i can be set to is the minimal between the maximum possible value of a_i and a_{i+1}.
+
+Wait, but a_{i+1} is already in P_{i+1}, so the maximum possible value for a_{i+1} is the maximum of P_{i+1}.
+
+So, the maximum possible value for a_i is the minimum between the maximum of P_i and the maximum of P_{i+1}.
+
+But that's not necessarily correct because a_i can be set to any x in P_i, and a_{i+1} can be set to any y in P_{i+1}, so x can be any value in P_i, and y can be any value in P_{i+1}, as long as x <= y.
+
+So, the minimal number of tricks is determined by the minimal number needed to choose x in P_i and y in P_{i+1} such that x <= y.
+
+Wait, but how?
+
+Perhaps, for each i, the minimal number of tricks is determined by the number of times we need to apply b to x in P_i until we find a y in P_{i+1} that is >= x.
+
+Wait, no. Because each trick can change x to b_x, so each trick application is a step in the function b.
+
+So, for a_i, the minimal number of tricks needed is the minimal k such that applying b k times to some x in P_i leads to y in P_{i+1}, and x <= y.
+
+Wait, but that's not directly applicable, because x can be any value in P_i, and y can be any in P_{i+1}.
+
+So, for a given i, the minimal number of tricks is the minimal number of steps needed to find x in P_i and y in P_{i+1} such that x <= y.
+
+But how?
+
+Another approach is to, for each i, find the minimal number of steps k such that the k-th iterate of b on some x in P_i is >= some y in P_{i+1}.
+
+But since we can choose x and y, perhaps for each i, the minimal number of steps is the minimal k where b^k(x) >= y, for some x in P_i and y in P_{i+1}.
+
+Wait, but this seems a bit abstract. Let's try to model this.
+
+For each i, the maximum possible x is the minimum between the maximum of P_i and the maximum of P_{i+1}.
+
+If this maximum possible x is already less than or equal to the maximum possible y of P_{i+1}, then no tricks are needed, because a_i can be set to the maximum of P_i, which is <= maximum of P_{i+1}.
+
+If not, then we need to find if there's a way to reduce x to y such that x <= y, and the number of steps is minimized.
+
+So, for each i, we can:
+
+1. Find the maximum possible x in P_i (let's call it max_x).
+
+2. Find the maximum possible y in P_{i+1} (max_y).
+
+3. If max_x <= max_y, then no tricks are needed for this i, and we can proceed.
+
+4. Else, we need to find the minimal number of tricks k such that applying b k times to some x in P_i results in a y >= some y' in P_{i+1}.
+
+Wait, but how do we find this k?
+
+This seems tricky, but perhaps we can precompute for each i, the minimal k where b^k(x) >= some y in P_{i+1}, for x in P_i.
+
+But since y can be any element of P_{i+1}, perhaps for a given x in P_i, the minimal number of steps is the smallest k where b^k(x) is in P_{i+1}.
+
+Wait, but that's not necessarily the case. Because y can be any element in P_{i+1}, so for a given x, the minimal k is the minimal number of steps required to reach any y in P_{i+1}.
+
+So, for a given x, the minimal steps is the minimal k such that b^k(x) is in P_{i+1}.
+
+So, for each x in P_i, compute the minimal k where b^k(x) is in P_{i+1}.
+
+Then, among all x in P_i, find the minimal k. That's the minimal number of tricks needed for this i.
+
+But this seems computationally expensive, especially since m can be up to 1e6.
+
+So, perhaps we can find the minimal k for each i by finding the minimal number of steps required to reach any element in P_{i+1} from any x in P_i.
+
+So, for each i, we can:
+
+- Find the minimal k where b^k(x) is in P_{i+1} for some x in P_i.
+
+So, the minimal k is the minimal number of steps across all x in P_i.
+
+So, the plan is:
+
+For each i from n-1 downto 0:
+
+1. Compute P_i: the set of all x where x is reachable by applying b any number of times starting from a_i.
+
+2. Compute max_x = maximum of P_i.
+
+3. Compute max_y = maximum of P_{i+1} (if i+1 exists).
+
+4. If max_x <= max_y, then no tricks are needed for this i. Proceed to the next i.
+
+5. Else, find the minimal k such that there exists x in P_i and y in P_{i+1}, where k is the minimal number of steps to reach y from x.
+
+6. If such a k exists, add it to the total number of tricks.
+
+7. Else, return -1.
+
+But wait, step 5 is the tricky part. How do we efficiently compute the minimal k for each i?
+
+Hmm, perhaps we can precompute for each i the minimal steps required to reach any y in P_{i+1} from any x in P_i.
+
+But this seems computationally intensive.
+
+Alternatively, for each i, we can find the minimal k where b^k(x) is in P_{i+1} for some x in P_i.
+
+So, for each i, we can:
+
+- For each x in P_i, compute the minimal k where b^k(x) is in P_{i+1}.
+
+- The minimal k across all x in P_i is the answer for i.
+
+But again, this is O(m) for each i, which is not feasible for m up to 1e6.
+
+So, we need a smarter way.
+
+Wait, perhaps for each i, the minimal k is the minimal number of steps required to reach any element in P_{i+1} starting from any element in P_i.
+
+So, for each i, the minimal k is the minimal number of steps required to reach any element in P_{i+1} from any element in P_i.
+
+So, perhaps we can precompute for each i the minimal k.
+
+But how?
+
+Another idea: for each i, the minimal k is the minimal number such that after applying b k times, the set of possible values is a superset of P_{i+1}.
+
+Wait, perhaps not. Let me think differently.
+
+Suppose we have P_i and P_{i+1}.
+
+We can model the problem as, for each x in P_i, find the minimal k where b^k(x) is in P_{i+1}.
+
+The minimal k across all x in P_i is the answer.
+
+But how to compute this efficiently.
+
+Hmm, perhaps for each x in P_i, we can precompute the minimal k such that b^k(x) is in P_{i+1}.
+
+Then, the minimal k for i is the minimum of all these k's.
+
+But again, for m up to 1e6, this is not feasible.
+
+So, perhaps we can find for each x in P_i, whether x is already in P_{i+1}, and if not, find the minimal k steps to reach any y in P_{i+1}.
+
+Wait, but that's still O(m) in the worst case.
+
+Alternative approach: for each i, the minimal k is the minimal number of steps required for any x in P_i to reach any y in P_{i+1}.
+
+So, for each i, the minimal k is the minimal steps needed for any x in P_i to reach any y in P_{i+1}.
+
+So, to find the minimal k across all x in P_i and y in P_{i+1}, where k is the minimal steps for x to reach y.
+
+Thus, for each i, the minimal k is the minimal steps across all x in P_i and y in P_{i+1}.
+
+So, the question is, for each i, what is the minimal number of steps k such that there exists x in P_i and y in P_{i+1} where b^k(x) = y.
+
+So, the approach is:
+
+For each i:
+
+1. Compute P_i.
+
+2. Compute P_{i+1}.
+
+3. If max_x <= max_y: no tricks needed.
+
+4. Else: find the minimal k where exists x in P_i, y in P_{i+1}, such that b^k(x) = y.
+
+The minimal k is the answer.
+
+So, the problem reduces to, for each i, find the minimal k such that some x in P_i can reach some y in P_{i+1} in k steps.
+
+This seems manageable if we can find, for each i, the minimal k.
+
+So, the plan is:
+
+- For each test case, precompute for each i the P_i.
+
+- Then, process the array from right to left, keeping track of the minimal k needed for each i.
+
+So, the crux is how to compute P_i for each i.
+
+But how?
+
+Computing P_i is the set of all x reachable by applying b any number of times starting from a_i.
+
+So, we can model this as a graph where each node is a value from 1 to m, and each node x has an edge to b[x].
+
+So, for each x, we can compute the closure of x under the function b.
+
+The closure is the set of all x's that can be reached by repeatedly applying b to x.
+
+So, for each x, we can compute its closure by following the chain until we find a cycle.
+
+Once we have the closure for each x, we can precompute P_i for each i.
+
+But for m up to 1e6, this is feasible.
+
+So, the steps are:
+
+For each test case:
+
+1. Read n, m.
+
+2. Read a array.
+
+3. Read b array.
+
+4. Precompute for each x in 1..m, the closure P_x: the set of all x's reachable by applying b any number of times.
+
+5. For each i from 0 to n-1, compute P_i = P[a_i].
+
+6. Then, process the array from right to left, keeping track of the maximum possible value that a_i can be set to, given the constraints from the right.
+
+Wait, perhaps processing from right to left, for each i, the maximum possible value is the minimum between the maximum of P_i and the maximum of P_{i+1}.
+
+If this maximum is already <= the maximum of P_{i+1}, then no tricks are needed for i.
+
+Else, we need to find the minimal k such that some x in P_i can reach some y in P_{i+1} in k steps.
+
+So, for each i, the minimal k is the minimal number of steps needed for any x in P_i to reach any y in P_{i+1}.
+
+Hmm, but how do we compute this efficiently.
+
+An alternative approach is:
+
+For each i, the minimal k is the minimal number of steps such that the closure of P_i under b^k contains at least one element of P_{i+1}.
+
+So, for each i, find the minimal k where the closure of P_i under b^k has a non-empty intersection with P_{i+1}.
+
+Wait, but the closure under b^k is the set {b^k(x) | x in P_i}.
+
+So, for each i, we need to find the minimal k where this set intersects with P_{i+1}.
+
+So, for each i, the minimal k is the smallest k such that there exists x in P_i where b^k(x) is in P_{i+1}.
+
+So, for each i, we can compute this k.
+
+Once we have this k, we add it to the total tricks.
+
+If for any i, the required k is infinity (i.e., no such x exists that can reach any y in P_{i+1} in finite steps), then the entire array cannot be made non-decreasing, so we return -1.
+
+So, the plan is:
+
+- Precompute for each x, the closure P_x.
+
+- For each i from n-1 downto 0:
+
+   a. Compute P_i = P[a_i].
+
+   b. Compute P_next = P[a_{i+1}]. (if i+1 exists).
+
+   c. max_x = max(P_i).
+
+   d. max_y = max(P_next).
+
+   e. If max_x <= max_y: no tricks needed for i.
+
+   f. Else: find the minimal k such that there exists x in P_i where b^k(x) is in P_next.
+
+   g. Add k to the total.
+
+   h. If no such k exists for i, return -1.
+
+So, the key is to compute for each i, the minimal k where some x in P_i can reach some y in P_next in k steps.
+
+This seems manageable.
+
+Now, the problem is how to compute this minimal k for each i efficiently.
+
+Let's think about how to compute, for a given i, the minimal k where b^k(x) is in P_next for some x in P_i.
+
+This is equivalent to finding the minimal k such that the closure of P_i under b^k has a non-empty intersection with P_next.
+
+So, for each i, we can:
+
+- Iterate k from 0 upwards, and for each k, check if there exists x in P_i such that b^k(x) is in P_next.
+
+- The first k where this is true is the minimal k.
+
+But for m up to 1e6, this approach would be O(m) per i, which is not feasible for large n.
+
+So, we need a smarter approach.
+
+Alternative idea: for each x in P_i, compute the minimal k where b^k(x) is in P_next. Then, the minimal k across all x is the answer.
+
+But again, for large P_i, this is O(m) which is not feasible.
+
+So, perhaps we can find for each x in P_i, the minimal k where b^k(x) is in P_next, and then find the minimal k across all x.
+
+But again, this is O(m) in the worst case.
+
+Hmm, perhaps another approach is to compute for each x in P_i, the minimal k where b^k(x) is in P_next, and then take the minimal k across all x.
+
+But again, for large m, this is not feasible.
+
+So, what's the alternative?
+
+Another idea: for each x in P_i, the minimal k where b^k(x) is in P_next is the minimal k where b^k(x) is in P_next.
+
+So, for each x, we can precompute the minimal k for x.
+
+But again, for large m, this is not feasible.
+
+So, perhaps we can find for each i, the minimal k such that the closure of x in P_i under b^k contains any element of P_next.
+
+So, for each i, the minimal k is the minimal number of steps such that the closure of P_i under b^k intersects P_next.
+
+So, perhaps we can model this as the minimal k where the intersection of the closure of P_i under b^k and P_next is non-empty.
+
+So, for each i, the minimal k is the minimal number of steps needed for any x in P_i to reach any y in P_next.
+
+This is equivalent to finding the minimal k where the closure of P_i under b^k has a non-empty intersection with P_next.
+
+So, the problem is to find the minimal k such that the closure of P_i under b^k intersects P_next.
+
+Now, the question is, how to compute this minimal k efficiently.
+
+Let me think about the properties of the closure.
+
+The closure of P_i under b^k is the set {b^k(x) | x in P_i}.
+
+So, for each x in P_i, b^k(x) must be in P_next for some x.
+
+So, for each x in P_i, the minimal k where b^k(x) is in P_next is the minimal number of steps needed for x to reach any element in P_next.
+
+So, for each x in P_i, we can precompute the minimal k_x where b^k_x(x) is in P_next.
+
+Then, the minimal k across all x in P_i is the answer for i.
+
+But again, for large P_i, this is O(m) per i, which is not feasible.
+
+So, perhaps we can find the minimal k for the entire P_i.
+
+Wait, perhaps we can model it as the minimal k where the closure of P_i under b^k is such that it contains at least one element of P_next.
+
+So, how to find the minimal k for which this is true.
+
+Let me think about the possible cases.
+
+Case 1: P_i is a subset of P_next.
+
+Then, for any x in P_i, b^0(x) is x, which is in P_next. So, k=0.
+
+So, the minimal k is 0.
+
+Case 2: P_i is not a subset of P_next, but there exists an x in P_i such that b^k(x) is in P_next for some k>0.
+
+We need to find the minimal k.
+
+So, the approach is:
+
+For each i, compute P_i and P_next.
+
+If P_i is a subset of P_next: no tricks needed.
+
+Else:
+
+   Find the minimal k where there exists x in P_i such that b^k(x) is in P_next.
+
+So, how to compute this minimal k.
+
+Hmm, perhaps we can precompute for each x in P_i, the minimal k_x where b^k_x(x) is in P_next.
+
+Then, the minimal k for i is the minimal k_x across all x in P_i.
+
+But again, for large P_i, this is not feasible.
+
+So, perhaps we can find the minimal k by looking for all possible k and checking if any x in P_i reaches P_next in k steps.
+
+But again, for large k, this could be time-consuming.
+
+So, perhaps we can model this as follows:
+
+For each i, the minimal k is the minimal number of steps such that the closure of P_i under b^k contains at least one element from P_next.
+
+So, for each i, the minimal k is the smallest k where the closure of P_i under b^k intersects P_next.
+
+So, the question is, how to find this minimal k efficiently.
+
+Let me think about the function f_k(x) = b^k(x). For each x, f_k(x) is x after applying b k times.
+
+We can model the function f_k as a mapping.
+
+So, for a given i, P_i is a set of x's. We need to find the minimal k where there exists x in P_i such that f_k(x) is in P_next.
+
+So, for each i, the minimal k is the minimal number such that the function f_k maps some x in P_i into P_next.
+
+So, perhaps we can find this k by considering the cycles in the function f.
+
+So, for each x, the function f_k(x) will eventually reach a cycle. So, for each x, the function f_k(x) can be expressed as x's value after k steps, which may be in a cycle.
+
+So, for each x in P_i, we can compute the minimal k where f_k(x) is in P_next.
+
+But again, for large P_i, this is not feasible.
+
+So, perhaps we can find for each i, the minimal k such that the closure of P_i under b^k intersects P_next.
+
+Another approach is to precompute for each x, the set of k's where f_k(x) is in P_next.
+
+Then, for each i, the minimal k is the minimal k where any x in P_i has k in its set.
+
+But again, for large m, this is not feasible.
+
+So, perhaps we can find the minimal k by considering the minimal k for all x in P_i, but this seems similar to the previous approach.
+
+Hmm.
+
+Wait, perhaps for each i, the minimal k is the minimal number of steps required such that any x in P_i can reach any y in P_next in k steps.
+
+So, the minimal k is the minimal number of steps such that the closure of P_i under b^k includes P_next.
+
+So, for each i, the minimal k is the minimal number of steps where the closure of P_i under b^k is a superset of P_next.
+
+So, how can we find this k?
+
+Perhaps, for each i, the minimal k is the minimal number of steps such that the closure of P_i under b^k includes all elements of P_next.
+
+So, for each x in P_next, we can find the minimal number of steps k_x such that x is in the closure of P_i under b^k_x.
+
+Then, the minimal k for i is the minimal k_x across all x in P_next.
+
+But again, for large P_next, this is not feasible.
+
+So, perhaps the approach is to find the minimal k where the closure of P_i under b^k contains all elements of P_next.
+
+So, for each x in P_next, we can find the minimal k_x where x is in the closure of P_i under b^k_x.
+
+Then, the minimal k for i

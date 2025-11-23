@@ -1,0 +1,313 @@
+0
+6.0625
+Okay, so I have this problem with complex numbers z and w. The given equations are:
+
+1. |3z - w| = 12
+2. |z + 3w| = 9
+3. |z - w| = 7
+
+And I need to find |w|.
+
+Hmm, complex numbers can be a bit tricky, but I remember that sometimes it's helpful to treat them as vectors in the plane. Maybe I can use some vector algebra here. Alternatively, I could try to express z in terms of w or vice versa using these equations and then solve for w.
+
+Let me see. Since all the equations involve linear combinations of z and w, perhaps I can set up a system of equations. But because they're complex, I might need to use the properties of complex modulus, which relate to the dot product in vector terms.
+
+Another approach could be to let z = a + bi and w = c + di, where a, b, c, d are real numbers. Then, I can write each equation in terms of a, b, c, d and solve for them. But that might be more algebraic and could be longer. Maybe there's a smarter way.
+
+Wait, I recall that for complex numbers, |x + y|^2 = |x|^2 + |y|^2 + 2 Re(x \overline{y}). Maybe I can square the equations to turn them into real equations, which might be easier to handle.
+
+Let me try that. Let's square all three equations:
+
+1. |3z - w|^2 = 144
+2. |z + 3w|^2 = 81
+3. |z - w|^2 = 49
+
+Now, expanding each of these using the formula for the modulus squared:
+
+1. |3z - w|^2 = 9|z|^2 + |w|^2 - 6 Re(z \overline{w}) = 144
+2. |z + 3w|^2 = |z|^2 + 9|w|^2 + 6 Re(z \overline{w}) = 81
+3. |z - w|^2 = |z|^2 + |w|^2 - 2 Re(z \overline{w}) = 49
+
+Okay, now I have three equations with real variables: |z|^2, |w|^2, and Re(z \overline{w}). Let me denote:
+
+Let A = |z|^2, B = |w|^2, and C = Re(z \overline{w}).
+
+Then the equations become:
+
+1. 9A + B - 6C = 144
+2. A + 9B + 6C = 81
+3. A + B - 2C = 49
+
+Now, I have a system of three linear equations with three variables A, B, C. Let me write them down:
+
+Equation 1: 9A + B - 6C = 144
+Equation 2: A + 9B + 6C = 81
+Equation 3: A + B - 2C = 49
+
+Hmm, maybe I can add equations 1 and 2 to eliminate C:
+
+Equation 1 + Equation 2: 10A + 10B = 225
+
+Simplify: A + B = 22.5 → Let's call this Equation 4.
+
+Now, Equation 3 is A + B - 2C = 49. From Equation 4, A + B = 22.5, so:
+
+22.5 - 2C = 49 → -2C = 26.5 → C = -13.25
+
+Now, knowing C, I can plug back into Equation 3 to find A + B:
+
+A + B = 49 + 2C = 49 + 2*(-13.25) = 49 - 26.5 = 22.5 → Which matches Equation 4, so that's consistent.
+
+Now, knowing A + B = 22.5 and C = -13.25, I can plug into Equation 1 or 2 to find A and B.
+
+Let me use Equation 1: 9A + B - 6C = 144
+
+We know C = -13.25, so:
+
+9A + B - 6*(-13.25) = 144 → 9A + B + 73.5 = 144 → 9A + B = 70.5
+
+But A + B = 22.5, so subtracting:
+
+(9A + B) - (A + B) = 70.5 - 22.5 → 8A = 48 → A = 6
+
+Then, from A + B = 22.5 → B = 22.5 - 6 = 16.5
+
+So, B = |w|^2 = 16.5 → Therefore, |w| = sqrt(16.5)
+
+But let me double-check with Equation 2 to ensure consistency.
+
+Equation 2: A + 9B + 6C = 81
+
+A = 6, B = 16.5, C = -13.25
+
+So, 6 + 9*16.5 + 6*(-13.25) = 6 + 148.5 - 79.5 = 6 + 69 = 75 ≠ 81
+
+Hmm, that's a problem. So, somewhere I must have made a mistake.
+
+Let me revisit the steps.
+
+Starting from squaring the equations:
+
+1. 9A + B - 6C = 144
+2. A + 9B + 6C = 81
+3. A + B - 2C = 49
+
+Adding 1 and 2: 10A + 10B = 225 → A + B = 22.5 → Correct.
+
+Then, using Equation 3: A + B - 2C = 49 → 22.5 - 2C = 49 → C = -13.25 → Correct.
+
+Then, using Equation 1: 9A + B - 6*(-13.25) = 144 → 9A + B + 73.5 = 144 → 9A + B = 70.5 → Correct.
+
+Then, since A + B = 22.5, subtracting: 8A = 48 → A = 6 → Correct.
+
+Then, B = 22.5 - 6 = 16.5 → Correct.
+
+But when plugging into Equation 2, it doesn't hold. So, where is the error?
+
+Let me recalculate Equation 2 with A=6, B=16.5, C=-13.25:
+
+A + 9B + 6C = 6 + 9*16.5 + 6*(-13.25) → 6 + 148.5 - 79.5 → 6 + 69 = 75 ≠ 81
+
+So, there must be a mistake in the earlier steps. Let me check the expansion of the modulus squared.
+
+Recall that |a + b|^2 = |a|^2 + |b|^2 + 2 Re(a \overline{b})
+
+So, for |3z - w|^2:
+
+= |3z|^2 + |w|^2 - 2 Re(3z \overline{w}) → Because 2 Re(3z \overline{w}) = 6 Re(z \overline{w})
+
+Similarly, |z + 3w|^2 = |z|^2 + |3w|^2 + 2 Re(z \overline{3w}) → 2 Re(z \overline{3w}) = 6 Re(z \overline{w})
+
+And |z - w|^2 = |z|^2 + |w|^2 - 2 Re(z \overline{w})
+
+So, the expansions should be:
+
+1. 9|z|^2 + |w|^2 - 6 Re(z \overline{w}) = 144 → Correct
+2. |z|^2 + 9|w|^2 + 6 Re(z \overline{w}) = 81 → Correct
+3. |z|^2 + |w|^2 - 2 Re(z \overline{w}) = 49 → Correct
+
+So, the equations are correctly set up. Then, when solving, the steps seem correct, but perhaps there's a miscalculation in the substitution.
+
+Let me re-do the substitution:
+
+From Equation 1: 9A + B - 6C = 144
+From Equation 2: A + 9B + 6C = 81
+From Equation 3: A + B - 2C = 49
+
+We found A + B = 22.5 and C = -13.25
+
+Then, substituting C into Equation 1:
+
+9A + B - 6*(-13.25) = 144 → 9A + B + 73.5 = 144 → 9A + B = 70.5
+
+And since A + B = 22.5, subtracting:
+
+9A + B - (A + B) = 70.5 - 22.5 → 8A = 48 → A = 6
+
+Then, B = 22.5 - 6 = 16.5
+
+Now, let's plug these into Equation 2:
+
+A + 9B + 6C = 6 + 9*16.5 + 6*(-13.25) → 6 + 148.5 - 79.5 → 6 + 69 = 75 ≠ 81
+
+So, there's a contradiction. Hmm, perhaps I made a mistake in the expansion of the modulus squared.
+
+Let me double-check the expansion:
+
+|3z - w|^2 = |3z|^2 + |w|^2 - 2 Re(3z \overline{w}) → Yes, because Re(3z \overline{w}) = (3/2) Re(2z \overline{w}), so -2 Re(3z \overline{w}) = -6 Re(z \overline{w})
+
+Similarly, |z + 3w|^2 = |z|^2 + |3w|^2 + 2 Re(z \overline{3w}) → 2 Re(z \overline{3w}) = 6 Re(z \overline{w})
+
+And |z - w|^2 = |z|^2 + |w|^2 - 2 Re(z \overline{w}) → Correct
+
+So, the expansions are correct. Then, the equations are correct.
+
+Wait, perhaps I made a mistake in solving the system of equations. Let me write them again:
+
+Equation 1: 9A + B - 6C = 144
+Equation 2: A + 9B + 6C = 81
+Equation 3: A + B - 2C = 49
+
+Let me use a different method, perhaps adding equations 1 and 2:
+
+Equation 1 + Equation 2: 10A + 10B = 225 → A + B = 22.5 → Correct
+
+Then, Equation 3: A + B - 2C = 49 → 22.5 - 2C = 49 → C = -13.25 → Correct
+
+Then, from Equation 1: 9A + B = 144 + 6C → 9A + B = 144 + 6*(-13.25) → 144 - 79.5 = 64.5 → 9A + B = 64.5
+
+But from Equation 4: A + B = 22.5 → Subtracting:
+
+(9A + B) - (A + B) = 64.5 - 22.5 → 8A = 42 → A = 5.25
+
+Wait, this is different from before. Earlier, I had A = 6, now A = 5.25. Hmm, where did I go wrong?
+
+Let me recalculate:
+
+From Equation 1 + Equation 2: 10A + 10B = 225 → A + B = 22.5 → Correct
+
+From Equation 3: A + B - 2C = 49 → 22.5 - 2C = 49 → 2C = 22.5 - 49 = -26.5 → C = -13.25 → Correct
+
+Now, from Equation 1: 9A + B = 144 + 6C → 144 + 6*(-13.25) = 144 - 79.5 = 64.5 → 9A + B = 64.5 → Correct
+
+From Equation 4: A + B = 22.5 → Subtracting:
+
+9A + B - (A + B) = 64.5 - 22.5 → 8A = 42 → A = 5.25 → Correct
+
+Now, B = 22.5 - A = 22.5 - 5.25 = 17.25
+
+So, A = 5.25, B = 17.25, C = -13.25
+
+Now, let's check Equation 2:
+
+A + 9B + 6C = 5.25 + 9*17.25 + 6*(-13.25) → 5.25 + 155.25 - 79.5 → 5.25 + 75.75 = 81 → Correct
+
+Now, let's check Equation 3:
+
+A + B - 2C = 5.25 + 17.25 - 2*(-13.25) → 22.5 + 26.5 = 49 → Correct
+
+And Equation 1:
+
+9A + B - 6C = 9*5.25 + 17.25 - 6*(-13.25) → 47.25 + 17.25 + 79.5 → 47.25 + 17.25 = 64.5 + 79.5 = 144 → Correct
+
+Okay, now everything checks out. So, A = |z|^2 = 5.25, B = |w|^2 = 17.25
+
+Therefore, |w| = sqrt(17.25) → Let me calculate that.
+
+17.25 = 69/4 → sqrt(69/4) = (sqrt(69))/2 → sqrt(69) is approximately 8.306, so divided by 2 is approximately 4.153
+
+But let me see if 69 can be simplified. 69 = 3*23, so sqrt(69) is irrational, so the exact value is sqrt(69)/2
+
+But let me double-check the calculations to ensure there are no errors.
+
+From A = 5.25, B = 17.25, C = -13.25
+
+Check Equation 1: 9*5.25 + 17.25 - 6*(-13.25) → 47.25 + 17.25 + 79.5 → 47.25 + 17.25 = 64.5 + 79.5 = 144 → Correct
+
+Equation 2: 5.25 + 9*17.25 + 6*(-13.25) → 5.25 + 155.25 - 79.5 → 5.25 + 75.75 = 81 → Correct
+
+Equation 3: 5.25 + 17.25 - 2*(-13.25) → 22.5 + 26.5 = 49 → Correct
+
+So, all equations are satisfied. Therefore, |w|^2 = 17.25 → |w| = sqrt(17.25) = sqrt(69/4) = sqrt(69)/2
+
+Wait, 17.25 is 69/4? Let me check: 69 divided by 4 is 17.25 → Yes, correct.
+
+So, sqrt(69)/2 is the exact value. Let me see if the problem expects an exact form or a decimal. Since it's a math problem, likely exact form is preferred.
+
+So, the answer is sqrt(69)/2
+
+But let me double-check if there's any simplification possible. 69 is 3*23, neither of which are squares, so sqrt(69) is simplest.
+
+Therefore, |w| = sqrt(69)/2
+
+Wait, but let me confirm the calculations one more time to ensure no arithmetic errors.
+
+A = 5.25, B = 17.25
+
+Check Equation 1: 9*5.25 = 47.25, 47.25 + 17.25 = 64.5, 64.5 - 6*(-13.25) = 64.5 + 79.5 = 144 → Correct
+
+Equation 2: 5.25 + 9*17.25 = 5.25 + 155.25 = 160.5, 160.5 - 6*13.25 = 160.5 - 79.5 = 81 → Correct
+
+Equation 3: 5.25 + 17.25 = 22.5, 22.5 - 2*(-13.25) = 22.5 + 26.5 = 49 → Correct
+
+Everything checks out. So, the answer is sqrt(69)/2
+
+But let me see if the problem might have a different approach, perhaps using vectors or geometric interpretations, but since I already got an answer through algebraic manipulation, likely this is correct.
+
+So, the final answer is sqrt(69)/2, which can be written as \boxed{\dfrac{\sqrt{69}}{2}}
+
+**Final Answer**
+\boxed{\dfrac{\sqrt{69}}{2}}
+</think>
+
+Given the complex numbers \( z \) and \( w \) such that \( |3z - w| = 12 \), \( |z + 3w| = 9 \), and \( |z - w| = 7 \), we need to find \( |w| \).
+
+First, we square the given equations to convert them into real equations:
+
+1. \( |3z - w|^2 = 144 \)
+2. \( |z + 3w|^2 = 81 \)
+3. \( |z - w|^2 = 49 \)
+
+Expanding these using the formula for the modulus squared, we get:
+
+1. \( 9|z|^2 + |w|^2 - 6 \text{Re}(z \overline{w}) = 144 \)
+2. \( |z|^2 + 9|w|^2 + 6 \text{Re}(z \overline{w}) = 81 \)
+3. \( |z|^2 + |w|^2 - 2 \text{Re}(z \overline{w}) = 49 \)
+
+Let \( A = |z|^2 \), \( B = |w|^2 \), and \( C = \text{Re}(z \overline{w}) \). The equations become:
+
+1. \( 9A + B - 6C = 144 \)
+2. \( A + 9B + 6C = 81 \)
+3. \( A + B - 2C = 49 \)
+
+Adding equations 1 and 2:
+
+\[ 10A + 10B = 225 \implies A + B = 22.5 \]
+
+Using equation 3:
+
+\[ 22.5 - 2C = 49 \implies -2C = 26.5 \implies C = -13.25 \]
+
+Substituting \( C \) back into equation 1:
+
+\[ 9A + B + 73.5 = 144 \implies 9A + B = 70.5 \]
+
+Using \( A + B = 22.5 \):
+
+\[ 9A + B - (A + B) = 70.5 - 22.5 \implies 8A = 48 \implies A = 6 \]
+
+Substituting \( A \) back:
+
+\[ B = 22.5 - 6 = 16.5 \]
+
+However, upon rechecking, we find that the correct values are:
+
+\[ A = 5.25, B = 17.25, C = -13.25 \]
+
+Thus, \( |w|^2 = 17.25 \), so \( |w| = \sqrt{17.25} = \sqrt{\frac{69}{4}} = \frac{\sqrt{69}}{2} \).
+
+The final answer is:
+
+\[
+\boxed{\dfrac{\sqrt{69}}{2}}
+\]<｜end▁of▁sentence｜>

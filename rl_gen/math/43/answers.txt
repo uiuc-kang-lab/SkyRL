@@ -1,0 +1,70 @@
+0
+8.658 \, \text{cm}
+Okay, so I need to find the distance from the apex where a plane parallel to the base should be cut in a quadrilateral pyramid to divide the volume into two equal parts. The base is a right-angled quadrilateral with sides a = 6 cm and b = 8 cm. Each side edge (the edges from the base to the apex) is 12 cm. 
+
+First, I should visualize the pyramid. Since the base is a right-angled quadrilateral, it's essentially a rectangle with sides 6 cm and 8 cm. But wait, no, actually, a right-angled quadrilateral is a rectangle, so the base is a rectangle with sides 6 cm and 8 cm. The apex is directly above the apex of the rectangle, right? Or is it above the center? Hmm, the problem doesn't specify, but I think in a right-angled quadrilateral pyramid, the apex is directly above the right-angled vertex. So, the base is a rectangle with sides 6 cm and 8 cm, and the apex is above the corner where the two sides meet, which are 6 cm and 8 cm.
+
+Wait, actually, no. A right-angled quadrilateral is a rectangle, so the base is a rectangle with sides 6 cm and 8 cm. The apex is above one of the vertices, but since it's a pyramid, it's above the center or one of the vertices? Hmm, maybe I need to clarify. But perhaps it's better to consider the pyramid as a right pyramid, meaning the apex is directly above the center of the base. But since the base is a rectangle, the center would be at (3,4) if we place the base with corners at (0,0), (6,0), (6,8), and (0,8). But the problem says each side edge is 12 cm, so the distance from each base corner to the apex is 12 cm.
+
+So, if I consider the base as a rectangle with corners at (0,0), (6,0), (6,8), and (0,8), and the apex at some point (x,y,z). Since it's a right pyramid, x and y should be the center, so x=3, y=4, and z is the height. But wait, the distance from each base corner to the apex is 12 cm. So, the distance from (0,0,0) to (3,4,z) should be 12 cm. So, using the distance formula: sqrt((3-0)^2 + (4-0)^2 + (z-0)^2) = 12. So, sqrt(9 + 16 + z^2) = 12, which is sqrt(25 + z^2) = 12. Squaring both sides: 25 + z^2 = 144, so z^2 = 119, so z = sqrt(119) ≈ 10.908 cm. 
+
+Wait, but the height of the pyramid is sqrt(119), which is approximately 10.908 cm. But the problem mentions each side edge is 12 cm, so that's correct.
+
+Now, the pyramid has a right-angled base, so the apex is directly above the center of the base. Therefore, the height of the pyramid is sqrt(119). 
+
+Now, the question is to cut the pyramid with a plane parallel to the base at some height h from the apex, such that the two resulting parts have equal volumes. So, the volume above the plane is equal to the volume below the plane.
+
+The volume of a pyramid is (1/3) * base area * height. So, the total volume of the pyramid is (1/3) * (6*8) * sqrt(119) = (1/3)*48*sqrt(119) = 16*sqrt(119).
+
+We need to cut the pyramid at height h from the apex, so the smaller pyramid on top will have height (sqrt(119) - h) from the base. Wait, no, if we cut at height h from the apex, then the smaller pyramid on top will have height h, and the remaining part will have height sqrt(119) - h from the base. But actually, since the plane is parallel to the base, the smaller pyramid is similar to the original pyramid, scaled by a factor.
+
+Wait, no, if we cut at height h from the apex, then the smaller pyramid on top will have height h, and the remaining part will have height sqrt(119) - h from the base. But since the cutting plane is parallel to the base, the smaller pyramid is similar to the original pyramid, scaled by the ratio of their heights. So, the volume of the smaller pyramid is (h / sqrt(119))^3 times the volume of the original pyramid.
+
+But we need the volume of the smaller pyramid to be half of the original volume. So, (h / sqrt(119))^3 = 1/2.
+
+Therefore, h = sqrt(119) * (1/2)^(1/3).
+
+But wait, actually, the volume of the smaller pyramid is (h / H)^3 * V, where H is the height of the original pyramid, and V is its volume. So, we need (h / H)^3 = 1/2, so h = H * (1/2)^(1/3).
+
+Given that H = sqrt(119), so h = sqrt(119) * (1/2)^(1/3).
+
+But the question is asking for the distance from the apex, which is h, so the answer is sqrt(119) * (1/2)^(1/3).
+
+But let me double-check. The volume of the smaller pyramid is (h / H)^3 * V. We need this to be equal to V/2. So, (h / H)^3 = 1/2, so h = H * (1/2)^(1/3).
+
+Yes, that's correct. So, h = sqrt(119) * (1/2)^(1/3).
+
+But let me express this in a cleaner way. (1/2)^(1/3) is equal to 2^(-1/3), so h = sqrt(119) * 2^(-1/3). Alternatively, h = (119)^(1/2) / 2^(1/3).
+
+But perhaps it's better to rationalize it as h = (119)^(1/2) * 2^(-1/3). So, in LaTeX, that would be \boxed{\sqrt{119} \cdot 2^{-1/3}}.
+
+Wait, but let me think again. The height from the apex is h, so the smaller pyramid has height h, and the original pyramid has height H = sqrt(119). So, the ratio is h / H, and the volume ratio is (h / H)^3 = 1/2. So, h = H * (1/2)^(1/3). Yes, that's correct.
+
+Alternatively, we can express it as h = (sqrt(119)) * (1/2)^(1/3). But perhaps it's better to write it as h = (119)^(1/2) * 2^(-1/3).
+
+So, the final answer is \boxed{\sqrt{119} \cdot 2^{-1/3}}.
+
+Wait, but let me check if the volume ratio is correct. The volume of the smaller pyramid is (h / H)^3 * V. We need this to be V/2, so (h / H)^3 = 1/2, so h = H * (1/2)^(1/3). Yes, that's correct.
+
+Alternatively, we can also think in terms of similar pyramids. If we cut the pyramid at height h from the apex, the smaller pyramid has height h, and the remaining part has height H - h. The ratio of similarity is h / H, so the volume ratio is (h / H)^3. So, to get equal volumes, (h / H)^3 = 1/2, so h = H * (1/2)^(1/3).
+
+Yes, that's correct. So, the answer is h = sqrt(119) * (1/2)^(1/3), which is \boxed{\sqrt{119} \cdot 2^{-1/3}}.
+
+But let me check if the height from the base is considered. Wait, no, the problem says "distance from the apex", so it's h from the apex. So, yes, that's correct.
+
+Alternatively, if we consider the height from the base, it would be H - h, but the question is about distance from the apex, so h is correct.
+
+Therefore, the final answer is \boxed{\sqrt{119} \cdot 2^{-1/3}}.
+</think>
+
+To find the distance from the apex where a plane parallel to the base should be cut in a quadrilateral pyramid to divide the volume into two equal parts, we start by noting that the volume of a pyramid is given by \( \frac{1}{3} \times \text{base area} \times \text{height} \). 
+
+Given the base is a right-angled quadrilateral with sides \( a = 6 \, \text{cm} \) and \( b = 8 \, \text{cm} \), the base area is \( 6 \times 8 = 48 \, \text{cm}^2 \). The height of the pyramid, calculated using the side edge length of 12 cm, is found using the distance formula from the apex to a base corner. The height \( H \) is \( \sqrt{119} \, \text{cm} \).
+
+We need to cut the pyramid such that the volumes of the resulting parts are equal. This requires the smaller pyramid on top to have half the volume of the original pyramid. Using the similarity ratio for volumes, we find the height \( h \) from the apex such that \( \left( \frac{h}{H} \right)^3 = \frac{1}{2} \). Solving for \( h \), we get \( h = H \times \left( \frac{1}{2} \right)^{1/3} \).
+
+Thus, the distance from the apex is:
+
+\[
+\boxed{\sqrt{119} \cdot 2^{-1/3}}
+\]<｜end▁of▁sentence｜>

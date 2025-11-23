@@ -1,0 +1,471 @@
+Okay, so I have this problem where Alice has a circuit with n lights and 2n switches. Each light is connected to exactly two switches, and each switch is connected to exactly one light. The key points are that when all switches are off, all lights are off, and toggling a switch flips the connected light. 
+
+The problem is to find the minimum and maximum number of lights that can be turned on, given the initial states of the switches. 
+
+Hmm, let's break this down. 
+
+First, the structure of the circuit: each light is connected to two switches. So, the switches are connected in a way that each light has two switches. But since each switch is connected to exactly one light, the connections form a bipartite graph. Wait, no, more precisely, each light is connected to two switches, and each switch is connected to one light. So, the switches form a graph where each node has exactly one outgoing edge, meaning the switches form a collection of cycles. But since each light is connected to two switches, each light is part of a cycle. So the graph is a collection of cycles, each of even length, because each light has two connections. 
+
+Wait, no. Let's think: each light is connected to two switches. So, for each light, there are two switches that are connected to it. So the switches form a graph where each switch is connected to exactly one light. So the switches can form cycles. For example, a cycle of length 2 would mean two switches connected to two lights, each connected to a switch. Wait, no, perhaps I'm getting this wrong. 
+
+Wait, each switch is connected to exactly one light, and each light is connected to exactly two switches. So the switches form a graph where each switch is connected to exactly one light, and each light is connected to exactly two switches. So the switches form a directed graph, but I think in this case, since each switch is connected to exactly one light, the connections are one-way. For example, switch 1 is connected to light A, switch 2 is connected to light A, switch 3 to light B, etc. So the switches form a graph where each node has exactly one outgoing edge (since each switch is connected to exactly one light), but the in-degree varies. 
+
+Wait, no. Each switch is connected to exactly one light. So each switch has exactly one outgoing edge, but the incoming edges can vary. So, the switches form a functional graph, where each node has exactly one outgoing edge. So the entire graph is made up of cycles and trees leading into the cycles. 
+
+So for the problem, the structure is such that the switches form a graph where each switch has exactly one outgoing connection (to a light), and each light is the target of exactly two switches. So each light is connected to exactly two switches. So the switches form a graph where each node (switch) points to exactly one other node (light). So, the entire structure is a collection of cycles, each of even length, because each light is connected to two switches. Wait, no. Because each light is connected to two switches, which implies that each light has an in-degree of two. So the switches form a functional graph where each node has exactly one outgoing edge, and each node (light) has in-degree two. 
+
+So, the structure is a directed graph where each switch points to a light, and each light is pointed to by exactly two switches. So, the switches form a graph where each switch points to exactly one light, and the in-degree of each light is two. 
+
+So, the graph consists of cycles, because each switch points to another switch or a light. Wait, no, because each switch is connected to exactly one light. So the switches point to lights, not to other switches. So, the graph is a collection of nodes (switches) where each node has exactly one outgoing edge (to a light). So, the graph is a collection of cycles and trees directed towards the cycles. 
+
+Wait, perhaps I should model the switches and their connections. Let me think: the switches are a list of 2n elements. Each switch is connected to exactly one light. So, for each switch i, it's connected to some light j. So, the connections can be represented as a function f: S → L, where S is the set of switches and L is the set of lights. 
+
+So, each light j is connected to exactly two switches. So, the function f must be such that each j is in the image of exactly two different f^{-1}(j) elements. So, for each j, there are exactly two s in S such that f(s) = j. 
+
+So, the switches form a mapping to lights, and each light is mapped to by exactly two switches. 
+
+So, the problem can be modeled as a bipartite graph between switches and lights, where each light is connected to exactly two switches, and each switch is connected to exactly one light. 
+
+Wait, no. Because the switches are the source, and each has exactly one outgoing edge. So, the switches form a functional graph, where each node has exactly one outgoing edge. The in-degree of each node (light) is two. 
+
+So, the graph is such that each node (light) has in-degree two, and each node (switch) has out-degree one. 
+
+So, the structure is a collection of cycles, each of even length. Because each node has in-degree two, which implies that the in-degree is even, but since each node's in-degree is two, the graph must consist of cycles of even length. Wait, no. For example, a cycle of length 2 would have each node in-degree 1, which is not the case here. So maybe I'm getting this wrong. 
+
+Wait, in-degree is the number of incoming edges. Each light is connected to exactly two switches, so the in-degree is two for each light. So, the graph must be such that each light has exactly two incoming edges. So, each light has in-degree two. So, the graph is a collection of components where each component is a cycle of even length. Because a cycle of length k must have each node's in-degree equal to the number of incoming edges, which for a cycle is 1 per node. Wait, no. That's not right. 
+
+Wait, in a cycle of length k, each node has exactly one incoming edge and one outgoing edge. So, the in-degree of each node is one. But in our case, each node has in-degree two. So, that's a contradiction. So, I must have made a mistake.
+
+Wait, this is confusing. Let me re-express the problem. 
+
+Each switch is connected to exactly one light. So, for each switch i, there exists a light j such that switch i is connected to light j. So, the switches form a mapping from S to L, where S is the set of switches and L is the set of lights. 
+
+Each light is connected to exactly two switches. So, for each light j, there are exactly two switches i and k such that switch i is connected to j and switch k is connected to j. 
+
+So, the switches are connected to exactly two switches per light, and each switch is connected to exactly one light. 
+
+So, the structure is such that the switches form a bipartite graph between S and L, where each light is connected to exactly two switches, and each switch is connected to exactly one light. 
+
+Wait, no. Because the switches are connected to lights, but each switch is connected to exactly one light. So, the bipartite graph is between switches and lights, with switches on one side, lights on the other. Each switch has exactly one edge (connected to one light), and each light has exactly two edges (connected to two switches). 
+
+So, the bipartite graph is a bipartition S and L, with S having 2n nodes, L having n nodes (since 2n switches and n lights, each light connected to two switches). 
+
+So, the bipartite graph is such that each node in S has degree 1, and each node in L has degree 2. 
+
+So, the graph is a collection of edges from S to L, with each L node having exactly two edges. So, the bipartite graph is a collection of cycles, but since each S node has exactly one edge, the cycles must be of even length. Because each S node has exactly one outgoing edge (to a L node), and the L nodes have two incoming edges. So, the cycles in this bipartite graph must have even length. 
+
+For example, a cycle could be S1 → L1 → S2 → L2 → S1, which is a cycle of length 4. Or a cycle could be S1 → L1 → S2 → L1, but that's not possible because L1 can't have two edges. So, the cycles must be even length. 
+
+So, the graph is made up of cycles of even length. 
+
+So, the structure is that the switches form a graph where each switch points to exactly one light, and each light is pointed to by exactly two switches. So, the graph is a collection of cycles, each of even length. 
+
+So, to model this, we can think of the switches as a graph where each switch points to a light, and the lights form a graph where each light has exactly two incoming edges. 
+
+So, the problem reduces to considering the bipartite graph between S and L, where each S node has degree 1, and each L node has degree 2. 
+
+Our task is, given the initial state of the switches (a_1, a_2, ..., a_{2n}), to find the minimum and maximum number of lights that can be turned on, given that toggling a switch flips its state and the connected light's state. 
+
+Hmm, so the initial state is a vector a of length 2n, each element 0 or 1. We can toggle switches, each toggle flips the state of the connected light. 
+
+The goal is to find the minimal and maximal number of lights that can be on after any number of toggles. 
+
+So, the initial state is a vector, and each toggle is a vector that has exactly two 1's (the two switches being toggled), and all other 0's. 
+
+Wait, no. Because each switch is connected to exactly one light, so toggling a switch will flip the state of exactly one light. So, each toggle is a vector that has exactly one 1 in the position corresponding to the switch, and 0 elsewhere. 
+
+Wait, that's correct. Each switch is a node in the bipartition S, and the edges connect S to L. So, each toggle of a switch affects exactly one light. 
+
+So, the problem is to find, given the initial state a, the possible final states after any number of toggle operations, and from that, find the minimal and maximal number of lights on. 
+
+But wait, the toggles are not arbitrary. Each toggle is a switch, and each toggle is a vector with exactly one 1 (the switch's position in the a array). So, the possible operations are the vectors e_i, where e_i is a vector with 1 in position i and 0 elsewhere. 
+
+So, the problem is similar to a linear algebra problem over the field GF(2). Each toggle is adding (XORing) a basis vector e_i to the current state. 
+
+So, the possible reachable states are the initial state plus any linear combination of the e_i's. But since each e_i is a basis vector, the reachable states form a subspace. 
+
+Wait, but each e_i is a vector with exactly one 1. So, the set of all possible toggle combinations is the set of all possible subsets of the switches. Because any subset of switches can be toggled, and each toggle affects exactly one light. 
+
+Wait, but no. Because each toggle is a switch, and toggling a switch affects exactly one light. So, the effect is that each toggle is adding a basis vector e_i to the current state. So, the possible reachable states are the initial state plus any subset of the e_i's, since each toggle is adding e_i. 
+
+So, the set of all possible reachable states is the initial state XORed with any subset of the e_i's (since toggling a subset S is equivalent to adding the sum (XOR) of e_i for i in S). 
+
+Wait, not exactly. Because toggling a switch is equivalent to flipping the state of the connected light. So, each toggle is adding a vector with exactly one 1. So, the reachable states are the initial state plus any possible sum of these vectors. 
+
+So, the problem reduces to finding, for the initial state a, the possible a' such that a' is equal to a XOR x, where x is a vector consisting of a subset of the e_i's. 
+
+So, the minimal number of lights on is the minimal weight of such a' (number of 1's), and the maximal is the maximal weight. 
+
+Wait, but the minimal and maximal number of lights on is the minimal and maximal number of 1's in a'. 
+
+So, the problem is to find the minimal and maximal number of 1's in a' = a XOR x, where x is a subset of the e_i's. 
+
+But x is any subset, so x can be any combination of the e_i's. So, a' can be any state that differs from a in an even number of positions? Or not? Wait, no. Because each toggle changes exactly one bit. So, each toggle changes exactly one bit. So, each x is a vector with exactly k 1's, where k is the number of toggles. 
+
+Wait, no. Each toggle is a vector with exactly one 1. So, x is the sum (XOR) of k such vectors. So, x can have any number of 1's, but it's possible that some bits are flipped multiple times. 
+
+Wait, no. Because each toggle is adding a unique e_i. So, x is the sum of a subset of the e_i's. So, x is a vector where each position is 1 if the switch is toggled an odd number of times. 
+
+So, the problem is, given a, find the minimal and maximal number of 1's in a XOR x, where x is a vector with any subset of the e_i's (i.e., x can be any vector where each position is 0 or 1, but we can choose any subset of the e_i's to add). 
+
+Wait, but each toggle is adding a unique e_i. So, x is the sum (XOR) of any subset of the e_i's. So, x can be any vector in the vector space generated by the e_i's. 
+
+But since each e_i is a basis vector, the sum of any subset of them is a unique vector. So, the possible x's are all possible subsets, each of which is a vector that has exactly k 1's, where k is the number of toggles. 
+
+So, the problem is to find the minimal and maximal number of 1's in a XOR x, where x is any subset of the e_i's. 
+
+Wait, but the e_i's are the switches themselves. So, toggling a subset of the switches S is equivalent to adding (XORing) the sum of e_i for i in S. So, x is the sum of e_i for i in S. 
+
+So, the problem reduces to: find the minimal and maximal possible weight (number of 1's) of a XOR x, where x is any subset of the e_i's (i.e., x is any sum of a subset of the e_i's). 
+
+So, the minimal number of lights on is the minimal Hamming distance between a and any a XOR x, which is the minimal weight of x such that a XOR x has as few 1's as possible. Similarly for the maximal. 
+
+But wait, since x can be any subset, including the empty set (which leaves a as is), the minimal number of lights on is min(a's weight, and a's weight - 2k, etc., where k is the number of toggles). Wait, no. Because x is the sum of some subset of the e_i's. So, the Hamming weight of a XOR x is the number of positions where a and x differ. 
+
+So, the minimal number of lights on is the minimal number of 1's in a XOR x, where x is any subset of the e_i's. Similarly for the maximum. 
+
+So, the problem is to find the minimal and maximal possible weight of a XOR x, where x is any subset of the e_i's. 
+
+Wait, but x can be any subset, so the minimal weight is 0 (if x is a XOR a, which is 0) and the maximum is 2n (if x is all 1's, but that's not possible because x is a subset of the e_i's, which are n switches). Wait, no, x is a subset of the e_i's, which are n switches. So, x can have at most n 1's. 
+
+So, the minimal number of lights on is the minimal number of 1's in a XOR x, where x is any subset of the e_i's. And the maximum is the maximal number of 1's in a XOR x, which is 2n - (number of 1's in a) + (number of 1's in x). Wait, no. 
+
+Wait, a XOR x is a vector where each bit is a_i XOR x_i. So, the number of 1's is the number of positions where a_i != x_i. 
+
+So, to minimize the number of 1's, we want as many positions as possible where a_i == x_i. So, x should agree with a as much as possible. 
+
+But x is a subset of the e_i's, which are the switches. So, for each e_i, x can choose to include it or not. So, x is a vector that has 1's only at some of the e_i's. 
+
+So, to find the minimal number of lights on, we need to find a subset S of the e_i's such that the number of positions where a_i != x_i is minimized. 
+
+Wait, but x is the sum (XOR) of the e_i's in S. So, x_i is 1 if and only if the number of times e_i is toggled is odd. But since each toggle is a single e_i, x_i is 1 if e_i is in S, 0 otherwise. 
+
+So, x is a vector where each position is 1 if e_i is in S, else 0. 
+
+So, the number of 1's in a XOR x is the number of positions where a_i is 0 and S includes e_i, plus the number of positions where a_i is 1 and S doesn't include e_i. 
+
+So, the problem is to find a subset S of the e_i's (each e_i is a switch, so each is a unique index) such that the number of 1's in a XOR x is minimized or maximized. 
+
+So, the minimal number of lights on is the minimal value of (number of e_i in S where a_i is 0) + (number of e_i not in S where a_i is 1). 
+
+Which can be rewritten as (count_0_in_S) + (count_1_not_in_S). 
+
+Which is equal to (total_0_in_a) - count_0_in_S + (total_1 - count_1_in_S). 
+
+Because count_1_not_in_S is total_1 minus the number of 1's in S. 
+
+So, total_0_in_a is the number of a_i's that are 0. Let's call this c0. 
+
+So, the expression becomes c0 - count_0_in_S + (n - count_1_in_S). 
+
+Which simplifies to c0 + n - (count_0_in_S + count_1_in_S). 
+
+But count_0_in_S is the number of e_i in S where a_i is 0. Similarly, count_1_in_S is the number of e_i in S where a_i is 1. 
+
+So, count_0_in_S + count_1_in_S is the size of S. 
+
+So, the expression becomes c0 + n - |S|. 
+
+So, to minimize the number of 1's in a XOR x, we need to minimize (c0 + n - |S|). Because the minimal value is when (c0 + n - |S|) is as small as possible. 
+
+Wait, because the expression is c0 +n - |S|. So, to minimize this, we need to maximize |S|. Because the more switches we include in S, the larger |S| is, so the smaller the result. 
+
+But |S| can be at most n, since there are n switches. So, the minimal number of 1's is c0 +n -n = c0. 
+
+Wait, that can't be right. Because when S is empty, the number of 1's is the number of positions where a_i is 1, which is the initial number of lights on. 
+
+Wait, wait, let's re-calculate. 
+
+The number of 1's in a XOR x is: 
+
+number of positions where a_i is 0 and x_i is 1, plus the number of positions where a_i is 1 and x_i is 0. 
+
+x_i is 1 if e_i is in S. 
+
+So, the number of 1's in a XOR x is: 
+
+sum_{i: a_i=0} (x_i=1) + sum_{i: a_i=1} (x_i=0) 
+
+= sum_{i in S} (a_i == 0) + sum_{i not in S} (a_i == 1) 
+
+= (number of e_i in S where a_i=0) + (number of e_i not in S where a_i=1) 
+
+= (|S ∩ {i | a_i=0}|) + (|{i | a_i=1} \ S|) 
+
+Let me denote the number of a_i=0 as c0 and the number of a_i=1 as c1. So, c0 + c1 = n. 
+
+So, the expression is: |S ∩ zeros| + |ones \ S| 
+
+= (number of zeros in S) + (number of ones not in S) 
+
+= (total_zeros_in_S) + (total_ones - total_ones_in_S) 
+
+= (total_zeros_in_S) + (c1 - total_ones_in_S) 
+
+= (total_zeros_in_S) + c1 - |S| 
+
+Because total_ones_in_S is the number of ones in S. 
+
+Wait, because S is a subset of the e_i's. So, the total_ones_in_S is the number of e_i's in S that have a_i=1. 
+
+So, the expression becomes (number of zeros in S) + (c1 - number of ones in S). 
+
+Which is equal to (c0 - number of ones in S) + (c1 - number of ones in S) 
+
+= c0 + c1 - 2 * number of ones in S 
+
+= n - 2 * |S ∩ ones| 
+
+So, the number of 1's in a XOR x is n - 2 * |S ∩ ones|. 
+
+So, to minimize this, we need to maximize |S ∩ ones|. Because that term is subtracted. 
+
+The maximum possible |S ∩ ones| is the minimum of |S| and c1. Because S can't have more ones than there are in the array. 
+
+Wait, no. Because S is a subset of the e_i's, which are all possible switches. So, S can have any size, but the ones in S can't exceed c1. 
+
+So, the maximum possible |S ∩ ones| is min(|S|, c1). 
+
+So, the minimal number of 1's is n - 2 * min(|S|, c1). 
+
+Wait, but |S| can be as large as n. So, for example, if S includes all the ones, then |S ∩ ones| is c1. So, the minimal number of 1's is n - 2 * c1. 
+
+But wait, that can't be right because n - 2*c1 can be negative. 
+
+Wait, perhaps I'm getting this wrong. Let's think again. 
+
+The number of 1's is n - 2 * |S ∩ ones|. So, to minimize this, we need to maximize |S ∩ ones|. 
+
+So, the maximum possible |S ∩ ones| is min(|S|, c1). 
+
+So, the minimal number of 1's is n - 2 * min(|S|, c1). 
+
+But |S| can be as large as n, but also as small as zero. 
+
+So, the minimal possible value is when |S ∩ ones| is as large as possible. 
+
+So, to find the minimal number of 1's, we need to choose S such that |S ∩ ones| is as large as possible. 
+
+So, the maximum possible |S ∩ ones| is min(|S|, c1). 
+
+So, the minimal number of 1's is n - 2 * min(|S|, c1). 
+
+Wait, but |S| can vary. So, to minimize the number of 1's, we need to choose S such that |S ∩ ones| is as large as possible. So, if c1 is larger than n, then the maximum |S ∩ ones| is n. So, the minimal number of 1's is n - 2*n = -n, which is impossible. So, that can't be right. So, perhaps I made a mistake in the derivation. 
+
+Alternatively, perhaps I should approach this problem differently. 
+
+Let me think about the minimal and maximal number of lights that can be on. 
+
+The minimal number of lights on is the minimal possible number of 1's in a XOR x, where x is any subset of the e_i's. 
+
+The maximal is the maximal possible number of 1's in a XOR x. 
+
+So, the minimal is the minimal number of 1's in a XOR x, and the maximal is the maximal. 
+
+So, how to find these? 
+
+Let me think about the minimal case. 
+
+The minimal number of 1's is the minimal number of bits that need to be flipped to turn on the lights. But since x is a subset of the e_i's, each x can flip certain bits. 
+
+Wait, but x is the sum of e_i's in S. So, each e_i is a vector with a single 1. So, x is the sum of e_i's in S, which is equivalent to a vector where the 1's are exactly the elements of S. 
+
+So, the number of 1's in x is the size of S. 
+
+So, the number of 1's in a XOR x is the number of positions where a_i is 0 and x_i is 1, plus the number of positions where a_i is 1 and x_i is 0. 
+
+So, let's denote:
+
+- c0 = number of a_i = 0.
+
+- c1 = number of a_i = 1.
+
+Then, the number of 1's in a XOR x is:
+
+count_0_x = number of a_i=0 where x_i=1.
+
+count_1_x_not = number of a_i=1 where x_i=0.
+
+So, total = count_0_x + count_1_x_not.
+
+We can express this as:
+
+count_0_x = (number of a_i=0 and x_i=1) = (number of a_i=0 in S) = zeros_in_S.
+
+count_1_x_not = (number of a_i=1 and x_i=0) = (number of a_i=1 not in S) = ones_not_in_S.
+
+So, total = zeros_in_S + ones_not_in_S.
+
+Which is equal to (zeros_in_S) + (c1 - ones_in_S).
+
+Since ones_in_S is the number of e_i in S where a_i=1.
+
+So, total = zeros_in_S + c1 - ones_in_S.
+
+But zeros_in_S + ones_in_S is the size of S, which is |S|.
+
+So, total = (c0 - ones_in_S) + c1 - ones_in_S 
+
+= c0 + c1 - 2 * ones_in_S 
+
+= n - 2 * ones_in_S.
+
+Because c0 + c1 = n.
+
+So, the number of 1's in a XOR x is n - 2 * (number of 1's in S).
+
+So, to minimize this, we need to maximize the number of 1's in S, because that's multiplied by -2, so larger values make the total smaller.
+
+The maximum number of 1's in S is min(|S|, c1).
+
+So, the minimal total is n - 2 * (min(|S|, c1)).
+
+Wait, but |S| can be as large as n. So, if c1 >= n, then the maximum is n. So, the minimal is n - 2 *n = -n, which is impossible. So, that suggests that the minimal can't be negative. 
+
+Wait, that's a problem. So, perhaps I'm miscalculating. 
+
+Wait, n is the total number of lights. So, the minimal number of 1's can't be negative. So, the minimal is max(0, n - 2 * min(|S|, c1)).
+
+Wait, not sure. Let's think differently. 
+
+The minimal number of 1's is the minimal possible value of n - 2 * k, where k is the number of 1's in S. 
+
+So, the minimal occurs when k is as large as possible. 
+
+So, the minimal is n - 2 * c1, but only if c1 <= n. 
+
+Wait, but c1 is the number of 1's in the initial a array, which is <=n. So, for example, if c1 is 3, then the minimal is n - 2*3. 
+
+Wait, but n can be 50, so 50 -6=44. So, 44 is possible? That seems possible.
+
+Wait, for example, if c1 is 3 and n is 50, then the minimal is 50-6=44. 
+
+So, the minimal is max(0, n - 2*c1). 
+
+Wait, no, because when c1 is 3, the maximum k is 3, so minimal is 50 - 2*3=44. 
+
+Yes. 
+
+So, the minimal number of 1's is max(0, n - 2 * c1).
+
+Wait, but wait, that's not correct. Because in the case where c1 is 3, you can choose S to be any subset of the e_i's, but the maximum number of 1's in S is 3. So, the minimal is 50 - 6 = 44. 
+
+So, that's the minimal. 
+
+So, for the minimal, it's max(0, n - 2*c1). 
+
+Wait, but what if n is 50 and c1 is 30. Then, n - 2*c1 is 50-60= -10. So, the minimal is 0. 
+
+So, that's correct. 
+
+So, the minimal is max(0, n - 2*c1). 
+
+Wait, no, because if n is 50 and c1 is 20, then 50-40=10. So, the minimal is 10. 
+
+Yes. 
+
+So, the minimal is max(0, n - 2*c1). 
+
+Wait, but what about when c1 is 0? Then, the minimal is 0. Which makes sense, because all lights are off, so no toggles are needed. 
+
+So, that formula seems to hold. 
+
+Now, for the maximal number of 1's. 
+
+The maximal number of 1's is the maximum possible value of n - 2*k, where k is the number of 1's in S. 
+
+Wait, because the number of 1's in a XOR x is n - 2*k. So, to maximize this, we need to minimize k. 
+
+The minimal k is 0 (empty set). So, the maximal number of 1's is n. 
+
+Wait, but that can't be right, because the initial a array is a certain configuration. 
+
+Wait, no. Because when x is empty (no toggles), the number of 1's is the initial c1. So, if c1 is 0, then the number of 1's is 0. So, the maximal can't be higher than c1. 
+
+Wait, no. Because the x can include some toggles. 
+
+Wait, the maximal number of 1's is the maximum possible n - 2*k, where k is the number of 1's in S. 
+
+So, to maximize this, we need to minimize k. So, the minimal k is 0. So, the maximal is n. 
+
+But wait, that's only possible if the initial a array has all 0's. 
+
+Wait, no. Because if a is already all 0's, then the number of 1's is 0. So, the maximal is 0. 
+
+Wait, I'm getting confused. Let's think again. 
+
+The number of 1's in a XOR x is n - 2*k, where k is the number of 1's in S. 
+
+We want to maximize this value. 
+
+So, to maximize n - 2*k, we need to minimize k. 
+
+The minimal k is 0, which can be achieved by choosing S as empty. So, the maximum is n. 
+
+But that's only possible if x is empty, which means no toggles are done. So, the number of 1's is c1. 
+
+Wait, so I'm getting conflicting conclusions. 
+
+Wait, perhaps I should model the problem differently. 
+
+Let me think about the problem as follows: 
+
+Each toggle is a subset S of the switches. So, each S defines x as the sum (XOR) of e_i for i in S. 
+
+The number of 1's in a XOR x is n - 2 * k, where k is the number of 1's in S. 
+
+So, the problem is to find the minimal and maximal possible n - 2*k, where k is the number of 1's in S, and S is any subset of the e_i's. 
+
+Wait, no. Because x is the sum of e_i's in S, which is a vector with 1's exactly at the positions of S. So, the number of 1's in x is |S|. 
+
+So, the number of 1's in a XOR x is (number of 0's in a with x's 1's) + (number of 1's in a with x's 0's). 
+
+Which is equal to (c0 - x_0_count) + (c1 - x_1_count). 
+
+Wait, no. Because x_0_count is the number of positions where x is 0, which is (n - |S|). 
+
+So, the number of 0's in a is c0, so the number of 0's in a where x is 1 is (c0 - x_0_count). Because x is 1 in |S| positions. 
+
+Similarly, the number of 1's in a where x is 0 is (c1 - x_1_count), because x is 0 in (n - |S|) positions. 
+
+So, the total number of 1's in a XOR x is (c0 - (n - |S|)) ) + (c1 - (|S| - c0)). 
+
+Wait, no. Let me re-calculate. 
+
+The number of 0's in a where x is 1 is (c0 - (number of 0's in a where x is 1)). 
+
+Wait, perhaps this approach is getting too complicated. 
+
+Let me think about the problem as a graph. Each state is a possible vector x, which is a subset of the e_i's. For each x, the number of 1's is n - 2*k, where k is the number of 1's in x. 
+
+Wait, no. Because x is the sum of e_i's in x. So, x has 1's exactly at the positions of x. So, the number of 1's is the size of x. 
+
+So, the number of 1's in a XOR x is (c0 - x_0_count) + (c1 - x_1_count). 
+
+Because x_0_count is the number of 0's in x, which is n - |x|. 
+
+So, the number of 0's in a where x is 1 is (c0 - (n - |x|)).
+
+The number of 1's in a where x is 0 is (c1 - (|x| - c0)).
+
+Wait, this is getting too tangled. 
+
+Let me think differently. 
+
+The number of 1's in a XOR x is the number of positions where a_i != x_i. 
+
+Which can be written as: 
+
+sum_{i=1 to n} (a_i != x_i) 
+
+Which is equal to sum_{i: a_i=0} (x_i=1) + sum_{i: a_i=1} (x_i=0). 
+
+Let me denote:
+
+z = number of 0's in a, which is c0.
+
+w = number of 1's in a, which is c1.
+
+The number of 1's in a XOR x is: 
+
+sum_{x_i=1, a_i=0} 1 + sum_{x_i=0, a

@@ -1,0 +1,607 @@
+0
+Okay, I need to solve this problem where I have two screens, each displaying a sequence of uppercase letters. Initially, both are empty. Each second, I can perform one of two actions: either append a character to one of the screens, or copy the entire content of one screen to the other. My goal is to find the minimum number of seconds needed to make the first screen show s and the second show t.
+
+Hmm, so for each test case, given s and t, I need to compute the minimal steps.
+
+Let me think about the possible approaches.
+
+First, I should consider the problem in terms of how the operations affect the sequences. Each append operation increases the length of a screen by one, and each copy operation copies the entire content of one screen to the other, which can be of varying lengths.
+
+The key is to find a way to merge s and t in the least number of steps. Maybe the problem can be broken down by considering the maximum of the two lengths, but I'm not sure yet.
+
+Wait, let's think about the operations. Appending is straightforward; each append takes 1 second. Copying is more efficient when one of the screens is longer because it can copy the entire content, which might be longer than appending all the way.
+
+But wait, no—because when you copy, you can only copy the content of one screen to the other. So if screen A is longer than screen B, you can copy B to A, but it's not necessarily beneficial unless s or t is a multiple of the other.
+
+Wait, perhaps the problem can be approached by considering the maximum of the lengths of s and t. Because for example, if one string is longer than the other, say s is longer, then you might need to append the remaining characters of s after copying t multiple times.
+
+But that's not necessarily optimal. Let me think of an example.
+
+Suppose s is 'abc' and t is 'abcd'. So s is length 3, t is 4. So if I copy t to s, s becomes 'abcd' in one operation. Then I have to append the remaining character of t, which is 'd'—but wait, t is already longer. Wait, no: in this case, s is 'abc' and t is 'abcd'—so I can copy t to s, which would make s = 'abcd' in one step. Then, I can append 'd' to t—but wait, no, because t is already longer, and I can't append to t. I have to append to the existing screens. So after t is already 'abcd', I can't append to it. So then I have to append the remaining character of s (but s is already done). Wait, no, s is already done. So the total steps would be 1 (copy) + 0 (since t is already done), but wait, no: the initial state is both empty.
+
+Wait, let's think again. Initially, both are empty. So to make s be 'abcd' and t be 'abcd', I can copy t to s, which takes 1 second (since t is 4 letters, s becomes 'abcd'). Then, I have to make t display 'abcd'—but since t is already done, I don't need to do anything. So the total time is 1 second.
+
+But in this case, the maximum length is 4, but only one copy is needed.
+
+Wait, but what about when both strings are of similar lengths. Like s is 'ab' and t is 'ab'. Then the minimal steps would be zero, since both are empty and we can do nothing. But if s is 'a' and t is 'b', then we have to do two operations: append a to s, copy a to t, then append b to t. Wait, no. Let's see: initial state is both empty. To make s 'a' and t 'b', the steps would be:
+
+1. Append a to s (s is 'a', t is empty).
+2. Copy a to t (t is 'a').
+3. Append b to t (t becomes 'ab').
+
+So that's 3 steps. But wait, another approach is to first copy a to s, then append b to t. But that's 2 steps.
+
+Wait, no. Let's see:
+
+Option 1:
+
+- Step 1: Append a to s → s is 'a', t is empty.
+- Step 2: Copy a to t → t is 'a'.
+- Step 3: Append b to t → t is 'ab'. So 3 steps.
+
+Option 2:
+
+- Step 1: Copy a to t → t is 'a'.
+- Step 2: Append b to t → t is 'ab'.
+- Then, s is 'a', t is 'ab' → but the desired is s='a' and t='b'. So this approach doesn't work.
+
+Alternatively:
+
+Wait, maybe another approach. After step 1, s has 'a', t is empty. Then step 2, copy s to t. So t becomes 'a', and s is empty. Then step 3, append b to t. So t becomes 'ab' and s is empty. That's 3 steps as well.
+
+So both approaches take 3 steps, but perhaps the minimal is 3 steps.
+
+Wait, but another approach: step 1: copy t to s? No, because t is empty. So that's not possible.
+
+Hmm, so for s='a' and t='b', the minimal steps are 3.
+
+So the initial approach of considering the maximum length and how to copy and append is important.
+
+But how do I model this in a general way?
+
+I think I need to find a way to model the process step by step, considering the best way to copy and append to minimize the total time.
+
+Let me think about the problem as a state where at each step, I can choose to append to a screen or copy one screen to another.
+
+The initial state is (empty, empty).
+
+The goal is to reach (s, t).
+
+We need to find the minimal number of steps to reach this state.
+
+This seems like a BFS problem, where each state is a tuple (a, b), representing the current sequences in screen 1 and screen 2. The transitions are the possible operations, and the steps are the transitions.
+
+But considering that s and t can be up to 100 characters each, the number of possible states is (100+100) * (100+100) = 40000, which is manageable? Because for each state, each transition can be considered, and with BFS, we can find the minimal steps.
+
+Wait, but 40000 is manageable, but perhaps there's a smarter way.
+
+Wait, but 40000 is for each possible (a, b), but for each state, the number of possible next states can be up to 2 (append to each screen, or copy each screen to the other). So for each state, the next states are 4 possibilities (but maybe some are duplicates).
+
+But 40000 is manageable for BFS, given that q is up to 500.
+
+So perhaps for each test case, perform a BFS starting from (empty, empty), and find the minimal steps to reach (s, t).
+
+But wait, what about the maximum possible steps? For s=100 and t=100, the worst case is 200 steps (each time appending to one of the screens). So BFS would be feasible.
+
+So the plan is: for each test case, model the problem as a BFS, where each state is (a, b), and the transitions are appending or copying. The goal is to reach (s, t) with minimal steps.
+
+But wait, wait—this approach might not be efficient because the state space is quite large. For example, if s and t are 100 each, the state is 100+100=200, so 200*200=40000 possible states. For each state, there are 4 possible transitions (append to a, append to b, copy a to b, copy b to a). So total transitions are 4 * 40000 = 160000 per test case, and for 500 test cases, 80 million transitions. That's a lot, but perhaps manageable.
+
+But perhaps we can optimize the BFS by using a visited structure to keep track of the minimal steps to reach each state. This way, once a state is visited, we don't process it again.
+
+So, let's outline the steps:
+
+For each test case:
+
+- Initialize a queue with the initial state (empty string, empty string), and 0 steps.
+- Use a dictionary or a 2D array to keep track of the minimal steps to reach each state (a, b).
+- For each state dequeued, consider all possible transitions (append to a, append to b, copy a to b, copy b to a).
+- For each new state, if it's not been visited before, enqueue it with the incremented step count.
+- If the new state is (s, t), return the current step count + 1.
+
+Wait, but the initial state is (empty, empty). So for each step, we can choose to append to either a or b, or copy a to b, or copy b to a.
+
+Wait, but in that case, for each state (a, b), we can generate the next states as follows:
+
+Appending to a: a becomes a + a_char, and the new state is (a + a_char, b).
+Appending to b: b becomes b + b_char, new state is (a, b + b_char).
+Copying a to b: new state is (a, b + a).
+Copying b to a: new state is (a + b, b).
+
+Wait, no. Wait, when you copy a to b, the new b is a + b. So the new state is (a, a + b). Similarly, copying b to a results in a + b.
+
+So for each state (a, b), the possible next states are:
+
+1. Append to a: (a + c, b), where c is any character.
+2. Append to b: (a, b + c).
+3. Copy a to b: (a, a + b).
+4. Copy b to a: (a + b, b).
+
+Each of these is a possible transition, but since we're looking for the minimal steps, for each state, we can generate these four possibilities.
+
+But in the BFS, we can process each possible transition, and keep track of the minimal steps to reach each state.
+
+So the algorithm is:
+
+Initialize a queue with ( (empty string, empty string), 0 steps).
+
+Create a dictionary to store the minimal steps for each state. Initialize all as -1, except the initial state which is 0.
+
+While the queue is not empty:
+
+- Dequeue the current state and its step count.
+- If current state is (s, t), return step count.
+- For each possible operation (append a, append b, copy a to b, copy b to a):
+   - Compute the new state.
+   - If the new state hasn't been visited yet (or has a higher step count), enqueue it with step + 1, and update the visited dictionary.
+
+But wait, appending a can be any character, not just one. So in this model, appending to a or b is a choice that can be any character each time. So in reality, appending a character is a step, but we don't know which character to choose. So the BFS approach as described would not actually model that. Because in the BFS, appending a is a forced choice, but in reality, we can choose any character to append each step, which would make the BFS potentially very slow because for each state, there are 26 possible options.
+
+Wait, that's a problem. Because the BFS approach as described would consider only one possible transition (appending to a or b), not all possible choices. So it's not working, because for each state, there are 26 possible characters to append, leading to multiple possibilities.
+
+So, for example, in each step, appending a character can lead to 26 different next states for each current state.
+
+But this would make the BFS approach impossible because it would have to explore 26 possibilities for each state, leading to a huge number of states.
+
+So I need a different approach.
+
+Hmm. Let me think differently. Maybe the problem can be modeled as a graph, where each node is a state (s, t), and edges represent the possible operations. But the number of edges per node is 4 (as before), but each edge could have multiple possible transitions (like 26 for appending). But in practice, the BFS with such a model is not feasible.
+
+Wait, perhaps another approach is needed. Let's think about the problem in terms of the minimal steps required, considering the optimal way to perform the operations.
+
+Let me think about the problem as the sum of the maximum of the lengths of the two strings, plus some other factors.
+
+Wait, for example, if one string is longer than the other, the minimal steps would be the length of the longer string plus the length of the shorter string minus the length of the shorter string (because we can copy the shorter string into the longer one in one step, then we just need to append the remaining characters of the longer one).
+
+Wait, that's an interesting idea. Let me test this.
+
+Suppose s is length m, t is length n.
+
+Case 1: m == n. Then, the minimal steps are 2 * m, but wait no: for m=3, s is 'abc' and t is 'abc', then the steps are 3 (copy each step), but wait, no. Wait, initial state is empty. So:
+
+- Copy a to b: s becomes 'a', t is 'a' → step 1.
+- Copy a to b: s becomes 'aa', t is 'aa' → step 2.
+- Copy a to b: s becomes 'aaa', t is 'aaa' → step 3.
+Wait, but that's 3 steps, which is equal to m steps.
+
+Alternatively, after steps 1, 2, 3, it's done. So for m=3, steps are 3.
+
+But if m is 100, then steps would be 100. But that's the same as appending each character. So the initial idea may not hold.
+
+Wait, no. Let me think again. For m=100, s is 'a'*100, t is 'a'*100. The minimal steps would be 100 steps, each appending a to s.
+
+But in reality, if I copy s to t, that would take 1 step, then I just need to append 99 more characters to t, for a total of 100 steps. So that's the same as the appending approach.
+
+So in that case, the minimal steps are the same as appending each character.
+
+So the initial idea might not help.
+
+Another approach: considering that each copy operation can merge the content of one screen into the other, but the order in which this is done matters.
+
+For example, if I have screen1 as 'a' and screen2 as 'b', then I can copy 'a' to screen2, making screen2 'ab', then append 'b' to screen2, making it 'abb'. So that took 3 steps. But that's more than the 2 steps (copy and append) needed.
+
+So perhaps the minimal steps can be found by considering the maximum between the lengths of s and t, and then adding the minimum of the lengths.
+
+Wait, for example:
+
+s is 'a', t is 'b' → max is 1, min is 1. So steps = 1 + 1 = 2.
+
+But earlier I thought the minimal steps were 3, but maybe I was wrong. Let me re-examine.
+
+Wait, no. Let's see:
+
+Option 1: copy a to t → t is 'a', then append 'b' → total steps 2.
+
+Option 2: append 'a' to t → t is 'a', then copy a to t → t is 'aa', then append 'b' → steps 3.
+
+Option 3: append 'a' to t, then append 'b' to t → steps 2.
+
+So the minimal is 2 steps.
+
+Wait, so for s='a' and t='b', the minimal steps is 2.
+
+So the formula would be 2 steps here. So the formula is not straightforward.
+
+Hmm, perhaps the minimal steps are the maximum of the two lengths plus the minimal of the two minus the minimal of the two. Or something else.
+
+Alternatively, let's think about the problem in terms of the steps required to copy the longer string into the shorter one, and then append the rest.
+
+Wait, but that's not always optimal.
+
+Wait, but maybe the minimal steps is the maximum of the two lengths plus the minimal of the two lengths minus the minimal of the two. Or perhaps it's just the maximum of the two.
+
+Wait, perhaps the minimal steps is simply the maximum of the two lengths. Because, for example:
+
+If s is longer than t, then you can copy t into s, but then you have to append the remaining s characters. So steps would be len(s) steps.
+
+Similarly, if t is longer than s, steps are len(t) steps.
+
+But wait, what about when s and t have some overlapping parts.
+
+Wait, let me think of another example.
+
+s is 'ab' and t is 'abc'.
+
+Then, the minimal steps would be:
+
+Copy 'ab' to t, which takes 1 step. Then, append 'c' to t, which takes 1 step. So total steps 2.
+
+Which is equal to the maximum of len(s) and len(t) (since len(t) is 3, which is the max). So that's correct.
+
+Another example: s='abc', t='abcd'. len(s)=3, len(t)=4.
+
+In this case, the minimal steps are 4, which is the maximum of the two.
+
+Another example: s='a', t='b'. Len(s)=1, len(t)=1. Max is 1, steps are 2, which is len(s) + len(t) - 1 = 1+1-1=1. Wait, but that's not matching.
+
+Hmm, perhaps I need to think differently.
+
+Wait, let me try to model the minimal steps as the maximum of s and t, plus the minimal of s and t, minus the minimal of s and t. No, that's not helpful.
+
+Wait, perhaps the minimal steps is the sum of the maximum length and the minimal length minus the minimal length. Which is the maximum length.
+
+Wait, but in the first example I thought of, s='a' and t='b', the minimal steps are 2 steps, which is the maximum length (1) + 1 (the minimal length) → 2.
+
+Another example: s='a', t='bb'. So len(s)=1, len(t)=2.
+
+We can copy t into s, but t is 'bb', so after copy, s is 'bb', then append 'b' to t. So steps are 2: copy a step and append t step. So that's 2 steps, which is len(t) (2) steps.
+
+So the formula is maximal of the two lengths.
+
+So perhaps the minimal steps is the maximum of the two lengths.
+
+But wait, let's think of s='a' and t='a'. Then, steps would be 1 step—copying s to t, or appending s to t, both take 1 step.
+
+So yes, that's correct.
+
+Another example: s='ab', t='abc'. len(s)=2, len(t)=3. So max is 3 steps.
+
+Wait, can I do it in 3 steps? Let's see:
+
+Copy 'ab' to t, then append 'c' to t.
+
+Yes, that's 2 steps. So the formula is incorrect.
+
+Hmm, so that approach is not correct.
+
+So, the initial approach of taking the maximum of the two lengths is not sufficient.
+
+So I need to find another approach.
+
+Let me think about the problem again.
+
+Each operation can be either appending a character to a screen or copying the entire content of one screen to the other.
+
+The goal is to reach the state where s is in screen1 and t in screen2.
+
+So, the minimal steps would be the sum of the lengths of the two strings plus some overhead due to the operations.
+
+But perhaps the minimal steps can be determined by the following:
+
+- The number of steps required to copy the longer string into the shorter one.
+
+- Then, appending the remaining characters of the longer string.
+
+But that's just one approach and may not be optimal.
+
+Wait, but perhaps in some cases, it's better to append some characters to one of the screens before copying.
+
+For example, if s is longer than t, perhaps it's better to append a few characters to t until it's the same length as s, then copy and append the remaining.
+
+Wait, let's take an example.
+
+s is 'abcde' (5 letters), t is 'fghi' (4 letters).
+
+Option 1: Copy t to s, which takes 1 step. Then append 'j' to t, which takes 1 step. Total steps: 2.
+
+Which is 5 steps. So that's worse.
+
+Wait, but that's not correct. Because after copy, s is 'fghij' (5 letters), but t is 'fghi'. Then, appending 'j' to t would make it 5 letters. So the steps would be:
+
+1. Copy t to s → s is now 'fghi...', t is 'fghi'.
+2. Append 'j' to t → t is 'fghij'.
+
+So 2 steps.
+
+Which is better than the initial approach.
+
+Wait, but what if s was 'abcde' and t was 'fghij'? Then the minimal steps would be 1 (copy s to t) + 1 (append 'k' to t) → 2 steps.
+
+So that's correct.
+
+But what if s is 'abcd' and t is 'efgh'? Then the minimal steps would be 2 steps (copy s to t, then append 'i' and 'h').
+
+So, in this case, the minimal steps is 2 steps, which is the maximum length.
+
+So, this suggests that the minimal steps can be either the maximum of the two lengths, or the sum of the two lengths minus the minimum of the two lengths.
+
+Wait, but that doesn't hold in all cases.
+
+Wait, for s='a' and t='b' (max is 1), steps are 2. Which is 1 + 1.
+
+Hmm.
+
+Wait, another example: s='a', t='aa'.
+
+Option 1: copy s to t (1 step), then append 'a' (1 step) → 2 steps.
+
+Option 2: append 'a' to t (1 step), then copy s to t (1 step) → 2 steps.
+
+Same result.
+
+But what if s is 'a' and t is 'aaa'?
+
+Steps:
+
+1. Copy s to t → t is 'aa', steps=1.
+
+2. Append 'a' → t is 'aaa', steps=2.
+
+Alternatively, you could append three times, but that's 3 steps, which is worse.
+
+So 2 steps is better.
+
+So the minimal steps is 2, which is the maximum of 1 and 3.
+
+Wait, that's correct.
+
+So, perhaps the minimal steps is always the maximum of the two lengths.
+
+But earlier I thought of a case where s is 'a' and t is 'b', which required 2 steps. Which is the maximum of 1 and 1, which is 1. So that's not correct. So that approach is wrong.
+
+Wait, wait, no. The maximum of 1 and 1 is 1, but the minimal steps are 2. So the minimal steps is not the maximum of the two lengths.
+
+So, I need to find another approach.
+
+Let me think again.
+
+Each step can either append a character to a screen or copy one screen to another.
+
+The minimal steps would be the sum of the lengths of the two strings, but this is not the case.
+
+Wait, for s='a' and t='b', the minimal steps are 2, which is equal to the sum of the lengths minus the length of the smaller string (1 + 1 -1 = 1, which is less than 2). So that's not correct.
+
+Hmm.
+
+Wait, perhaps the minimal steps can be calculated as follows:
+
+The minimal steps is the maximum of the two lengths plus the minimum of the two lengths minus the minimum of the two lengths.
+
+Which is the maximum.
+
+But that's not correct for the 'a' and 'b' case.
+
+So perhaps the minimal steps is the maximum of the two lengths, plus the minimum of the two lengths minus the minimum of the two lengths. So that's just the maximum.
+
+But I'm getting stuck.
+
+Alternative approach: model the problem as a BFS, but with each state being the current a and b, and the steps taken. For each state, generate all possible next states by appending a character to a or b, or copying a to b or b to a. Then, track the minimal steps to reach each state.
+
+But for the 'a' and 'b' case, each step has two options: append or copy. So the BFS would have:
+
+Initial state: (empty, empty), steps=0.
+
+From there, we can append to a, leading to (a, empty), or append to b, leading to (empty, b). Or copy a to b, leading to (empty, ab). Or copy b to a, leading to (ab, empty).
+
+Each of these is a possible state, and we can process them.
+
+But for the 'a' and 'b' case, the minimal steps is 2. Let's see:
+
+Step 0: (empty, empty) → steps 0.
+
+Step 1: process (empty, empty). Generate four states:
+
+1. Append to a: (a, empty) → step 1.
+2. Append to b: (empty, b) → step 1.
+3. Copy a to b: (empty, ab) → step 1.
+4. Copy b to a: (ab, empty) → step 1.
+
+So these are four new states.
+
+Now, processing each of these.
+
+For state (a, empty):
+
+Step 1: process this state. Generate four next states:
+
+1. Append to a: (aa, empty) → step 2.
+2. Append to b: (a, b) → step 2.
+3. Copy a to b: (a, ab) → step 2.
+4. Copy b to a: (ab, empty) → step 2.
+
+Similarly for state (empty, b):
+
+Generate four next states.
+
+State (empty, ab):
+
+Generate four next states.
+
+And so on.
+
+But for the 'a' and 'b' case, the minimal steps is 2, achieved by appending 'a' to t in step 1, then appending 'b' to t in step 2.
+
+So the BFS approach would process these steps.
+
+But in this case, the state (a, b) is reached in step 2, which is correct.
+
+But for larger examples, the BFS approach is feasible because the number of states is manageable.
+
+So, the plan is:
+
+For each test case, perform a BFS starting from (empty, empty), where each state is a tuple (a, b). The transitions are appending a character to a or b, or copying a to b or vice versa. The steps are incremented by 1 each time.
+
+We can use a dictionary to track the minimal steps to reach each state. Initially, the dictionary has {(empty, empty): 0}.
+
+For each state dequeued, for each possible transition, compute the next state, and if it's not in the dictionary or has a higher step count, enqueue it.
+
+Once a state (s, t) is found in the dictionary, return the step count.
+
+But wait, for each state, the transitions are:
+
+1. Append to a: new_a = a + c, new_b = b. We generate this state and check if it's better.
+
+2. Append to b: new_a = a, new_b = b + c. Similarly.
+
+3. Copy a to b: new_a = a, new_b = a + b. Which is a copy of a to b, making b longer.
+
+4. Copy b to a: new_a = a + b, new_b = b. Which is a copy of b to a.
+
+Each of these transitions is a possible operation.
+
+So, in code, for each state (a, b), the possible next states are:
+
+- (a + c, b) for any c in 'a'-'z' → but since c can be any character, this is a lot. But wait, in BFS, each state can have up to 26 possible transitions for each of the four operations. But that's not feasible because the BFS would have to consider 26 possibilities for each state, leading to 4*26 = 104 transitions per state.
+
+This is not feasible for the given constraints because the time would be too high.
+
+Wait, but perhaps the problem can be optimized by noting that appending a character is a step that can be done in one step, so perhaps for each state, the minimal steps to reach it is the same as the minimal steps to reach the previous state plus one.
+
+But that's not directly helpful because the state transitions are based on the characters, which are variable.
+
+Alternatively, perhaps we can model the problem as a graph where the state is (a, b), but since a and b can be up to 100 characters, the BFS could be too slow.
+
+Wait, but for the problem, perhaps the minimal steps can be found by only considering the maximum of the two lengths and the minimum of the two lengths.
+
+Wait, let's think about the minimal steps.
+
+Each time you can perform an operation that either appends a character or copies the entire content.
+
+So, for example, in the case where s is much longer than t, the minimal steps is len(s), because you can copy t into s, and then append the remaining s characters. But that's not always the case.
+
+Alternatively, perhaps the minimal steps is the maximum of the two lengths, plus the minimal of the two lengths minus the minimal of the two lengths. So it's the maximum.
+
+But that's not correct in the 'a' and 'b' case.
+
+Alternatively, perhaps the minimal steps is the sum of the two lengths, but that's not the case either.
+
+Wait, I'm stuck. Let me think of another way.
+
+Another idea: the minimal steps is the maximum of the two lengths. Because, for example, if s is longer than t, you can copy t to s, but that requires t to be the same length as s. Which is impossible unless t is the same as s.
+
+Hmm, that's not helpful.
+
+Wait, perhaps the minimal steps can be determined as follows:
+
+The minimal steps is the maximum of the two lengths if one is longer than the other. But that's not correct because in the 'a' and 'b' case, the maximum is 1, but the minimal steps are 2.
+
+So, perhaps the minimal steps is the maximum of the two lengths plus the minimum of the two lengths minus the minimum of the two lengths, which is the maximum.
+
+So, the minimal steps is the maximum of the two lengths.
+
+But that's not correct for the 'a' and 'b' case, because the maximum is 1, but the minimal steps are 2.
+
+So, that approach is wrong.
+
+Hmm.
+
+Wait, perhaps the minimal steps is the maximum of the two lengths plus the minimum of the two lengths minus the minimum of the two lengths. So, it's the maximum.
+
+But that's incorrect.
+
+So, perhaps the problem is more complex, and the BFS approach is the only way.
+
+But given the time constraints, perhaps I can model the problem as a BFS, but with the observation that the minimal steps can be found by considering the maximum of s and t.
+
+Wait, perhaps the minimal steps is the maximum of the two lengths.
+
+But in the 'a' and 'b' case, that's not correct. So that's not the case.
+
+Alternative approach: perhaps the minimal steps is the sum of the two lengths minus the minimum of the two.
+
+Because, for s='a' and t='b', sum is 2, min is 1, so steps 1, which is less than 2. So that's not correct.
+
+Alternatively, the minimal steps is the maximum of the two lengths plus the minimum of the two lengths minus the minimum of the two lengths. Which is the maximum.
+
+But that's not correct.
+
+Hmm.
+
+Alternative Idea: Let's think of the problem as a graph where each state is (a, b), and the edges are the possible operations. The goal is to reach (s, t) with minimal steps.
+
+But since each state can have up to 26 transitions, the BFS can become very slow.
+
+To optimize, perhaps for each state, we only track the minimal steps to reach it. If a state is already visited with a lower or equal step count, we can skip processing it.
+
+But in the worst case, it's still O(40000 * 26) which is manageable.
+
+So, perhaps the BFS approach is feasible.
+
+Now, the code:
+
+We can represent each state as a tuple (a, b), where a and b are the current sequences.
+
+We can use a queue for BFS, and a dictionary to track the minimal steps for each state.
+
+So, in Python:
+
+from collections import deque
+
+def minimal_steps(s, t):
+    target_a = s
+    target_b = t
+
+    # Initialize the queue with the initial state (empty, empty) and 0 steps
+    queue = deque()
+    queue.append( ( ('', ''), 0 ) )
+    # Dictionary to store the minimal steps for each state
+    visited = dict()
+    visited[ ('', '') ] = 0
+
+    while queue:
+        a, b, steps = queue.popleft()
+
+        if a == target_a and b == target_b:
+            return steps
+
+        # Generate all possible next states
+        # Append to a
+        new_a = a + 'a'
+        new_b = b
+        if (new_a, new_b) not in visited or steps + 1 < visited.get( (new_a, new_b), float('inf') ):
+            visited[ (new_a, new_b) ] = steps + 1
+            queue.append( (new_a, new_b, steps + 1) )
+
+        # Append to b
+        new_a = a
+        new_b = b + 'a'
+        if (new_a, new_b) not in visited or steps + 1 < visited.get( (new_a, new_b), float('inf') ):
+            visited[ (new_a, new_b) ] = steps + 1
+            queue.append( (new_a, new_b, steps + 1) )
+
+        # Copy a to b
+        new_a = a
+        new_b = a + b
+        if (new_a, new_b) not in visited or steps + 1 < visited.get( (new_a, new_b), float('inf') ):
+            visited[ (new_a, new_b) ] = steps + 1
+            queue.append( (new_a, new_b, steps + 1) )
+
+        # Copy b to a
+        new_a = a + b
+        new_b = b
+        if (new_a, new_b) not in visited or steps + 1 < visited.get( (new_a, new_b), float('inf') ):
+            visited[ (new_a, new_b) ] = steps + 1
+            queue.append( (new_a, new_b, steps + 1) )
+
+    # The problem states that s and t can be any two strings, so this should always reach (s, t) in some steps.
+    return -1  # Shouldn't reach here.
+
+Wait, but this code isn't correct because in each step, the code is appending a character, which can be any character. So for example, in the 'a' and 'b' case, the code will process appending 'a' to b, then appending 'b' to b, leading to (a, b) in two steps. Which is correct.
+
+But in the code above, the queue is being processed in BFS order, which is correct for finding the minimal steps.
+
+But in the code, for each state, we generate all four possible next states by appending a character to a, appending a character to b, copying a to b, and copying b to a. But each of these transitions is a step, and we enqueue them with steps+1.
+
+But the code is generating all possible transitions for each state, which could be 4 * 26 = 104 transitions per state. But that's not manageable for large states.
+
+Wait, but in the code, each state is represented by a and b, which can be any string. So, for example, if a is 100 characters, and b is 100, then each state has 26 possibilities for each of the four operations. So the queue can have a lot of states.
+
+But given that the problem has constraints of 100 for s and t, perhaps the total number of states is manageable.
+
+Wait, the maximum possible length of a or b is 100, so for each state, a can be up to 100, and b can be up to 100. So each state is a tuple of two strings, each of length up to 100.
+
+So the number of possible states is (101 * 101) for each length, but as the two can vary independently, the total is 101 * 101 * 101 * 101 = about a million. That's manageable.
+
+But in Python, for each state, checking if it's been visited before is O(1), but for a million states, it's manageable.
+
+But the BFS for each test case would take some time, but for 50

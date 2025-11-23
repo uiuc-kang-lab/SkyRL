@@ -1,0 +1,436 @@
+Okay, I need to solve this problem. Let's read it carefully.
+
+So, the problem is about calculating the expected value of (f(S))², where f(S) is the XOR of all elements in a random multiset S. Each element a_i is added to S with probability p_i/10^4, and the insertions are independent.
+
+Hmm, the XOR of all elements in S is a bit tricky. I remember that the XOR of a set of numbers can be computed bit by bit. For each bit position, the result is 1 if there's an odd number of 1s in that bit position across all elements of S, and 0 otherwise.
+
+So, maybe I can model this problem by considering each bit separately. That is, for each bit position k (from 0 to, say, 10, since a_i is up to 1023), I can compute the probability that the k-th bit in f(S) is 1. Then, the expected value of (f(S))² can be broken down into the sum over all bits and their squares, plus twice the sum for each pair of different bits where their contributions are multiplied.
+
+Wait, right. Because (a + b)^2 = a² + 2ab + b². But since each bit is independent, the expectation of (f(S))² is the sum over all bits of E[(bit_k)]² plus twice the sum over all pairs of different bits of E[bit_k * bit_l].
+
+But wait, no. Because in the expectation of the square, it's E[f(S)^2] = E[(sum_{k} bit_k * 2^k)^2] = sum_{k} E[bit_k^2] + 2 sum_{k < l} E[bit_k * bit_l}.
+
+Since bit_k is 0 or 1, bit_k squared is equal to bit_k. So E[bit_k^2] is just E[bit_k]. And E[bit_k * bit_l} is E[bit_k] * E[bit_l} because the bits are independent.
+
+So, putting it all together, the expected value is the sum over all bits k of (E[bit_k] * 2^k) squared, plus twice the sum over all pairs of bits k and l of E[bit_k] * E[bit_l}.
+
+Wait, no. Wait, the expansion is (sum x_k)^2 = sum x_k^2 + 2 sum_{k < l} x_k x_l. But since each x_k is 0 or 1, x_k^2 is x_k. So the expectation is sum E[x_k] + 2 sum_{k<l} E[x_k x_l}.
+
+But since x_k and x_l are independent, E[x_k x_l} = E[x_k] E[x_l}. So the total expectation is sum E[x_k} + 2 * sum_{k < l} E[x_k] E[x_l}.
+
+This can be rewritten as [sum E[x_k}]^2 minus sum (E[x_k})^2. Because (sum a_k)^2 = sum a_k² + 2 sum_{k < l} a_k a_l. So sum a_k is S, sum a_k squared is sum a_k², and sum a_k a_l for k < l is (S² - sum a_k²)/2. So the expected value is S² - sum a_k², where S is the sum of E[x_k}.
+
+Wait, let me see: S = sum E[x_k}, then S² = sum (E[x_k})² + 2 sum_{k < l} E[x_k} E[x_l}. So S² - sum (E[x_k})² = 2 sum_{k < l} E[x_k} E[x_l}. Then the expected value is S² - sum (E[x_k})² plus 2 sum_{k < l} E[x_k} E[x_l}?
+
+Wait, no. Wait, the expectation is S², which is sum (E[x_k})² + 2 sum_{k < l} E[x_k} E[x_l}. So the expected value is S², which is equal to sum E[x_k²] + 2 sum_{k < l} E[x_k x_l}.
+
+Wait, but since x_k is 0 or 1, x_k² = x_k, so sum E[x_k} is S, and S² is the expectation. So the expected value is S².
+
+So, the expected value of f(S)^2 is equal to (sum_{k} E[bit_k})^2.
+
+Wait, that's a big simplification! So instead of dealing with XOR, which is a bit complicated, I can model each bit independently, compute the probability that each bit is set in f(S), and then the expected value is the square of the sum of these probabilities.
+
+Yes, that makes sense. Because when you square the sum, you get the sum of squares plus twice the sum of products, but since each bit is independent, the cross terms are just the product of their probabilities.
+
+So, the plan is:
+
+1. For each bit k (0 to 10, since a_i is up to 1023), calculate p_k which is the probability that this bit is set in f(S).
+
+2. The expected value E is (sum_{k} p_k)^2.
+
+3. Then, output this value modulo 1e9+7, using modular inverses for division.
+
+So, the key is to compute p_k for each bit.
+
+How to compute p_k?
+
+Each a_i contributes to the bit k if, in a_i, the k-th bit is set, and a_i is included in S with probability (p_i / 1e4).
+
+So, for each a_i, let's check if the k-th bit is set. If it is, then the contribution to p_k is the probability that a_i is included in S, which is (p_i / 1e4).
+
+But wait, because the bits are independent, the probability that a_i contributes to the k-th bit is the product of two events: a_i has the k-th bit set, and a_i is included in S.
+
+So, for each a_i, if the k-th bit is set, then the probability that it contributes is (p_i / 1e4). If not, it contributes 0.
+
+So, for each k, p_k is the sum over all a_i where the k-th bit is set, of (p_i / 1e4).
+
+Wait, but wait, the inclusion of each a_i is independent. So for a particular a_i, the probability that the k-th bit is set in f(S) is the probability that a_i is included in S multiplied by whether the k-th bit is set in a_i.
+
+So, for each a_i, if the k-th bit is set, then the probability that a_i contributes to the k-th bit in f(S) is (p_i / 1e4). So, for each k, p_k is the sum of (p_i / 1e4) for all i where the k-th bit is set in a_i.
+
+But wait, no. Because for each a_i, the k-th bit is set, so the probability that a_i is included in S is p_i / 1e4. So for each such a_i, the probability that the k-th bit is set in f(S) is (p_i / 1e4).
+
+So, p_k is the sum over all a_i where the k-th bit is set in a_i of (p_i / 1e4).
+
+Yes, that's correct.
+
+So, the steps are:
+
+For each test case:
+
+- For each bit k (0 to 10, since a_i is up to 1023):
+
+   - Compute the sum of p_i for all a_i where the k-th bit is set.
+
+   - Divide that sum by 1e4 to get p_k.
+
+Then, the expected value is (sum of p_k for all k)^2.
+
+So, the problem reduces to, for each test case, compute for each bit k the sum of p_i where a_i has the k-th bit set, then sum all those p_k, square it, and output it modulo 1e9+7.
+
+This is manageable.
+
+Now, the next step is to compute, for each a_i, which bits are set, and sum p_i for those bits.
+
+But wait, for each a_i, it's a number up to 1023, so it's 10 bits. So for each a_i, we can loop through each bit from 0 to 9 (since 1023 is 1111111111 in binary), and for each bit that is set, add p_i to that bit's sum.
+
+Yes.
+
+So, the steps for each test case are:
+
+1. Read n, a array, p array.
+
+2. Initialize an array of size 11 (since bits are 0 to 10) to store the sum for each bit.
+
+3. For each i in 0..n-1:
+
+   a. For each bit k in 0..9:
+
+      i. If a[i] has the k-th bit set, add p[i] to the sum for bit k.
+
+4. For each bit k, compute p_k = sum / 1e4.
+
+5. Compute the total sum S = sum of p_k for all k.
+
+6. The expected value is S^2.
+
+7. Output S^2 modulo 1e9+7.
+
+Wait, but wait, 1e4 is 10000. So, for each p_i, we have p_i / 10000.
+
+So, for each a_i, for each set bit, add p_i to that bit's sum, then divide by 10000.
+
+So, for each a_i, for each bit k where (a_i >> k) & 1 is 1, add p_i to sum[k].
+
+Then, p_k is sum[k] / 10000.
+
+So, the code can be written as:
+
+For each test case:
+
+sum_bits = [0] * 11
+
+for i in range(n):
+
+    ai = a[i]
+
+    for k in range(10):  # since a_i is up to 1023, which is 10 bits
+
+        if (ai >> k) & 1:
+
+            sum_bits[k] += p[i]
+
+then, for each k, p_k = sum_bits[k] / 10000
+
+then, S = sum of p_k for all k.
+
+result = S * S
+
+But since S is a sum of fractions, and we need to compute S^2, which is a rational number, we need to represent this accurately modulo 1e9+7.
+
+So, the challenge is to compute this correctly under modular arithmetic, considering that divisions are involved.
+
+Wait, but 1e4 is 10000, which is co-prime with 1e9+7 (since 1e9+7 is a prime, and 1e4 is much smaller than it). So, the modular inverse of 1e4 exists modulo 1e9+7.
+
+So, the steps to compute p_k:
+
+p_k = (sum_bits[k] * inv_10000) mod MOD, where inv_10000 is the modular inverse of 10000 modulo 1e9+7.
+
+Similarly, S is the sum of p_k, which is sum of (sum_bits[k] * inv_10000) for all k.
+
+Then, S squared is (sum_p)^2, where sum_p is sum (sum_bits[k] * inv_10000) for all k.
+
+So, to compute this, we can represent sum_p as a fraction, and compute its square.
+
+But since all operations are under modulo, we can represent sum_p as a sum of (sum_bits[k] * inv_10000) mod MOD, and then compute (sum_p * sum_p) mod MOD.
+
+So, let's proceed step by step.
+
+First, precompute inv_10000 modulo MOD.
+
+MOD = 1e9+7.
+
+inv_10000 = pow(10000, MOD-2, MOD)
+
+Because MOD is prime, Fermat's little theorem says that a^(MOD-2) is the inverse.
+
+So, inv_10000 = 10000^(MOD-2) mod MOD.
+
+Once we have inv_10000, for each bit k, sum_bits[k] is the sum of p_i's for that bit. Then, p_k is (sum_bits[k] * inv_10000) mod MOD.
+
+Sum all p_k's to get S.
+
+Then, the expected value is S^2 mod MOD.
+
+Wait, but S is a sum of fractions, so S is sum (sum_bits[k] * inv_10000) mod MOD.
+
+So, to compute S, we can do:
+
+s = 0
+
+for k in 0..10:
+
+    s = (s + sum_bits[k] * inv_10000) % MOD
+
+Then, the result is s * s % MOD.
+
+Yes.
+
+So, now the code structure is clear.
+
+Let me think about the implementation.
+
+In Python, for each test case:
+
+Read n.
+
+Read a as a list of integers.
+
+Read p as a list of integers.
+
+Compute sum_bits as a list of 11 zeros.
+
+Loop over each i in 0..n-1:
+
+   ai = a[i]
+
+   for k in 0..9:
+
+       if (ai >> k) & 1:
+
+           sum_bits[k] += p[i]
+
+Then, for each k in 0..10, compute p_k = sum_bits[k] * inv_10000 mod MOD.
+
+Compute sum_p = sum(p_k for all k) mod MOD.
+
+Then, the answer is (sum_p * sum_p) mod MOD.
+
+Wait, no. Because sum_p is already the sum of all p_k, which is sum (sum_bits[k] * inv_10000) for all k.
+
+So, the expected value is (sum_p)^2.
+
+Yes.
+
+So, the code steps are:
+
+Compute sum_bits for each bit.
+
+Compute sum_p as sum of (sum_bits[k] * inv_10000) for all k.
+
+Then, compute (sum_p * sum_p) % MOD.
+
+So, the code in Python would be something like:
+
+MOD = 10**9 +7
+
+inv_10000 = pow(10000, MOD-2, MOD)
+
+t = int(input())
+
+for _ in range(t):
+
+    n = int(input())
+
+    a = list(map(int, input().split()))
+
+    p = list(map(int, input().split()))
+
+    sum_bits = [0] * 11
+
+    for ai, pi in zip(a, p):
+
+        for k in range(10):
+
+            if (ai >> k) & 1:
+
+                sum_bits[k] += pi
+
+    sum_p = 0
+
+    for k in range(11):
+
+        sum_p = (sum_p + sum_bits[k] * inv_10000) % MOD
+
+    ans = (sum_p * sum_p) % MOD
+
+    print(ans)
+
+Wait, but wait: sum_bits[k] is the sum of p_i's for a_i that have the k-th bit set. Then, p_k is sum_bits[k] / 1e4. So, sum_p is sum of p_k for all k.
+
+Which is sum of (sum_bits[k] * inv_10000) for all k.
+
+Yes, that's correct.
+
+So, the code should work.
+
+Let me test this with an example.
+
+Sample Input:
+
+Let's say n=1.
+
+a = [1]
+
+p = [1]
+
+So, a is 1, which in binary is 0b1. So, the 0th bit is set.
+
+sum_bits[0] = 1 (since p[i] is 1).
+
+For other bits (1-9), sum_bits[k] is 0.
+
+inv_10000 is 1/10000 mod MOD.
+
+sum_p is sum_bits[0] * inv_10000 = 1 * inv_10000.
+
+So, sum_p is inv_10000.
+
+Then, the expected value is (inv_10000)^2 = inv_10000^2.
+
+But wait, the expected value is (sum_p)^2, which is (1/10000)^2 = 1/1e8.
+
+So, the output should be 1e8 inverse mod 1e9+7.
+
+Wait, let's compute 1/1e8 mod 1e9+7.
+
+Compute 100000000 inverse mod 1e9+7.
+
+Using Fermat's little theorem, inv = 100000000^(MOD-2) mod MOD.
+
+But let me compute 100000000^(-1) mod 1e9+7.
+
+Compute 100000000 * x ≡ 1 mod 1e9+7.
+
+We can compute this as x = pow(100000000, MOD-2, MOD).
+
+In Python, that's pow(100000000, MOD-2, MOD).
+
+But let's say MOD is 1e9+7, which is a prime.
+
+So, 1e9+7 is 1000000007.
+
+Computing 100000000^ (1000000007 - 2) mod 1000000007.
+
+But I'm not sure of the exact value, but in any case, the code correctly computes it.
+
+So, the sample input should output 1/1e8 mod MOD, which is the square of 1/1e4.
+
+So, the code should handle this correctly.
+
+Another test case: n=2, a = [1, 2], p = [1, 1].
+
+For a[0] =1, bits 0 is set.
+
+a[1] =2, bits 1 is set.
+
+sum_bits[0] =1, sum_bits[1] =1.
+
+sum_p = 1 * inv_10000 + 1 * inv_10000 = 2 * inv_10000.
+
+So, expected value is (2 * inv_10000)^2 = 4 * inv_10000^2.
+
+Which is 4/(1e4)^2 = 4/(1e8) = 4e-8.
+
+So, the code should output 4 * inv_10000 squared mod MOD.
+
+Which is correct.
+
+So, the code seems to handle this.
+
+Now, the only thing left is to implement this in Python.
+
+Potential corner cases:
+
+- All p_i are 0: expected value is 0.
+
+- All a_i are 0: expected value is 0.
+
+- Each a_i is 0: p_k is 0 for all k except when a_i is 0, but since a_i is 0, no bits are set. So sum_p is 0.
+
+Another corner case: n=0? But according to the input constraints, n is at least 1.
+
+Wait, the input constraints say 1 <= t <= 1e4, and for each test case, n is 1 <= n <= 2e5.
+
+So, no, n is at least 1.
+
+So, the code should handle all cases.
+
+Another test case: n=1, a=0, p=1.
+
+So, a is 0, which has no bits set. So sum_bits is all 0. So sum_p is 0, so the expected value is 0.
+
+Yes.
+
+Another test case: n=1, a=3 (binary 11), p=1.
+
+sum_bits[0] =1, sum_bits[1]=1.
+
+sum_p = (1 + 1) * inv_10000 = 2 * inv_10000.
+
+So, expected value is (2 * inv_10000)^2 = 4/(1e8) = 4e-8.
+
+Which is correct.
+
+So, the code should handle all these cases correctly.
+
+So, the final code is as written.
+</think>
+
+To solve this problem, we need to calculate the expected value of the square of the XOR of a randomly constructed multiset \( S \) derived from two arrays \( a \) and \( p \). The result should be output modulo \( 10^9 + 7 \).
+
+### Approach
+1. **Bitwise Analysis**: The XOR of a set of numbers can be analyzed bit by bit. For each bit position \( k \), we determine the probability that this bit is set in the XOR result of the multiset \( S \).
+
+2. **Probability Calculation**: For each bit \( k \), the probability that the bit is set in the XOR result is the sum of probabilities that each element \( a_i \) that has the \( k \)-th bit set is included in \( S \) and contributes to the bit being set. This probability is calculated as \( \frac{\text{sum of } p_i \text{ for all } a_i \text{ with the } k\text{-th bit set}}{10000} \).
+
+3. **Sum of Probabilities**: The expected value of the square of the XOR result is the square of the sum of these probabilities for all bit positions. This is because the expected value of the square of a sum of independent random variables is the square of the sum of their expected values.
+
+4. **Modular Arithmetic**: Since the result needs to be modulo \( 10^9 + 7 \), we use modular arithmetic to handle divisions. The modular inverse of 10000 is precomputed using Fermat's Little Theorem.
+
+### Solution Code
+```python
+MOD = 10**9 + 7
+inv_10000 = pow(10000, MOD - 2, MOD)
+
+t = int(input())
+for _ in range(t):
+    n = int(input())
+    a = list(map(int, input().split()))
+    p = list(map(int, input().split()))
+    
+    sum_bits = [0] * 11  # Since a_i is up to 1023, 10 bits are sufficient
+    
+    for ai, pi in zip(a, p):
+        for k in range(10):
+            if (ai >> k) & 1:
+                sum_bits[k] += pi
+    
+    sum_p = 0
+    for k in range(11):
+        sum_p = (sum_p + sum_bits[k] * inv_10000) % MOD
+    
+    ans = (sum_p * sum_p) % MOD
+    print(ans)
+```
+
+### Explanation
+1. **Reading Input**: The input consists of multiple test cases. For each test case, we read the arrays \( a \) and \( p \).
+
+2. **Summing Contributions**: For each bit position \( k \) (from 0 to 9), we sum the probabilities \( p_i \) for all elements \( a_i \) that have the \( k \)-th bit set.
+
+3. **Modular Inverse**: The modular inverse of 10000 is precomputed to handle divisions under modulo arithmetic.
+
+4. **Expected Value Calculation**: The sum of the probabilities for each bit is computed, and the expected value of the square of the XOR result is the square of this sum, taken modulo \( 10^9 + 7 \).
+
+This approach efficiently handles the problem constraints and computes the result using bitwise analysis and modular arithmetic.<｜end▁of▁sentence｜>

@@ -1,0 +1,646 @@
+0
+Okay, I need to solve this problem where I have an array consisting of 'a' ones and 'b' twos. The task is to determine if we can assign '+' or '-' signs to each element such that the total sum is zero. Hmm.
+
+Let me think about the conditions that need to be satisfied for this to be possible.
+
+First, the sum after assigning signs must be zero. So, the sum of all elements with their signs should equal zero.
+
+Each 1 can contribute either +1 or -1, and each 2 can contribute either +2 or -2. So the total sum is the sum of all these contributions.
+
+Let’s denote the sum contributed by the 1s as S1 and by the 2s as S2. So, the total sum is S1 + S2 = 0.
+
+Let me express S1 and S2 in terms of the number of '+' and '-'.
+
+For the 1s: Let’s say x of them are positive, then (a - x) are negative. So, S1 = x*1 + (a - x)*(-1) = x - (a - x) = 2x - a.
+
+Similarly, for the 2s: Let y of them be positive, so (b - y) are negative. S2 = 2y - 2*(b - y) = 2y - 2b + 2y = 4y - 2b.
+
+So, the total sum is S1 + S2 = (2x - a) + (4y - 2b) = 0.
+
+So, 2x + 4y = a + 2b.
+
+We can factor this as 2(x + 2y) = a + 2b.
+
+So, a + 2b must be even because the left side is 2 multiplied by something. Wait, no: because 2(x + 2y) is even, so a + 2b must be even.
+
+Wait, that's a necessary condition. So, for the problem to have a solution, a + 2b must be even. Because the left side is 2 times an integer, so the right side must be even. So a + 2b must be even.
+
+Wait, but let me recheck. The equation is 2(x + 2y) = a + 2b. So, a + 2b must be equal to 2*(some integer), which is always even. So, the sum a + 2b must be even. So, that's a necessary condition.
+
+But is it sufficient? Not necessarily. Because even if a + 2b is even, there might be other constraints.
+
+So, let's think about the possible values of x and y.
+
+x can be between 0 and a, inclusive. Similarly, y can be between 0 and b, inclusive.
+
+Let me think about the minimum and maximum possible values of the total sum.
+
+The maximum possible sum is when all 1s are positive and all 2s are negative. So, maximum sum is a*1 + b*(-2) = a - 2b.
+
+The minimum possible sum is when all 1s are negative and all 2s are positive: sum is a*(-1) + b*2 = -a + 2b.
+
+So, the total sum can vary between (a - 2b) and (-a + 2b). But we need it to be exactly zero.
+
+So, another condition is that zero must lie within this range.
+
+So, the total sum can be zero only if (a - 2b) <= 0 <= (-a + 2b). Wait, no: because the sum can be any value between a-2b and -a+2b. So, for zero to be in this interval, we must have that a-2b <= 0 and 0 <= -a + 2b. Wait, no. Wait, because the sum can be any value between those two extremes. So, for zero to be attainable, the sum must lie within that interval.
+
+Wait, no. Because the sum can be any value in the interval, so for zero to be possible, zero must be between a-2b and -a + 2b.
+
+So, our conditions are:
+
+1. a + 2b must be even.
+2. 0 must be between (a - 2b) and (-a + 2b).
+
+Wait, let me think again. Because the sum can be anything in that range, as we can vary x and y. So, if the required sum (zero) is within the range, then it's possible. So, condition 2 is whether 0 is within [a-2b, -a +2b].
+
+Wait, no. Because the sum can be any value in that interval. So, if the desired sum (zero) is within the interval, then it's possible. So, if 0 is between (a-2b) and (-a +2b), then yes.
+
+So, let's think about the two conditions:
+
+Condition 1: a + 2b must be even.
+
+Condition 2: 0 must be between (a - 2b) and (-a + 2b).
+
+Wait, that's not correct. Because the sum can vary between a-2b and -a + 2b. So, for zero to be in this range, the lower bound must be <= 0 <= upper bound.
+
+So, condition 2 is (a - 2b) <= 0 <= (-a + 2b).
+
+Wait, but a and b are non-negative. Let me see.
+
+Wait, let's take some examples.
+
+Example 1: a=3, b=1.
+
+Condition 1: 3 + 2*1 =5, which is odd. So, condition 1 fails. So, output is No.
+
+Example 2: a=2, b=1.
+
+Condition 1: 2 + 2=4, even. So condition 1 passes.
+
+Condition 2: a-2b= 2-2=0. So 0 is the lower bound. So 0 is within [0, ( -2 + 2 )=0]. So 0<=0 <=0: yes.
+
+So, possible.
+
+Another example: a=1, b=1.
+
+Condition1:1+2=3, odd. So no.
+
+Another example: a=2, b=2.
+
+Condition1: 2 +4=6, even.
+
+Condition2: a-2b=2-4=-2. -2 <=0 <= (-2+4)=2. So yes.
+
+So, possible.
+
+Another example: a=3, b=2.
+
+Condition1:3+4=7, odd. So no.
+
+So, in code, I need to compute both conditions.
+
+So, the steps are:
+
+For each test case:
+
+1. Check if a + 2*b is even. If not, output No.
+
+2. Check if 0 is between (a-2b) and (-a + 2b). So, if (a-2b) <= 0 <= (-a +2b). If yes, output Yes. Else, No.
+
+Wait, but let's think about when a-2b is negative. For example, a=1, b=1: a-2b= -1. So, 0 is >=-1 and <=0 (since -a+2b=0). So yes.
+
+Another example: a=0, b=1.
+
+Condition1: 0 +2*1=2, even.
+
+Condition2: a-2b=0-2=-2. 0 >=-2, and 0 <= (0 +2)=2. So yes.
+
+So, the sum can be zero.
+
+Wait, let's see: the array is [2]. Assign '+' or '-': 2 or -2. The sum is zero only if we assign the '-': sum is -2, which is not zero. Or wait, wait: 2 is the array. So, to make the sum zero, we can assign '+' to 2: sum is 2, which is not zero. Or assign '-', sum is -2, not zero. So, in this case, the sum is 2, which can't be zero. So what's wrong here.
+
+Wait, for a=0, b=1:
+
+The array is [2]. So, the sum must be zero. The possible sums are 2 and -2, which are not zero. So, the answer should be No.
+
+But according to our conditions:
+
+Condition1: 0 + 2*1=2, which is even.
+
+Condition2: (0 -2*1) = -2 <=0 <= (0 + 2*1)=2. So yes.
+
+But in reality, it's not possible.
+
+So, our conditions are insufficient.
+
+Hmm, that's a problem.
+
+So, what's wrong with our approach.
+
+Wait, what's the sum in this case.
+
+We have a=0, b=1.
+
+We can assign either + or - to the 2.
+
+So, the sum is either 2 or -2. Neither is zero. So, the answer is No.
+
+But according to our conditions, it outputs Yes. So, our approach is wrong.
+
+So, we need to find another condition.
+
+So, what's wrong with our previous reasoning.
+
+Let me re-express the problem.
+
+We have:
+
+sum = 2x - a + 4y - 2b = 0.
+
+Wait, wait, no. Wait, earlier we found that sum is 2x -a + 4y - 2b = 0.
+
+Wait, no. Let me re-calculate.
+
+Wait, for 1s: sum is (x * 1 + (a-x)* (-1)) = x - (a -x) = 2x -a.
+
+For 2s: sum is (y*2 + (b-y)* (-2)) = 2y - 2(b - y) = 2y - 2b + 2y = 4y - 2b.
+
+So total sum is (2x -a) + (4y - 2b) = 2x + 4y -a - 2b = 0.
+
+Which can be rewritten as 2x +4y = a + 2b.
+
+So, the equation is 2x +4y = a + 2b.
+
+We can factor this as 2(x + 2y) = a + 2b.
+
+So, a + 2b must be even, which is condition 1.
+
+But in the a=0, b=1 case:
+
+a + 2b = 0 + 2 = 2, which is even.
+
+So, condition 1 is satisfied.
+
+Now, for condition 2, we need to find x and y that satisfy 2x +4y = 2.
+
+So, x + 2y = 1.
+
+But x can be 0 or 1 (since a=0, x can only be 0).
+
+So, x=0: 0 + 2y =1 → y=0.5, which is not possible because y must be integer.
+
+x=1: 1 + 2y=1 → y=0.
+
+So, x=1, y=0.
+
+But wait, a is 0, so x can be 0 or 1? No, a is 0, so all elements are 2s. So, x is the count of 1's, which is 0. So, x can't be 1.
+
+So, no solution exists, which is correct.
+
+So, our previous condition is not sufficient. So, the earlier approach is wrong.
+
+So, what's the correct condition?
+
+Hmm.
+
+So, in this case, the equation 2x +4y =2 can be rewritten as x + 2y =1.
+
+But x can be 0 or 1, but since a is 0, x can only be 0.
+
+So, x=0: 0 + 2y=1 → y=0.5, which is not allowed.
+
+Thus, no solution.
+
+So, our earlier approach of checking if zero is in the sum range is not sufficient.
+
+So, what's the correct condition?
+
+We need to find x and y such that x is between 0 and a, y between 0 and b.
+
+But how?
+
+Another approach: Let's express x in terms of y or vice versa.
+
+From 2x +4y = a + 2b → x = (a + 2b -4y)/2.
+
+Since x must be an integer between 0 and a.
+
+So, (a +2b -4y) must be even and non-negative, and x must be <=a.
+
+Similarly, y must be between 0 and b, and (a+2b -4y) must be even and non-negative.
+
+So, the approach is to iterate over possible y values, compute x, and check if x is within 0 and a.
+
+But since a and b are small (up to 9), this is feasible.
+
+So, for each test case, we can iterate y from 0 to min(b, (a + 2b)/4), perhaps, and check if x is a valid integer and within 0 and a.
+
+Wait, let me think: 4y must be <= a + 2b → y <= (a + 2b)/4.
+
+So, for each y in 0 to min(b, (a +2b)/4), compute x = (a +2b -4y)/2. Then check if x is integer and 0<=x<=a.
+
+If any y satisfies this, then the answer is Yes. Otherwise, No.
+
+So, this seems to be a more accurate approach.
+
+So, let's outline the steps for each test case:
+
+1. Check if a + 2b is even. If not, output No.
+
+2. Otherwise, iterate y from 0 to min(b, (a + 2b) //4), because 4y can't exceed a +2b.
+
+   a. For each y, compute numerator = a + 2b -4y.
+
+   b. If numerator is negative, skip.
+
+   c. Check if numerator is even. Because x must be integer.
+
+   d. Compute x = numerator / 2.
+
+   e. Check if x is between 0 and a.
+
+   f. If yes, then check if x is >=0 and <=a.
+
+   g. If all conditions are satisfied, then return Yes.
+
+3. If after all possible y's, none satisfy, then return No.
+
+So, let's test this approach with the earlier example.
+
+Test case: a=0, b=1.
+
+Condition1: 0+2=2, even. So proceed.
+
+Iterate y from 0 to min(1, 2/4=0.5 → 0).
+
+So, y can be 0.
+
+Compute numerator: 0 +2 -4*0 = 2.
+
+Is numerator even? Yes.
+
+x = 2/2=1.
+
+Check x is between 0 and 0: x=1>0 → invalid.
+
+So, no solution. So, output No.
+
+Which is correct.
+
+Another test case: a=2, b=1.
+
+Condition1: 2 +2*1=4, even.
+
+Iterate y from 0 to min(1, 4/4=1) → 0 or 1.
+
+y=0:
+
+numerator=4-0=4 → even.
+
+x=4/2=2.
+
+Check x<=2: yes.
+
+So, x=2 is valid.
+
+So, yes.
+
+Another test case: a=3, b=1.
+
+Condition1: 3+2=5, odd. So, no.
+
+Another test case: a=2, b=2.
+
+Condition1: 2 +4=6, even.
+
+Iterate y from 0 to min(2, 6/4=1.5 → 1).
+
+y=0:
+
+numerator=6 → even.
+
+x=3.
+
+But a=2, so x=3>2 → invalid.
+
+y=1:
+
+numerator=6-4=2 → even.
+
+x=1.
+
+Check x=1 <=2: yes.
+
+So, yes.
+
+So, the approach works.
+
+So, in code, for each test case, read a and b.
+
+Check if a + 2b is even. If not, output No.
+
+Else, loop y from 0 to min(b, (a + 2b) //4), because 4y can't exceed a +2b.
+
+For each y in this range:
+
+   compute numerator = a + 2b -4y.
+
+   if numerator <0: skip.
+
+   check if numerator is even.
+
+   compute x = numerator //2.
+
+   if x is >=0 and <=a, then yes.
+
+If any y satisfies, output Yes.
+
+Else, No.
+
+So, now, let's code this.
+
+But wait, in code, for each test case, we'll loop y from 0 to min(b, (a + 2b) //4).
+
+Wait, but (a+2b) can be up to 2*9 +9*2= 18 +18=36. So, 4y can be up to 36, so y can be up to 9, which is manageable.
+
+So, the code can proceed.
+
+Now, let's think about the code.
+
+Read t test cases.
+
+For each case:
+
+read a and b.
+
+if (a + 2*b) % 2 != 0 → print No.
+
+else:
+
+   max_y = min(b, (a + 2*b) //4)
+
+   for y in 0 to max_y inclusive:
+
+       numerator = a + 2*b - 4*y
+
+       if numerator <0 → continue.
+
+       if numerator %2 !=0 → continue.
+
+       x = numerator //2
+
+       if 0 <=x <=a:
+
+           print Yes and proceed to next test case.
+
+   after all y, print No.
+
+So, that's the plan.
+
+Now, let's test this code with the earlier example.
+
+Test case a=0, b=1.
+
+a+2b=2 even.
+
+max_y = min(1, 2//4=0) → 0.
+
+Loop y=0.
+
+numerator=2-0=2.
+
+even → x=1.
+
+Check x <=0 → no.
+
+So, no solution. Output No.
+
+Another test case: a=2, b=2.
+
+a+2b=6 even.
+
+max_y = min(2, 6//4=1) →1.
+
+y=0:
+
+numerator=6-0=6 → even.
+
+x=3. a=2 → no.
+
+y=1:
+
+numerator=6-4=2 → even.
+
+x=1 <=2 → yes.
+
+So, output yes.
+
+Another test case: a=1, b=1.
+
+a+2b=3, which is odd → output No.
+
+Another test case: a=2, b=1.
+
+a+2b=4 even.
+
+max_y= min(1,4//4=1) →1.
+
+y=0: numerator=4 →x=2 → a=2 → yes.
+
+So, output yes.
+
+Another test case: a=1, b=0.
+
+a +2b=1, odd → no.
+
+So, output no.
+
+So, code works for these cases.
+
+Another test case: a=3, b=2.
+
+a+2b=3+4=7, odd → no.
+
+Yes.
+
+So, code seems correct.
+
+Now, let's write the Python code.
+
+The code will read t, then loop t times.
+
+For each test case:
+
+read a and b.
+
+if (a + 2*b) is odd → print No.
+
+else, set max_y = min(b, (a +2b)//4).
+
+then, loop y from 0 to max_y:
+
+   compute numerator = a + 2b -4y.
+
+   if numerator <0 → continue.
+
+   if numerator is even → x = numerator//2.
+
+   if x is between 0 and a → yes.
+
+So, implement this.
+
+Now, code:
+
+Read t.
+
+for _ in range(t):
+
+    a, b = map(int, input().split())
+
+    total = a + 2*b
+
+    if total %2 !=0:
+
+        print("No")
+
+        continue
+
+    max_y = min(b, (total) //4)
+
+    found = False
+
+    for y in range(0, max_y+1):
+
+        numerator = total - 4*y
+
+        if numerator <0:
+
+            continue
+
+        if numerator %2 !=0:
+
+            continue
+
+        x = numerator //2
+
+        if 0 <=x <=a:
+
+            found = True
+
+            break
+
+    print("Yes" if found else "No")
+
+Yes, that should do it.
+
+Testing this code with the earlier examples should give correct results.
+
+Another test case: a=1, b=1.
+
+a+2b=3 → odd → No.
+
+a=0, b=2.
+
+a+2b=4 even.
+
+max_y = min(2,4//4=1) →1.
+
+y=0: numerator=4 →x=2>0 → but a=0, so x can't be 2.
+
+y=1: numerator=4-4=0 →x=0.
+
+x=0 is <=0 → yes.
+
+So, output Yes.
+
+So, with a=0, b=2.
+
+The array is [2,2].
+
+We can assign both as negative: sum is -2 -2 =-4 → no.
+
+Wait, no: wait, no. Wait, the array is [2,2]. Assign signs:
+
+We can assign '+' and '-'.
+
+Wait, in code, for a=0, b=2: the 1s are zero, so all are 2s.
+
+We need to assign '+' and '-' to the two 2s.
+
+The sum must be zero.
+
+So, 2x -2y =0 → x - y=0 →x=y.
+
+But x is the number of '+' signs on 1s, which is 0.
+
+So, x=0: 0 - y=0 → y=0.
+
+But the array has two 2s, so y can be 0 or 2.
+
+So, y can be 0: then sum is 0*1 + 2*0 →0.
+
+So, sum is 0.
+
+Wait, but how? Because the 2s are assigned both as negative.
+
+So, the sum is 0. So, yes.
+
+So, in code, for a=0, b=2.
+
+We have a+2b=4 even.
+
+max_y = min(2, 1) →1.
+
+y=0: numerator=4 →x=2>0 → no.
+
+y=1: numerator=4-4=0 →x=0.
+
+x is 0 ≤0 → yes.
+
+So, code returns yes.
+
+Which is correct.
+
+So, in this case, the sum is zero.
+
+So, the code works.
+</think>
+
+To solve this problem, we need to determine if we can assign '+' or '-' signs to each element in an array consisting of 'a' ones and 'b' twos such that the sum of all elements equals zero.
+
+### Approach
+1. **Condition 1**: The sum of all elements after assigning '+' or '-' signs must be zero. This translates to the equation \(2x + 4y = a + 2b\), where \(x\) is the number of '+' signs on ones and \(y\) is the number of '+' signs on twos. For this equation to hold, \(a + 2b\) must be even.
+2. **Condition 2**: The sum of all elements must lie between the minimum and maximum possible values. The minimum possible sum is \(a - 2b\) (when all ones are negative and all twos are positive), and the maximum possible sum is \(2a + 2b\) (when all ones are positive and all twos are negative). For the sum to be zero, it must lie within this range.
+
+### Solution Code
+```python
+t = int(input())
+for _ in range(t):
+    a, b = map(int, input().split())
+    total = a + 2 * b
+    if total % 2 != 0:
+        print("No")
+        continue
+    max_y = min(b, total // 4)
+    found = False
+    for y in range(0, max_y + 1):
+        numerator = total - 4 * y
+        if numerator < 0:
+            continue
+        if numerator % 2 != 0:
+            continue
+        x = numerator // 2
+        if 0 <= x <= a:
+            found = True
+            break
+    print("Yes" if found else "No")
+```
+
+### Explanation
+1. **Reading Input**: The number of test cases \(t\) is read first. For each test case, the values of \(a\) (number of ones) and \(b\) (number of twos) are read.
+2. **Check Even Condition**: If \(a + 2b\) is odd, it is impossible to assign signs to make the sum zero, so the answer is "No".
+3. **Iterate Possible Values**: For each possible value of \(y\) (number of '+' signs on twos), compute the corresponding numerator and check if it is even and non-negative. If valid, compute \(x\) (number of '+' signs on ones) and check if it lies within the valid range.
+4. **Output Result**: If a valid combination of \(x\) and \(y\) is found, print "Yes". Otherwise, print "No".
+
+This approach ensures that we efficiently check all possible combinations of '+' and '-' signs to determine if the sum can be zero.<｜end▁of▁sentence｜>

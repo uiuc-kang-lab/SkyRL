@@ -1,0 +1,51 @@
+\frac{\pi}{6}
+Okay, so I have this problem where cos x is 0, and cos(x + z) is -1/2. I need to find the smallest positive value of z. Let me break this down step by step.
+
+First, I know that cos x = 0. When is cosine zero? Oh right, at π/2, 3π/2, and so on. So x could be π/2 + kπ, where k is any integer. That's because cosine has a period of 2π, so it repeats every 2π. So x is an odd multiple of π/2.
+
+Next, cos(x + z) = -1/2. I need to find z such that when I add it to x, the cosine of that sum is -1/2. Let's think about where cosine is -1/2. Cosine is -1/2 at 2π/3 and 4π/3 in the unit circle, plus any multiple of 2π. So x + z must be equal to 2π/3 + 2πk or 4π/3 + 2πk, where k is an integer.
+
+Since x is π/2 + kπ, let's substitute that into the equation. So x + z = π/2 + kπ + z. This must equal either 2π/3 + 2πm or 4π/3 + 2πm, where m is another integer.
+
+Now, I can set up the equation: π/2 + kπ + z = 2π/3 + 2πm or π/2 + kπ + z = 4π/3 + 2πm.
+
+I need to solve for z in both cases. Let's take the first case: π/2 + kπ + z = 2π/3 + 2πm.
+
+Rearranging, z = 2π/3 - π/2 + 2πm - kπ.
+
+Similarly, for the second case: z = 4π/3 - π/2 + 2πm - kπ.
+
+Let me compute the constants first. 2π/3 - π/2 is equal to (4π/6 - 3π/6) = π/6. Similarly, 4π/3 - π/2 is (8π/6 - 3π/6) = 5π/6.
+
+So z = π/6 + 2πm - kπ or z = 5π/6 + 2πm - kπ.
+
+Now, I can combine the terms with π. Since 2πm - kπ is the same as π(2m - k), which is just some integer multiple of π. So essentially, z can be written as π/6 + nπ or 5π/6 + nπ, where n is an integer.
+
+But we are looking for the smallest positive z. Let's see the possible values.
+
+If n = 0, then z could be π/6 or 5π/6. Both are positive, but π/6 is smaller.
+
+If n = -1, then z would be π/6 - π = -5π/6, which is negative, so we ignore that.
+
+So the smallest positive z is π/6. But let me double-check to make sure I didn't make any mistakes.
+
+Wait, let me think again. cos(x + z) = -1/2, and x is π/2 + kπ. So x + z = π/2 + kπ + z. We set this equal to 2π/3 + 2πm or 4π/3 + 2πm.
+
+So solving for z, we get z = 2π/3 - π/2 + 2πm - kπ or z = 4π/3 - π/2 + 2πm - kπ.
+
+Computing 2π/3 - π/2: 4π/6 - 3π/6 = π/6.
+
+Similarly, 4π/3 - π/2: 8π/6 - 3π/6 = 5π/6.
+
+So z = π/6 + 2πm - kπ or 5π/6 + 2πm - kπ.
+
+Since we're looking for the smallest positive z, the smallest value comes from m = 0 and k = 0, giving z = π/6.
+
+Wait, but let me make sure that x + z = 2π/3. So x is π/2, so z would be 2π/3 - π/2 = π/6. That seems correct.
+
+Alternatively, if x + z = 4π/3, then z = 4π/3 - π/2 = 5π/6. So both are possible, but π/6 is smaller.
+
+Therefore, the smallest positive z is π/6.
+</think>
+
+The smallest possible positive value of \( z \) is \(\boxed{\dfrac{\pi}{6}}\).<｜end▁of▁sentence｜>

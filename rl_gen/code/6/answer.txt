@@ -1,0 +1,680 @@
+0
+Okay, I need to solve this problem. Let's read it carefully.
+
+The problem is about finding the maximum possible value of some subsequence of a given array. The value is defined as the size of the subsequence minus the number of set bits in the bitwise OR of all elements in that subsequence.
+
+Hmm. So for each test case, given an array, I have to consider all possible subsequences, compute their size and the number of set bits in the OR of their elements, and find the maximum value among all these.
+
+Wait, but considering all possible subsequences is computationally expensive, especially since n can be up to 100. That's way too big for brute force. So I need a smarter approach.
+
+Wait, let's think about the OR operation. The OR of a subsequence is determined by the bits set in any of its elements. So for each bit position, if any element in the subsequence has that bit set, the OR will have it set.
+
+So the OR of the subsequence is the bitwise OR of all elements in it. Let's denote this as OR_sub.
+
+Then the value is len(sub) - count_bits(OR_sub).
+
+We need to maximize this value.
+
+Hmm, but how do I compute this without checking all possible subsequences?
+
+Wait, for the maximum value, we want a subsequence that has a large len, and a small OR_sub's set bits.
+
+Alternatively, perhaps the maximum occurs when we include as many elements as possible, and the OR is as small as possible.
+
+But how to model that.
+
+Wait, perhaps the maximum is achieved by including as many elements as possible, but in such a way that the OR is as small as possible. Or maybe it's better to include a certain subset of elements that has a small OR, but a large size.
+
+But I'm not sure. Let's think about the problem differently.
+
+Let me think about the possible OR values. Since the OR can't have more bits than the maximum in the array, perhaps for each possible OR value, I can find the maximum size of a subsequence where the OR is exactly that value. Then, for each such OR, compute the value (size - number of set bits in OR), and take the maximum.
+
+Wait, that makes sense. Because the OR could be any value, but for each possible OR, I can find the largest subset whose OR is that value. Then, for each possible OR, compute the value and take the maximum.
+
+But how do I find, for each possible OR, the largest subset of the array whose OR is exactly that value.
+
+Wait, but for that, the subset can have any elements, as long as their OR is exactly that value.
+
+So the approach could be:
+
+1. Enumerate all possible OR values that can be formed by any subset of the array. Then, for each such OR value, find the maximum size of a subset where the OR is exactly that value. Then, for each OR, compute the value (size - number of set bits in OR) and take the maximum.
+
+But enumerating all possible ORs is not feasible for large n, as the OR can be up to 2^60.
+
+Wait, but perhaps the number of distinct OR values is manageable. Because each OR is determined by the bits set, and for each bit position, it's either set or not. So the number of possible ORs is O(2^60), which is way too big.
+
+That's not feasible for n=100, because 2^60 is around 1e18, which is impossible to process.
+
+Hmm, so I need a better approach.
+
+Wait, perhaps the maximum value is achieved when the OR is as small as possible. Because the number of set bits in the OR is minimized, which increases the value len(sub) - (number of set bits). So perhaps, the optimal is a subsequence where the OR is 0, but that's only if all elements are zero. Or wait, no, because OR of any elements is just the OR of all, which is 0 only if all elements are zero.
+
+Wait, let me think. If I select a subsequence where the OR is zero, that means all elements in the subsequence are zero. So the value is the size of the subsequence minus zero, which is just the size. So to maximize this, we'd take as many zero elements as possible. But if there are m zero elements, then the maximum value is m, since any subsequence of these m zeros will have OR 0, and the value is m.
+
+But perhaps if the OR is higher, but the number of set bits is small, the value could be larger.
+
+For example, if the OR is 3 (binary 11), which has two set bits, but the subset size is perhaps 5. Then the value would be 5-2=3, which is larger than m=3 if m=5? Wait, no, 5-2 is 3, same as m=5 - 2. So in that case, it's the same.
+
+Wait, maybe in some cases, a higher OR with a few bits set can give a higher value.
+
+So the problem is to find a subset where the OR is as small as possible, but the size is as large as possible, or perhaps a balance between the subset size and the number of bits in the OR.
+
+Alternatively, perhaps the maximum value is achieved by the maximum possible subset size where the OR is 0, but that's only if all elements are zero.
+
+Wait, but I'm not sure. Let's think of some examples.
+
+Take the sample input: [1, 0, 1, 2]. The OR is 3, which has two bits set. So the value is 4-2=2.
+
+But what if I take the subset [0,1,1], which OR is 1, which has one bit. The size is 3. So value is 3-1=2, same as sample.
+
+Another example: if the array is [3, 3], the OR is 3, which has two bits. The value is 2-2=0. But if I take a subset of one element, the OR is 3, value is 1-2=-1. So the maximum is 0.
+
+Wait, no. Wait, the maximum is achieved by the subset of both elements. So the value is 2-2=0.
+
+Hmm, so in that case, the maximum value is 0.
+
+Another example: array is [1,2,3]. So possible subsets:
+
+Option 1: [1], OR is 1. Value is 1-1=0.
+
+Option 2: [1,2], OR is 3. Value is 2-2=0.
+
+Option 3: [1,2,3], OR is 3. Value 3-2=1.
+
+Option 4: [2,3], OR is 3. Value 2-2=0.
+
+So the maximum is 1.
+
+Hmm, so in this case, the maximum is achieved by the entire array.
+
+So perhaps the problem is to find the subset with the maximum possible size, such that the OR is as small as possible. But how to find that?
+
+Wait, perhaps the best approach is to find the subset that includes as many elements as possible, and among those, has the minimal OR.
+
+But how?
+
+Wait, perhaps the optimal subset is the entire array, but only if the OR of the entire array is minimal. Or perhaps not.
+
+Alternatively, perhaps the maximum value is achieved by the entire array. Because adding more elements can't decrease the OR, but the size increases. So perhaps the maximum is achieved by the entire array.
+
+But wait, let's see:
+
+In the sample input, the entire array's OR is 3 (binary 11), which has two set bits. So value is 4-2=2.
+
+If I take a subset of three elements, OR is 3. Value is 3-2=1.
+
+So the entire array's value is 2, which is higher than any subset.
+
+So in this case, the entire array's value is better.
+
+So perhaps the maximum is achieved by the entire array.
+
+Wait, is that always the case?
+
+Another example: array [0,0,0]. Then, any subset has OR 0, size varies. The maximum value is 3, since any subset of size 3 will have OR 0, value 3-0=3.
+
+Another example: array [4,5,6].
+
+Compute OR of all three: 4 |5 |6 = 7 (binary 111). So value is 3-3=0.
+
+But perhaps a subset of two elements could give a better value.
+
+For example, [4,5], OR is 5, which has two bits. So value is 2-2=0.
+
+Or [5,6], OR is 7, same as before.
+
+So the maximum value is 0.
+
+But the entire array's value is 0 as well.
+
+Hmm.
+
+Another example: array [1,2,4].
+
+OR is 7, which has three bits. So value is 3-3=0.
+
+But if I take a subset of two elements, say [1,2], OR is 3, which has two bits. Value is 2-2=0.
+
+So the maximum is still 0.
+
+But the entire array's value is 0.
+
+Hmm.
+
+Wait, perhaps the maximum value is achieved when the subset is the entire array.
+
+Wait, let's think: the OR of the entire array is a certain value. The value for the entire array is n - number_of_bits.
+
+If I take a subset of size k, the OR is at least as large as the OR of the entire array. No, wait: no, because a subset's OR is a bitwise OR of some elements, which is less than or equal to the OR of the entire array. Because the OR of larger elements can't be smaller than the OR of all elements.
+
+Wait, no, that's not correct. Wait, the OR of a subset is the bitwise OR of all elements in the subset. The OR of the entire array is the bitwise OR of all elements. So the OR of any subset is a subset of the OR of the entire array.
+
+Wait, no, the OR of the entire array is the OR of all elements. So any subset's OR is the OR of a subset of elements, which is a subset of those elements, but the OR is computed for the subset. So the OR of the subset can be equal to the OR of the entire array, but it can't be larger.
+
+No, wait, that's incorrect. For example, if the array is [3, 1], the OR is 3 (binary 11). The subset [1,3] has OR 3. But if the array is [2,3], the OR is 3. The subset [2] has OR 2, which is less than 3.
+
+Wait, no, the OR of the subset can't be larger than the OR of the entire array.
+
+Because the OR of the entire array is the bitwise OR of all elements. So any subset's OR is the bitwise OR of some subset of the elements. But the bitwise OR of any subset is less than or equal to the bitwise OR of the entire array.
+
+Wait, no, that's not correct. Because the entire array's OR is the OR of all elements, which is the same as the OR of any subset of elements. Because each element is part of that subset.
+
+Wait, no. Think of the array [1, 2, 3]. The OR is 3. Any subset's OR is less than or equal to 3.
+
+Wait, no, for example, the subset [1,2] has OR 3, same as the entire array. Subset [3], OR is 3. Subset [1,2,3], OR is 3.
+
+So the OR of any subset is <= the OR of the entire array.
+
+Wait, that's right. Because the OR of the entire array is the OR of all elements, which is the maximum possible OR that can be achieved by any subset. Because including all elements gives the maximum possible OR.
+
+Wait, no, that's not right. Wait, the OR of a subset is the OR of all elements in the subset. So the OR of the subset can't be larger than the OR of the entire array. Because all elements are part of the OR, and the OR is a bitwise operation that combines all bits present in any element.
+
+So for example, the subset [a, b] has OR a | b. The entire array's OR is a | b | c, etc. So the subset's OR can't be larger than the entire array's OR.
+
+Wait, that's correct. So the OR of any subset is a subset of the OR of the entire array.
+
+Wait, no, that's not the case. Because the subset's OR is a | b | c | ... etc. So the OR of the subset can't be larger than the OR of all elements in the array.
+
+Yes, that's correct.
+
+So the OR of the subset is always less than or equal to the OR of the entire array. So when considering all possible subsets, the maximum possible OR is the OR of the entire array. But wait, that's not correct. Because if I have a subset that doesn't include some elements, the OR could be less.
+
+Wait, the OR of the entire array is the maximum possible OR that any subset of the array can have. Because including any subset can't get a higher OR than the entire array's OR.
+
+Wait, but for example, the array [3, 1, 2]. The OR of all elements is 3 | 1 | 2 = 3 (binary 11). But the subset [3, 1, 2] has OR 3. But the subset [3, 1] also has OR 3. So the maximum OR for any subset is 3.
+
+Wait, yes. So the maximum possible OR is the OR of the entire array.
+
+But that's not always the case. Suppose you have an array where all elements are 0 except one element. Then the OR of the entire array is that element, and any subset will have OR equal to that element.
+
+Wait, no. If the array has elements [0, 0, 5], the OR of the entire array is 5. Any subset will have OR 5 (if it includes 5) or 0 (if it doesn't). So the maximum OR is 5.
+
+Wait, no. If the subset is [5], then OR is 5. If the subset is [0,5], OR is 5. So the maximum is 5.
+
+So the OR of any subset can't be higher than the OR of the entire array.
+
+Wait, but that's not correct. Because the OR of the entire array is a certain value, and any subset's OR is the OR of its elements. So the OR of the entire array is always >= any subset's OR.
+
+Wait, no. Because the OR of a subset is the OR of all elements in the subset. So for example, if the entire array's OR is 3, a subset that includes some elements that have 3 in their OR can't have a higher OR than 3.
+
+Yes.
+
+So for any subset, the OR is <= the OR of the entire array.
+
+So the maximum possible OR of any subset is the OR of the entire array.
+
+So that's a crucial point.
+
+So, the maximum OR possible for any subset is the OR of the entire array.
+
+So the value for the entire array is n - number_of_bits_in_OR.
+
+But perhaps the OR of a subset is smaller, and the size is larger, leading to a higher value.
+
+But how?
+
+Because the value is (size of subset) minus (number of set bits in OR of subset).
+
+So for a subset S, value is |S| - c, where c is the number of set bits in OR(S).
+
+We need to find the maximum of this over all possible subsets S.
+
+But how can we find this maximum without checking all subsets?
+
+Hmm. Let me think about the possible maximum.
+
+The maximum value could be achieved by taking the entire array, or a subset that has a lower OR but a larger size.
+
+But given that the OR of the entire array is the maximum possible, perhaps the entire array's value is the maximum possible.
+
+Wait, let's see.
+
+Suppose the OR of the entire array is X, which has k set bits. The value is n - k.
+
+Now, consider any subset S. The OR of S is Y <= X.
+
+So the value is |S| - count_bits(Y).
+
+We need to find the maximum over all subsets S.
+
+But how to find that maximum.
+
+Alternatively, perhaps the maximum is achieved when Y is as small as possible, but the size of S is as large as possible.
+
+Because for a given Y, the maximum |S| is the maximum subset size where the OR is Y.
+
+But then, for each possible Y (subset of the OR of the entire array), we can find the maximum subset size for each Y and compute (size) - bits in Y. Then take the maximum of all these.
+
+But how to compute the maximum subset size for each Y.
+
+Wait, for Y, the maximum subset size is the maximum number of elements in the array that can OR up to Y.
+
+But how?
+
+Alternatively, perhaps for each Y, find the maximum number of elements in the array that, when ORed together, equal Y.
+
+But that's similar to the problem of finding, for each possible Y, the maximum number of elements in the array that can contribute to Y through their OR.
+
+So for example, for Y=3 (binary 11), the elements in the array that can contribute to Y are those that have at least one bit set in the positions where Y has bits set.
+
+Wait, no. Because when you OR a subset, each element in the subset can contribute to the OR. So for Y to be the OR of the subset, each element in the subset must have all bits set that are set in Y.
+
+Wait, no. Because the OR is the accumulation of all elements. So for example, if Y is 3 (binary 11), an element can be 2 (10), which doesn't set the second bit. But when ORed, it can contribute to the OR.
+
+Wait, no, because 2's binary is 10. OR with 1 (01) is 11 (3). But if 2 is in the subset, it contributes to the OR.
+
+But how to find the maximum subset size where the OR is exactly Y.
+
+Hmm, perhaps for each Y, the maximum subset size is the maximum number of elements in the array that can be ORed together to produce Y.
+
+But how to compute that.
+
+Wait, perhaps we can model this as a bitmask problem.
+
+For a given Y, the maximum subset size is the maximum number of elements in the array such that their combined OR is Y.
+
+To compute this, perhaps we can use a BFS approach for each Y.
+
+But that's computationally expensive, especially for n=100.
+
+Wait, but perhaps Y is up to 2^60, which is too big to handle for each Y.
+
+So perhaps another approach is needed.
+
+Wait, another idea: since the OR of the entire array is known as X, perhaps the maximum value can be achieved by considering all possible Y that are a subset of X (i.e., Y is a bitwise subset of X).
+
+Because any subset's OR is Y, which is a subset of X.
+
+So the OR of the subset can't have any bits set that are not in X.
+
+So perhaps for each possible Y (subset of the OR of the entire array), we can compute the maximum subset size for which Y is the OR.
+
+Once we have that, for each Y, compute (max subset size) - (number of set bits in Y). The maximum over all Y is the answer.
+
+But how to compute, for each Y, the maximum subset size.
+
+Hmm. So for Y, how to find the maximum subset size such that the OR of the subset is exactly Y.
+
+The subset can be any subset of the array, but all elements in the subset must have all bits set in Y.
+
+Wait, no. Because the OR of the subset is Y, which is the cumulative OR of all elements.
+
+So each element in the subset must have at least all the bits that are set in Y, but when ORed together, the result is Y.
+
+Wait, no. That's not correct. Because the OR of the subset is Y, which is the OR of all elements. Each element in the subset may have some bits set beyond Y, but the OR of all elements is Y. No, that's not possible. Because each element in the subset is part of the OR. So the OR can't be less than any element.
+
+Wait, no. For example, if the entire array's OR is 3, and a subset's OR is 3, but some elements in the subset are 4 (binary 100), which when ORed with 3 (11) gives 111. So the subset can include elements that are higher than Y.
+
+Wait, no. Because the OR of the entire array is Y. So if the subset's OR is Y, then all elements in the subset, when ORed together, can't have any bits set that are not in Y. Because Y is the OR of the entire array, which includes all elements.
+
+Wait, no, that's not correct. Because the OR of the entire array is Y, but the OR of a subset S is Y. So perhaps the elements in S can have bits beyond Y, but when ORed, they result in Y.
+
+Wait, that's impossible because if any element in S has a bit set that is not in Y, then the OR would have that bit set, which would be higher than Y.
+
+So the OR of the subset S can't have any bits set that are not in Y. So the OR of the subset S is a subset of Y.
+
+Wait, no. Because the OR of the entire array is Y. So the OR of the subset S is a subset of Y.
+
+So for a subset S, the OR is a subset of Y.
+
+But Y is the OR of the entire array, which includes all elements. So the OR of any subset S is a subset of Y.
+
+So for subset S, OR(S) is a subset of Y.
+
+So Y must be >= OR(S).
+
+So for a subset S, the OR is Y, which is a subset of the OR of the entire array.
+
+So the problem reduces to finding, for each Y (subset of the OR of the entire array), the maximum size of a subset S such that OR(S) = Y.
+
+Once we have that, for each Y, compute (size) - (number of set bits in Y), and take the maximum.
+
+So how can we compute, for each Y, the maximum size of S where OR(S) = Y.
+
+Hmm.
+
+An alternative approach: For each Y, the maximum subset size is the maximum number of elements in the array that, when ORed, give Y. But how to find that.
+
+Let me think of it as a bitmask problem for each Y.
+
+We can model this as a BFS, where each state represents a certain bitmask and the count of elements used.
+
+But for n=100, that's not feasible.
+
+Alternative idea: For each Y, the maximum subset size is the maximum number of elements in the array that can contribute to Y, in the sense that when you OR all of them, you get Y.
+
+So how can we model this.
+
+Wait, perhaps for each Y, the maximum subset size is the maximum number of elements in the array that can be part of a group whose OR is Y.
+
+So for each element in the array, if it is a subset of Y (i.e., all bits set in it are set in Y), then it can be part of a subset that contributes to Y.
+
+But that's not sufficient because the OR of the subset may be exactly Y.
+
+Wait, for example, consider Y=3 (11). Suppose elements are 1, 2, 3.
+
+Each element is a subset of Y. So all can be in a subset, and their OR is 3.
+
+So the maximum subset size is 3.
+
+But if the array is [1,2,3], then the maximum subset size for Y=3 is 3.
+
+But if the array is [1,2,5], Y=3 (11). The elements 1 and 2 are subsets of Y. But the OR of 1 and 2 is 3. So the maximum subset size is 2.
+
+Hmm.
+
+So it's possible that even if all elements are subsets of Y, their OR may not be Y. So to find the maximum subset size for Y, we need to find the largest subset of elements, each of which is a subset of Y, and whose OR is exactly Y.
+
+So how to compute that.
+
+Hmm. So for each Y, the maximum subset size can be found by considering all elements in the array that are subsets of Y (i.e., x & Y == x). Then, among these, find the largest subset S such that the OR of all elements in S is exactly Y.
+
+But how to compute this efficiently.
+
+Hmm, perhaps for each Y, we can model this as a graph where nodes represent current OR, and edges represent adding an element. Then, we can perform BFS to find the maximum subset size for Y.
+
+But for each Y, this could be expensive since Y can be up to 2^60.
+
+But perhaps for each Y, we can represent the possible ORs that can be achieved with varying subset sizes, starting from the empty set.
+
+Wait, but that's not directly applicable.
+
+Alternative idea: For each Y, the maximum subset size is the maximum number of elements in the array that can form a subset whose OR is Y.
+
+Let me think of this as a problem where each element can be included or not, and the inclusion contributes to the OR.
+
+Then, the problem is to find the maximum number of elements that can be included such that their OR is exactly Y.
+
+But how to compute this for each Y.
+
+Hmm. Maybe for each Y, the maximum subset size is the size of the largest possible subset of the array that, when ORed together, gives Y.
+
+So for each Y, we can model it as a bitmask problem where we find the maximum size of a subset S where S is a subset of the array, and the OR of S is Y.
+
+But how.
+
+Wait, perhaps for each Y, the maximum subset size is the maximum number of elements in the array that can contribute to Y in their binary representation.
+
+But how.
+
+Wait, perhaps for each Y, the maximum subset size is the maximum number of elements in the array that are subsets of Y, but their combination gives Y.
+
+Wait, but that's not sufficient because we can have elements that are subsets of Y but when ORed together, their OR is less than Y.
+
+For example, Y=3 (11), elements 1 (01), 2 (10). Their OR is 3.
+
+But if Y=3, and an element is 3, then any subset including it will have OR 3.
+
+So perhaps for a given Y, the maximum subset size is the number of elements in the array that are subsets of Y, but when combined, their OR is Y.
+
+But how to compute this.
+
+Alternatively, for a given Y, the maximum subset size is the maximum number of elements in the array that can contribute to Y when ORed.
+
+So, for each Y, the maximum subset size is the maximum number of elements in the array that can be ORed together to reach Y.
+
+So for Y, the maximum subset size is the maximum size of a subset S of the array where OR(S) = Y.
+
+Hmm.
+
+But how to compute this for each Y.
+
+Wait, perhaps for each Y, we can model this as a BFS where each state is a certain bit pattern, and we track the maximum number of elements that can contribute to Y.
+
+But for each Y, this could be expensive.
+
+Another approach: For each Y, the maximum subset size is the maximum number of elements in the array that can form a subset which, when ORed together, equals Y.
+
+So, for each Y, we can compute this as follows:
+
+1. For each element in the array, check if it is a subset of Y. That is, if (element & Y) == element.
+
+   Because only elements that are subsets of Y can possibly contribute to the OR of Y.
+
+2. For these elements, we can consider them as candidates to form the subset.
+
+3. Now, the problem is to find the largest subset of these candidates such that their OR is Y.
+
+So for each Y, the maximum subset size is the maximum number of elements in the array that are subsets of Y, and when ORed together, give Y.
+
+So the approach is:
+
+- For each Y in the subset of the OR of the entire array:
+
+   a. Collect all elements that are subsets of Y (i.e., (x & Y) == x).
+
+   b. Compute the maximum subset size of these elements such that their OR is Y.
+
+   c. For this Y, the value is (max size) - (number of set bits in Y).
+
+   d. Keep track of the maximum across all Y.
+
+But how to compute step 3b efficiently.
+
+Hmm, for each Y, step 3b is to find the maximum number of elements in the array that are subsets of Y, and their OR is Y.
+
+This sounds like a problem that can be solved with BFS.
+
+So, for each Y, we can model it as a bitmask problem where the state is the current OR value, and the count of elements used.
+
+The idea is to perform BFS, starting from 0 (no elements selected), and for each step, add an element that is a subset of Y, and track the OR value and the count of elements used. The goal is to reach Y with the maximum count.
+
+But for Y up to 2^60, this is impractical because Y can be very large.
+
+But wait, the OR of the entire array is X. So Y is a subset of X. So for any Y, it's a number that is a subset of X's bits.
+
+So for each Y, the OR of any subset S is a subset of X. But the OR of the entire array is X, which is Y's superset.
+
+So perhaps we can track the ORs during the BFS and stop when Y is reached.
+
+But for n=100, and for each Y, the BFS could take O(2^60) steps, which is impossible.
+
+Hmm, that's a problem.
+
+Alternative idea: For each Y, the maximum subset size is the maximum number of elements in the array that are subsets of Y, and their combined OR is Y.
+
+But perhaps, for a given Y, the maximum subset size is the size of the array if all elements are subsets of Y and their OR is Y.
+
+Wait, but that's not necessarily the case.
+
+Wait, perhaps for a given Y, the maximum subset size is the number of elements in the array that are subsets of Y, but only if their combination can produce Y.
+
+But how to compute that.
+
+Another idea: For each Y, the maximum subset size is the number of elements that are subsets of Y, provided that their OR is exactly Y.
+
+But how to find that.
+
+Hmm.
+
+Wait, perhaps for each Y, the maximum subset size is the size of the array if all elements are subsets of Y and their OR is Y.
+
+But that's not always the case.
+
+Alternatively, for a given Y, the maximum subset size is the maximum number of elements in the array that are subsets of Y and whose combined OR is Y.
+
+Which can be found by:
+
+- For all elements in the array that are subsets of Y, perform a BFS to find the maximum number of elements that can contribute to Y.
+
+But again, this is computationally expensive.
+
+Wait, but perhaps for each Y, we can represent the problem as a bitwise OR problem, and find the maximum number of elements that can contribute to Y.
+
+Wait, perhaps for each Y, the maximum subset size is the maximum number of elements in the array that can be ORed together to yield Y.
+
+So, for each Y, this is the maximum size of a subset S where S is a subset of the elements, and the OR of S is Y.
+
+Hmm.
+
+Wait, here's an alternative idea: for each Y, the maximum subset size is the count of elements that are subsets of Y and greater than or equal to the bits in Y.
+
+Wait, no, that doesn't make sense.
+
+Alternatively, perhaps for each Y, the maximum subset size is the number of elements in the array that are subsets of Y, and when you OR all of them, you get Y.
+
+But again, how to compute that.
+
+Hmm. Another approach: since the OR of the entire array is X, which is the maximum possible OR, perhaps the maximum value is achieved when the subset is the entire array. So perhaps the maximum value is (n - number of set bits in X).
+
+But let's see.
+
+In the sample input: array is [1, 0, 1, 2], X is 3 (binary 11), so value is 4-2=2.
+
+But earlier, the maximum value was also 2.
+
+Wait, but what about a case where a subset of the array has a lower OR but a larger subset size.
+
+Wait, let's take an example.
+
+Array: [3,3,3].
+
+OR of entire array is 3 (11).
+
+So value is 3 - 2 =1.
+
+But what if I take a subset of size 2: OR is 3. The value is 2-2=0.
+
+So the entire array's value is 1, which is higher.
+
+Another example:
+
+Array: [5,5,5,5], OR is 5 (101).
+
+Value is 4 - 2 = 2.
+
+But what if I take a subset of 3 elements: OR is 5. Value is 3-2=1.
+
+So the entire array gives a higher value.
+
+Another example:
+
+Array: [4,5], OR is 5.
+
+Value is 2 - 2 =0.
+
+But if I take the entire array, OR is 5.
+
+Alternatively, if I take a subset of one element, OR is 4 or 5. If it's 5, value is 1-2= -1.
+
+So the entire array's value is better.
+
+Another example:
+
+Array: [2, 2, 3].
+
+OR of entire array is 3 (11).
+
+Value is 3-2=1.
+
+But what about taking a subset of 2 elements: OR is 3. Value is 2-2=0.
+
+So the entire array is better.
+
+Wait, maybe the maximum value is achieved when the subset is the entire array.
+
+So perhaps, the maximum possible value is the value when the subset is the entire array.
+
+But let's think of a case where a subset with a lower OR can have a higher value.
+
+Suppose the array has elements [1,2,3], n=3.
+
+OR of entire array is 3 (11).
+
+Value is 3 - 2 =1.
+
+But if I take a subset of two elements, say [1,2], OR is 3, value is 2 - 2=0.
+
+So the entire array's value is higher.
+
+Another example: array [1,2,3,4], n=4.
+
+OR is 7 (111).
+
+Value is 4 - 3 =1.
+
+But if I take a subset of three elements, say [1,2,3], OR is 3, value is 3-2=1.
+
+Which is same as the entire array.
+
+Hmm.
+
+Wait, what if the array is [4,5,6].
+
+OR is 7 (111).
+
+Value is 3-3=0.
+
+But if I take subset [4,5], OR is 5, value is 2-2=0.
+
+So same.
+
+Hmm.
+
+Another example: array [2,3,5], OR is 7.
+
+Value is 3-3=0.
+
+But if I take a subset of [2,3,5], OR is 7, value 0.
+
+But take a subset of [3,5], OR is 7, value 0.
+
+Hmm.
+
+Wait, perhaps the maximum value is always achieved when the subset is the entire array.
+
+Because any subset S can't have a higher OR than X, and the value is |S| - bits.
+
+So, if |S| is larger than the entire array's size, that's not possible. So, for any subset, the value is at most (n - k), where k is the number of set bits in OR(S).
+
+But perhaps for the entire array, the OR is X, and the value is n - bits(X).
+
+But perhaps there exists a subset S where the OR is smaller than X, but |S| is larger than (n - bits(X)), leading to a higher value.
+
+Wait, but |S| can't be larger than n.
+
+Wait, for example, if |S|=n, and OR(S) is X, then value is n - bits(X).
+
+If |S|=n-1, and OR(S) is X', which is a subset of X, then the value is (n-1) - bits(X').
+
+Which could be higher than (n - bits(X)).
+
+Is that possible?
+
+Yes.
+
+For example, let's say X has 2 bits set.
+
+If S is the entire array, value is n - 2.
+
+If S is missing one element, but the OR of S is X', which has 1 bit set.
+
+Then, the value is (n-1) - 1 = n-2, same as before.
+
+No gain.
+
+But perhaps when X has 3 bits.
+
+Suppose the entire array's OR is 7 (111), bits(X) is 3.
+
+So value for entire array is 3 -3 =0.
+
+But if I take a subset that's missing two elements, but their OR is 3.
+
+The value is 2 - 2=0.
+
+No gain.
+
+Hmm.
+
+Alternatively, suppose X has 4 bits set.
+
+If I take a subset S with |S|=4, value is 4 -4=0.
+
+But if I take a subset S with |S|=3, and OR is 3 (3 bits), value is 3-2=1.
+
+Which is better.
+
+So in this case, the value is higher.
+
+Wait, so in this case, the maximum is achieved by

@@ -1,0 +1,565 @@
+Okay, I have to solve this problem where a robot is moving on a grid based on a script, and I need to find out how many times it reaches the origin (0,0) after executing the script k times. Hmm, let's think about how to approach this.
+
+So, the robot starts at (0,0) and follows the script s which is of length n. Each character in s tells it to move in a particular direction. But if it tries to move outside the rectangle, it changes the script. Oh right, so every time it goes outside, the script is modified, and then it continues from the nearest possible character.
+
+The process is repeated k times. So for each of the k iterations, we execute the script s, modifying it as needed, and track if the robot steps back to (0,0) any number of times during those k steps.
+
+Wait, but the problem is to count all the times it reaches (0,0) during all k executions. So, for each of the k runs, the robot might visit (0,0) multiple times.
+
+Hmm, okay. So, the first thing I need to do is model the robot's movement. But since k can be up to 1e6 and n up to 1e6, a naive simulation for each step would be too slow.
+
+So, I need a smarter way. Maybe find patterns or cycles in the robot's movement and then compute how often (0,0) is revisited within each cycle, then multiply by the number of cycles in k steps.
+
+Let me think about the process step by step.
+
+Each time the robot is about to move, it checks if the next move is outside the grid. If yes, it changes the script and then starts executing from the nearest valid character. So, the script can change multiple times as the robot moves.
+
+Wait, but the script changes only when the robot tries to go outside. So, the script can be in a modified state, and the robot's next move is determined by the current state of the script.
+
+This seems complicated. Maybe I can model the state of the script as it changes, and for each state, track the robot's position and direction.
+
+But that might be too much for large k. So, perhaps we can find that after some steps, the script's state cycles, and the robot's position and state also cycle. Then, we can compute the number of times (0,0) is visited within each cycle, and the total is the number of cycles multiplied by the count per cycle, plus the remainder.
+
+So, the plan is:
+
+1. For each test case, simulate the robot's movement and track the state of the script and the robot's position.
+2. But to avoid simulating each step up to k steps (which is up to 1e6 per test case and 1e4 test cases), find a way to model the state transitions and find cycles.
+3. Once a cycle is found in the state transitions, compute how many times (0,0) is visited in each cycle, and then calculate the total based on the number of full cycles and the remainder.
+
+But how to model the state? The script's state can change based on whether the robot moves outside. So, the script can be in a modified state, and each modified state depends on the previous state and the robot's movement.
+
+Wait, perhaps the key is to track the current script state and the robot's position. But the script can be in any of 4 directions (L, R, U, D) and can be in a modified state, which could be a combination of L/R and U/D changes. So, the number of possible script states is 2^2 =4 (since each L/R can be flipped to R/L, and each U/D can be flipped to D/U). So, the number of possible script states is limited.
+
+Wait, no. The script is being modified based on whether the robot steps outside. So, each time the robot steps outside, the script is modified, and the robot's next move is determined by the current script state. So, the script state can change multiple times, but perhaps the number of possible states is manageable.
+
+So, the approach is:
+
+- For each test case, simulate the robot's movement step by step, keeping track of the current script state and the robot's position.
+- But since the script state can change, and the robot's position can change, we can model this as a state (script state, robot position). Since the script state is limited to 4 possibilities, and the robot's position is up to w and h (which can be up to 1e6 each), this approach could be too slow.
+
+Wait, but 4 * 1e6 * 1e6 is way too big. So, we need a smarter way.
+
+Alternative approach: find that the robot's movement is periodic or has a fixed pattern, and model the transitions between states.
+
+Wait, perhaps the problem can be broken down into two independent subproblems: the x and y directions. Because the robot's movement in the x-direction (left/right) is independent of the y-direction (up/down), except for the fact that each step affects both x and y.
+
+Wait, no. Each movement affects both x and y. So, the x and y movements are interdependent.
+
+Hmm. Maybe the key is to find the robot's movement in the x and y directions separately. But I'm not sure.
+
+Wait, let's think about the robot's movement in terms of the script state. Each time the robot is about to move, it checks if the move is outside the grid. If it is, the script is modified, and the robot starts executing from the nearest valid position.
+
+So, the script state can change, and this affects how the robot moves.
+
+So, the problem is to model the robot's movement, considering the script state and the robot's position, and count the number of times it returns to (0,0).
+
+But with the constraints on n and k, it's impossible to simulate each step for large k.
+
+So, perhaps we can model the problem as a finite automaton, where each state is the current script state and the robot's position, and transitions are the robot's movements. Then, we can find cycles in this automaton, compute how often (0,0) is visited in each cycle, and multiply by the number of cycles in k steps, plus the remainder.
+
+But how to model this automaton. The script state can be in one of 4 states (each combination of L/R and U/D flipped). For each state, the robot's position can be any (x, y) within the grid. So, the number of possible states is 4 * w * h, which is way too big.
+
+So, this approach is not feasible.
+
+Alternative idea: the robot's movement can be broken down into independent steps in x and y directions, but since each step affects both, it's not straightforward.
+
+Wait, another observation: the robot's movement is deterministic once the script is in a certain state and the robot's position is known. So, for each state, the robot's next move is determined by the script, and thus we can model this as a state machine where each state is a combination of script state and robot's position.
+
+But again, this is impractical due to the size.
+
+Hmm. Let me think differently. Since the robot starts at (0,0), and the script is s, perhaps the robot's path can be modeled as a finite automaton, and we can find cycles in this automaton.
+
+But I'm not seeing it yet.
+
+Wait, perhaps the robot's movement can be represented as a state, and each state transition is determined by the current script state and the robot's position. So, for each test case, the robot's movement is a sequence of states, and we can model the transitions.
+
+But again, the size is too big.
+
+Alternative approach: find that the robot's movement is periodic in some way, and the number of times it reaches (0,0) in each period can be computed.
+
+But I'm not sure how to find that period.
+
+Wait, let's think about when the robot is at (0,0). The robot is at the origin, so any move that would take it outside the grid would modify the script, and the next move starts from the nearest valid position.
+
+Hmm, but when the robot is at (0,0), the next move is determined by the current script state. So, if the script is, say, "L", then the robot would move left, which is to (-1,0), which is outside. So, the script is modified to "R", and the robot starts moving from the nearest possible position, which is (0,0) again. So, the next move is R, bringing it to (1,0).
+
+Wait, that's an important point. So, if the robot is at (0,0), executing a script that would take it outside will cause the script to change, and the robot starts executing from (0,0) again.
+
+So, the robot's position can return to (0,0) only if the script is modified in such a way that the next move is to (0,0). Or wait, no: the robot is at (0,0), and it's executing the current script. If the next move would take it outside, the script is modified, and the robot starts executing from the nearest valid position. So, the next move is determined by the modified script.
+
+So, for example, if the current script is "UR", and the robot is at (0,0). The next move is 'U', which would take it to (0,1), which is inside. So, no change. Then, the robot moves up. But if the next move is 'D', which would take it to (0,-1), outside. So, the script is modified to 'U', and the robot starts executing from (0,0) again.
+
+Wait, but in this case, the robot is at (0,0) again, and the next move is determined by the modified script 'U'. So, the robot moves up to (0,1).
+
+Hmm, so (0,0) can only be revisited if, after some moves, the robot is at (0,0) again, and the next move is such that it doesn't take it outside.
+
+So, perhaps the robot's position can only be (0,0) if it's in a state where the next move doesn't take it outside.
+
+So, for each state (script state, position), we can model transitions.
+
+But again, the problem is that the number of states is too big.
+
+Wait, but perhaps the robot's x and y movements can be considered independently, but their changes are linked because each step affects both.
+
+Hmm, maybe not.
+
+Alternative idea: find that the robot's movement in the x and y directions is periodic, and find the period for each direction, then find the overall period by taking the least common multiple of the two periods. Then, compute how many times (0,0) is visited in each period.
+
+But this is a stretch, and I'm not sure if this applies here.
+
+Wait, considering that each step affects both x and y, perhaps the movement in x and y can be considered separately, but in reality, they are linked.
+
+Hmm.
+
+Let's try to model the robot's movement step by step for a small example.
+
+Take the example given: s = "ULULURD", n=7, w=4, h=4.
+
+Wait, no, the example in the problem statement is for a robot that moves, and the script is modified when it exits the grid. So, let's see what happens.
+
+Wait, the example in the problem statement is a bit complex, but perhaps it's better to think through a small example.
+
+Let me take a simple case where the robot starts at (0,0), and the script is "L". So, the robot is to move left each time.
+
+But since the grid is, say, 5x5, starting at (0,0), moving left would take it to (-1,0), which is outside the grid. So, the script is modified to "R", and the robot starts moving from (0,0) again.
+
+So, the robot's next move is right, taking it to (1,0).
+
+Then, the next move is left, taking it to (0,0), which is the origin. So, this is a visit to (0,0).
+
+So, in this case, the robot reaches (0,0) once.
+
+But how can we generalize this?
+
+Hmm, maybe the key is to find all possible positions the robot can be in, and for each position, determine how many times it returns to (0,0) during a full cycle of the script.
+
+But I'm not sure.
+
+Another approach: since the robot's script is modified whenever it steps outside the grid, the script's state changes are determined by the robot's path. So, the changes are not independent of the robot's movement.
+
+So, perhaps the problem can be broken down into two parts:
+
+1. For each possible script state, determine how many times the robot returns to (0,0) during a single cycle of executing the script.
+
+2. Find how many full cycles the robot can do in k steps, and add the partial cycle.
+
+But again, the issue is that the number of script states is small (4 possibilities), so for each test case, we can simulate the robot's movement for a certain number of steps, determine the number of visits to (0,0) in a cycle, and then compute the total.
+
+Wait, but how? Because the number of steps in a cycle is not fixed.
+
+Alternatively, perhaps the robot's movement is periodic, and the period is small enough that we can simulate a few steps and find the cycle.
+
+So, let's think: for each test case, simulate the robot's movement for a certain number of steps (say, up to 4n steps), and see if a cycle is formed. Then, compute how many times (0,0) is visited in that cycle.
+
+Then, for k steps, the total is the number of full cycles multiplied by the count per cycle, plus the count from the remaining steps.
+
+But how to determine the cycle.
+
+Alternatively, perhaps the robot's movement is such that after a certain number of steps, the script state returns to its original state, and the robot's position is back to the starting point. So, the cycle length is the least common multiple of the x and y periods.
+
+But this is getting a bit abstract.
+
+Maybe I should model the robot's movement step by step, keeping track of the script state and the current position. For each step, I can record whether the robot reaches (0,0) and update a counter.
+
+But with k up to 1e6, and t up to 1e4, this approach would be too slow.
+
+Wait, but perhaps the number of steps before a cycle is detected is small, say up to 4n steps. So, for each test case, simulate up to 4n steps, and then see if the state (script state, position) repeats. If it does, then the subsequence from the first occurrence to the current step is a cycle.
+
+Then, compute how many times (0,0) is visited in each cycle, and the remaining steps.
+
+But this approach depends on detecting cycles quickly.
+
+So, the steps are:
+
+For each test case:
+
+1. Simulate the robot's movement for up to 4n steps, recording each state (script state, position) and the step number.
+
+2. Once a state repeats, determine the cycle length, and the number of times (0,0) was visited during the cycle.
+
+3. Compute how many full cycles fit into k steps, and how many steps are left.
+
+4. Multiply the count of (0,0) per cycle by the number of full cycles, and add the count from the remaining steps.
+
+But wait, the robot's state is determined by the script state and the position. So, for each step, the state is (script_state, x, y). So, if at step i and j, the state is the same, then the subsequence from i to j is a cycle.
+
+So, in code, for each test case, we can:
+
+- Initialize the current script state as the initial state (like all L, R, U, D, but wait, the initial script is s. So, the initial script state is s, but since the robot starts at (0,0), the first move is determined by s[0].
+
+Wait, no. The initial script is s, but the robot starts executing s[0] first, then s[1], etc.
+
+So, the initial script state is s. The robot starts executing s[0], then s[1], etc., and each time it tries to move outside, the script is modified.
+
+So, the initial state is (s, 0, 0). Then, for each step, we check if the next move would take the robot outside. If yes, change the script, and then start the next move from the current position.
+
+So, the state is (script_state, x, y). So, for each step, the state is updated as follows:
+
+- Get the current script state.
+- Check if the move (based on the current script state) would take the robot outside.
+- If yes, change the script, and the next move is determined by the modified script.
+- If no, execute the current script state's move, update x or y, and set the new position.
+
+So, in code, for each test case:
+
+- Read n, k, w, h, s.
+- Initialize current_script_state as s.
+- current_x = 0, current_y = 0.
+- visited_states = set() to track (current_script_state, current_x, current_y) to detect cycles.
+- count = 0
+- for step in 0 to k:
+   - current_script_state = current_script_state
+   - determine the direction to move: based on current_script_state.
+   - new_x, new_y = current_x + dx, current_y + dy
+   - check if new_x is out of bounds (x <0 or x >= w) or new_y is out of bounds (y <0 or y >= h)
+   - if yes:
+       - change the script state: for each L/R, flip to R/L; for each U/D, flip to D/U.
+       - current_script_state = new_script_state
+   - else:
+       - current_x, current_y = new_x, new_y
+   - if (current_script_state, current_x, current_y) is in visited_states:
+       - find the cycle start and cycle length.
+       - compute how many (0,0) visits were in this cycle.
+       - add to count the number of (0,0) visits in the cycle multiplied by the number of cycles.
+       - break out of the loop.
+   - else:
+       - add (current_script_state, current_x, current_y) to visited_states.
+- after the loop, output count.
+
+But wait, this approach would be too slow because for each step, we have to record the state, which could be up to 4 * w * h states. For w and h up to 1e6, this is impossible.
+
+So, this approach is not feasible.
+
+Alternative idea: instead of tracking the entire state, track the robot's position and the current script state. But again, the number of possible positions is too big.
+
+Hmm. Maybe the key is to realize that the robot's movement can be represented as a finite automaton, and that the transitions between states can be modeled in a way that allows us to compute the number of visits to (0,0) without tracking every possible state.
+
+But I'm not seeing it.
+
+Another approach: for each test case, simulate the robot's movement for a certain number of steps (like up to 4n steps), and then see if the movement starts to repeat, which would indicate a cycle.
+
+But again, this is impractical for large n.
+
+Wait, perhaps the robot's movement is periodic in terms of the script's state. So, after a certain number of steps, the script's state returns to its initial state, and the robot's position returns to the starting point (0,0). Then, the cycle length would be the least common multiple of the x and y periods.
+
+But I'm not sure how to find the x and y periods.
+
+Alternatively, perhaps when the robot returns to (0,0), it's because the script has been modified in such a way that the next move is to (0,0). So, for each step, we can track the robot's position and script state, and if it returns to (0,0), we can count that as a visit.
+
+But again, the problem is to find how often this happens in k steps, which is too time-consuming.
+
+Hmm. Maybe the key is to find that after a certain number of steps, the robot's positions cycle, and the script's state cycles as well. Then, the total number of (0,0) visits is the sum of visits in each cycle multiplied by the number of cycles, plus the visits in the remaining steps.
+
+So, for each test case, simulate the robot's movement for a certain number of steps (like up to 4n steps), and then find the cycle length. Then, compute how many times (0,0) was visited in the cycle, and the remaining steps.
+
+But again, the issue is that simulating the movement for up to 4n steps is manageable, as 4*1e6 is 4e6 per test case, and with t=1e4, that's 4e10, which is way too big.
+
+So, this approach is not feasible.
+
+Another idea: since the robot's movement is determined by the script and the current position, perhaps the number of possible positions is manageable if the script state is limited.
+
+Wait, the script state is limited to 4 possibilities. So, for each position, the state is (script state, x, y). So, the number of possible states is 4 * w * h. For w and h up to 1e6, this is 4e12, which is way too big.
+
+So, this is not feasible.
+
+Hmm. So, perhaps the problem requires a different approach.
+
+Wait, let's think about the robot's movement in terms of the script's state and the current position. Each time the robot is about to move, it checks if the move is valid. If not, the script is modified, and the robot starts moving from the nearest valid position.
+
+So, the movement is a state machine where each state is (script state, current position). The transitions are determined by the robot's movement.
+
+But again, the state space is too big.
+
+Wait, but perhaps the robot's movement is such that the x and y movements are independent. So, maybe we can model the x and y movements separately, find their periods, and then compute the total visits as the product of the x and y counts.
+
+But I'm not sure.
+
+Wait, in the x direction, each move affects the robot's x-coordinate. Similarly for y.
+
+So, perhaps the movement in x and y can be considered independently, and their individual periods can be found.
+
+So, for the x direction, the robot's movement is determined by the script's x-components (L, R, or D, U). Similarly for y.
+
+So, the x movement can be modeled as a state machine with states being the current x position, and transitions based on the script's x components.
+
+Same for y.
+
+So, perhaps the total number of (0,0) visits is the product of the number of times the robot returns to (0,0) in the x-direction and the y-direction, multiplied by the number of steps in each direction.
+
+Wait, but that's not necessarily true, because the robot's movement in x and y are not independent. Each step changes both x and y.
+
+So, this approach might not work.
+
+Hmm. I'm stuck. Maybe I should look for hints or think about similar problems.
+
+Wait, I recall that in some programming competition problems, when you have a robot that can change its state based on the position, the key is to track the state and find cycles.
+
+So, for this problem, perhaps the robot's state is (current script state, x, y). Since the script state is limited to 4 possibilities, and x and y can be up to 1e6, but for each test case, the number of steps is limited to k, which is up to 1e6, perhaps for each test case, we can simulate the robot's movement for up to 4n steps, and then look for cycles.
+
+Because 4n is manageable for n up to 1e6, as 4e6 steps per test case, and t up to 1e4, that's 4e10 steps, which is way too big.
+
+So, that's not feasible.
+
+Hmm. So, perhaps the problem is to find that the robot's movement is periodic, and the period is small enough to simulate a few steps and find the cycle.
+
+So, here's an alternative plan:
+
+For each test case:
+
+1. Simulate the robot's movement step by step, tracking the script state and the current position.
+
+2. For each step, record the current state (script state, x, y).
+
+3. Once a state is repeated, we have found a cycle.
+
+4. The cycle starts at the first occurrence of the state, and the cycle length is the difference between the current step and the first occurrence.
+
+5. Then, compute how many times (0,0) was visited during the cycle.
+
+6. The total number of visits is the number of full cycles multiplied by the count per cycle, plus the count from the remaining steps.
+
+But again, the problem is that the number of steps can be up to 4n, which is 4e6, and for t=1e4, this is 4e10 steps, which is way too slow.
+
+So, this approach is not feasible.
+
+Hmm. So, I'm stuck. Maybe I need to think differently.
+
+Wait, perhaps the robot's movement in the x and y directions can be considered separately, and the number of times it reaches (0,0) is the product of the x and y counts.
+
+But wait, that's not correct. For example, in the x direction, the robot might reach (0,0) 3 times, and in the y direction, 2 times, leading to 6 visits, but in reality, each step affects both x and y, so the visits are not independent.
+
+So, that approach is incorrect.
+
+Hmm. Another idea: since the robot starts at (0,0), and each move is determined by the script, perhaps the number of times it reaches (0,0) is equal to the number of times the script is modified in such a way that the next move is to (0,0). So, for each step, if the robot is at (0,0), and the next move is to (0,0), then it's a visit. But the robot is at (0,0) only when the script is such that the next move is to (0,0). So, the number of such visits is the number of times the robot is at (0,0) and the next move is to (0,0).
+
+So, perhaps the problem can be reduced to finding the number of times the robot is at (0,0) and the next move is to (0,0) during the k steps.
+
+But how to model this.
+
+So, the key is to find all the steps where the robot is at (0,0) AND the next move would take it to (0,0).
+
+So, for each step, if the robot is at (0,0), and the next move is to (0,0), then it's a visit.
+
+So, the problem reduces to counting the number of times the robot is at (0,0) and the next move is to (0,0) during the k steps.
+
+But how to model this.
+
+Hmm. So, the robot's movement is determined by the script state. So, the next move is determined by the current script state and the robot's position.
+
+So, when the robot is at (0,0), the next move is determined by the current script state. So, if that move is to (0,0), then it's a visit.
+
+So, the problem is to find, during the k steps, the number of times the robot is at (0,0) and the next move is to (0,0).
+
+So, how to model this.
+
+So, for each step, we can track whether the robot is at (0,0) and the next move is to (0,0). So, for each such case, increment the count.
+
+But again, the problem is how to find these cases quickly.
+
+Hmm. Maybe we can model the robot's movement as a state machine, where each state is the current script state and the current position. So, the transitions are determined by the current script state and the movement.
+
+But again, the state space is too big.
+
+So, perhaps the only way is to simulate the robot's movement step by step, and for each step, check if the robot is at (0,0) and the next move is to (0,0). If so, increment the count.
+
+So, the code would look like this:
+
+count = 0
+
+current_script_state = s
+
+x = 0
+
+y = 0
+
+for step in range(k):
+
+    # determine the direction based on current_script_state
+
+    if current_script_state == 'L':
+
+        dx, dy = -1, 0
+
+    elif current_script_state == 'R':
+
+        dx, dy = 1, 0
+
+    elif current_script_state == 'U':
+
+        dx, dy = 0, -1
+
+    else: # D
+
+        dx, dy = 0, 1
+
+    new_x = x + dx
+
+    new_y = y + dy
+
+    # check if new position is outside the grid
+
+    if new_x < 0 or new_x >= w or new_y < 0 or new_y >= h:
+
+        # change the script state
+
+        if current_script_state == 'L' or current_script_state == 'R':
+
+            # flipping L/R to R/L, so the script becomes R, L, or their opposites.
+
+            # for example, if current script is 'L', flipping to 'R'.
+
+            # So, for 'L', new script is 'R'.
+
+            # Similarly for 'R', becomes 'L'.
+
+            new_script_state = 'L' if current_script_state == 'R' else 'R'
+
+        else: # U or D
+
+            # flipping U/D to D/U.
+
+            new_script_state = 'D' if current_script_state == 'U' else 'U'
+
+        # Now, the script is modified, and the robot starts executing from (0,0) again.
+
+        # So, the new position is (0,0), and the next move is determined by the new script state.
+
+        # So, set x and y to 0,0.
+
+        x = 0
+
+        y = 0
+
+        current_script_state = new_script_state
+
+        # reset the movement, since after modifying the script, the robot starts from (0,0) again.
+
+    else:
+
+        # move to new position
+
+        x = new_x
+
+        y = new_y
+
+    # check if (x, y) is (0,0)
+
+    if x == 0 and y == 0:
+
+        # check if the next move is also (0,0)
+
+        # determine the direction based on current_script_state
+
+        if current_script_state == 'L':
+
+            dx, dy = -1, 0
+
+        elif current_script_state == 'R':
+
+            dx, dy = 1, 0
+
+        elif current_script_state == 'U':
+
+            dx, dy = 0, -1
+
+        else: # D
+
+            dx, dy = 0, 1
+
+        new_x = 0 + dx
+
+        new_y = 0 + dy
+
+        if new_x == 0 and new_y == 0:
+
+            # the robot is at (0,0) and the next move is also (0,0)
+
+            count += 1
+
+So, this code would simulate each step, and for each step where the robot is at (0,0), check if the next move is also to (0,0). If so, increment the count.
+
+But wait, in the code above, when the robot is at (0,0), the new position is (0,0), and the next move is determined by the new script state. So, if the new script state causes the next move to be (0,0), then it's a visit.
+
+So, this code correctly counts the number of times (0,0) is visited.
+
+But the problem is that for large k, this code would take too long. For example, if k is 1e6, and for each step, the code runs in O(1) time, then 1e6 steps are manageable. But in Python, 1e6 steps are manageable, but 1e6 * 4n steps could be a problem.
+
+Wait, but in the code above, for each step, the robot's movement is simulated, and for each step where the robot is at (0,0), we have to determine the next move. So, for each of those steps, it's O(1) to determine the next move.
+
+So, the total time is O(k) per test case, which for k up to 1e6 and t up to 1e4, is 1e10 operations, which is way too slow.
+
+So, this approach is not feasible.
+
+Hmm. So, I'm stuck again.
+
+Alternative idea: find that the robot's movement in the x and y directions are independent, and find the periods for x and y, then compute the total visits.
+
+But I'm not sure.
+
+Wait, perhaps the problem can be modeled as follows:
+
+Each time the robot completes a cycle of movements, it returns to (0,0) a certain number of times. So, the total number of visits is the number of complete cycles multiplied by the number of visits per cycle, plus the visits in the remaining steps.
+
+But again, the number of cycles is unknown.
+
+Hmm. Another approach: since each step affects both x and y, perhaps the number of (0,0) visits is the product of the number of times x is zero and the number of times y is zero, but that's not correct because each step affects both.
+
+Wait, perhaps not. For example, in a single step, both x and y can be zero, leading to a visit. So, the visits are not independent.
+
+Hmm. So, perhaps the problem can't be solved by considering x and y separately.
+
+Another Idea: since the robot's movement is deterministic given the script state and position, perhaps for each test case, we can simulate the robot's movement for up to 4n steps, and then look for cycles.
+
+So, for each test case, simulate for up to 4n steps, and for each step, record the state (script state, x, y). Once a state repeats, we have found a cycle.
+
+Then, the number of steps in the cycle is the difference between the current step and the first occurrence of that state.
+
+Once the cycle is found, the number of (0,0) visits in the cycle can be computed, and the total count can be calculated based on the number of full cycles and remaining steps.
+
+So, for each test case:
+
+1. Simulate the robot's movement step by step, keeping track of the state (script state, x, y).
+
+2. Once a state repeats, find the start and end of the cycle.
+
+3. Compute how many (0,0) visits are in this cycle.
+
+4. Multiply the count by the number of full cycles in k steps, add the remaining steps' count.
+
+This would reduce the problem to O(4n) per test case, which is manageable for n up to 1e6 and t up to 1e4, as 4e6 * 1e4 is 4e10, which is way too big. Wait, no, 4e6 steps per test case, and t is 1e4, that's 4e10 steps, which is impossible.
+
+So, this approach is also not feasible.
+
+Hmm. So, I'm stuck. Maybe I need to think of another approach.
+
+Wait, perhaps the problem can be modeled as a finite automaton where the state is the script state and the position, but the number of possible positions is manageable.
+
+But no, for w and h up to 1e6, this is not feasible.
+
+Hmm. Maybe the key is to note that the robot's movement is periodic in the x and y directions. So, the number of (0,0) visits is the product of the number of times the x direction returns to 0 and the number of times the y direction returns to 0, multiplied by the number of steps.
+
+But again, this isn't correct because each step affects both x and y.
+
+Hmm. So, I'm stuck. I think I need to look for hints or think differently.
+
+Wait, perhaps the problem can be approached by considering that the robot's movement is modified only when it tries to move outside the grid. So, each modification of the script is triggered by a move outside the grid.
+
+So, the robot's movement is a sequence of steps, where each step might trigger a script modification.
+
+So, the total number of modifications is O(k), but for large k, it's impractical.
+
+So, perhaps the robot's movement is such that after a certain number of steps, it starts to return to (0,0) after some steps, and the number of times it does so is periodic.
+
+So, the problem reduces to finding the cycle length and the number of visits in each cycle.
+
+But again, I'm not sure.
+
+Hmm. So, perhaps the best way is to try to implement the simulation approach, but with some optimizations.
+
+In the code, for each test case, simulate the robot's movement step by step, and for each step, check if the robot is at (0,0) and the next move is also to (0,0). If so, increment the count.
+
+But for large k, this is too slow.
+
+Wait, but in practice, the robot's movement may have a lot of steps, but the number of steps where the robot is at (0,0) is limited.
+
+So, perhaps for each test case, simulate until either k

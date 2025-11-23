@@ -1,0 +1,584 @@
+0
+Okay, I've got this problem to solve. Let's read it carefully and understand what's going on.
+
+So, Alice and Bob have permutations of numbers from 1 to n. They play a game where in each turn, Alice removes either the first or last element from her array, and then Bob does the same from his array. They do this for n-1 turns, so each array will end up with one element. If those elements are the same, Bob wins; else, Alice wins.
+
+Our task is to determine who will win if both play optimally.
+
+Hmm, I need to find out, given the two permutations, whether the final elements x and y are equal or not, assuming both play their best strategies.
+
+Let me think about the possible scenarios.
+
+First, the game is turn-based, with each player making a choice each step. So, the order in which they remove elements from their arrays matters, and each choice affects the options available later.
+
+Wait, but both players are playing optimally. So for Alice, she wants to choose moves that prevent Bob from getting a matching x and y, while Bob wants to maximize the chance of matching.
+
+But considering the game as a whole, perhaps there's a way to model it as a game where the outcome is determined by certain conditions in the initial arrays.
+
+Let me think about the end result. The final x is the last remaining element of Alice's array after n-1 removals. Similarly for y. So, x is the element at position k in a, and y is the element at position m in b, after they've each removed n-1 elements.
+
+Wait, no. Because in each step, a player removes one element, so after n-1 steps, each array has one element. So, for Alice, the first step is to remove one element, and so on until only one remains. So, the order in which elements are removed can affect which element is left.
+
+But wait, the order in which they are removed depends on the choices made by Alice and Bob. But both are playing optimally, so perhaps there's a way to model the best possible outcome for each.
+
+But this seems complicated. Maybe there's a smarter way to model this.
+
+Wait, let's think about the process of elimination. The elements that survive are the ones not removed, and for each array, the possible last elements after n-1 removals would depend on the order in which the ends are taken.
+
+But this seems too vague. Let me think of the problem in terms of the minimal possible difference between x and y.
+
+Wait, but the problem isn't about the minimal difference, it's about whether they can be equal or not. So, maybe the key is to find whether the leftmost and rightmost elements of both arrays can be matched in some way.
+
+Wait, perhaps the game can be modeled such that if Alice can force the final x and y to be the same, she wins. Otherwise, Bob wins.
+
+But how?
+
+Let's consider the process of elimination. Since each player can choose to remove from either end, the order in which the elements are removed can be controlled. So, the key is to find a strategy where Alice can ensure that the remaining elements are the same.
+
+Wait, but since Alice is trying to prevent Bob from winning, she will try to remove elements in such a way that the remaining elements are different. Bob, on the other hand, will try to make them the same.
+
+So, perhaps the outcome depends on whether the maximum of Alice's left and right elements is less than or equal to the minimum of Bob's left and right elements, or something like that.
+
+Wait, let's think about the possible final elements. For Alice's array, the remaining element is a certain position from the start or end. Similarly for Bob's.
+
+Wait, maybe the key is to find the maximum in Alice's array and the maximum in Bob's array. Or perhaps not. Let's think of some examples.
+
+Take the example where n=1: Alice's array is [1], Bob's is [1]. Then Bob wins.
+
+Another example: n=2.
+
+Alice's array: [1,2]
+Bob's array: [2,1]
+
+In the first turn, Alice can remove 2 (from her array) or 1 (from her array). Similarly for Bob.
+
+If Alice removes 2, her array is [1]. Then Bob can remove 1 from his array, leaving 2. So x=1, y=2. Alice wins.
+
+Alternatively, if Alice removes 1, her array is [2]. Bob can remove the other element (2), leaving 1. So x=2, y=1. Bob wins.
+
+Wait, but Alice will choose the option that maximizes her chances. So in this case, she will choose to remove 2, leading to her array being [1], Bob's array being [2,1]. Bob can then choose to remove 1 from his array, leaving 2. So x=1, y=2. Alice wins.
+
+Wait, but wait: after Alice removes 2 from her array, her array is [1]. Then Bob's array is [2,1]. Bob can remove 1 (from the end) or 2 (from the start). Let's see:
+
+If Bob removes 1 (from the end), his array becomes [2]. So x=1, y=2. Alice wins.
+
+Alternatively, if Bob removes 2 (from the start), his array becomes [1]. So x=1, y=1. Bob wins.
+
+But Bob is playing optimally, so he would choose to remove 2, making his array [1], which is same as Alice's. So in this case, Bob wins.
+
+So, in this example, Alice's optimal choice is to remove 2, leading to Bob's array being [2,1], and Bob can remove 1, making x=1, y=2. So Alice wins.
+
+Wait, but wait: in the initial step, Alice can choose to remove 1 or 2. If she removes 1, her array is [2]. Then Bob can choose to remove 2 (from his array), which is the first element, leaving 1. So x=2, y=1. Bob wins.
+
+So, Alice, in this case, would choose to remove 2, leading to her array being [1], and Bob's array being [2,1]. Bob can then choose to remove 1, making y=2. So x=1, y=2. Alice wins.
+
+So in this case, Alice can win.
+
+Another example: n=3.
+
+Alice's array: [1,2,3]
+Bob's array: [3,2,1]
+
+What happens?
+
+After 2 turns, Alice's array is one element, Bob's is one.
+
+Wait, let's see:
+
+First step: Alice can remove first or last element.
+
+Case 1: Alice removes 1. Her array is [2,3]. Bob can remove from his array.
+
+Bob's options: remove 3 (end) or 2 (start). Let's see what Bob would do.
+
+If Bob removes 3, his array is [2,1]. Then Alice's array is [2,3]. She can remove 3, leaving 2. So x=2. Bob's array is [2,1], Bob can remove 1, leaving 2. So y=2. So x=y, Bob wins.
+
+Alternatively, if Bob removes 2 from his array, his array becomes [3,1]. Then Alice's array is [2,3]. She can remove 3, leaving 2. So x=2. Bob's array is [3,1]. He can remove 1, leaving 3. So x=2, y=3. Alice wins.
+
+But Bob is trying to maximize the chance of x=y. So in this case, Bob would choose to remove 3, leading to x=y=2, so Bob wins.
+
+But wait, in this case, Alice removed 1. So the outcome is Bob's win.
+
+But what if Alice removes 3 in her first move?
+
+Then her array is [1,2]. Bob's array is [3,2,1].
+
+Bob can choose to remove 3 (end) or 2 (start).
+
+If Bob removes 3, his array becomes [2,1]. Then Alice's array is [1,2]. She can remove 2, leaving 1. So x=1. Bob's array is [2,1]. He can remove 1, leaving 2. So y=2. Alice wins.
+
+Alternatively, if Bob removes 2 from his array, his array becomes [3,1]. Then Alice can remove 1, leaving 2. So x=2. Bob's array is [3,1], he can remove 1, leaving 3. So x=2, y=3. Alice wins.
+
+So, in this case, Bob's choice is to remove 3, leading to x=1, y=2. Alice wins.
+
+Wait, but Alice's initial choice of removing 3 leads to a winning scenario.
+
+So, in this case, Alice can choose to remove 3, leading to a win.
+
+So the outcome depends on Alice's initial choice.
+
+Hmm, this suggests that the outcome is determined by the maximum of Alice's array and the minimum of Bob's array.
+
+Wait, in the first example I considered, n=2:
+
+Alice's array is [1,2], so maximum is 2.
+
+Bob's array is [2,1], so minimum is 1.
+
+So 2 > 1, so Alice wins.
+
+In the second example I considered, n=3:
+
+Alice's maximum is 3, Bob's minimum is 1. So 3 > 1, Alice wins.
+
+In the case where Alice's maximum is 3, Bob's minimum is 1, Alice wins.
+
+Wait, so perhaps the condition is that Alice's maximum is greater than or equal to Bob's minimum, then Alice wins, else Bob wins.
+
+But let's test another example.
+
+Suppose n=4:
+
+Alice's array: [1,3,4,2]. So the maximum is 4.
+
+Bob's array: [2,4,3,1]. The minimum is 1.
+
+So 4 > 1: Alice wins.
+
+Another example where the outcome is Bob's victory.
+
+n=3.
+
+Alice's array: [1,2,3], Bob's array: [3,2,1].
+
+Alice's maximum is 3, Bob's minimum is 1. So Alice wins.
+
+Wait, but in the earlier example where Alice removes 1, Bob could win.
+
+So perhaps the initial approach is incorrect.
+
+Hmm, maybe I'm missing something. Let's think differently.
+
+What if the condition is whether the maximum of Alice's array is greater than or equal to the maximum of Bob's array, or something like that.
+
+Alternatively, perhaps the key is to find the minimal value that can be the last element for Alice and Bob.
+
+Wait, another approach: The game is such that Alice is trying to make x and y as large as possible, while Bob tries to make them as small as possible. Or perhaps the opposite.
+
+Alternatively, perhaps the game can be modeled using the concept of the minimal possible of Alice's array and the maximal possible of Bob's array.
+
+Wait, perhaps the winner is determined by whether the maximum of Alice's array is greater than or equal to the maximum of Bob's array, or something like that.
+
+No, that doesn't seem to fit.
+
+Wait, let's think about the possible end elements.
+
+After n-1 steps, Alice's array has one element, which is the last remaining one. Similarly for Bob.
+
+So, for Alice's array, the end element is either the first or last element after each step. So, the remaining element could be any of the elements, depending on the choices made.
+
+But both Alice and Bob are trying to choose their moves to influence which element remains.
+
+Wait, perhaps the optimal play for Alice is to try to maximize the chance that Bob's remaining element is the same as hers.
+
+So, Alice wants to choose a path where the remaining elements are the same as Bob's. Bob, on the other hand, wants to choose a path that makes them different.
+
+This sounds a bit like a game where the players are trying to maximize or minimize certain conditions.
+
+But modeling this for all possible arrays is complex, especially for large n.
+
+So, perhaps there's a smarter way to approach this.
+
+Wait, let's think about the following: the game can be viewed as a turn-based process where each player, on their turn, chooses to remove from either end of their array. The game ends when both arrays have one element left.
+
+The winner is determined by whether these two elements are equal.
+
+So, the problem reduces to whether the last remaining elements of the two arrays are the same.
+
+Now, what's the condition for this to happen.
+
+Hmm, perhaps the minimal possible and maximal possible values for Alice and Bob's arrays can determine this.
+
+Wait, the last remaining element for Alice can be any element that is not removed. Similarly for Bob.
+
+But since both play optimally, Alice will try to minimize the chance of Bob's last element being the same, and Bob will try to maximize it.
+
+Wait, but I'm not sure.
+
+Let me think about the minimal and maximal possible values for Alice's last element and Bob's.
+
+Wait, in Alice's array, the last remaining element is the one that is not removed. So, Alice can choose to remove elements from either end, which could lead to different possibilities.
+
+But perhaps the optimal play for Alice is to choose the option that maximizes the chance that Bob's remaining element is the same as hers. Wait, but she's trying to prevent that.
+
+Alternatively, perhaps the key is to find the minimal possible value that can be in Alice's array and the maximum in Bob's array, or something like that.
+
+Alternatively, perhaps the winner is determined by the maximum of Alice's array and the minimum of Bob's array. If the maximum of Alice's array is >= the maximum of Bob's array, then Alice can win, else Bob can.
+
+Wait, let's see.
+
+In the first example I considered earlier where n=2:
+
+Alice's array is [1,2], so maximum is 2.
+
+Bob's array is [2,1], so maximum is 2.
+
+So, 2 >= 2: Alice wins.
+
+Another example: n=3.
+
+Alice's array is [1,2,3], maximum is 3.
+
+Bob's array is [3,2,1], maximum is 3.
+
+So, 3 >=3: Alice wins.
+
+Another example where Alice's maximum is less than Bob's maximum.
+
+n=3.
+
+Alice's array is [1,2,3], Bob's array is [4,5,6].
+
+Wait, but the problem states that the arrays are permutations of 1 to n. So, all elements are unique.
+
+So, for example, n=3, Alice's array [1,2,3], Bob's array [4,5,6].
+
+What's the outcome?
+
+Alice's maximum is 3. Bob's maximum is 6.
+
+So, 3 <6: Bob would win.
+
+Wait, but let's see.
+
+In this case, whether Alice can get 3 as the last element, and Bob's last element is 6. So, x=3, y=6. So Bob wins.
+
+So, according to this, if Alice's maximum is less than Bob's maximum, Bob wins.
+
+But wait, in the first example, n=2, Alice's maximum is 2, Bob's maximum is 2. So, Alice wins.
+
+So, perhaps the condition is: if the maximum of Alice's array is greater than or equal to the maximum of Bob's array, Alice wins; else, Bob wins.
+
+Wait, that seems to fit the examples I've considered.
+
+So, the approach is to find the maximum in Alice's array and the maximum in Bob's array.
+
+If Alice's max >= Bob's max: Alice wins.
+
+Else: Bob wins.
+
+But wait, let's test another example.
+
+n=4.
+
+Alice's array: [1,3,2,4]. Max is 4.
+
+Bob's array: [5,1,2,3]. Max is5.
+
+So, Alice's max is 4 <5: Bob wins.
+
+Yes, because in this case, Bob's last element is 5, which is larger than Alice's maximum.
+
+So, Bob wins.
+
+So, according to this, the condition is that if the maximum of Alice's array is >= the maximum of Bob's array, Alice wins; else, Bob wins.
+
+But wait, in the earlier case where Alice's array was [1,3,4,2], and Bob's array was [3,2,1], which is [3,2,1]. So Bob's max is 3, which is less than Alice's max of 4: so Alice would win.
+
+Which aligns with the earlier example.
+
+So, perhaps the solution is to compute the maximum of Alice's array and the maximum of Bob's array. If Alice's max is >= Bob's, then Alice wins; else, Bob wins.
+
+But wait, does this hold for all cases?
+
+Another example: n=4.
+
+Alice's array: [4,3,2,1]. Max is4.
+
+Bob's array: [4,3,2,1]. Max is4.
+
+So, equality: Alice wins.
+
+Yes, because Alice's last element is4, Bob's last element is4.
+
+Another test case: n=4.
+
+Alice's array: [1,2,3,4]. Bob's array: [5,6,7,8]. Wait, no, because the arrays are permutations of 1..4, so Bob's array can't have 5,6,7,8. So, this is impossible.
+
+So, all elements are unique.
+
+So, the maximum of Bob's array is 4.
+
+So, if Alice's max is4, which is >= Bob's max of 4: Alice wins.
+
+Yes.
+
+Another test case: n=5.
+
+Alice's array: [5,4,3,2,1]. Max is5.
+
+Bob's array: [5,4,3,2,1]. Max is5.
+
+So, Alice's max is 5 >= Bob's 5: Alice wins.
+
+Another case: n=5.
+
+Alice's array: [1,5,3,2,4]. Max is5.
+
+Bob's array: [5,4,3,2,1]. Max is5.
+
+So, Alice's max is5 >= Bob's 5: Alice wins.
+
+So, yes, the condition holds.
+
+So, the approach is to find the maximum of Alice's array and the maximum of Bob's array. If Alice's max >= Bob's, Alice wins, else Bob wins.
+
+But wait, another test case: n=3.
+
+Alice's array: [2,1,3]. Max is3.
+
+Bob's array: [3,2,1]. Max is3.
+
+So, 3 >=3: Alice wins.
+
+But wait, in this case, if Alice's array is [2,1,3], her maximum is3.
+
+Bob's array is [3,2,1], maximum is3.
+
+So, according to our condition, Alice wins.
+
+But in the first step, Alice can choose to remove 3 from her array, leaving [2,1]. Then Bob can remove 1 from his, leaving3. So, x=2, y=3. Alice wins.
+
+So, yes.
+
+Another example where Alice's max is 4, Bob's is3.
+
+So, Alice's array has a maximum of4, Bob's is3.
+
+So, Alice's max is larger, so she wins.
+
+So, perhaps the correct condition is that if the maximum of Alice's array is >= the maximum of Bob's array, then Alice wins, else Bob wins.
+
+But wait, let's think of a case where Alice's maximum is greater than Bob's, but Bob can make the last elements different.
+
+Wait, no. Because if Alice's maximum is greater than Bob's, then Bob's maximum is less than Alice's. So, Bob's maximum is Bob's last element. So, if Alice's maximum is greater than Bob's, then the last element of Bob's array is at most Bob's maximum, which is less than Alice's. So, x can be Alice's maximum, and y can be Bob's maximum, which is less than x. So, x != y.
+
+So, Alice wins.
+
+So, the condition is correct.
+
+Thus, the solution is to compute the maximum of Alice's array and the maximum of Bob's array. If Alice's maximum is >= Bob's maximum, Alice wins; else, Bob wins.
+
+So, the code can be written as:
+
+For each test case:
+
+- Read n.
+
+- Read Alice's array.
+
+- Read Bob's array.
+
+- Compute max_a = max(Alice's array).
+
+- Compute max_b = max(Bob's array).
+
+- If max_a >= max_b: Alice wins.
+
+- Else: Bob wins.
+
+Wait, but wait a second. Let's think about the case where Alice's array is [3,2,4], so the maximum is4.
+
+Bob's array is [1,5,6], maximum is6.
+
+So, according to our condition, Bob's maximum is6>4: Bob would win.
+
+Yes, because Bob's last element is6, which is larger than Alice's4. So, x=4, y=6: Bob wins.
+
+So, condition holds.
+
+Another example: n=3.
+
+Alice's array: [1,3,2]. Max 3.
+
+Bob's array: [3,2,1]. Max 3.
+
+So, condition holds: Alice wins.
+
+Yes.
+
+So, the code can be written as:
+
+Read t test cases.
+
+For each test case:
+
+Read n.
+
+Read a as a list.
+
+Read b as a list.
+
+Compute max_a = max(a).
+
+Compute max_b = max(b).
+
+If max_a >= max_b: print "Alice"
+
+Else: print "Bob"
+
+This seems too simple, but according to all the test cases I've thought of, it seems to hold.
+
+Wait, but wait. Let me think of another scenario.
+
+n=4.
+
+Alice's array: [4,3,2,1]. Max is4.
+
+Bob's array: [1,2,3,4]. Max is4.
+
+So, Alice's max is4, Bob's max is4: Alice wins.
+
+Yes.
+
+Another case: Alice's array is [2,4,3,1]. Max is4.
+
+Bob's array is [5,6,7,8]. Wait, no, because Bob's array is a permutation. So, the maximum is 8.
+
+So, 4 <8: Bob wins.
+
+Yes.
+
+Another example: n=5.
+
+Alice's array: [5,1,2,3,4]. Max is5.
+
+Bob's array: [5,1,2,3,4]. Max is5.
+
+So, Alice's max is5 >=5: Alice wins.
+
+Yes.
+
+So, the code is straightforward.
+
+So, the code would read each test case, find the max of a and b, compare, and output the winner.
+
+So, the code can be written as follows.
+
+Read t.
+
+For each t:
+
+Read n.
+
+Read a as list of integers.
+
+Read b as list of integers.
+
+Compute max_a = max(a)
+
+Compute max_b = max(b)
+
+If max_a >= max_b: print "Alice"
+
+Else: print "Bob"
+
+Yes, that's the solution.
+
+Now, let's test this against the examples.
+
+In the first example given:
+
+n=1.
+
+a = [1]
+
+b = [1]
+
+max_a =1, max_b=1.
+
+1 >=1: Alice wins.
+
+Another example:
+
+n=2.
+
+a = [1,2]
+
+b = [2,1]
+
+max_a=2, max_b=2: Alice wins.
+
+Another example:
+
+n=3.
+
+a = [1,2,3]
+
+b = [3,2,1]
+
+max_a=3, max_b=3: Alice wins.
+
+Another example:
+
+n=4.
+
+a = [1,2,3,4]
+
+b = [5,6,7,8]
+
+max_a=4, max_b=8: 4 <8: Bob wins.
+
+Yes.
+
+So, the code should work.
+</think>
+
+To solve this problem, we need to determine the winner of a game played by Alice and Bob using their respective permutations of integers. The game involves removing elements from both arrays alternately until only one element remains in each. Alice wins if the remaining elements are the same; otherwise, Bob wins.
+
+### Approach
+The key insight is that the winner can be determined by comparing the maximum elements of Alice's and Bob's permutations. The reasoning is as follows:
+1. Alice and Bob take turns removing elements from their respective arrays until only one element remains.
+2. The optimal strategy for both players ensures that Alice will try to maximize the chance of her remaining element matching Bob's, while Bob will try to minimize this chance.
+3. The maximum element in Alice's array (max_a) and the maximum element in Bob's array (max_b) are critical because:
+   - If Alice's maximum element is greater than or equal to Bob's maximum element, Alice can always ensure that her remaining element matches Bob's.
+   - If Bob's maximum element is greater than Alice's, Bob can ensure that he wins.
+
+Thus, the solution involves comparing the maximum elements of both arrays and determining the winner based on this comparison.
+
+### Solution Code
+```python
+def determine_winner():
+    import sys
+    input = sys.stdin.read
+    data = input().split()
+    idx = 0
+    t = int(data[idx])
+    idx += 1
+    results = []
+    for _ in range(t):
+        n = int(data[idx])
+        idx += 1
+        a = list(map(int, data[idx:idx+n]))
+        idx += n
+        b = list(map(int, data[idx:idx+n]))
+        idx += n
+        max_a = max(a)
+        max_b = max(b)
+        if max_a >= max_b:
+            results.append("Alice")
+        else:
+            results.append("Bob")
+    print('\n'.join(results))
+
+determine_winner()
+```
+
+### Explanation
+1. **Reading Input:** The input is read in one go for efficiency, especially given the constraints.
+2. **Processing Each Test Case:** For each test case, we read the size of the permutations and the permutations themselves.
+3. **Finding Maximum Elements:** We compute the maximum elements of both Alice's and Bob's permutations.
+4. **Determining the Winner:** Based on the comparison of these maximum elements, we determine if Alice wins or Bob wins and store the result.
+5. **Output the Results:** Finally, we print the results for all test cases.
+
+This approach ensures that we efficiently determine the winner by leveraging the properties of maximum elements in the permutations, leading to an optimal solution.<｜end▁of▁sentence｜>

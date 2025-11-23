@@ -1,0 +1,802 @@
+0
+Okay, so I've got this problem where I need to find the minimum number of operations to make all leaves in a tree at the same distance from the root. The tree is rooted at node 1. The operation allowed is to remove a leaf and its adjacent edge, which might create new leaves. I need to figure out the minimum number of such operations required.
+
+Hmm, let's think about this. The goal is to make all the leaves at the same depth. Right now, the tree's leaves might be at different depths, so we need to adjust them.
+
+First, I think I should calculate the depth of each leaf. Because the leaves are the nodes with degree 1 except for the root. So for each leaf, I can note its depth from the root.
+
+But wait, the root isn't a leaf because the tree is rooted, and the root has at least one child. So, the leaves are all the nodes except the root and those with degree 1.
+
+So, the first step is to find all the leaves and their depths.
+
+Once I have all the depths, I need to make them all the same. How?
+
+I think the approach is to decide the target depth, which is the maximum depth among the leaves. Because if I choose a target less than the maximum, I might end up with some leaves that are deeper than others. Wait, no, actually, maybe not. Wait, the maximum depth is the deepest leaf, so if I set the target to be that depth, then all existing leaves are at that depth.
+
+But wait, what if some leaves are already at that depth? Then I don't need to touch them. So the problem is to find the minimal number of operations to adjust some leaves so that their depths are all equal to the maximum depth of the current leaves.
+
+Wait, no. Because each operation can only remove a leaf and its edge. So, each operation can decrease the depth of a node by 1, because removing a leaf's edge would make the node's parent a leaf, but the node itself is removed. But wait, no—removing a leaf just removes it, but the parent's depth increases by one.
+
+Wait, let me think again. When you remove a leaf, say node L, which is a child of node P. When you remove L, node P loses a child, so its degree decreases by one. So, P might become a leaf if its degree was 1 before. So, the depth of P increases by one, because it's now one level deeper.
+
+So, the process of removing a leaf can cause the parent of that leaf to have a higher depth. So, the initial idea of choosing the target as the maximum depth might not be correct because that could require more operations than necessary.
+
+Wait, perhaps the target depth should be such that all the leaves are at that depth. So, maybe we can choose a target depth that is less than or equal to the current maximum depth, but that's not possible because the leaves are already at some depths, and some may be deeper than others.
+
+Wait, no. The target must be such that all leaves are at the same depth. So, if some leaves are deeper than others, we need to 'move' some of them down. But the way we can do that is by performing operations that remove leaves, which increases the depth of their parents.
+
+So, the minimal number of operations is the minimal number of steps needed to get all the leaves to the same depth.
+
+Let me think about the example given in the problem statement. The user provided a soundCloud link, but the example is a tree with nodes 1,2,3,4,5,6. The structure is such that node 1 has children 2,3,4. Node 2 has children 5 and 6. So, the leaves are 5,6,4. Their depths are 2,2,1. So, the maximum depth is 2.
+
+Wait, no, the root is 1, which has depth 0. Its children are 2,3,4, so their depths are 1. Nodes 5 and 6 are children of 2, so their depths are 2. So the leaves are 5,6,4. So, the depths are 2,2,1. So, the maximum is 2. So, the leaves are already at the maximum depth. So, no operations are needed. But that's not the case in the example given.
+
+Wait, no, the example given in the problem description is a different tree. Maybe I should look at the sample input and output.
+
+Wait, the problem statement says that in the first sample, the code is given as follows: [paved garden](https://soundcloud.com/fractalex-gd/ginkiha-paved-garden-little). Hmm, but I don't have the sample input.
+
+Wait, perhaps I should look for the minimal number of operations to make all leaves at the same depth.
+
+So, the approach is:
+
+1. For each test case, compute the depth of each leaf.
+
+2. Find the maximum depth among all leaves. Let's call it D.
+
+3. The current leaves are at various depths, some less than D, some equal to D.
+
+4. The leaves that are at depth less than D need to be moved up to depth D. But moving them up requires removing their parent, which increases the depth of the parent by one. So, each such removal can potentially fix one leaf.
+
+Wait, but wait. Each operation removes a leaf and increases the depth of its parent by one. So, for a leaf at depth d, to move it up to depth D, we need to perform (d - D) operations, but each operation increases the depth of the parent by one.
+
+Wait, no. Let's see: Suppose a leaf is at depth 1. We want it to be at depth 2. So, to make it depth 2, we need to remove it, which increases its parent's depth by 1. So, the parent's depth increases from 0 to 1. Now, the parent is a leaf, so it's a new leaf at depth 1. But we wanted it to be at depth 2. So, now we have a new leaf at depth 1, which is not good.
+
+So, perhaps this approach isn't correct.
+
+Alternatively, perhaps the way to think is that for each leaf, the number of operations required to bring it up to depth D is (D - d), where d is the current depth of the leaf. But each operation increases the parent's depth by one. So, to get a leaf to depth D, we need to perform (D - d) operations, but each operation also affects the parent's depth.
+
+Wait, but if a leaf is at depth d < D, and we remove it, the parent's depth increases by 1. So, the parent's depth becomes d+1. If that parent was previously a leaf, then after this operation, it's no longer a leaf. So, we have to remove it as well, which increases its depth again.
+
+So, this suggests that the process is not straightforward. Each time we remove a leaf, the parent's depth increases by one, which might cause the parent to be a leaf, which then needs to be removed, which increases its parent's depth, and so on.
+
+This seems complicated. So, perhaps a better approach is to model this as a tree, and for each node, determine how many leaves are at a certain depth, and how many operations are needed to bring all leaves to that depth.
+
+Wait, perhaps another approach: the minimal number of operations is equal to the sum over all leaves of (D - d) minus the number of leaves that are already at depth D.
+
+Wait, no, because each operation can affect multiple leaves. Or perhaps, the number of operations is the sum of (d - target_depth) for all leaves, but that can't be right, because each operation affects one leaf and increases the parent's depth.
+
+Hmm, perhaps it's better to model the problem as follows: for each leaf, the number of operations needed to bring it up to depth D is (D - d), but each operation also affects the parent's depth. So, for each operation, the parent's depth increases by one, which can cause other leaves to be removed.
+
+Wait, perhaps the minimal number of operations is the sum of (D - d) for all leaves, minus the number of times the parent's depth is increased beyond certain levels.
+
+Alternatively, perhaps the minimal number of operations is the sum of (D - d) for all leaves, minus the number of times a parent's depth was increased beyond a certain threshold.
+
+Wait, perhaps I'm overcomplicating this. Let's think about it differently. The goal is to make all leaves have the same depth. Let's say the target depth is D, which is the maximum depth among all current leaves.
+
+Now, for each leaf, the number of operations required to bring it up to D is (D - d). But each operation also causes the parent's depth to increase by one. So, if a parent's depth was already at D, then after this operation, the parent's depth is D+1, which is a new leaf. That new leaf needs to be removed, which requires another operation, which in turn increases the parent's depth again.
+
+So, the problem is that each time we remove a leaf, the parent's depth increases, which may require more operations.
+
+Wait, but perhaps the minimal number of operations is the sum of (D - d) for all leaves, but minus the number of times a parent's depth was increased beyond D. Because when a parent's depth was already D, removing the child (the leaf) would increase the parent's depth to D+1, which needs to be removed. So, for each such parent, we have to perform an additional operation, which adds another (D+1 - (D+1)) = 0, but that doesn't help. Hmm, maybe not.
+
+Wait, perhaps the minimal number of operations is the sum of (D - d) for all leaves, minus the number of leaves that are already at depth D. Because for those leaves, no operations are needed. So, the total operations would be sum(D - d) for all leaves where d < D, since those are the leaves that need to be moved up.
+
+Wait, but that doesn't account for the fact that each operation increases the depth of the parent. So, for example, if a leaf is at depth 1, and D is 2, then we need to perform 1 operation to bring it up to 2. But after that, the parent's depth becomes 2. If the parent was a leaf, we have to remove it, which would require another operation, bringing the parent's depth to 3. So, each such parent would require another operation.
+
+So, perhaps the minimal number of operations is the sum of (D - d) for all leaves, but when the parent's depth was already D, each such parent would require an additional operation.
+
+Hmm, this is getting complicated.
+
+Let me think of an example. Suppose the tree is as follows:
+
+Root is 1.
+
+1 has children 2, 3, 4.
+
+2 has child 5.
+
+3 has child 6.
+
+4 has child 7.
+
+So, the leaves are 5,6,7, and 4. Wait, no, 7 is a leaf because it has no children.
+
+So, the depths are:
+
+5: 2 (since 1->2->5)
+
+6: 2 (1->3->6)
+
+7: 2 (1->4->7)
+
+The maximum depth is 2. All leaves are already at depth 2. So, no operations are needed.
+
+Another example:
+
+Tree structure:
+
+1 is root.
+
+1 has children 2,3,4.
+
+2 has children 5,6.
+
+3 has child 7.
+
+4 has child 8.
+
+So, the leaves are 5,6,7,8.
+
+Depths are:
+
+5: 2
+
+6: 2
+
+7: 1 (1->3->7)
+
+8: 1 (1->4->8)
+
+So, the maximum depth is 2. The leaves at 2 are 5,6, and the leaves at 1 are 7,8.
+
+So, the target depth is 2. So, for leaves at 1, we need to bring them up to 2.
+
+How?
+
+Each time we remove a leaf, the parent's depth increases.
+
+So, for leaf 7: process it.
+
+- Remove 7: parent is 3. Now, 3 has a child 7, so 3 is no longer a leaf. So, 3's depth increases by 1, from 0 to 1.
+
+Now, 3 is not a leaf, so we can't remove it now. So, we need to remove 3.
+
+- Remove 3: parent is 1. Now, 1 has a child 3, so 1's depth increases from 0 to 1.
+
+Now, 1 is not a leaf. So, we can't remove it anymore. So, we need to remove 1.
+
+- Remove 1: no children. So, 1 is a leaf. Now, 1's depth is 0.
+
+So, now, the leaves are 5,6,7,8, but wait, no. Wait, after removing 7, 3's depth becomes 1. So, 3 is no longer a leaf. So, we remove 3, which increases 1's depth to 1. Then, remove 1, which is a leaf, but now it's at depth 0. So, now, the leaves are 5,6,7,8.
+
+Wait, that's not helpful. So, I must have made a mistake in the process.
+
+Alternatively, perhaps I should think of the process as a chain of operations.
+
+Let me try to simulate the process for this example.
+
+Initial tree:
+
+- Root 1.
+
+- Children: 2,3,4.
+
+- 2's children:5,6.
+
+- 3's child:7.
+
+- 4's child:8.
+
+Leaves:5,6,7,8. Depths:5:2,6:2,7:1,8:1.
+
+Target is 2.
+
+So, for the leaves at 1 (7 and 8), each needs to be removed, which increases their parent's depth.
+
+So, step by step:
+
+1. Remove 7.
+
+- Parent is 3.
+
+- 3's depth was 0. Now it's 1.
+
+- Now, 3 is not a leaf, as it has child 7.
+
+2. Remove 8.
+
+- Parent is 4.
+
+- 4's depth was 0. Now it's 1.
+
+- 4 is not a leaf.
+
+3. Remove 3.
+
+- Parent is 1.
+
+- 1's depth was 0. Now it's 1.
+
+- 1 is not a leaf.
+
+4. Remove 1.
+
+- Now, 1 is a leaf with depth 0.
+
+So, after these four operations, the leaves are 5,6,7,8. Wait, no. After removing 7,8,3,1, the leaves are 5,6,7,8, but wait, 7 and 8 were removed, so they are gone. So, after removing 7,8,3,1, the leaves are 5,6.
+
+So, the leaves are two, which are at depth 2. So, the target is achieved.
+
+So, the number of operations is 4.
+
+But let's see what the sum of (D - d) is.
+
+D is 2.
+
+Leaves at 1:7,8. So, for each, D - d is 1.
+
+So, sum is 2.
+
+But the actual operations needed are 4.
+
+So, that approach is incorrect.
+
+Hmm, so the initial idea of summing (D - d) for all leaves is not sufficient.
+
+So, perhaps another approach is needed.
+
+Another idea: for each node, calculate how many times it is the parent of a leaf. For each leaf, the number of times it's a child of a node is 1. But when you remove it, the parent's depth increases by 1.
+
+So, the problem is to find a way to make the depth of all leaves equal, which requires that for each leaf, the number of operations (which is equal to the number of times it's removed) is such that the sum of (depth of parent - current depth) for each removal is considered.
+
+Alternatively, perhaps the problem can be modeled by considering for each node, the number of leaves in its subtree. The leaves in the subtree of a node may require certain operations.
+
+Wait, perhaps the minimal number of operations is the sum of (number of leaves in the subtree of each node) minus the number of nodes with degree 1.
+
+Wait, not sure.
+
+Alternatively, perhaps the minimal operations is the sum over all nodes of the number of leaves in their subtree minus the number of leaves at higher levels.
+
+Wait, perhaps this is getting too vague.
+
+Let me think again. The problem is to make all leaves at the same depth. So, the minimal operations is the sum of (D - d) for all leaves, but this is only possible if D is the maximum depth. But in cases where some leaves are already at a deeper depth, perhaps the target depth is lower.
+
+Wait, no. The target depth should be such that all leaves are at that depth, but some leaves may already be at a higher depth. So, perhaps the target is the maximum depth of the current leaves.
+
+Wait, but in the earlier example, the target was 2, which was the maximum depth of the initial leaves.
+
+So, perhaps the correct approach is:
+
+1. Compute for each node, its depth.
+
+2. Compute the depth of each leaf.
+
+3. The target depth is the maximum among all leaf depths.
+
+4. For each leaf, if its depth is less than the target, we need to perform (target - depth) operations.
+
+But wait, in the earlier example, the leaves are at depths 1 and 2. So, the target is 2. So, the leaves at 1 need to be moved up by 1, which requires 1 operation each. So, total operations would be 2.
+
+But in the example I tried earlier, the operations were 4. So, perhaps that approach is not correct.
+
+Wait, perhaps I'm getting confused between the number of operations and the number of steps.
+
+Wait, in the earlier example, the leaves are at depths 1 and 2. The target is 2.
+
+Each leaf at depth 1 needs to be moved up by one step.
+
+So, for 7 and 8, each needs one operation.
+
+So, total operations would be 2.
+
+But earlier simulation required 4 operations. So, perhaps I was wrong in the simulation.
+
+Let me re-simulate.
+
+Initial tree:
+
+1 has children 2,3,4.
+
+2 has children 5,6.
+
+3 has child 7.
+
+4 has child 8.
+
+Leaves are 5,6,7,8. Depths are 2,2,1,1.
+
+So, target is 2.
+
+So, for 7 and 8, each needs one operation.
+
+Let's see:
+
+Step 1: Remove 7.
+
+Parent is 3. 3's depth increases by 1. So, 3's depth was 0, now 1.
+
+3 is not a leaf.
+
+Step 2: Remove 8.
+
+Parent is 4. 4's depth increases by 1. So, 4's depth was 0, now 1.
+
+4 is not a leaf.
+
+Step 3: Remove 3.
+
+Parent is 1. 1's depth increases by 1. So, 1's depth was 0, now 1.
+
+1 is not a leaf.
+
+Step 4: Remove 1.
+
+1 is a leaf. Its depth is now 0.
+
+So, after four steps, the leaves are 5,6,7,8, but 7 and 8 are removed. So, the leaves are 5,6.
+
+Wait, no. After steps 1-4, all leaves are 5,6. So, the target is achieved.
+
+So, the number of operations is 4, but according to the approach of summing (target - d), which is 1 for each of the two leaves, the sum is 2. But the actual operations needed are 4.
+
+So, that approach is incorrect.
+
+Hmm, so perhaps I need to find a different way to model the problem.
+
+Another idea: the minimal number of operations is the sum for each node of the number of leaves in its subtree, minus the number of leaves at a higher level.
+
+Wait, perhaps not.
+
+Alternatively, perhaps the minimal number of operations is the sum of (number of leaves in each subtree) minus the number of leaves at the root.
+
+Wait, let's think.
+
+In the earlier example, the tree is:
+
+1 has children 2,3,4.
+
+2 has children 5,6.
+
+3 has child 7.
+
+4 has child 8.
+
+So, the subtrees:
+
+- 2's subtree has leaves 5,6.
+
+- 3's subtree has leaf 7.
+
+- 4's subtree has leaf 8.
+
+- 1's subtree is the whole tree.
+
+So, the number of leaves in each subtree is:
+
+- 2's:2
+
+- 3's:1
+
+-4's:1
+
+-1's:4
+
+So, the sum is 2+1+1+4=8.
+
+The number of leaves at the root is 4.
+
+So, 8-4=4. Which matches the number of operations needed.
+
+That seems promising.
+
+Let me test this with another example.
+
+Another example:
+
+Tree is a chain: 1-2-3-4-5.
+
+Leaves are 1 and 5. Depths are 0 and 4.
+
+Target depth is 4.
+
+For leaf 1, it needs 4 operations.
+
+For leaf 5, it's already at depth 4? No, wait, no. In this chain, 5 is a leaf, and its depth is 4. So, no operations needed.
+
+So, target depth is 4.
+
+The sum of leaves in each subtree:
+
+- 2's subtree: 3,4,5. Leaves:3,4,5. Number of leaves in 2's subtree:3.
+
+Wait, no. The subtree of 2 includes 2,3,4,5. The leaves are 3,4,5. So, 3 leaves.
+
+Subtree of 3 includes 3,4,5. Leaves: 4,5. So, 2 leaves.
+
+Subtree of4: 4,5. Leaves:5. 1 leaf.
+
+Subtree of 1: 1,2,3,4,5. Leaves:1,5. 2 leaves.
+
+So, sum is 3+2+1+2=8.
+
+Minus the number of leaves at the root (2) gives 6.
+
+But according to the problem, the target depth is 4. So, for the leaves in the subtree of 2 (3,4,5), how many operations are needed.
+
+Wait, in this case, the leaves at 4 and 5 are already at the target depth. So, for leaf 3, which is in the subtree of 2, it's at depth 2. So, how many operations are needed to bring it up to depth 4.
+
+Each operation on leaf 3 would increase its parent's depth. So, for each operation on 3, the parent (2) increases by 1.
+
+So, the steps:
+
+- Remove 3: parent is 2. Now, 2's depth is 3.
+
+- Remove 3 is done, but 2 is still not a leaf.
+
+- Remove 2: parent is 1. Now, 1's depth is 1.
+
+- Remove 1: it's a leaf, now at depth 0.
+
+So, for leaf 3, which is at depth 2, we need 2 operations.
+
+Wait, but the sum approach gives 6 operations. Let's see.
+
+In the sum approach, the total is 3+2+1+2=8. Minus 2 (leaves at root) is 6.
+
+But according to the simulation, it's 4 steps.
+
+So, perhaps the sum approach is incorrect.
+
+Hmm, perhaps I'm misunderstanding the problem.
+
+Alternatively, perhaps the minimal number of operations is the sum of (depth of each leaf) minus the number of leaves at the target depth.
+
+Wait, in the first example, the target depth was 2. Leaves at 1 and 2. So, sum of depths is 1+2=3. Target leaves are 2, so 3-2=1. But earlier simulation needed 4 operations.
+
+So, that approach is also incorrect.
+
+Hmm, perhaps I need to think differently.
+
+Let me try to model the problem as follows:
+
+Each operation can be thought of as removing a leaf and increasing the depth of its parent. So, each operation affects one leaf and increases the depth of its parent by one.
+
+So, for a leaf at depth d, to bring it to depth D, we need (D - d) operations, but each operation increases the parent's depth by one.
+
+So, the parent of the leaf will have its depth increased by (D - d) during the process.
+
+So, the total number of operations is the sum over all leaves of (D - d), but each operation also affects the parent's depth.
+
+But the problem is that the parent's depth is being increased, which may require further operations.
+
+So, for example, if a parent is at depth d_p, and during the process, it's increased by k steps, then it can't be a leaf anymore.
+
+So, the parent's depth is d_p + number of operations on its child.
+
+So, the number of operations on a parent is equal to the number of times it is the child of a leaf.
+
+So, the total number of operations is the sum of (D - d) for all leaves, and also, each time a node is a parent of a leaf, it's increased by the number of operations on that leaf.
+
+Wait, perhaps the minimal number of operations is equal to the sum of (D - d) for all leaves, minus the number of nodes that are the parent of one or more leaves.
+
+Because, for each such node, the number of operations on its child is equal to the depth it needs to be increased.
+
+So, for example, in the earlier example:
+
+Leaves at 1 (7,8) and 2 (5,6).
+
+Sum of (D - d) is 1 + 1 = 2.
+
+But the number of nodes that are parents of leaves is 3: 2,3,4.
+
+So, sum is 2, minus 3 gives -1. That's not correct.
+
+Hmm, perhaps this approach is not working.
+
+Another approach: Let's model the problem as follows.
+
+The minimal number of operations is equal to the sum over all leaves of (D - d), minus the number of leaves at depth D.
+
+Because, each leaf at D doesn't need to be moved, so the sum is (D - d) for leaves not at D.
+
+So, in the first example, leaves are at 1 and 2. Target D is 2.
+
+Sum is (2-1) for leaf 1, which is 1. The leaves at D are 2, so subtract 1. So, sum is 1-1=0. Which is incorrect because the required operations are 4.
+
+So, this approach is also wrong.
+
+Hmm, perhaps I'm stuck. Let me try to think of the problem differently.
+
+The goal is to make all leaves at the same depth. Let's consider the target depth D.
+
+For each leaf, the number of operations required to bring it to D is (D - d), where d is its current depth.
+
+But each operation on a leaf also increases the depth of its parent by one.
+
+So, the parent's depth will be d_p + (number of operations on its child).
+
+So, the total number of operations is the sum of (D - d) for all leaves, but each parent's depth is increased by the number of operations on its children.
+
+So, the parents' depths are being increased, and this affects how many operations are needed for their children.
+
+This seems complex, but perhaps we can model it as a system of equations.
+
+Alternatively, perhaps the minimal number of operations is the sum of (D - d) for all leaves, minus the number of leaves at depth D.
+
+Wait, let's test this.
+
+In the earlier example:
+
+Leaves at 1 (7,8) and 2 (5,6).
+
+Sum of (D - d) for leaves is 2 (1+1) for leaves at 1, but 1+1=2. Leaves at D=2 are 2, so subtract 2. So, 2-2=0. Which is incorrect.
+
+Hmm.
+
+Alternatively, perhaps the minimal number of operations is the sum of (D - d) for all leaves, minus the number of leaves at depth D.
+
+So, for the first example: 2-2=0. No, not correct.
+
+Another idea: the minimal number of operations is equal to the sum of (D - d) for all leaves, minus the number of leaves that are already at depth D.
+
+So, in the first example, sum is 2 (1+1) minus 2 (leaves at D) is 0. Which is incorrect.
+
+This approach is not working.
+
+Perhaps I should look for a different angle.
+
+Another observation: Each operation reduces the depth of a leaf and increases the depth of its parent. So, the process is similar to leveling the tree, but each operation is applied to a leaf.
+
+The minimal number of operations is thus the sum of the differences in depth for all leaves, but considering that each operation affects the parent.
+
+Wait, perhaps the minimal number of operations is equal to the sum for each node of (number of leaves in its subtree) minus (number of leaves in the grandparent's subtree).
+
+Wait, not sure.
+
+Alternatively, perhaps the minimal number of operations is equal to the sum of the levels of all leaves, minus the number of leaves, multiplied by their level.
+
+Wait, not sure.
+
+Another approach: Let's model the problem as follows.
+
+Each operation reduces the depth of a leaf by 1, but increases the depth of its parent by 1.
+
+So, the total number of operations is the sum of (D - d) for all leaves, where D is the target depth.
+
+But we also need to consider that each operation increases the parent's depth, which may require more operations on the parent.
+
+So, this is a chain reaction.
+
+So, the problem is similar to a chain where each operation affects the next node.
+
+So, perhaps the minimal number of operations is the sum of (D - d) for all leaves, minus the number of times a node is a parent of a leaf.
+
+So, the formula would be:
+
+operations = sum(D - d) for leaves - number of nodes that are parents of leaves.
+
+But how to compute this?
+
+In the earlier example:
+
+Leaves are 5,6,7,8.
+
+sum(D - d) for leaves is (2-2)+(2-2)+(2-1)+(2-1) = 0 + 0 +1 +1 = 2.
+
+Number of nodes that are parents of leaves is 3 (nodes 2,3,4).
+
+So, operations = 2 -3 = -1. Which is wrong.
+
+Hmm.
+
+Alternatively, perhaps the formula is sum(D - d) + number of nodes that are parents of leaves.
+
+But in the earlier example, that would be 2 +3=5, which is also incorrect.
+
+So, perhaps this approach is not working.
+
+Another idea: since each operation on a leaf increases the depth of its parent, the minimal number of operations is the sum of (D - d) for all leaves, but we have to ensure that each parent can be operated on as needed.
+
+So, perhaps the minimal number of operations is the sum of (D - d) for all leaves, minus the number of times a node is the parent of a leaf.
+
+But again, not sure.
+
+Alternatively, perhaps the minimal number of operations is the sum of (D - d) for all leaves, minus the number of leaves at depth D.
+
+In the first example, sum is 2, leaves at D are 2, so 2-2=0. Which is wrong.
+
+Hmm.
+
+I think I'm stuck. Maybe I should look for a pattern in the examples.
+
+Let me consider another example.
+
+Example 2:
+
+n=5.
+
+Tree structure:
+
+1 is root.
+
+1 has children 2,3,4,5.
+
+Leaves are 2,3,4,5. All at depth 1.
+
+Target depth D is 1.
+
+So, no operations needed.
+
+Another example:
+
+n=6.
+
+Tree structure:
+
+1 has children 2,3,4.
+
+2 has child 5,6.
+
+Leaves:5,6,4.
+
+Depths:5,6 are at 2, 4 is at 1.
+
+Target D is 2.
+
+So, leaves 5,6 need 1 operation each, and 4 is already at 1.
+
+So, sum is 2.
+
+But what's the minimal number of operations?
+
+Simulate:
+
+Initial leaves:5,6,4.
+
+Operations needed:
+
+For 5 and 6: each needs to be removed. So, two operations.
+
+Each operation on 5 or 6 will increase the parent's depth.
+
+For 5: parent is 2.
+
+So, remove 5: parent is 2, which increases to depth 1.
+
+Now, 2 is no longer a leaf.
+
+So, remove 2: now, parent is 1, which increases to depth 1.
+
+1 is no longer a leaf.
+
+Remove 1: which is a leaf, depth 0.
+
+So, after four operations, the leaves are 6,4.
+
+So, target is achieved.
+
+So, number of operations is 4.
+
+Sum of (D -d) is 1+1+0=2.
+
+Which is 2, but the actual operations are 4.
+
+So, again, the approach is incorrect.
+
+Hmm, perhaps the minimal number of operations is the sum of (D - d) for all leaves, plus the number of leaves.
+
+Not sure.
+
+Alternatively, perhaps the minimal number of operations is the sum of (D - d) for all leaves, plus the number of leaves that are not at D.
+
+But in the first example, sum is 2, leaves at D is 2, leaves not at D is 2. So, 2+2=4. Which matches the simulation's 4 operations.
+
+In the second example, leaves at D is 0 (since all are at D=1, no, wait in the second example, D is 1, leaves are 2,3,4, which are at depth 1. So, sum is 0, leaves not at D is 4. So, 0+4=4, but in the simulation, the required operations are 4.
+
+So, that seems to fit.
+
+Another example:
+
+First example:
+
+sum is 2, leaves at D is 2, leaves not at D is 2. So, 2+2=4, which is the correct answer.
+
+Second example:
+
+sum is 0, leaves not at D is 4. So, 0+4=4, which is correct.
+
+Another example:
+
+n=3.
+
+Tree:
+
+1 is root.
+
+1 has child 2, which has child 3.
+
+Leaves are 3. Depth 1.
+
+Target D is 1.
+
+So, no operations needed.
+
+So, sum is 0, leaves not at D is 0. So, 0+0=0.
+
+Another example:
+
+n=4.
+
+Tree:
+
+1 has children 2,3.
+
+2 has child 4.
+
+Leaves are 3,4. Depths 1 and 1.
+
+Target D is 1.
+
+Sum is 0, leaves not at D is 2.
+
+So, 0+2=2 operations.
+
+Which is correct.
+
+So, the formula seems to be: minimal operations = sum (D - d) for all leaves + (number of leaves - number of leaves at D).
+
+In other words, minimal operations = sum (D - d) + (L - L_D), where L is the total number of leaves, and L_D is the number of leaves at depth D.
+
+So, in the first example, sum is 2, L=4, L_D=2. So, 2 + (4-2) =4.
+
+In the second example, sum is 0, L=4, L_D=0. So, 0 +4=4.
+
+In the third example, sum is 0, L=2, L_D=2. So, 0+0=0.
+
+In the fourth example, sum is 4, L=4, L_D=0. So, 4+4=8.
+
+So, let's see.
+
+Another example:
+
+n=5.
+
+Tree:
+
+1 has children 2,3,4.
+
+2 has child 5.
+
+Leaves are 3,4,5. Depths 1,1,1.
+
+Target D=1.
+
+Sum is 0, L=3, L_D=3. So, 0+0=0.
+
+Another example:
+
+n=6.
+
+Tree:
+
+1 has children 2,3,4.
+
+2 has children 5,6.
+
+Leaves are 3,4,5,6. Depths 1,1,1,1.
+
+Sum is 0, L=4, L_D=4. So, 0+0=0.
+
+So, this formula seems to work.
+
+So, the steps to solve the problem are:
+
+1. For each test case, compute the depth of each leaf.
+
+2. Find the maximum depth among all leaves, which is D.
+
+3. Compute the sum of (D - d) for all leaves.
+
+4. Compute the number of leaves at depth D, which is L_D.
+
+5. The minimal number of operations is sum + (L - L_D).
+
+So, the code can be structured as follows:
+
+- For each test case, build the tree.
+
+- Compute the depth of each node, starting from the root (depth 0).
+
+- Collect all the leaves, and their depths.
+
+- Find D as the maximum depth of

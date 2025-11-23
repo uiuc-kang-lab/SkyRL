@@ -1,0 +1,727 @@
+Okay, I need to solve this problem where I have three sequences a, b, c, and I need to find a subsequence p of length m that satisfies certain conditions and maximizes the sum of c's. Hmm, let's break down the problem.
+
+So, the conditions are:
+1. The subsequence p must be such that the a's are non-decreasing. So, a[p1] <= a[p2] <= ... <= a[pm].
+2. All b's in p must be distinct. So, for any two elements in p, their b's can't be the same.
+
+And I need to maximize the sum of c's for the chosen p.
+
+The constraints are n up to 3000 and m up to 5. Hmm, that's manageable. Because m is small, maybe a dynamic programming approach can work.
+
+Wait, what's the plan here? Let's think.
+
+First, I need to select m elements from the sequences, such that their a's are non-decreasing, their b's are all unique, and their c's are as large as possible.
+
+But how to model this? It feels like a state problem where the state depends on some information about the previous elements.
+
+Maybe I can model the DP state as follows:
+
+dp[i][mask] = the maximum sum we can get when we've selected i elements, with certain conditions on the b's.
+
+Wait, but the mask needs to represent which b's have been used so far. Since m is up to 5, the mask can be a bitmask of 5 bits, which is manageable.
+
+So, for each position in the sequences, and for each possible mask, we'll track the best possible sum.
+
+Let me think about the steps.
+
+First, I think we can pre-sort the sequences in a way that makes the DP manageable.
+
+Wait, but the sequences are given in a specific order. The a, b, and c are given as sequences, and the subsequence p is chosen based on their indices. So, the order in which we pick elements must respect the original indices of a, b, c.
+
+Hmm, so the DP needs to consider the positions in the original sequences.
+
+Wait, perhaps for each position in the original sequence, I can track the state as (number of elements selected, mask of b's used, last a's value, last b's value). But the last a's value is necessary because the next element must have a a value >= the last a's value.
+
+Wait, that might complicate things a bit, but given that m is small, it's manageable.
+
+Alternatively, maybe we can process the elements in the order of their a's or something like that.
+
+Wait, but for the DP state, perhaps I can represent it as:
+
+dp[i][mask] = maximum sum when selecting i elements, with the mask representing which b's are used, and the current a's value (since the a's must be non-decreasing).
+
+But the problem is, for each step, when choosing the next element, I can't just choose any element as long as its a is >= the last a. So, the state needs to keep track of the last a's value.
+
+Hmm, perhaps the state is (i, mask, last_a), where i is the number of elements selected, mask is the set of used b's, and last_a is the a value of the last selected element. But since m is small, maybe i can go up to m, and last_a can be up to the maximum a value in a, which is n, which is 3000. So, for each state, it's something like i=1 to m, mask with up to 2^5=32 possibilities, and last_a up to 3000.
+
+So, the total possible states are m * 32 * 3000 = 3000 * 32 * 5 (because m is up to 5, so 5 * 32 * 3000 = 480,000). That's manageable for a DP approach.
+
+So, the plan is to process each element in the sequences, and for each, update the DP states based on whether we include it or not.
+
+Let me think about how to process the elements.
+
+We'll process each element in the original sequence (so, in order, which is important for the subsequence p to be maintained as a subsequence).
+
+Wait, but the problem requires that p is a subsequence of 1 to n, chosen such that a's are non-decreasing, and b's are all distinct.
+
+So, for each element, we can choose to include it in the subsequence or not.
+
+If we include it, it must be a valid next element in the subsequence, i.e., its a is >= the previous a in the subsequence, and its b hasn't been used before.
+
+So, for each state in the DP, which represents having selected i elements, using a certain mask of b's, and the last a value, we can consider adding the current element (if allowed) and update the state accordingly.
+
+So, the steps are:
+
+1. Preprocess the sequences to get a, b, c as given.
+
+2. Initialize the DP. Initially, before selecting any elements, the state is (0, 0 mask, 0 last_a), but that's probably not useful. Maybe start with selecting the first element as the first element of the subsequence.
+
+Wait, perhaps the initial state is (0, 0, 0), meaning no elements selected, no b's used, and last a is 0.
+
+Then, for each element in the sequences (from index 0 to n-1), we can consider adding it to the DP states.
+
+Wait, but the sequences are given in a certain order, so the elements are ordered, and we can process them in that order, adding each to the DP.
+
+So, for each current state (i, mask, last_a), when processing the current element (a, b, c), we can check:
+
+- Can we include this element in the subsequence?
+
+Well, if i < m, then adding this element would increase i by 1. But we need to check two things:
+
+a) The current element's a is >= last_a.
+
+b) The current element's b hasn't been used before (i.e., the mask does not have this b set).
+
+If both conditions are met, then we can create a new state (i+1, new_mask, new_last_a), where new_mask is mask | (1 << b_index), and new_last_a is a of the current element.
+
+Wait, but each b is a value, so for the current element, its b is b. We can get the index of b in the b array, but wait, the b array is given as 1-based? Or 0-based? Because in the problem statement, the sequences are given as a_1, a_2, ..., which are 1-based. Wait, no, the input is given as a, b, c, each with n elements, which are 1-based? Or are they 0-based? Looking back at the problem statement, the input is given as a_1, ... a_n, so the sequences are 1-based in the input but in the code, we'll process them as 0-based.
+
+So, for each element in the sequences, the b value is b_i (0-based in the code, since in the input, it's given as b_1, which is the second element in the input line, but in Python, the input is read as a list, which is 0-based, so b[0] is the first element, but the problem says that the sequences are a_1, a_2, ..., a_n, which are 1-based. Hmm, but in the code, the sequences are 0-based, so the 0th index is a_1 in the problem's terms.
+
+So, for each element in the sequences, we can find its index in the b array, which is b_index = b[i] - 1? Or wait, no, because in the problem statement, the elements are 1-based, so for example, b_1 is the first element in the input line, which is b[0] in the Python list. So, the b index is b[i] - 1.
+
+Wait, no: in the problem statement, the sequences are given as a_1, a_2, ..., a_n, which are 1-based. So, in the code, the sequences are 0-based, so a[0] is a_1, a[1] is a_2, etc. So, for each element, the b's value is b[i], which is 1-based, so in the code, we can compute the index as b[i] - 1, since lists are 0-based.
+
+So, for each element in the original sequences, we can process it in order, and for each possible state in the DP, we can consider adding it.
+
+So, the DP will be a dictionary or a 3-dimensional array, where dp[i][mask][last_a] represents the maximum sum for selecting i elements with the given mask and last a value.
+
+Wait, but in Python, a 3D array could be a bit memory intensive, but given that m is up to 5, and mask up to 2^5=32, and last_a can be up to n (3000), the total states are 5 * 32 * 3000 = 480,000, which is manageable.
+
+So, the initial state is (0 elements selected, mask 0, last_a 0) with sum 0.
+
+Then, for each element in the sequences (from i=0 to n-1), for each possible state in the current DP, we can consider whether to include the current element.
+
+Wait, but the elements are processed in the order of the sequences, so for each element, we process it, and update the DP accordingly.
+
+Wait, perhaps it's better to process the elements in the order they appear, and for each element, update the DP.
+
+So, for each element in a, b, c:
+
+Wait, no, perhaps for each element in the sequences, in the order of their indices (from 0 to n-1), for each possible state, consider adding this element to the subsequence if possible.
+
+So, for each state (i, mask, last_a), if i < m, and the current element's a is >= last_a, and the current element's b is not in mask, then we can create a new state (i+1, mask | (1 << b_index), a_current) with sum increased by c_current.
+
+This way, the DP transitions.
+
+So, the initial state is (0, 0, 0) with sum 0.
+
+Then, for each element in the sequences (from 0 to n-1), we process it:
+
+- For each possible state in the current DP, if including the current element is possible, create a new state.
+
+Wait, but the order is important. Because the subsequence is a subsequence of the original sequences, the elements must be in the same order as the original sequences. So, processing each element in order, and for each possible state, decide whether to include it or not.
+
+So, for each element in the original sequences, in order, we process each possible state in the current DP, and for each, if the element can be added, create a new state.
+
+Hmm, but when processing each element, we need to make a copy of the current DP and then update it with the new possibilities. Or perhaps, process the element and update the DP in a way that builds up all possible states.
+
+Alternatively, for each element, we can process the existing DP and generate new states, adding to the DP.
+
+Wait, perhaps the way to approach this is to process each element in order, and for each possible state, check whether adding the current element would create a new state.
+
+So, for each element (a_i, b_i, c_i):
+
+- For the current DP, which contains all possible (i, mask, last_a) states, for each such state, if we can add this element to it, then create a new state (i+1, mask | (1 << b_i), a_i) with sum increased by c_i.
+
+But the order in which we process the elements is crucial because the subsequence cannot have elements in a different order.
+
+Wait, but since we are processing each element in order, and for each state, we can only add it to the subsequence if it's after the last element.
+
+So, the way to model this is that we process each element in the original sequence, and for each possible state, we can choose to include it or not. But including it requires that it's after the previous element in the subsequence.
+
+Wait, but the way the DP is structured, each state represents the last element's a value. So, the next element must have a a value >= last_a.
+
+Hmm, that makes sense.
+
+So, the steps for each element (a_i, b_i, c_i) are:
+
+1. For each existing state (i, mask, last_a) in the current DP:
+
+   a. If i < m, and a_i >= last_a, and (mask & (1 << b_i)) == 0, then:
+
+      i. Create a new state (i+1, mask | (1 << b_i), a_i) with sum increased by c_i.
+
+      ii. Update the DP with this new state, if it's better than any existing state for (i+1, mask | (1 << b_i), a_i).
+
+2. Also, for each existing state (i, mask, last_a), do not include this element, so the state remains the same.
+
+Wait, but the way to process the elements is to iterate through each element and for each possible state, decide whether to include it or not.
+
+But how do we represent the DP? Maybe as a dictionary, where the keys are tuples (i, mask, last_a), and the values are the maximum sum achieved for that state.
+
+So, for each element, we can make a copy of the current DP, and then for each state in the current DP, we can generate new states by including the element.
+
+Alternatively, perhaps we can process the elements in order, and for each element, for each possible state in the current DP, we can generate the new state by adding the element, and update the DP accordingly.
+
+But in Python, handling this could be a bit tricky. So, perhaps the way is to iterate through each element, and for each possible state, if adding the element is allowed, create a new state and see if it improves the DP.
+
+But perhaps the way to represent the DP is as a dictionary, and for each step, we create a new temporary dictionary to store the new states, and then merge it into the main DP.
+
+Wait, perhaps the best approach is to process each element, and for each possible state, decide whether to include it.
+
+So, for each element in a, b, c:
+
+   for each state in the current DP:
+
+      if i < m, and a_i >= last_a, and not in mask:
+
+          create a new state (i+1, mask | (1 << b_i), a_i) with sum += c_i.
+
+   add all these new states to the DP, but ensure that for each state, only the maximum sum is kept.
+
+But how to handle this in code.
+
+Hmm, perhaps using a defaultdict for the DP, and for each element, create a new temporary dictionary, and for each state in the DP, consider adding the element if allowed, and update the temporary dictionary. Then, after processing all states and elements, merge the temporary into the main DP.
+
+Wait, or perhaps, for each element, we process the current DP, and for each state, update the DP as follows:
+
+- For each state (i, mask, last_a) in DP:
+
+   - If i < m, and a_i >= last_a, and not in mask:
+
+      - new_mask = mask | (1 << b_i)
+
+      - new_last_a = a_i
+
+      - new_sum = dp[i][mask][last_a] + c_i
+
+      - Check if (i+1, new_mask, new_last_a) exists in the new_dp. If so, take the maximum between the current value and new_sum.
+
+      - Else, add this state to new_dp.
+
+- Then, merge new_dp into the main DP, keeping the maximum sum for each state.
+
+So, in code, for each element, we create a new temporary dictionary new_dp, and for each state in the current DP, we see if adding the element is possible, and update new_dp accordingly. Then, for each state in new_dp, we update the main DP to be the maximum between existing and new value.
+
+But how do I represent the DP in code? Maybe as a dictionary where the keys are tuples (i, mask, last_a), and the value is the maximum sum.
+
+So, in code:
+
+Initialize dp as a dictionary with the initial state (0, 0, 0) having sum 0.
+
+Then, for each element in the sequences:
+
+   a_val, b_val, c_val = element
+
+   create a temporary dictionary new_dp as empty.
+
+   for (i, mask, last_a) in dp:
+
+       if i < m and a_val >= last_a and (mask & (1 << b_val)) == 0:
+
+           new_mask = mask | (1 << b_val)
+
+           new_last_a = a_val
+
+           new_sum = dp[(i, mask, last_a)] + c_val
+
+           if (i+1, new_mask, new_last_a) in new_dp:
+
+               if new_sum > new_dp[(i+1, new_mask, new_last_a)]:
+
+                   new_dp[(i+1, new_mask, new_last_a)] = new_sum
+
+           else:
+
+               new_dp[(i+1, new_mask, new_last_a)] = new_sum
+
+   # Now, merge new_dp into dp.
+
+   for (i, mask, last_a) in new_dp:
+
+       existing = dp.get((i, mask, last_a), 0)
+
+       if existing < new_dp[(i, mask, last_a)]:
+
+           dp[(i, mask, last_a)] = new_dp[(i, mask, last_a)]
+
+Wait, but in this approach, for each element, we are processing the current dp and creating new states, and then updating the dp with these new states. But the order could be that the same state is processed multiple times, which may not be efficient. But given that m is small, and the number of states is manageable, this should be acceptable.
+
+Wait, but what about the order of processing the elements? Because the subsequences are built in the order of the original sequences, so the elements are processed in the order of the original sequences, and for each element, we can only add it to the subsequence if it's after the last element.
+
+So, the way to process the elements is correct.
+
+Wait, but when processing each element, for each state in the current dp, we can choose to include it or not. But including it requires that the element is added, and the state is updated.
+
+But the way I've written the code, for each element, I create a new_dp, and for each state in the current dp, if adding the element is possible, add to new_dp. Then, after processing all states for this element, merge new_dp into dp.
+
+This way, the dp is updated to include all possible states that can be formed by adding the current element to any state in the current dp.
+
+Yes, that makes sense.
+
+Now, after processing all elements, the dp will contain all possible states for the maximum possible m (up to 5). We then need to find the maximum sum among all states where i = m, and where the b's are all distinct.
+
+Wait, but in the problem statement, the condition is that all b's in the subsequence are pairwise distinct. So, the mask must have all bits set for those b's that are included.
+
+So, for the final state, when i = m, the mask must have all bits set that correspond to the b's in the subsequence.
+
+Wait, but no, because the mask is built by OR'ing the bits of the b's that are included. So, for the subsequence, the mask is exactly the sum of the bits for the included b's. So, for the state (m, mask, last_a) to be valid, the mask must have all bits set for all b's in the subsequence, which is exactly the case, because each time a new b is added, the mask is OR'ed with (1 << b_val), ensuring that each b is present once.
+
+So, when i = m, the mask is all bits set for the included b's, so all b's are distinct.
+
+Thus, after processing all elements, we can iterate through the dp to find the maximum sum where i = m.
+
+If there are no such states, output -1.
+
+So, putting it all together:
+
+- Initialize dp with (0, 0, 0) = 0.
+
+- For each element in a, b, c:
+
+   - For each state in dp:
+
+      - if can add this element (a >= last_a, not in mask):
+
+          - create new state and update new_dp.
+
+   - Merge new_dp into dp, keeping the maximum sum.
+
+- After processing all elements, find the maximum sum in dp where i = m.
+
+- If no such state exists, output -1.
+
+Now, the next step is to code this.
+
+But wait, the initial state is (0, 0, 0) with sum 0.
+
+For each element in a, b, c:
+
+Wait, no, the elements are processed in the order of their indices. So, for each index in 0 to n-1, we process the element a[i], b[i], c[i].
+
+So, in code, we can loop over i from 0 to n-1:
+
+   a_val, b_val, c_val = a[i], b[i], c[i]
+
+   ... (the rest as before)
+
+So, the code structure is:
+
+n, m = map(int, input().split())
+
+a = list(map(int, input().split()))
+b = list(map(int, input().split()))
+c = list(map(int, input().split()))
+
+from collections import defaultdict
+
+dp = defaultdict(int)
+dp[(0, 0, 0)] = 0
+
+for i in range(n):
+    a_val = a[i]
+    b_val = b[i]
+    c_val = c[i]
+    
+    new_dp = defaultdict(int)
+    
+    for (i_state, mask, last_a) in dp.items():
+        if i_state < m and a_val >= last_a and (mask & (1 << b_val)) == 0:
+            new_mask = mask | (1 << b_val)
+            new_last_a = a_val
+            new_sum = dp[(i_state, mask, last_a)] + c_val
+            if (i_state + 1, new_mask, new_last_a) in new_dp:
+                if new_sum > new_dp[(i_state + 1, new_mask, new_last_a)]:
+                    new_dp[(i_state + 1, new_mask, new_last_a)] = new_sum
+            else:
+                new_dp[(i_state + 1, new_mask, new_last_a)] = new_sum
+    
+    for (i_state, mask, last_a) in new_dp.items():
+        if (i_state, mask, last_a) in dp:
+            if new_dp[(i_state, mask, last_a)] > dp[(i_state, mask, last_a)]:
+                dp[(i_state, mask, last_a)] = new_dp[(i_state, mask, last_a)]
+        else:
+            dp[(i_state, mask, last_a)] = new_dp[(i_state, mask, last_a)]
+
+max_sum = -1
+for (i_state, mask, last_a) in dp:
+    if i_state == m:
+        if dp[(i_state, mask, last_a)] > max_sum:
+            max_sum = dp[(i_state, mask, last_a)]
+
+print(max_sum if max_sum != -1 else -1)
+
+Wait, but in the code above, for each element, we create a new_dp and then merge it into the main dp. However, the code as written may have issues because for each element, the new_dp is built, but the main dp is not updated yet. So, perhaps in each iteration, we should create a new_dp, process it, and then merge it into the main dp.
+
+Wait, no, because in the code above, for each element, we process the current dp, and for each state, we generate new states for the new_dp. Then, after processing all states for this element, we iterate through new_dp and update the main dp.
+
+So, for each element, the code is:
+
+- Create new_dp as empty.
+
+- For each state in dp:
+
+   - if can add the current element:
+
+      - compute new state and add to new_dp.
+
+- Then, for each state in new_dp, update the main dp.
+
+So, in code, after processing all states for the current element, the new_dp is merged into the main dp.
+
+Wait, but in the code above, it's not done that way. It's iterating through new_dp, but the main dp is not being updated.
+
+Wait, that's a bug.
+
+Because, in the code as written, after processing the current element, for each state in new_dp, it's checking if it's in dp, and if so, updating the sum. But the main dp is not being updated with these new states. So, the new states are not added to the main dp.
+
+So, the code is incorrect.
+
+So, the correct way is, for each element, create a new_dp, process each state in the current dp, and for each state that can be extended, add to new_dp. Then, after processing all states, merge new_dp into the main dp.
+
+So, the code should be:
+
+for each element in a, b, c:
+
+   create new_dp as empty
+
+   for each state in dp:
+
+       if can add the element:
+
+           create new state and add to new_dp
+
+   for each state in new_dp:
+
+       if state is in dp, take the maximum
+
+       else, add to dp
+
+So, in code, it should be:
+
+for each element in a, b, c:
+
+   a_val = a[i]
+
+   b_val = b[i]
+
+   c_val = c[i]
+
+   new_dp = defaultdict(int)
+
+   for (i_state, mask, last_a) in dp:
+
+       if i_state < m and a_val >= last_a and (mask & (1 << b_val)) == 0:
+
+           new_mask = mask | (1 << b_val)
+
+           new_last_a = a_val
+
+           new_sum = dp[(i_state, mask, last_a)] + c_val
+
+           if (i_state + 1, new_mask, new_last_a) in new_dp:
+
+               if new_sum > new_dp[(i_state + 1, new_mask, new_last_a)]:
+
+                   new_dp[(i_state + 1, new_mask, new_last_a)] = new_sum
+
+           else:
+
+               new_dp[(i_state + 1, new_mask, new_last_a)] = new_sum
+
+   # Now, merge new_dp into dp
+
+   for (i_state, mask, last_a) in new_dp:
+
+       existing_sum = dp.get((i_state, mask, last_a), 0)
+
+       if new_dp[(i_state, mask, last_a)] > existing_sum:
+
+           dp[(i_state, mask, last_a)] = new_dp[(i_state, mask, last_a)]
+
+So, this way, all possible states after processing each element are added to the dp.
+
+Thus, the code is correct now.
+
+Now, let's test the code with the sample input.
+
+Wait, but the sample input isn't given. So, perhaps I should think of a small test case.
+
+For example, let's say n=3, m=2.
+
+a = [1, 2, 3]
+
+b = [2, 1, 3]
+
+c = [3, 4, 5]
+
+So, the sequences are:
+
+a: 1, 2, 3
+
+b: 2, 1, 3
+
+c: 3,4,5
+
+The possible subsequences of length 2 where a is non-decreasing and b's are distinct.
+
+Option 1: select 2 and 3, with a's 2 and 3, which is non-decreasing. B's are 1 and 3, which are distinct. Sum is 4+5=9.
+
+Option 2: select 1 and 3, but their a's are 1 and 3, which is non-decreasing. B's are 2 and 3, which are distinct. Sum is 3+5=8.
+
+Option 3: select 2 and 3 again, but that's the same as option 1.
+
+So, the maximum is 9.
+
+In the code, for i=0, the element is a=1, b=2, c=3.
+
+Check if i=0 < 2, a=1 >= last_a=0, and mask is 0, so new_mask is 4 (1 << 2). new_sum is 3.
+
+So, in new_dp, (1, 4, 1) = 3.
+
+Then, merge new_dp into dp.
+
+Now, for i=1, element is a=2, b=1, c=4.
+
+For each state in dp:
+
+- (0, 0, 0): can be added. new_mask is 1, new_last_a=2, new_sum=3+4=7.
+
+So, new_dp has (1, 1, 2) =7.
+
+- Also, for (1,4,1) is in dp, but i_state+1 is 2> m=2, so no.
+
+So, after processing i=1, the new_dp has (1,1,2)=7.
+
+Merge into dp: dp now has (1,1,2)=7.
+
+Then, process i=2, a=3, b=3, c=5.
+
+For each state in dp:
+
+- (0,0,0): i_state=0 < 2. a=3 >= 0. mask is 0, so new_mask is 8. new_sum is 0+5=5.
+
+So, new_dp has (1,8,3) =5.
+
+- (1,1,2): i_state=1 <2. a=3 >=2. mask is 1, which is (1<<1)=2. new_mask is 3 (1+2). new_sum is 7+5=12.
+
+So, (2,3,3) =12 is added.
+
+So, after i=2, the new_dp has (1,8,3)=5, (2,3,3)=12.
+
+Then, merge into dp.
+
+The maximum in i=2 is 12.
+
+So, the code correctly outputs 12.
+
+So, the code seems to handle this case.
+
+Another test case: n=3, m=1.
+
+a = [3,1,2]
+
+b = [2,3,1]
+
+c = [10, 20, 30]
+
+We can select any element, but the a must be non-decreasing. Wait, m=1, so any single element is allowed.
+
+So, the maximum sum is 30.
+
+In the code:
+
+i=0, element is 3, b=2, c=10.
+
+Check if i=0 is <1. a=3 >=0. mask is 0, new_mask is 4. sum is 10.
+
+So, new_dp has (1,4,3)=10.
+
+i=1, element is 1, b=3, c=20.
+
+Check each state in dp:
+
+- (0,0,0): can add, new_mask 8, sum 20.
+
+- (1,4,3): i_state=1 is not <1, so no.
+
+So, new_dp has (1,8,1) =20.
+
+i=2, element is 2, b=1, c=30.
+
+Check each state in dp:
+
+- (0,0,0): i=0 <1, a=2 >=0. new_mask 2, sum=30.
+
+- (1,4,3): can't add, since i=1 is not <1.
+
+- (1,8,1): can't add, since i=1 is not <1.
+
+So, new_dp has (1,2,2)=30.
+
+So, the maximum is 30.
+
+So, the code should output 30.
+
+Thus, the code seems to handle these cases.
+
+Now, let's think about the possible issues.
+
+One issue is that the initial state is (0,0,0), which is correct.
+
+Another issue is that in the code, the new_dp is built, and then merged into the main dp. So, the main dp is being updated.
+
+Another point: in the code, the new_dp is built as a defaultdict, but in Python, when you do new_dp = defaultdict(int), when you do new_dp[(i_state+1, new_mask, new_last_a)] = new_sum, it's okay because if the state already exists in dp, we take the maximum.
+
+Wait, no. Because in the code, after building new_dp, we loop through each state in new_dp and, for each, check if it's present in dp, and if so, take the maximum between existing and new_sum. But in the code as written, we only set dp[(i_state, mask, last_a)] = new_dp[(i_state, mask, last_a)].
+
+Wait, no, in the code, after processing the current element, for each state in new_dp, we do:
+
+if (i_state, mask, last_a) in dp:
+
+   if new_dp[(i_state, mask, last_a)] > dp[(i_state, mask, last_a)]:
+
+       dp[...] = new_dp[...]
+
+else:
+
+   dp[...] = new_dp[...]
+
+So, for each state in new_dp, we update dp's state if the new_sum is larger.
+
+But in the code as written, it's not done. Because in the code, after creating new_dp, it loops through new_dp and sets the dp. So, in the code, the code is:
+
+for (i_state, mask, last_a) in new_dp.items():
+
+   if (i_state, mask, last_a) in dp:
+
+       if new_dp[(i_state, mask, last_a)] > dp[(i_state, mask, last_a)]:
+
+           dp[(i_state, mask, last_a)] = new_dp[(i_state, mask, last_a)]
+
+   else:
+
+       dp[(i_state, mask, last_a)] = new_dp[(i_state, mask, last_a)]
+
+So, this is correct.
+
+Wait, but in the code I wrote earlier, I have:
+
+for (i_state, mask, last_a) in new_dp.items():
+
+   if (i_state, mask, last_a) in dp:
+
+       if new_dp[(i_state, mask, last_a)] > dp[(i_state, mask, last_a)]:
+
+           dp[...] = new_dp[...]
+
+   else:
+
+       dp[...] = new_dp[...]
+
+Which is correct.
+
+So, the code should be okay.
+
+Another thing is that the initial state is (0, 0, 0), and the sum is 0. So, that's correct.
+
+Now, the code should handle all cases.
+
+Testing for n=3, m=2, as above, it gives correct output.
+
+Now, what about when m is 5, and the sequences are long.
+
+But in Python, using defaultdict is efficient enough, as the number of states is manageable.
+
+So, the code should handle it.
+
+Another potential issue is the order of processing the elements. Since the code processes elements in order, it's correct because the elements must appear in the original order.
+
+Thus, the code seems correct.
+
+So, to write the code as follows:
+
+Read n, m.
+
+Read a, b, c.
+
+Initialize dp as a defaultdict with (0,0,0) : 0.
+
+Loop for each element in a, b, c:
+
+   a_val = a[i]
+
+   b_val = b[i]
+
+   c_val = c[i]
+
+   Create new_dp.
+
+   For each state in dp:
+
+      if i < m, a_val >= last_a, and not in mask:
+
+          compute new_mask, new_last_a.
+
+          new_sum.
+
+          add to new_dp.
+
+   Merge new_dp into dp.
+
+After processing all elements, find the maximum sum for states where i == m.
+
+If no such state exists, output -1.
+
+So, the code is as written earlier.
+
+Now, the code as per the earlier outline:
+
+Read n, m.
+
+Read a, b, c.
+
+Initialize dp.
+
+Loop through each element:
+
+   a_val = a[i]
+
+   b_val = b[i]
+
+   c_val = c[i]
+
+   create new_dp.
+
+   for each (i_state, mask, last_a) in dp:
+
+       if i_state < m and a_val >= last_a and (mask & (1 << b_val)) == 0:
+
+           new_mask = mask | (1 << b_val)
+
+           new_last_a = a_val
+
+           new_sum = dp[(i_state, mask, last_a)] + c_val
+
+           if (i_state + 1, new_mask, new_last_a) in new_dp:
+
+               if new_sum > new_dp[(i_state + 1, new_mask, new_last_a)]:
+
+                   new_dp[(i_state + 1, new_mask, new_last_a)] = new_sum
+
+           else:
+
+               new_dp[(i_state + 1, new_mask, new_last_a)] = new_sum
+
+   for (i_state, mask, last_a) in new_dp:
+
+       if (i_state, mask, last_a) in dp:
+
+           if new_dp[(i_state, mask, last_a)] > dp[(i_state, mask, last_a)]:
+
+               dp[(i_state, mask, last_a)] = new_dp[(i_state, mask, last_a)]
+
+       else:
+
+           dp[(i_state, mask

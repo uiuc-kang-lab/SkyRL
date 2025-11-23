@@ -1,0 +1,30 @@
+<｜begin▁of▁sentence｜><｜User｜>
+You are given a connected undirected graph, the vertices of which are numbered with integers from $1$ to $n$. Your task is to minimize the number of pairs of vertices $1 \leq u < v \leq n$ between which there exists a path in this graph. To achieve this, you can remove exactly one edge from the graph.
+
+Find the smallest number of pairs of vertices!
+
+Input Format:
+Each test consists of several sets of input data. The first line contains a single integer $t$ ($1 \leq t \leq 10^4$) — the number of sets of input data. Then follows their description.
+
+The first line of each set of input data contains two integers $n$ and $m$ ($2 \leq n \leq 10^5$, $n - 1 \leq m \leq \min(10^5, \frac{n \cdot (n - 1)}{2})$) — the number of vertices in the graph and the number of edges.
+
+Each of the next $m$ lines contains two integers $u$ and $v$ ($1 \leq u, v \leq n, u \neq v$), indicating that there is an undirected edge in the graph between vertices $u$ and $v$.
+
+It is guaranteed that the given graph is connected and without multiple edges.
+
+It is guaranteed that the sum of $n$ and the sum of $m$ over all sets of input data does not exceed $2 \cdot 10^5$.
+
+Output Format:
+For each set of input data, output the smallest number of pairs of reachable vertices, if exactly one edge can be removed.
+
+Tags:
+['dfs and similar', 'graphs', 'trees']
+
+Time Limit: 2000 ms
+Memory Limit: 256 MB
+
+Write Python code to solve the problem. Present the code in
+```python
+Your code
+```
+at the end.<｜Assistant｜><think>

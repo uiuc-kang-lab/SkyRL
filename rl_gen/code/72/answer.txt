@@ -1,0 +1,828 @@
+0
+Okay, I need to solve this problem where Alice, Bob, and Charlie want to divide a cake into contiguous slices. The goal is to assign each a contiguous piece such that each gets at least a third (ceiling) of the total cake value. 
+
+Let me start by understanding the problem. So, the cake is divided into n pieces, each with values a_i, b_i, c_i for Alice, Bob, and Charlie respectively. The sum of all a_i, b_i, c_i is the same, tot. Each person needs at least ceil(tot/3) in their slice.
+
+The slices must be contiguous, and no overlapping. So, the intervals [la, ra], [lb, rb], [lc, rc] must be disjoint.
+
+Hmm, the approach I think is to find for each possible way to split the cake into three parts, each meeting the condition. But since n can be up to 2e5, a brute force approach is impossible.
+
+Wait, perhaps binary search can be used here. Since the total is fixed, maybe we can binary search on the minimum required for each person. Or perhaps, for each possible way to split, find the minimal required and see if it's possible.
+
+Wait, the problem is to assign each a contiguous segment to Alice, Bob, and Charlie. So the first step is to find three non-overlapping, contiguous segments such that each's sum is at least ceil(tot/3).
+
+So, how can I model this?
+
+I think the approach is to consider all possible ways to split the cake into three parts. But since n is up to 2e5, we need an efficient way to check possible splits.
+
+Let me think about the binary search approach. Maybe for a given target, I can check if it's possible to split the cake into three parts where each part is >= target. But since the target depends on the total, which is fixed, perhaps for each possible target, we can see if such a split exists.
+
+Wait, but the target is ceil(tot/3). So, for each test case, the target is fixed. So, perhaps the binary search is not needed, as we can directly check if it's possible.
+
+Alternatively, perhaps I can iterate over possible segments for Alice, then for Bob, etc., but that would be O(n^3), which is not feasible.
+
+Hmm, so maybe a sliding window approach for each person.
+
+Wait, but for three people, it's more complicated. Maybe I can precompute prefix sums for each person's cake.
+
+Yes, that's a good idea. Let's compute prefix sums for a, b, c. Then, for any interval [l, r], the sum is prefix[r] - prefix[l-1].
+
+So, the plan is:
+
+1. Compute the total tot = sum(a) = sum(b) = sum(c). Then, target is ceil(tot / 3).
+
+2. For each test case, compute prefix sums for a, b, c.
+
+3. Now, we need to find three non-overlapping, contiguous intervals, one for each person, such that each interval's sum is >= target.
+
+4. The intervals must not overlap. So, the positions where they end must be in increasing order.
+
+So, how can I find these intervals?
+
+Well, perhaps for each possible position for Alice's interval, find the best possible Bob and Charlie intervals that come after Alice's.
+
+But even that seems computationally heavy.
+
+Wait, maybe we can precompute for each possible Alice's interval, the earliest possible Bob's interval that starts after Alice's end, and then the earliest possible Charlie's interval after Bob's end.
+
+But again, that's O(n^2), which is not feasible for n up to 2e5.
+
+Hmm, perhaps a smarter way is needed.
+
+Wait, another observation: since all the a, b, c are sorted in a way that allows for efficient checking, maybe we can find the best possible.
+
+Wait, but the values are arbitrary, so the prefix sums don't necessarily help.
+
+Alternatively, perhaps for each possible starting point of Alice's interval, find the best possible Bob's interval that starts after Alice's end, and then find the best Charlie's interval after Bob's end. But again, this is O(n^2), which is not feasible.
+
+Hmm, this is getting complicated. Let's think about the constraints.
+
+Each of Alice, Bob, and Charlie's intervals must be contiguous and non-overlapping. So, the intervals must be in order: first Alice's, then Bob's, then Charlie's. Or any other order as long as they don't overlap.
+
+Wait, no. The intervals can be in any order as long as they don't overlap. For example, Alice's interval could be the first, then Bob's, then Charlie's. Or Alice's could be the last, but that's not possible because Bob and Charlie have to get their own.
+
+Wait, no. Because the cake is divided into three parts, each assigned to a person. So, the three intervals must be non-overlapping and cover the entire cake. So, for example, the order could be Alice's interval, then Bob's, then Charlie's. Or any other order, as long as they don't overlap.
+
+So, the approach is to find three intervals, possibly in any order, that cover the entire cake, and each is contiguous, and each has sum >= target.
+
+Wait, but the order is not fixed. So, for example, Alice's interval could be somewhere in the middle, then Bob's, then Charlie's.
+
+This makes the problem more complex.
+
+Hmm, perhaps the way to approach this is to find all possible possible intervals for Alice, and for each, find the best possible way to assign Bob and Charlie.
+
+But again, this would be O(n^2), which is not feasible.
+
+Wait, perhaps we can precompute for each possible position, the best way to assign Bob and Charlie after that.
+
+Let me think differently. Let's consider that Alice's interval must be somewhere in the cake, and then Bob's must be a later interval, and then Charlie's must be after Bob's.
+
+But that's one possible way. Alternatively, Alice's interval could be in the middle, and Bob and Charlie could be on either side.
+
+Wait, perhaps the optimal way is to assign Alice's interval in such a way that Bob and Charlie can get the maximum possible sums after that.
+
+So, for each possible Alice's interval, we can compute the best possible Bob and Charlie intervals after Alice's.
+
+But again, this would require nested loops.
+
+Wait, but perhaps for each possible Alice's interval, we can find the earliest possible Bob's interval that starts after Alice's end, and then for each such Bob's interval, find the earliest possible Charlie's interval after Bob's end, such that all three intervals are non-overlapping and their sum is >= target.
+
+But even this approach would be O(n^2), which is not feasible.
+
+Hmm, perhaps the problem can be approached by considering that the three intervals must be non-overlapping and cover the entire cake. So, the sum of their lengths is n.
+
+So, each person's interval is a subarray, and the union of the three is the entire array, with no overlaps.
+
+So, the problem reduces to finding three subarrays, one for each person, that don't overlap and cover the entire array, and each has sum >= target.
+
+So, how can I find such subarrays?
+
+Hmm, perhaps a way is to iterate through all possible positions for Alice's interval, then for each, iterate through possible positions for Bob's interval after Alice's, and then for each of those, find the earliest possible position for Charlie's interval after Bob's.
+
+But this is O(n^2), which is not feasible for n=2e5.
+
+So, this approach is not going to work.
+
+Wait, perhaps there's a smarter way. Since all the a, b, c arrays are given, perhaps the problem can be transformed into finding three intervals that cover the entire array, each in their own subarrays, and each sum >= target.
+
+Wait, perhaps the key is to find the earliest possible Alice's interval, then find the earliest possible Bob's interval after Alice's, then the earliest possible Charlie's interval after Bob's.
+
+But this would give the earliest possible assignment, which may not satisfy the sum conditions. So perhaps this is not the right approach.
+
+Alternatively, perhaps we can find the maximum possible sum for each person, but that's not directly applicable.
+
+Hmm, perhaps it's better to think about the problem by considering that each person's interval must be a subarray, and their sum is >= target.
+
+So, for each possible starting position of Alice's interval, we can find the earliest possible Bob's interval that starts after Alice's end, and then the earliest possible Charlie's interval after Bob's.
+
+But even this is O(n^2), which is not feasible.
+
+Wait, but perhaps we can find for each position i, the minimum j where the sum from i to j is >= target. Then, for each such j, find the minimum k where the sum from j+1 to k is >= target, and the sum from k+1 to n is >= target.
+
+But again, this is O(n^2) in the worst case.
+
+Hmm, perhaps we can precompute for each index i, the earliest j where the sum from i to j is >= target. Then, for each such j, compute the earliest k >= j+1 where the sum from j+1 to k is >= target, and the sum from k+1 to n is >= target.
+
+But even that, it's O(n) for each i, which is O(n^2) overall.
+
+Not feasible.
+
+Hmm, so I'm stuck. Let's think differently.
+
+What if we consider the total sum and target. Let's say the target is T = ceil(tot / 3).
+
+Each person must get at least T.
+
+So, the sum of each person's interval must be >= T.
+
+We need to find three non-overlapping, contiguous intervals, one for each person, such that each has sum >= T.
+
+An alternative approach is to find the earliest possible way to assign the intervals, but I'm not sure.
+
+Wait, perhaps we can iterate over the cake from left to right, trying to assign Alice's interval first, then Bob's, then Charlie's, ensuring that each is a contiguous subarray and non-overlapping.
+
+But again, this is O(n^2), which is not feasible.
+
+Hmm, perhaps a binary search approach is needed. Let's think about binary searching on the maximum possible starting position for Alice's interval.
+
+Wait, but I'm not sure how to apply binary search here.
+
+Alternatively, perhaps for each possible starting position of Alice's interval, we can compute the earliest possible Bob's interval that starts after Alice's end, and then compute the earliest possible Charlie's interval after Bob's end, and check if the sum of the three intervals meets the target.
+
+But again, this is O(n^2), which is not feasible.
+
+Hmm, perhaps I'm missing a key insight.
+
+Let me think about the problem in terms of the sum for each person.
+
+The sum for Alice is the sum of a contiguous subarray, same for Bob and Charlie. Each must be >= T.
+
+So, the sum of all three is tot, so each is at least T, which is <= tot/3.
+
+So, the sum of all three is exactly tot.
+
+So, the sum of Alice's, Bob's, and Charlie's slices is exactly tot.
+
+Each must be >= T, so the sum of the three is exactly tot, so each is exactly T or more.
+
+So, the problem reduces to finding three non-overlapping, contiguous subarrays, one for each person, such that each has sum >= T.
+
+So, the question is, how to find such subarrays.
+
+Hmm, perhaps the approach is to find all possible positions for Alice's interval, then for each, find the best possible Bob's interval that starts after Alice's, and then for each of those, find the best possible Charlie's interval after Bob's.
+
+But this is O(n^2), which is not feasible.
+
+Wait, but perhaps for each possible Alice's interval, the best Bob's interval is the earliest possible that allows the best possible Charlie's interval.
+
+Alternatively, perhaps for each Alice's interval, the best Bob's interval is the one that starts as early as possible after Alice's end, and then the best Charlie's interval is the one that starts as early as possible after Bob's end.
+
+But even this is O(n^2), which is not feasible.
+
+Hmm, perhaps the problem can be solved by considering that the three intervals must cover the entire cake, so the sum of their lengths is n.
+
+So, the first step is to find three intervals that cover the entire cake, each is a contiguous subarray, and each has sum >= T.
+
+So, perhaps the way to approach this is to find the earliest possible way to assign the intervals.
+
+Alternatively, perhaps the problem can be solved by using a sliding window approach for each person's interval.
+
+For example, for Alice, find the earliest possible interval that covers a certain part of the cake, then find the earliest possible Bob's interval after that, and so on.
+
+But again, this is O(n^2), which is not feasible.
+
+Hmm, perhaps the key is to realize that the earliest possible intervals for Alice, Bob, and Charlie will satisfy the conditions, so we can find the earliest possible Alice's interval, earliest possible Bob's after that, earliest possible Charlie's after that.
+
+But is this the case? Not necessarily. For example, the earliest Alice's interval may have a sum less than T, so we need to find a later interval.
+
+So, perhaps the approach is to find the earliest Alice's interval where the sum is >=T, then find the earliest Bob's interval after Alice's, with sum >=T, then find the earliest Charlie's interval after Bob's, with sum >=T.
+
+But this is not guaranteed to work.
+
+Wait, but if this approach works, then we can find the earliest possible assignment, which might be a valid solution. But if it's not, then this approach would fail.
+
+But perhaps this is the only way to proceed, given the time constraints.
+
+So, let's outline the steps:
+
+1. Compute the total, T.
+
+2. For each test case, compute the prefix sums for a, b, c.
+
+3. For each possible starting index i of Alice's interval, find the earliest j >=i such that the sum from i to j is >= T. Then, for each such j, find the earliest k >= j+1 such that sum from j+1 to k is >= T, and then find the earliest l >= k+1 such that sum from k+1 to l is >= T. If such i, j, k, l exist, then we can return these indices.
+
+4. If such i, j, k, l are found, return them. Otherwise, return -1.
+
+But this is O(n^2) in the worst case, which is not feasible.
+
+So, perhaps we can find a way to compute this in O(n) time.
+
+Wait, perhaps the problem can be transformed into finding three intervals that cover the entire array, each in a contiguous subarray, and each has sum >= T.
+
+So, the sum of all three is exactly T*3, which is equal to the total.
+
+So, the problem is to find three non-overlapping, contiguous subarrays, one for each person, such that each has sum >= T.
+
+Hmm, perhaps the way is to find the earliest possible Alice's interval, then the earliest possible Bob's interval after that, then the earliest possible Charlie's interval after that.
+
+If this is possible, then we can return it. Otherwise, perhaps try later Alice's intervals.
+
+But again, this is O(n^2), which is not feasible.
+
+Hmm, perhaps the problem can be solved by considering that the three intervals must cover the entire cake, so the sum of their lengths is n.
+
+So, the sum of the lengths is n, but that's not directly helpful.
+
+Wait, another idea: since each person's interval must be a contiguous subarray, perhaps the maximum sum for a person is the total sum. So, for each person, the best possible sum is the total, but in this problem, we need each to have at least T.
+
+So, perhaps the approach is to find for each possible position of Alice's interval, the best possible Bob's and Charlie's intervals.
+
+But I'm stuck.
+
+Another idea: since the sum of a's, b's, and c's are all equal to tot, and each must be >= T, the sum of the three is exactly tot, so each is exactly T.
+
+Wait, no. Because the sum of a's, b's, and c's is equal to 3T. So, if each person's slice is exactly T, then the sum is 3T. But the total is also 3T.
+
+So, each person's slice must be exactly T.
+
+Wait, that can't be right. Wait, the sum of a's, b's, and c's is 3T. So, if each person's slice is exactly T, then the sum is 3T, which is correct.
+
+So, the problem reduces to finding three non-overlapping, contiguous subarrays, one for each person, each with sum exactly T.
+
+Wait, no, that's not necessarily the case. Because each person's slice can be more than T, as long as their sum is >= T.
+
+But if the sum is exactly T, it's easier to compute.
+
+So, perhaps the optimal way is to find three subarrays, each with sum exactly T.
+
+But the problem allows each to have sum >= T, so perhaps that's a more general case.
+
+Hmm.
+
+Another angle: Since the sum of a, b, c is 3T, and each slice must be >= T, the only possible way for the slices to sum to exactly 3T is if each is exactly T. Because if any slice is more than T, then the sum of the other two would have to be less than T, which is impossible.
+
+Wait, that's a crucial point.
+
+Wait, because a + b + c = 3T.
+
+If each of a, b, c has a slice sum >= T, then:
+
+slice_a + slice_b + slice_c = a + b + c = 3T.
+
+So, the only way for slice_a + slice_b + slice_c = 3T is that slice_a = slice_b = slice_c = T.
+
+So, each slice must be exactly T.
+
+Oh! That's a significant insight.
+
+So, the problem reduces to finding three non-overlapping, contiguous subarrays, each with sum exactly T, covering the entire cake.
+
+So, the three slices must each sum to exactly T, and they must be non-overlapping.
+
+This simplifies the problem a lot.
+
+So, the approach is to find three non-overlapping, contiguous subarrays, one for each person, each with sum exactly T.
+
+So, now the problem is to find three such subarrays.
+
+So, how to find this?
+
+Well, given that each slice must be exactly T, perhaps the approach is to find for each possible starting position of Alice's slice, the earliest possible Bob's slice that starts after Alice's, and then the earliest possible Charlie's slice that starts after Bob's.
+
+But again, this is O(n^2) in the worst case, which is not feasible.
+
+Hmm.
+
+So, perhaps the way is to find all possible slices for Alice, and for each, find the best possible slices for Bob and Charlie.
+
+But I'm not sure.
+
+Another idea: since each slice must sum to T, perhaps the problem can be transformed into finding, for each position i, the earliest j where the sum from i to j is T. Then, for each such j, find the earliest k > j where the sum from j+1 to k is T, and then find the earliest l >k where the sum from k+1 to l is T.
+
+If such a triplet (i, j, k, l) exists, then the answer is found.
+
+But this is O(n^2) in the worst case.
+
+Hmm.
+
+Wait, but perhaps we can precompute for each position i, the earliest j where the sum from i to j is T. Let's call this start[i].
+
+Similarly, for each position i, precompute the earliest j where the sum from i+1 to j is T. Let's call this start_b[i].
+
+Similarly, precompute the earliest j where the sum from i+2 to j is T. Let's call this start_c[i].
+
+Then, for each i, if start[i] exists, then for each j = start[i], check if start_b[j] exists and is >= j+1, and then check if start_c[j] exists and is >= k+1.
+
+If all are found, then return these indices.
+
+This way, for each i, we can find the possible j, k, l quickly.
+
+But how to precompute these arrays?
+
+Well, for each i, we can compute start[i] as the earliest j >=i where the sum from i to j is T.
+
+Similarly for start_b and start_c.
+
+So, the steps are:
+
+1. Compute the prefix sums for a, b, c.
+
+2. For each test case, compute the prefix sums.
+
+3. For each i, find the earliest j where prefix[j] - prefix[i-1] == T.
+
+   - This can be done by binary search on j.
+
+4. Similarly, for each i, find the earliest k > j where the sum from j+1 to k is T.
+
+   - Which is the earliest k in the prefix array where prefix[k] - prefix[j] == T, and k > j.
+
+5. Similarly, for each i and j, find the earliest l >k where the sum from k+1 to l is T.
+
+So, this approach can be feasible if the binary searches are efficient.
+
+So, the plan is:
+
+For each test case:
+
+- Compute the prefix sums for a, b, c.
+
+- Compute the total T = sum(a) = sum(b) = sum(c).
+
+- For each i, compute start[i] as the earliest j >=i where prefix[j] - prefix[i-1] == T.
+
+- Then, for each i, if start[i] exists, compute for j = start[i], find the earliest k >j where the sum from j+1 to k is T. Let's call this start_b[j].
+
+- Then, for each j, if start_b[j] exists, find the earliest l >start_b[j] where the sum from start_b[j]+1 to l is T. Let's call this start_c[j].
+
+- If for any i, start[i] exists, then for j = start[i], start_b[j] exists, and start_c[j] exists, then the indices are (i, j, k, l) where k is start_b[j], l is start_c[j].
+
+But wait, in this approach, for each i, j is determined as start[i], then k is determined as start_b[j], then l is determined as start_c[j]. So, the indices are i, j, k, l, which are the starting indices of Alice, Bob, Charlie's slices.
+
+Wait, but the ending indices are j, k, l. So, the Alice's slice is from i to j, Bob's from j+1 to k, Charlie's from k+1 to l.
+
+So, the end indices are j, k, l.
+
+So, this would give us the indices for each person.
+
+So, the steps are:
+
+For each i from 0 to n-1:
+
+   if start[i] exists:
+
+       j = start[i]
+
+       if j+1 < n:
+
+           if start_b[j] exists and is >= j+1:
+
+               k = start_b[j]
+
+               if k+1 <n:
+
+                   if start_c[k] exists and >= k+1:
+
+                       l = start_c[k]
+
+                       return (i, j, k, l)
+
+So, the code would look something like this.
+
+Now, the question is, how to compute these start, start_b, and start_c arrays.
+
+Each of these arrays is for a certain starting index, and for each i, finds the earliest j where the sum from i to j is T.
+
+This can be done using a sliding window approach, but it's a bit tricky because the window has to cover a certain sum.
+
+Wait, but for each i, we can perform a binary search on j to find the earliest j where the sum from i to j is T.
+
+So, for each i, j can range from i to n-1.
+
+The sum from i to j is prefix[j] - prefix[i-1].
+
+So, for each i, we can compute the required sum as T, and find the smallest j >=i such that prefix[j] - prefix[i-1] == T.
+
+This can be done using binary search on j.
+
+Similarly for start_b and start_c.
+
+So, the code outline is:
+
+Compute prefix sums for a, b, c.
+
+For each i in 0 to n-1:
+
+   target = T
+
+   low = i
+
+   high = n-1
+
+   ans = -1
+
+   while low <= high:
+
+       mid = (low + high) // 2
+
+       current_sum = prefix[mid] - prefix[i-1]
+
+       if current_sum == target:
+
+           ans = mid
+
+           break
+
+       elif current_sum < target:
+
+           low = mid + 1
+
+       else:
+
+           high = mid - 1
+
+   if ans != -1:
+
+       j = ans
+
+       # Now find start_b[j] = earliest k >j where sum from j+1 to k is T
+
+       low = j+1
+
+       high = n-1
+
+       ans_b = -1
+
+       while low <= high:
+
+           mid = (low + high) // 2
+
+           current_sum = prefix[mid] - prefix[j]
+
+           if current_sum == target:
+
+               ans_b = mid
+
+               break
+
+           elif current_sum < target:
+
+               low = mid +1
+
+           else:
+
+               high = mid -1
+
+       if ans_b != -1:
+
+           k = ans_b
+
+           # Now find start_c[k] = earliest l >k where sum from k+1 to l is T
+
+           low = k+1
+
+           high = n-1
+
+           ans_c = -1
+
+           while low <= high:
+
+               mid = (low + high) // 2
+
+               current_sum = prefix[mid] - prefix[k]
+
+               if current_sum == target:
+
+                   ans_c = mid
+
+                   break
+
+               elif current_sum < target:
+
+                   low = mid +1
+
+               else:
+
+                   high = mid -1
+
+           if ans_c != -1:
+
+               l = ans_c
+
+               # Now, the indices are i, j, k, l
+
+               # So, return (i, j, k, l)
+
+               print(i, j, k, l)
+
+               # Wait, but the indices are 0-based, right?
+
+               # The problem says the indices are 1-based.
+
+               # So, convert them to 1-based.
+
+               print(i+1, j+1, k+1, l+1)
+
+               break
+
+So, this approach is O(n log n) per test case, which is acceptable since n is up to 2e5 and t is up to 1e4, leading to 2e5 * log(2e5) per test case, which is about 2e5 * 18 = 3.6e6 operations, which is manageable.
+
+Wait, but wait, for each i, we perform two binary searches, each of which is O(log n). So, per i, it's O(log n) steps. For n elements, that's O(n log n) per test case.
+
+So, for t=1e4 and n=2e5, the total is 1e4 * 2e5 * log(2e5) = 1e4 * 2e5 * 18 ≈ 3.6e9 operations, which is way too much.
+
+Wait, that's not feasible. So, this approach is not efficient enough.
+
+Hmm, so I need a more efficient way.
+
+Wait, perhaps I can precompute for each i, the earliest j where the sum is T, and then for j, the earliest k where the sum is T, and so on.
+
+But even this is O(n^2) in the worst case.
+
+So, perhaps I can find a way to compute this in O(n) time.
+
+Wait, another idea: since the sum is fixed, perhaps the slices can be found by greedily selecting the earliest possible slices.
+
+For example, for Alice, find the earliest slice that sums to T. Then, for Bob, find the earliest slice after Alice's slice that sums to T. Then, for Charlie, find the earliest slice after Bob's slice that sums to T.
+
+If all three slices are found, then return them.
+
+Otherwise, try to find the next possible slice for Alice, and so on.
+
+But this is a greedy approach and may not find a solution if a later slice for Alice allows for a valid solution.
+
+So, this approach may not work.
+
+Hmm.
+
+Another idea: since the sum of a, b, c is 3T, and each slice must sum to T, perhaps we can find all possible slices for Alice, and for each, compute the remaining sum and see if the remaining can be split into Bob's and Charlie's slices.
+
+But for each slice of Alice, the remaining sum is 2T. So, Bob's slice must sum to T, and Charlie's slice must sum to T.
+
+So, perhaps for each possible slice of Alice, we can check if the remaining array can be split into two parts, each summing to T.
+
+If such a split exists, then we can return the slices.
+
+So, the steps are:
+
+For each possible slice of Alice (from i to j, sum T):
+
+   remaining_a = a[i..j]
+
+   remaining_b = a[j+1..n-1]
+
+   Check if sum(remaining_b) == T.
+
+   If yes, then check if the remaining_b can be split into a slice for Bob and a slice for Charlie.
+
+Wait, but that's not correct, because after Alice's slice, the remaining array is a[j+1..n-1], and we need to split this into two parts, each summing to T.
+
+So, the sum of the entire remaining array is 2T, so it's possible.
+
+So, for each possible slice of Alice, compute the remaining array, and check if it can be split into two slices, each summing to T.
+
+If yes, then return the slices.
+
+So, the question is, how to do this efficiently.
+
+So, for each possible slice of Alice (i, j), where sum(a, i, j) = T:
+
+   compute the sum of the remaining array (a[j+1 ... n-1]).
+
+   if this sum is not equal to 2T, skip.
+
+   else:
+
+       check if there exists a slice in the remaining array that sums to T.
+
+       if yes, then the remaining array after that slice is another slice, which must sum to T.
+
+       so, for the remaining array, find any position k where the sum from j+1 to k is T.
+
+       if such a k exists, then the remaining array after k is another slice, which is T.
+
+So, the plan is:
+
+For each possible slice of Alice (i, j):
+
+   sum_alice = T
+
+   remaining_a = a[j+1 ... n-1]
+
+   sum_remaining = sum(remaining_a) must be 2T.
+
+   if not, continue.
+
+   else:
+
+       find if there's a slice in remaining_a that sums to T.
+
+       if yes, then the remaining after that slice is another slice.
+
+       So, the indices are (i, j, k, l), where k is the end of Bob's slice, and l is the end of Charlie's.
+
+So, the code can be structured as:
+
+for i in 0 to n-1:
+
+   for j in i to n-1:
+
+       if sum a[i..j] != T: continue
+
+       sum_remaining = sum(a[j+1..n-1])
+
+       if sum_remaining != 2*T: continue
+
+       # Now, find if there's a slice in a[j+1..n-1] that sums to T.
+
+       # So, for the subarray a[j+1..n-1], find any k where sum(j+1, k) = T.
+
+       # If found, then the remaining is sum(k+1, n-1) must be T.
+
+       # So, compute the sum of a[j+1..k] and a[k+1..n-1] and see if both are T.
+
+       # So, let's find the earliest k where sum(j+1, k) = T.
+
+       # Using binary search.
+
+       low = j+1
+
+       high = n-1
+
+       ans_b = -1
+
+       while low <= high:
+
+           mid = (low + high) // 2
+
+           current = prefix[mid] - prefix[j]
+
+           if current == T:
+
+               ans_b = mid
+
+               break
+
+           elif current < T:
+
+               low = mid + 1
+
+           else:
+
+               high = mid -1
+
+       if ans_b != -1:
+
+           k = ans_b
+
+           # Now, check if the sum from k+1 to n-1 is T.
+
+           sum_remaining_after = prefix[n-1] - prefix[k]
+
+           if sum_remaining_after == T:
+
+               # So, the slices are:
+
+               # Alice: i to j
+
+               # Bob: j+1 to k
+
+               # Charlie: k+1 to n-1
+
+               # Convert to 1-based indices.
+
+               print(i+1, j+1, k+1, k+1 + (n-1 -k))  # Wait, no.
+
+               Wait, the indices are 0-based. So, the slices are:
+
+               Alice: i to j (0-based).
+
+               Bob: j+1 to k.
+
+               Charlie: k+1 to n-1.
+
+               So, the 1-based indices are (i+1, j+1, k+1, (n-1 - (k+1) +1)) ?
+
+               Wait, no. The end index in 0-based is n-1.
+
+               So, the slice for Charlie is from k+1 to n-1 (0-based). So, in 1-based, it's (k+2, n).
+
+Wait, no. 0-based to 1-based is +1.
+
+So, Alice's slice is from i to j (0-based): 1-based is (i+1, j+1).
+
+Bob's slice is from j+1 to k: 1-based is (j+2, k+1).
+
+Charlie's slice is from k+1 to n-1: 1-based is (k+2, n).
+
+So, the four numbers are i+1, j+1, k+2, n.
+
+Wait, no. Let me clarify:
+
+0-based to 1-based is i+1 for each i.
+
+So, the slice from i to j (0-based) is from index i to j, which is (i+1) to (j+1) in 1-based.
+
+So, for the four slices:
+
+Alice: i to j (0-based) → 1-based (i+1, j+1)
+
+Bob: j+1 to k → 1-based (j+2, k+1)
+
+Charlie: k+1 to n-1 → 1-based (k+2, n)
+
+So, the four numbers are (i+1, j+1, k+2, n).
+
+So, in the code, when we find i, j, k, and l (0-based), we need to convert them to 1-based.
+
+So, the indices are:
+
+a_start = i + 1
+
+a_end = j + 1
+
+b_start = j + 2
+
+b_end = k + 2
+
+c_start = k + 2
+
+c_end = n
+
+Wait, no. Because j+1 is the start of Bob's slice. So, Bob's slice is from j+1 to k (0-based). So, in 1-based, that's (j+2) to (k+1).
+
+Similarly, Charlie's slice is from k+1 to n-1 (0-based) → (k+2) to n (1-based).
+
+So, the four indices are:
+
+a_start = i+1
+
+a_end = j+1
+
+b_start = j+2
+
+b_end = k+1
+
+c_start = k+2
+
+c_end = n
+
+So, the four numbers are a_start, a_end, b_start, b_end, c_start, c_end.
+
+Wait, no. The problem requires six numbers: the indices assigned to Alice, Bob, and Charlie.
+
+So, the output is six numbers: a_start, a_end, b_start, b_end, c_start, c_end.
+
+So, in code:
+
+if we find i, j, k, l (0-based):
+
+a_start = i +1
+
+a_end = j +1
+
+b_start = j +2
+
+b_end = k +2
+
+c_start = k +2
+
+c_end = n
+
+So, the six numbers are a_start, a_end, b_start, b_end, c_start, c_end.
+
+So, the code can output these.
+
+Now, the question is, how to find i, j, k, l efficiently.
+
+So, back to the approach:
+
+For each possible i, find j where sum a[i..j] = T.
+
+Then, for j, find k where sum a[j+1..k] = T.
+
+Then, for k, find l where sum a[k+1..n-1] = T.
+
+If all three sums are T, then return the indices.
+
+So, the code can be optimized by precomputing the prefix sums.
+
+So, the steps are:
+
+Compute the prefix sum array.
+
+For each i in 0 to n-1:
+
+   if prefix[i] - prefix[0] != T: continue (since j must be >=i, but for i=0, prefix[0] is 0, so a[0..0] is a[0], which is prefix[1] - prefix[0] = a[0].
+
+So, for i=0, j must be >=0, and sum a[0..j] = T.
+
+So, for i=0, j can be found via binary search.
+
+Similarly for other i's.
+
+So, the code can be as follows:
+
+Compute the prefix sum.
+
+For i in 0

@@ -1,0 +1,582 @@
+0
+Okay, I need to solve this problem where I have to find an integer x such that for every element a_i in the array, x is a generator of a_i. If no such x exists, I should return -1.
+
+Let me understand the problem first. For x to be a generator of a_i, there must be a sequence of operations starting from x where each step increases the number by a divisor d (at least 2). So each step is x → x + d1 → x + d1 + d2 → ... → x + sum of some divisors, ending at a_i.
+
+Hmm, so for each a_i, x must be such that x + sum of some divisors is equal to a_i. Wait, no, because each step adds a divisor, but those divisors could be any, possibly varying. So the total sum added is the sum of some divisors, but each step's divisor must be a divisor of the current x at that moment.
+
+Wait, but that's a bit tricky. Because each step depends on the current x. So for example, the first step is x, then you add d1, which must divide x. Then the new x is x + d1, and so on.
+
+This seems complicated because the choice of d's affects the path. So I need to find x such that there exists a way to reach a_i by adding divisors, each step being a divisor of the current x.
+
+Alternatively, perhaps the sum of all the chosen d's is a_i - x. But that's not necessarily correct because the order of adding can affect the total sum. For example, adding a larger d first might allow more options later. But since each d must be a divisor of the current x, the sum would be the sum of a sequence where each term is a divisor of the x after each step.
+
+This seems tricky. So maybe I should think about what constraints x must satisfy for all a_i.
+
+Let's think about the possible x values. For each a_i, x must be such that x + s = a_i, where s is a sum of divisors, but each divisor is a divisor of x, then x + d1, then x + d1 + d2, etc., but each step's d must divide the current x.
+
+Wait, perhaps another approach: for each a_i, x must be a divisor of (a_i - some sum of its divisors). Or perhaps not. Let's think differently.
+
+Wait, let's consider the first example. For a_i=8, x is 3. The steps are 3 →6 (d=3) →8 (d=2). So 3 + 3 + 2 = 8, and the sum of divisors is 5. Wait, 3 is a divisor of 3, and 6 is a multiple of 3, so 3 divides 6, so 2 must be a divisor of 6. So the sum is 5, which is 8-3.
+
+So in this case, for x=3, the sum is 5, and each step adds a divisor of x at that step.
+
+But for x=4, a_i is 10. 4→8→10. So 4+4 (d=4) then 8 is a multiple of 4, so 2 is added. So sum is 6, which is 10-4.
+
+So in this case, the sum is 6.
+
+So for each a_i, x must be such that (a_i - x) is the sum of the divisors added. But the order in which these divisors are added affects whether each step is possible.
+
+Wait, but perhaps that's not the case. Because each step's divisor must divide the current x. So for example, when you add d1 to x, the new x is x + d1. Then, the next step's d must divide this new x.
+
+So for the first step, x must be a divisor of x + d1. So d1 must be a divisor of x + d1, but since x is a divisor of x + d1, then d1 must be a divisor of x. Because x divides x + d1, so x divides d1. So wait, that's not possible unless d1 is 0, which it can't be. Wait, wait, no. Let me see: x + d1 is the new x. So d1 must divide x, because x is the current x before adding d1. So d1 must be a divisor of x.
+
+So, for the first step, d1 must be a divisor of x. Then, the new x is x + d1. The next d2 must divide x + d1.
+
+So, for the first example, x=3. d1=3 is a divisor of 3. Then new x is 6. d2=2 is a divisor of 6.
+
+So, for each step, the added divisor d must be a divisor of the current x at that step.
+
+So the sum of all added divisors is a_i - x.
+
+So, for each a_i, x must be <= a_i.
+
+Also, x must be >= 2.
+
+So, for each a_i, there must be some s_i = a_i - x, which is the sum of the divisors added in the steps.
+
+But the problem is to find x such that for each a_i, x can add a sum of divisors s_i, where each s_i is the sum of the d's, and for each step, each d must be a divisor of the x before adding it.
+
+Wait, but that seems hard to model. So perhaps we need a different approach.
+
+Alternative idea: For x to be a valid, it must be a divisor of (a_i - x) for some a_i, but that's not correct because each a_i can have a different s_i.
+
+Wait, no: For x to be a generator of a_i, x can be increased in steps by divisors, each of which is a divisor of x at that step. So the sum of the steps is s_i = a_i - x.
+
+But each step's d must divide the current x.
+
+So, for example, in the first step, x must divide x + d1. So d1 = x + d1 - x must be a multiple of x. Wait, no: d1 is added, so x + d1 must be divisible by x. So d1 must be a multiple of x.
+
+Wait, no. Because x divides x + d1, which implies that x must divide d1. So d1 must be a multiple of x. But d1 is a divisor of x, because the way the problem is defined. So the only way that d1 is a multiple of x is if d1 = x, since x is at least 2.
+
+So, in the first step, d1 must be equal to x. Because d1 is a divisor of x, and to have x + d1 be divisible by x, d1 must be a multiple of x. So the only possibility is d1 = x.
+
+Wait, that's a crucial point. Because for the first step, d1 must be a divisor of x, and x + d1 must be divisible by x. So:
+
+d1 must divide x, and (x + d1) must be divisible by x.
+
+So, x + d1 = k*x, for some integer k >= 2 (since d1 >= 2, and x >= 2, so k can be 2 or more).
+
+So, x + d1 = k x → d1 = (k-1) x.
+
+But d1 must divide x, because the first step's d is a divisor of x.
+
+So (k-1) x divides x → (k-1) x | x → (k-1) x must be a divisor of x.
+
+But x is at least 2, so (k-1) x <= x → k-1 <=1 → k <=2.
+
+So k can be 2 or 1?
+
+Wait, but k is the factor in x + d1 = k x. Since d1 >= 2, x >= 2, k must be at least 2.
+
+So, k = 2.
+
+So, d1 = (2-1) x = x.
+
+But wait, d1 >=2. So x >= 2, which is already the case.
+
+So, in the first step, the only possible d1 is x, and the sum is x. So x + x = 2x.
+
+So, the first step adds x, making the new x 2x.
+
+So, for the first step, the only possible addition is x, and the sum increases by x.
+
+Wait, but that would imply that after the first step, x becomes 2x, and for the next step, the added d must be a divisor of 2x.
+
+So, for a_i, the sum s is a_i - x. But according to this, s must be x, because the first step is x.
+
+So, x + x = 2x, so the sum is x. So, a_i must be 2x. So, for a_i to be a valid a_i for x, a_i must be 2x.
+
+But that's not necessarily the case, because perhaps in the first step, the added d is not x, but another divisor.
+
+Wait, but according to the earlier analysis, the only possible d in the first step is x, because d1 must be a divisor of x and x + d1 must be divisible by x. So, d1 = x is the only option.
+
+So, the first step must add x, making the new x 2x. So, for any a_i, it must be possible to reach it by adding x, 2x, 3x, etc., in steps.
+
+Wait, but no. Because after the first step, x is 2x, but in subsequent steps, the added d's can be divisors of 2x.
+
+So, for example, in the first test case, a_i is 8, x is 3. Wait, but according to this, the first step would have to add 3 to x, making x 6. But in the example, it added 3 and then 2.
+
+So perhaps my earlier analysis is wrong. So, let's re-examine this.
+
+Wait, the example is x=3, a_i=8. The steps are 3 →6 (d=3) →8 (d=2). So, 3 is a divisor of 3, then 6 is a multiple of 3, then 8 is a multiple of 6? No, wait 8 is not a multiple of 6. So that doesn't make sense. Or wait, 6 + 2 is 8, and 2 is a divisor of 6.
+
+So the second step's divisor is 2, which divides 6.
+
+So, the first step's d1 is 3, which is a divisor of 3. Then the new x is 6. The next step's d2 is 2, which must be a divisor of 6.
+
+So, the conclusion is that the first step's d1 is 3, which is a divisor of 3, and the second step's d2 is 2, which is a divisor of 6.
+
+So, in this case, the first step's d1 is 3, which is x.
+
+So, the initial reasoning that d1 must be x is correct, but in the example, the first step's d1 was x.
+
+Wait, but according to the earlier analysis, the first step's d1 must be x. So why did the example choose x=3 and d1=3, which is x, and then d2=2, which is a divisor of 6.
+
+So, in this case, the first step added x, and the second step added d2, which is a divisor of 6.
+
+So, the sum is x + d2 = 3 + 2 = 5, which equals 8 - 3 =5.
+
+So, perhaps the initial analysis is correct, and the first step must add x, but in the example, the first step added x.
+
+Wait, but then in the example, a_i=8 is 3 + 3 + 2 = 8. So that makes sense.
+
+So, perhaps the first step must add x, making x 2x. Then, in the next steps, the added d's can be any divisors of 2x.
+
+But then, what about the case where x is a divisor of a_i - x, but the first step requires adding x, which is a divisor of x, but the a_i is larger than 2x.
+
+Wait, for example, let's say x=3 and a_i=10. Then, according to the first step, you add x, making x=6, and then you need to add 4 (because 6 + 4 =10). But 4 is a divisor of 6? No, 6 divided by 4 is 1.5, which is not an integer. So, you can't add 4.
+
+So, in this case, x=3 can't be a solution for a_i=10, because after the first step, you can't reach 10.
+
+But wait, 10 - 3 =7. So, the sum of the added divisors is 7. But the first step adds 3, which is x, making x=6. Then, the sum required is 4, but 4 is not a divisor of 6. So, it's not possible.
+
+So, for x=3 to be a solution, a_i must be 3 + 3 + 4, but 4 is not a divisor of 6. So, x=3 is not a solution.
+
+So, perhaps the key is that, for each a_i, x must divide (a_i - x), because the sum of the divisors added is a_i -x. But in the first step, the sum added is x, so a_i must be 2x. But wait, that's not always the case, as the example shows.
+
+Wait, no. Because in the first step, x is added, so a_i must be x + d1, where d1 is a divisor of x. But according to earlier analysis, d1 must be x, so a_i is 2x.
+
+But that's not the case in the example, where a_i=8. So, the first step's d1 is 3, not x=3. Wait, x=3 in that case, and the first step's d1 is 3, which is x. So, a_i=3 +3=6. But in the example, a_i is 8, which is 3 +3 +2=8.
+
+Wait, this is getting a bit confusing. Maybe I need to think differently.
+
+Let me try to model the process for a given x and a_i.
+
+For x, each step, you add a divisor d of current x. The order of adding d's can vary.
+
+We need to reach a_i.
+
+So, the sum of all d's is s, and x + s = a_i.
+
+The key is that each d must be a divisor of x when it is added.
+
+Now, the problem is to find x such that for each a_i, there exists a sequence of divisors (each step's d divides the current x at that step) that sums up to a_i - x.
+
+But how can we find x?
+
+Alternative approach: Since x must be a divisor of a_i - x, for each a_i, perhaps x must be a divisor of (a_i -x). Because, for each a_i, x must be a divisor of s_i = a_i -x.
+
+Wait, but that's not correct because s_i can be a sum of d's, which are not necessarily divisors of x.
+
+Wait, but each d is a divisor of x. So s_i is the sum of divisors of x, but the order may vary. So, the sum can be any number that is the sum of some divisors of x.
+
+But how does that relate to x's properties?
+
+Hmm, perhaps x must be such that for each a_i, a_i -x is a sum of divisors of x.
+
+But how can we find x?
+
+Another thought: For x to be a valid, it must be a divisor of some (a_i -x). So, for each a_i, x must divide (a_i -x). So, x + x divides a_i, because a_i -x is the sum, and x must divide it.
+
+Wait, no, because (a_i -x) is the sum, but x must divide each d in the steps. But a_i -x is the sum of the d's, which are each divisors of x.
+
+So, the sum s_i = sum of d's = a_i -x.
+
+But each d is a divisor of x, so s_i is the sum of some divisors of x.
+
+But s_i is a_i -x.
+
+So, for x to be valid, for each a_i, (a_i -x) must be expressible as the sum of some divisors of x.
+
+But how can we find x?
+
+This seems tricky. Maybe we can think about the possible x's that are common divisors of (a_i -x) for all a_i.
+
+Wait, but a_i -x is the sum of d's. So, for each a_i, x must divide (a_i -x) plus x, because a_i = x + sum of d's.
+
+Wait, no. Because a_i = x + s_i, and s_i is the sum of the d's. Each d is a divisor of x.
+
+But that doesn't directly imply x divides s_i.
+
+So, perhaps x must be a divisor of a_i -x for each a_i.
+
+Because s_i = a_i -x, and each d is a divisor of x.
+
+Wait, but s_i is the sum of the d's, which are each divisors of x. So, s_i is a sum of multiples of divisors of x.
+
+But the sum can be any number that is the sum of some of the divisors of x.
+
+So, s_i can be any number such that s_i is a multiple of x, or a multiple of some of its divisors.
+
+Hmm, perhaps this is getting too abstract.
+
+Alternative idea: For x to be a valid, the sum s_i for each a_i must be such that s_i is a multiple of x's greatest common divisor with x's divisors.
+
+Wait, perhaps not.
+
+Perhaps another approach: For each a_i, x must be a divisor of (a_i -x) + x = a_i, which is obvious. But that doesn't help.
+
+Wait, perhaps the key is that for each a_i, x must be a divisor of a_i -x plus x, which is a_i. But that's always true.
+
+So, perhaps x must be such that for each a_i, x is a divisor of (a_i -x) + x, but that's not helpful.
+
+Wait, another angle: For x to be a valid, for each a_i, a_i must be x plus a sum of numbers that are each divisors of x.
+
+But the sum can be any number that is the sum of some subset of x's divisors.
+
+So, for example, if x is 3, then the possible s_i's are 3, 6, 9, etc.
+
+So, for a_i=8, a_i -x=5, which is not a multiple of 3. So, x=3 is invalid.
+
+Wait, but in the example, x=3 is a solution because 3 + 3 + 2 = 8.
+
+So, the sum is 5, which is not a multiple of 3. So, the x=3 is not a divisor of s_i=5.
+
+Ah! So, my previous assumption was wrong. So, x does not need to be a divisor of s_i.
+
+So, that complicates things.
+
+So, the sum s_i can be any number that is a sum of some divisors of x.
+
+So, for each a_i, s_i must be a sum of some divisors of x.
+
+So, x must be such that for each a_i, (a_i -x) is a sum of some divisors of x.
+
+But how can we find x?
+
+This seems computationally intensive for large n.
+
+Alternative idea: The x must be such that for each a_i, a_i -x can be expressed as a sum of some of x's divisors.
+
+But to find x, perhaps x must be a divisor of (a_i -x) + x = a_i, which is always true.
+
+Wait, but that's not helpful.
+
+Another thought: For x to be a solution, the sum s_i = a_i -x must be expressible as a sum of some of x's divisors.
+
+What's the maximum possible s_i? For x, the maximum sum is the sum of all divisors of x, which is s_max = sigma(x), where sigma is the sum-of-divisors function.
+
+So, for each a_i, a_i -x must be <= sigma(x).
+
+So, for x to be a candidate, for each a_i, a_i -x <= sigma(x).
+
+But sigma(x) can be up to x * log x, which for x up to 4e5 is manageable.
+
+But given the constraints, n can be up to 1e5, and t up to 1e4, we need an efficient way.
+
+Alternative approach: For each x, precompute all a_i's such that a_i -x is <= sigma(x), and a_i -x is a sum of some of x's divisors.
+
+But this seems computationally expensive.
+
+Alternatively, perhaps the only possible x's are the divisors of the a_i's.
+
+But that's not necessarily the case.
+
+Wait, in the first example, x is 3, which is a divisor of 8 and 10, but a_i=8 is not a multiple of 3.
+
+Wait, 8 mod 3 is 2, which is not zero.
+
+So, that approach doesn't hold.
+
+Hmm.
+
+Alternative idea: For x to be a valid solution, for each a_i, x must be a divisor of (a_i - x) + x = a_i. Which is always true.
+
+But that doesn't help.
+
+Wait, perhaps for x to be valid, x must be a divisor of a_i, since s_i = a_i - x.
+
+Wait, that's not necessarily the case, as seen in the example where x=3 and a_i=8, which is not a multiple of 3.
+
+So, that's not the case.
+
+Another angle: Let's consider that for x to be a solution, the sum s_i for each a_i must be such that s_i is the sum of some subset of x's divisors. So, the sum s_i can be any number that is a sum of some of x's divisors.
+
+So, for each a_i, s_i must be >= the sum of the smallest d's.
+
+The smallest d is 2, so s_i must be at least 2.
+
+But that's not helpful.
+
+Wait, but for each x, the possible s_i can be any number that can be formed by the sum of some of x's divisors.
+
+So, for example, if x is 4, the divisors are 2 and 4. The possible s_i's are 2,4,6, etc.
+
+So, for a_i=10, s_i=6, which can be achieved by adding 2 and 4.
+
+So, x=4 is a possible solution for a_i=10.
+
+So, in that case, x=4 is a valid solution.
+
+So, the approach is to find x such that for each a_i, a_i -x can be expressed as a sum of some of x's divisors.
+
+This seems like a problem where for each x, we need to check if for all a_i, a_i -x is in the set of possible sums of x's divisors.
+
+But checking this for all possible x's is computationally expensive.
+
+So, perhaps the approach is to find x's such that x is a divisor of a_i -x, but I'm not sure.
+
+Wait, wait, no. Because a_i -x is the sum of the d's, which are each divisors of x. So, a_i -x is a sum of x's divisors. So, for a given x, a_i -x must be >= the sum of the smallest possible divisors.
+
+But again, this doesn't directly help.
+
+Alternative idea: Since x can be as large as a_i, but the sum s_i can be up to sigma(x), perhaps x must be a divisor of s_i for each a_i. But again, I'm not sure.
+
+Wait, no. Because s_i is the sum of the divisors, which can include x, 2x, etc. So, x must divide x, but it's not a divisor of s_i, unless s_i is x, 2x, etc.
+
+Hmm.
+
+Alternatively, perhaps x must be a divisor of (a_i -x) for all a_i. But that's not the case, as in the example where a_i=8 and x=3, 8-3=5, which is not a multiple of 3.
+
+So, that's not correct.
+
+Another angle: For x to be valid, the sum s_i = a_i -x must be such that s_i must be a sum of some of x's divisors. So, for each x, we can precompute all possible s_i that can be formed by the sum of x's divisors. Then, for each a_i, a_i -x must be in this set.
+
+But for n up to 1e5, this is not feasible.
+
+So, perhaps we can find x such that x is a divisor of the a_i's minus some s_i.
+
+Wait, not sure.
+
+Alternative idea: Let's consider all possible x's that are divisors of (a_i - x) for some a_i.
+
+Wait, but that doesn't directly help.
+
+Another approach: Let's think about each a_i and the possible x's that can generate it.
+
+For each a_i, x can be any number such that x + s_i = a_i, where s_i is the sum of divisors of x, and each d in the steps divides x.
+
+But the sum s_i must be a i -x.
+
+So, x must be such that for each a_i, a_i -x is a sum of some divisors of x.
+
+We need to find such an x.
+
+But how?
+
+Perhaps, for each a_i, the possible x's are the divisors of (a_i -x), but x is also a divisor of x, which is obvious.
+
+Wait, no, because x must be a divisor of x, which is always true.
+
+Wait, I'm stuck. Let's think of another way.
+
+What is the minimal possible x?
+
+Since x must be at least 2, perhaps x can't be larger than the minimal a_i minus the sum of divisors.
+
+Wait, but that's vague.
+
+Another thought: The minimal x is the minimal possible divisor of a_i - x, but I'm not sure.
+
+Wait, perhaps the key is to find x such that x divides (a_i -x) plus x, which is a_i. But that's always true.
+
+Wait, perhaps the only possible x's are the divisors of some a_i minus x.
+
+But again, not helpful.
+
+Alternative approach: Since each step must add a divisor of the current x, perhaps the sequence of steps must form a chain where each step's x is a multiple of the previous step's x.
+
+Wait, for example, in the first example, x=3, then 6, then 8.
+
+So, 3 divides 6, which divides 8. So, the chain is 3 →6 →8.
+
+But in that case, the sum is 3 + 2 =5, which is the sum of 3 and 2.
+
+But 3 does not divide 8, but the chain is 3 →6 →8.
+
+So, perhaps the chain is such that each step's x is a multiple of the previous step's x.
+
+Wait, but the steps can be any order, not necessarily in the order of multiples.
+
+So, perhaps this isn't a helpful approach.
+
+Let me try to think of the problem from a different angle.
+
+We need to find x such that for each a_i, a_i -x is a sum of some divisors of x.
+
+So, for each a_i, (a_i -x) must be expressible as a sum of some of x's divisors.
+
+So, for x to be valid, for each a_i, (a_i -x) must be a sum of some subset of the divisors of x.
+
+But how can we find x such that this is true for all a_i?
+
+This seems computationally feasible if we can precompute for each x the possible sums of its divisors, but for large x, this would be time-consuming.
+
+So, perhaps an alternative approach is to find all possible x's that are divisors of some a_i minus x, but I'm not sure.
+
+Wait, no. Because x must be a divisor of (a_i -x) plus x, which is a_i.
+
+But that's always true, so that doesn't help.
+
+Another idea: For x to be a solution, the sum s_i = a_i -x must be a multiple of x's greatest common divisor with x, but that's not necessarily the case.
+
+Wait, perhaps not.
+
+Alternative approach: Since x must be a divisor of (a_i -x) plus x, which is a_i, perhaps x can be any number that divides (a_i -x) for each a_i.
+
+Wait, no, because x must divide (a_i -x) only if x is a divisor of (a_i -x).
+
+But a_i -x could be any number, not necessarily a multiple of x.
+
+So, that's not a correct assumption.
+
+Hmm, perhaps I'm stuck and need to look for another way.
+
+Wait, perhaps the solution x must be a divisor of (a_i - x) for each a_i. But that's not correct.
+
+But in the example where a_i=8, x=3, a_i -x=5, which is not a multiple of 3.
+
+So, that's not correct.
+
+So, that approach is invalid.
+
+Another idea: Let's consider that for x to be a solution, the sum s_i = a_i -x must be a multiple of x's minimal divisor, which is 2. But that's not correct either, as the example shows.
+
+Hmm.
+
+Perhaps the only possible x's are the divisors of (a_i -x) for each a_i, but I'm not sure.
+
+Alternatively, perhaps x must be such that for each a_i, x is a divisor of (a_i -x) plus x, which is a_i, but that's always true.
+
+I'm not making progress here. Maybe I should try to find a pattern or think of some properties that x must satisfy.
+
+Wait, perhaps x must be a divisor of (a_i -x) + x, which is a_i, but that's always true. So, that's not helpful.
+
+Wait, what if x is a divisor of (a_i -x) for each a_i? Then, a_i -x must be a multiple of x, which implies a_i = x + k * x = x*(k+1). So, a_i must be a multiple of x.
+
+But in the example, a_i=8, x=3. 8 is not a multiple of 3. So, that's not a valid case.
+
+So, that's not a condition.
+
+Another idea: Let's think about the minimal x that can be a solution.
+
+The minimal x is 2, but for x=2, a_i -x must be a sum of divisors of 2. So, the sum can be 2, 4, 6, etc.
+
+So, for each a_i, a_i -2 must be even.
+
+But in the first example, a_i=8: 8-2=6, which is even. So, 6 is a sum of 2 and 2 (but 2 is a divisor of 2, so adding 2 twice would give 4, but 4 is not 6. So, that's not possible.
+
+So, x=2 may not be a solution.
+
+Hmm.
+
+Another thought: For x to be a solution, the sum s_i for each a_i must be equal to a_i -x, which is the sum of the d's added in each step.
+
+Each d is a divisor of x, so the sum s_i can be any number that's a sum of some subset of x's divisors.
+
+So, for x to be a solution, the set of a_i's must be such that for each a_i, a_i -x is a sum of some subset of x's divisors.
+
+So, perhaps for x to be a solution, the a_i's must be x plus some sum of x's divisors.
+
+But again, not directly helpful.
+
+Alternative idea: Let's consider that for each a_i, a_i -x must be a sum of x's divisors. So, for x to be a solution, the a_i's must be such that a_i -x is equal to the sum of some divisors of x.
+
+So, perhaps x can be found by considering the minimal a_i's.
+
+Wait, perhaps for each a_i, x can be the smallest divisor of a_i -x.
+
+But I'm not sure.
+
+Alternatively, perhaps for each a_i, x must be a divisor of (a_i -x) plus x, which is a_i. So, x must be a divisor of a_i.
+
+But that's not the case, as in the example.
+
+Alternatively, perhaps x must be a divisor of (a_i -x) plus x, but since that's always true, that doesn't help.
+
+Another approach: Let's think about the minimal x that can generate all a_i.
+
+But I'm not sure.
+
+Hmm.
+
+Wait, perhaps the solution is to find x such that x is a divisor of all (a_i -x). But that's not correct, as seen in the example.
+
+So, perhaps x must be a divisor of (a_i -x) for each a_i, but that's not the case.
+
+I'm stuck. Maybe I should think about the problem differently.
+
+Let me think about the problem's constraints again.
+
+For each a_i, x must be a number such that a_i can be expressed as x plus a sum of divisors of x, each step's divisor being a divisor of the current x.
+
+So, the sum s_i = a_i -x must be the sum of the divisors added in each step.
+
+But since each step's divisor must divide the current x, the sum s_i must be the sum of some subset of the divisors of x.
+
+So, for each a_i, s_i must be a sum of divisors of x.
+
+So, for x to be a solution, for each a_i, s_i must be such a sum.
+
+So, the problem reduces to finding an x such that for each a_i, a_i -x is a sum of some subset of x's divisors.
+
+So, how can we find such an x?
+
+One possible approach is to consider all possible x's that are divisors of some (a_i -x).
+
+But given that n is up to 1e5, and t is 1e4, this approach is not feasible.
+
+Alternative idea: For each a_i, the possible x's are the divisors of a_i - s_i, where s_i is the sum of some divisors of x.
+
+But this is circular.
+
+Another approach: The sum s_i for each a_i must be a sum of x's divisors, which are all at least 2. So, s_i must be at least 2.
+
+But that's not sufficient.
+
+So, perhaps x must be such that for all a_i, a_i -x is at least 2, but that's not the case.
+
+Wait, perhaps the key is to find x such that the sum of the minimal divisors of x (which is 2) is <= s_i.
+
+So, 2 * k <= s_i, where k is the number of steps.
+
+But again, not helpful.
+
+Another idea: For x to be a solution, the minimal possible sum s_i is 2 (when x=2). So, for each a_i, a_i must be x + s_i, where s_i >= 2.
+
+But in the example where x=3 and a_i=8, s_i=5, which is >=2.
+
+So, that's not helpful.
+
+Hmm.
+
+Perhaps it's time to look for some patterns or mathematical properties.
+
+Let me think about the first example:
+
+Input:
+3
+3 6 8
+
+Output: 3.
+
+So, for a_i=3: s_i=0 (since x=3, a_i=3, so s_i=0).
+
+Wait, no, wait, a_i=3, x=3: s_i=0, which is the sum of zero steps. So, it's allowed.
+
+For a_i=6: s_i=3 (3), which is a divisor of 3.
+
+For a_i=8: s_i=5 (3+2), which is the sum of 3 and 2, both divisors of 3.
+
+So, the sum is 5, which is allowed.
+
+So, x=3 is valid.
+
+Another example: x=4.
+
+For a_i=10: s_i=6, which is 2+4 (divisors of 4). So, x=4 is valid.
+
+But for a_i=10, x=4: a_i -x=6. 6 must be expressible as sum of 2 and 4.
+
+Yes, 2+4=6.
+
+So, x=4 is a possible solution.
+
+Wait, but 4 can't be the solution because in the first example, x=3 is the solution.
+
+So, both 3 and 4 are possible solutions.
+
+But the problem says to find any such x, so either is acceptable.
+
+But perhaps the problem expects

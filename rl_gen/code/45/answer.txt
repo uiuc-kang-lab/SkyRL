@@ -1,0 +1,503 @@
+0
+Okay, I have this problem to solve. Let me try to understand it step by step.
+
+So, the problem is about a rooted tree where each node (except the root) has a parent p_i. Each edge has a weight t_i. We know that the sum of all t_i from i=2 to n is w. Also, each t_i is a non-negative integer.
+
+The tree is numbered in a special way: during a depth-first search (DFS), the vertices are numbered in the order they are visited. So, for each subtree, the numbers are consecutive. That makes sense because when you visit a node, you go into its subtree, assign numbers in order, and then come back.
+
+Now, the main task is to process n-1 events. Each event gives a value t_x = y. After each event, we need to calculate, for each vertex i (from 1 to n), the distance between i and (i mod n + 1). Wait, wait. Wait, i mod n is from 0 to n-1, so adding 1 makes it 1 to n. So, for each i, we compute the distance between i and (i mod n +1). Then, for each i, we want the maximum possible value of this distance, given the current t's. But wait, no. Wait, no. Because when t's are known, the distances are fixed. But in the problem statement, it says that after each event, we need to find the maximum possible value of dist(i, i mod n +1) for each i. Wait, no. Wait, the problem says: "Iris is given integers x and y, indicating that t_x = y. After each event, Iris wants to know the maximum possible value of dist(i, i mod n +1) independently for each i (1 ≤ i ≤ n)."
+
+Wait, so for each i, compute dist(i, (i mod n)+1), and then find the maximum among these n values. Or wait, no. Wait, no, the problem says, "the maximum possible value of dist(i, i mod n +1) independently for each i". Wait, that's a bit confusing. Or perhaps, for each i, compute the distance, and then find the maximum among all these n distances. Because the problem statement is a bit ambiguous. Oh, looking back: "we only need to know the sum of these n values." So, for each i, compute dist(i, (i mod n) +1), and sum all those n values. But wait, the sample input and output might clarify this.
+
+Wait, the problem statement says: "we only need to know the sum of these n values." So, the output is n-1 integers, each is the sum of the n distances. So, after each event, compute the sum of dist(i, (i mod n) +1) for all i from 1 to n, and output that sum.
+
+Wait, that's a crucial point. So, for each event, after setting t_x to y, we calculate the sum of dist(i, (i mod n) +1) for i from 1 to n, and output that sum.
+
+So, the problem reduces to, after each event, compute the sum of the distances between each i and (i mod n)+1.
+
+Now, the challenge is to compute this sum efficiently, given that the tree structure and the t_i's can change dynamically.
+
+Let me think about the structure. The tree is rooted at 1, and each node i (i>1) has a parent p_i. The edges are directed from parent to child, with weight t_i.
+
+The distance between two nodes u and v is the sum of the weights of the edges along the path from u to v.
+
+So, for each i, the distance is dist(i, (i mod n)+1).
+
+We need to compute this for each i, sum them, and output after each event.
+
+But given that n can be up to 2e5, and events up to 2e5, we need an O(1) or O(log n) per event solution, or something similar.
+
+So, how can we model this?
+
+First, let's consider the structure of the tree. It's a rooted tree, and during DFS, the nodes are numbered in the order of the traversal. So, the children of a node are processed in the order they appear in the DFS.
+
+Wait, but in the problem statement, it's mentioned that the vertices of the tree are numbered in a special way: the numbers of the vertices in each subtree are consecutive integers. So, for example, in the subtree of 2, the vertices are 2, 3,4,5, meaning that these are consecutive. So, the order in which the children are processed in the DFS determines the numbering.
+
+This implies that the numbering is such that for any node u, all its children are numbered in the order they were discovered, but their numbering is a block of consecutive integers. So, for example, if u has children v, w, x, then v might be numbered 2k, w 2k+1, x 2k+2 for some k. Or perhaps it's better to think that the children of u are numbered starting from some number, and their numbering is consecutive.
+
+Wait, this is an important point. The numbering is such that, for each subtree, the vertices are consecutive. So, the root is 1, and its children are 2,3,4,... but not necessarily in order. Wait, no, because for each subtree, the vertices are numbered consecutively. So, the root's children are numbered 2,3,4,... but perhaps in an arbitrary order. But then, for each child of the root, say 2, the children of 2 are numbered 5,6,7, etc. So, the numbering is such that the subtree of a node u starts at some number, and all its children are numbered consecutively.
+
+This suggests that the tree is traversed in a way that the children of u are numbered in a contiguous block, and within that block, the children are processed in their own order.
+
+But that's not necessarily the case. The problem statement says that for the subtree of 2, the numbers are 2,3,4,5, which are consecutive. So, that suggests that 2 is the first node in the subtree, and its children are numbered 3,4,5, etc. Wait, but that can't be right because 2 is the root of its own subtree, and the subtree should include 2 itself. So, perhaps the numbering starts at 1, and the root is 1. Its children are 2,3,4,... and each of those children's subtrees are numbered consecutively. So, for example, child 2's subtree is 2,3,4,5,6, etc.
+
+Wait, that makes sense. So, the numbering is such that the root is 1, and each child is numbered immediately after the root. Then, each child's subtree is numbered consecutively, starting from the next available number. So, if the root has children 2,3,4, then 2's subtree starts at 5, 3's at 6, 4's at 7, etc.
+
+No, that can't be right because 2 is the root of its own subtree. So, 2's subtree includes 2,3,4,5, etc. So, the numbering is such that when you perform a DFS starting from the root, the order in which nodes are visited is the order in which they are numbered.
+
+Wait, but in a standard DFS, the first node is 1, then its children are processed in order. So, if node 2 is a child of 1, then 2 is numbered 2. Then, if node 3 is a child of 1, node 3 is numbered 3, and so on. Then, for each child, say 2, its children are numbered 4,5,6, etc.
+
+So, the numbering is such that the root is 1, then its children are 2,3,4,... in the order of the DFS. Then, each child's subtree is numbered consecutively, starting from the next available number.
+
+So, for example, root 1 has children 2,3. Then, 2's subtree is 2,3,4,5, and 3's is 3,4,5,6. Wait, no, because 3 is already a child of 1. So, perhaps in that case, 3's subtree is 3,4,5,6, but then 2's subtree would have 2,3,4,5,6 as well. That doesn't make sense.
+
+Hmm, I think I need to model the numbering correctly.
+
+The problem statement says that the vertices are numbered in the order of a depth-first search, and in each subtree, the vertices are consecutive integers. So, for example, the subtree of 2 has vertices numbered 2,3,4,5. So, this suggests that 2 is the first node in its subtree, and its children are numbered 3,4,5, etc. So, the root is 1, and the children are numbered 2,3,4, etc.
+
+Wait, that can't be. Because the root has no parent, so it's the first node. Its children are numbered 2,3,4, etc. So, for example, in a tree where root is 1, has child 2, which has child 3, and so on. Then, the numbering would be 1,2,3,4,5, etc. So, each child is numbered immediately after the root.
+
+So, for any node u, the subtree of u is the nodes that are visited after u in the DFS. So, the numbering starts at 1, then u is numbered next, then its children are numbered in order, and so on.
+
+So, the numbering is such that the root is 1, its children are 2,3,4,... in the order they are visited. Then, each child's subtree is numbered consecutively, starting from the next available number.
+
+So, for example, if 1 has two children, 2 and 3, then 2 is numbered 2, 3 is numbered 3. Then, 2 has a child 4, which is numbered 4, and so on.
+
+Wait, that makes sense. So, the root is 1. Then, the children are numbered 2,3,4,... in the order of their discovery. Then, each child's subtree is numbered starting from the next available number. So, for example, if child 2 has a child 4, then 4 is numbered 4, but wait, that's after 2. So, the numbering is such that for each node u, its children are numbered in the order of their discovery, and their numbering is a consecutive block.
+
+So, the root is 1, numbered 1. Its children are 2,3,4,... in the order of their discovery. Then, each child's subtree is numbered consecutively. So, if child 2's children are 5,6,7, then 5 is numbered 5, 6 is 6, etc.
+
+So, the numbering is a pre-order traversal, where each subtree is numbered in consecutive order, but the starting number for each subtree is the next available number after the parent.
+
+This is an important observation because it affects how we compute the distances.
+
+So, for each node u, the subtree of u is numbered starting from s_u + 1, where s_u is the starting number for the subtree of u's parent.
+
+Wait, no. Let me think. The root is 1, numbered 1. Its children are 2,3,4,... in the order they were discovered. So, child 2 is numbered 2. Then, child 2's children are numbered 5,6,7, etc., because after 2, the next number is 3, but 3 is already a child of the root, so perhaps I'm getting this wrong.
+
+Wait, no. The root is 1. Its children are 2,3,4, etc. So, the root's children are numbered in the order they are discovered. So, for example, if 2 is a child of 1, then 2 is numbered 2. Then, 3 is a child of 1, so 3 is numbered 3. Then, 4 is a child of 1, numbered 4, etc.
+
+Now, for each child of 1, say 2, its children are numbered starting from 5. So, if 2 has a child 5, then 5 is numbered 5. If 2 has a child 6, then 6 is numbered 6, and so on.
+
+Wait, that can't be because 5 is larger than 2, which is a child of 1. So, the numbering for 2's subtree is 2,3,4,5,6, etc.
+
+Wait, but that would mean that the subtree of 2 includes 2,3,4,5,6, etc. Which is correct. So, the numbering is such that for any node u, the subtree of u includes u, and all its children are numbered consecutively, starting from the next available number after u's parent.
+
+So, the root is 1, numbered 1. Its children are 2,3,4, etc., in the order they are discovered. Then, for each child u, its subtree is numbered starting from s_u +1, where s_u is the starting number for the subtree of u's parent.
+
+Wait, perhaps the starting number for a child's subtree is the next available number after the parent. So, for example, the root is 1, numbered 1. Its children are 2,3,4, etc. So, child 2's subtree starts at 2. Then, child 3's subtree starts at 3, child 4's at 4, etc.
+
+Wait, no. Because in the problem statement, the subtree of 2 has vertices 2,3,4,5, which are consecutive. So, that suggests that 2 is the first node in its subtree. So, the root is 1, which is not part of 2's subtree. So, perhaps I'm misunderstanding the structure.
+
+Wait, perhaps the root is 1, and its children are 2,3,4, etc. So, 2 is a child of 1, and its subtree includes 2,3,4,5, etc. So, the numbering is such that 2 is numbered 2, 3 is 3, 4 is 4, 5 is 5, etc.
+
+So, in this case, the subtree of 2 is 2,3,4,5,6, etc. So, the starting number for 2's subtree is 2. Then, the starting number for 3's subtree is 3, and so on.
+
+So, the subtree of u starts at u's position in the DFS order. So, the root is 1, with no parent. Then, its children are processed in the order of DFS, so for each child u, the next available number is u's position in the DFS order.
+
+So, during a DFS, the nodes are numbered in the order they are visited. So, for node 1, the first child is 2 (say), then 3, then 4, etc. So, 2 is numbered 2, 3 is 3, 4 is 4, etc.
+
+Then, for each child u, the subtree of u is numbered starting from the next available number after u's parent. So, for u's parent p, the next available number is p's position in the DFS order. So, for example, if p is 2, the next available number is 3. So, the subtree of 2 starts at 3, which is 2's position in the DFS order.
+
+Wait, that makes sense. So, the starting number for a child's subtree is the position of the parent in the DFS order plus 1.
+
+So, for example:
+
+- Root is 1, no parent.
+- Its children are processed in the order of discovery. Say, 2, then 3, then 4, etc.
+- So, 2 is numbered 2, 3 is 3, 4 is 4, etc.
+- For each child u of p, the starting number for u's subtree is p's position in the DFS order +1.
+
+So, for u=2, p=1. p's position is 1. So, u's subtree starts at 2.
+
+For u=3, p=1. p's position is 2. So, u's subtree starts at 3.
+
+So, the subtree of 2 is 2,3,4,5,6,..., etc.
+
+Similarly, the subtree of 3 is 3,4,5,6, etc.
+
+Wait, but that would mean that 2's subtree includes 2,3,4,5, etc., and 3's subtree includes 3,4,5, etc. So, the subtree of 2 is 2,3,4,5, etc., and the subtree of 3 is 3,4,5, etc. So, the numbering is such that each child's subtree is numbered starting from the next available number after the parent.
+
+So, the starting number for a child u is s = p's position +1.
+
+So, the subtree of u is a consecutive sequence starting at s.
+
+So, the subtree of u is s, s+1, s+2, etc.
+
+So, the numbering for the tree is such that:
+
+- The root is 1, with no parent.
+- For each child u of p, the starting number of u's subtree is p's position + 1.
+- The children of u are processed in the order they are visited, so their numbering is s, s+1, s+2, etc.
+
+This is a crucial observation because it allows us to model the subtree of each node as a consecutive sequence starting from a certain number.
+
+So, given this, the distance between two nodes i and j is the sum of the weights along the path from i to j.
+
+So, for each i, we need to find dist(i, (i mod n)+1) and sum all these for each i from 1 to n.
+
+The challenge is to compute this sum efficiently after each event.
+
+Now, let's think about how to represent the tree and compute the distances.
+
+First, the tree is given as a rooted tree with root 1, and for each node i (2<=i<=n), p_i is its parent. So, the tree is built, and for each node, we can find its children.
+
+But in the problem, the children of a node u are those nodes v where p_v = u.
+
+So, we can construct a list of children for each node.
+
+Once the tree is built, we can perform a DFS to assign the numbering to each node, which is the pre-order traversal order.
+
+Wait, but in the problem statement, the numbering is such that the root is 1, and each child is numbered in the order they are visited in the DFS. So, the numbering is the standard pre-order traversal.
+
+So, the numbering can be obtained by performing a pre-order traversal of the tree, and for each node u, its number is the order in which it is visited.
+
+So, for example, the root is 1. Its children are processed in the order of their discovery, say 2,3,4. So, 2 is numbered 2, 3 is 3, 4 is 4. Then, for each child, say 2's children are 5,6,7. So, 5 is numbered 5, 6 is 6, 7 is7, and so on.
+
+So, the numbering is the standard pre-order traversal.
+
+So, the first step is to perform a pre-order traversal of the tree to assign each node a number, say, in an array 'number' where number[u] is the number of u.
+
+Once we have the 'number' array, we can represent each node's value t_i as the weight of the edge from its parent to itself.
+
+Wait, no. Because for each node u, the edge from u to its parent p_u has weight t_u. So, for each node u (except root), t_u is the weight of the edge connecting u and p_u.
+
+So, for node u, the parent is p_u, and the edge from u to p_u has weight t_u.
+
+So, for the root, there's no parent, so its t is 0.
+
+So, for each node u, t_u is the weight of the edge connecting u to its parent p_u.
+
+Wait, the problem says that the sum of t_i from i=2 to n is w. So, each t_i is non-negative.
+
+So, given that, the tree is built, and for each node u (2<=u<=n), we have p_u.
+
+So, the first step is to read the input and build the tree.
+
+Once the tree is built, we can perform a pre-order traversal to assign the numbers to each node. The root is 1, and its children are processed in the order of their discovery. So, the order is 1, then its children in the order they were visited.
+
+Wait, no. The pre-order traversal of a tree is to visit the root, then each child in order. So, for example, the root is 1. Its children are 2,3,4. So, the pre-order traversal would be 1,2,3,4,... etc.
+
+So, the numbering would be:
+
+number[1] = 1
+
+number[2] = 2
+
+number[3] =3
+
+number[4]=4
+
+and so on.
+
+So, the pre-order traversal assigns the numbers in the order of the traversal.
+
+So, this is the key to assigning the numbers correctly.
+
+Once the numbers are assigned, for each node u, t_u is the weight of the edge from u to its parent.
+
+So, for each u, t_u is the weight of the edge connecting u and p_u.
+
+So, the next step is to, for each node u, compute the distance from u to (u mod n)+1.
+
+So, for each i from 1 to n, compute dist(i, (i mod n)+1), and sum all these distances.
+
+Now, the problem is to compute this sum efficiently after each event.
+
+Each event gives x and y, setting t_x = y.
+
+So, the sum changes as t_x changes.
+
+So, the question is, how to represent the sum in a way that allows for efficient updates.
+
+Now, the main issue is that for each event, we have to update t_x, and then recompute the sum for all i from 1 to n.
+
+But n can be up to 2e5, and events up to 2e5. So, a naive approach of recomputing the sum after each event is O(n), which is 4e10 operations—way too slow.
+
+So, we need a smarter approach.
+
+So, the key is to find a way to represent the sum in a data structure that allows for efficient updates and queries.
+
+Let me think about the structure of the sum.
+
+The sum is S = sum_{i=1 to n} dist(i, (i mod n) +1).
+
+Each dist(i, j) is the sum of the weights along the path from i to j.
+
+So, for each i, dist(i, j) is the sum of t_k for each edge on the path from i to j.
+
+Now, the problem is that for each event, we have to update t_x, which affects all the paths that go through x.
+
+But how can we model this?
+
+Wait, but each event only affects one t_x, so for each event, only the paths that include x will have their distance affected.
+
+So, for each event, when we set t_x = y, we need to find all nodes in the subtree of x, and for each such node u, add (y - t_x) to the distance from u to (u mod n)+1.
+
+Wait, no. Because the distance from u to (u mod n)+1 is being added (y - t_x) to the sum.
+
+So, for each u in the subtree of x, dist(u, j) changes by (y - t_x), where j is (u mod n) +1.
+
+So, the sum S is the sum of dist(u, j) for all u.
+
+So, when t_x is updated to y, for each u in the subtree of x, we need to add (y - t_x) to dist(u, j), where j is (u mod n)+1.
+
+So, the total change in S is sum_{u in subtree(x)} (y - t_x) = (y - t_x) * size_of_subtree(x).
+
+So, the new sum is S + (y - t_x) * size_of_subtree(x).
+
+Wait, is that correct?
+
+Yes, because for each u in subtree(x), dist(u, j) increases by (y - t_x) because t_x is now y.
+
+So, the change in S is (y - t_x) multiplied by the number of u's in subtree(x).
+
+So, the approach is as follows:
+
+- Precompute for each node u, j = (u mod n) +1.
+
+- Precompute for each node u, the path from u to j.
+
+- But to compute the sum of t's along that path, we can precompute for each node u, the sum of t's on the path from u to its parent.
+
+Wait, but each node's path to j is from u up to its parent, then down to j.
+
+Wait, no. For example, j is (u mod n)+1, which could be in the subtree of u.
+
+So, the path from u to j is u → parent(u) → ... → u's parent → ... → j.
+
+So, the sum of t's on this path is t_u + t_parent(u) + ... + t_{u's parent} + ... + t_j.
+
+So, for each u, the distance from u to j is the sum of t's along the path from u to j.
+
+So, to compute this, for each u, we can precompute the sum of t's from u to its parent, and then from parent to j.
+
+Wait, but j is (u mod n) +1. So, j is in the subtree of u, or is it?
+
+Wait, j is (u mod n) +1. So, if u is between 1 and n, then j can be up to (n mod n) +1 = 0 +1=1.
+
+Wait, let's see: u can be 1,2,...,n.
+
+For u=1: j=1 mod n +1=1+1=2.
+
+For u=2: j=2 mod n +1=2+1=3.
+
+...
+
+For u =n: j =n mod n +1=0 +1=1.
+
+So, for u in 1..n, j is in 2..n, except for u=n, j is 1.
+
+So, j can be any node from 1 to n.
+
+So, for u, j is (u mod n) +1.
+
+So, j can be 1 if u is n, and otherwise 2 to n.
+
+So, j is in the subtree of u only if j is a descendant of u. Wait, no. Because j is (u mod n) +1, which can be any node in 1..n. So, j is in the subtree of u only if u is an ancestor of j.
+
+So, for example, if u is 2 and n=5, j is 3. So, if 2 is a child of 1, then 2's subtree is 2,3,4,5. So, j=3 is in 2's subtree.
+
+So, in this case, the path from u to j is u → parent(u) → ... → j.
+
+So, the distance is the sum of t's along this path.
+
+So, for each u, the distance from u to j is the sum of t's from u up to j.
+
+So, the idea is that for each u, j is (u mod n) +1. So, j is in the subtree of u only if u is an ancestor of j.
+
+So, the distance between u and j is the sum of the t's along the path from u to j.
+
+Now, when t_x is updated to y, for each u in the subtree of x, the distance from u to j is increased by (y - t_x).
+
+So, the total change in S is (y - t_x) multiplied by the number of u's in the subtree of x.
+
+So, S_new = S + (y - t_x) * size_of_subtree(x).
+
+So, this is a crucial insight.
+
+So, the steps are:
+
+1. Precompute for each node u, j = (u mod n) +1.
+
+2. For each event, set t_x = y.
+
+3. For each u in the subtree of x, add (y - t_x) to the distance from u to j.
+
+4. The sum S is the sum of all dist(u, j) for u.
+
+So, the sum S can be computed as S = initial_sum + (y - t_x) * size_subtree(x).
+
+So, the problem reduces to:
+
+- Compute the initial sum S.
+
+- For each event, update t_x, and compute S as initial_sum + (y - t_x) * size_subtree(x).
+
+So, the key is to compute the initial sum S, and the size of the subtree of x, for each event.
+
+So, the plan is:
+
+- Precompute for each node x, the size of its subtree.
+
+- Compute the initial sum S.
+
+- For each event, get t_x and y.
+
+- Compute delta = (y - t_x) * size_subtree(x).
+
+- Update S = S + delta.
+
+- Output S.
+
+Wait, but is that correct?
+
+Wait, because for each u in the subtree of x, the distance from u to j is increased by (y - t_x), so the total sum increases by (y - t_x) * size_subtree(x).
+
+Yes, because each such u contributes (y - t_x) to their distance from j.
+
+So, the initial S is the sum of all dist(u, j). Then, each event updates t_x, which affects all u in the subtree of x.
+
+So, the total change is (y - t_x) multiplied by the number of u in the subtree of x.
+
+So, the sum S_new = S + (y - t_x) * size_subtree(x).
+
+This is a very efficient approach.
+
+So, the steps are:
+
+1. Read the tree and build the adjacency list.
+
+2. Precompute the subtree sizes for each node.
+
+3. Compute the initial sum S by, for each u, computing dist(u, j) and adding it to S.
+
+4. For each event, read x and y. Update t_x to y. Compute delta = (y - t_x) * size_subtree(x). Update S += delta. Output S.
+
+Wait, but how to compute dist(u, j) efficiently?
+
+Because for each u, we need to compute the distance from u to j, which is (u mod n)+1.
+
+So, for u, j = (u mod n) + 1.
+
+So, for u, j can be in the subtree of u, or perhaps not.
+
+Wait, for example, u=2, j=3. If 2 is a child of 1, then 3 is in 2's subtree.
+
+So, j is in the subtree of u if u is an ancestor of j.
+
+So, for each u, j is in the subtree of u only if u is an ancestor of j.
+
+So, to compute dist(u, j), we can find the path from u to j.
+
+Which is u → parent(u) → ... → j.
+
+So, the distance is t_u + t_parent(u) + ... + t_j.
+
+So, to compute this, for each u, we can precompute the sum of t's from u to its parent, and then from parent to j.
+
+Wait, but j is (u mod n)+1. So, j is a node in 1..n.
+
+So, for each u, j can be represented as another node in 1..n.
+
+So, for each u, j is j = (u mod n) +1.
+
+So, j can be 1, 2, ..., n.
+
+So, for each u, the distance from u to j is the sum of t's along the path from u to j.
+
+So, for each u, j is a node, and the path is u → parent(u) → ... → j.
+
+So, the sum is t_u + t_parent(u) + ... + t_j.
+
+So, to compute this, we can precompute for each node, the sum of t's from the node to its parent, and then from parent to j.
+
+Wait, but j is (u mod n)+1. So, for each u, j is a specific node, and the path from u to j is u → parent(u) → ... → j.
+
+So, the distance is the sum of t's along this path.
+
+So, for each u, the distance to j is the sum of t's from u to j.
+
+So, to compute this sum, for each u, we can precompute the sum of t's from u to its parent, and then from parent to j, and add them.
+
+Wait, but for each u, j can be any node in 1..n, so for each u, j is a specific node, and the path from u to j is u → parent(u) → ... → j.
+
+So, the sum is t_u + t_parent(u) + ... + t_j.
+
+So, to compute this, for each u, we can precompute the sum from u to its parent, and then add the sum from the parent to j.
+
+Wait, but for that, we need a way to quickly get the sum from any node to another node on the path.
+
+Alternatively, for each u, j, the sum can be computed as the sum from u to j, which is the sum of t's along the path.
+
+But to compute this for each u, j, it's O(1) with the right pre-processing.
+
+So, perhaps we can precompute for each node u, the sum from u to its immediate parent, and then build a prefix sum array for each node's path.
+
+Wait, but the tree is a parent array, so for each node u, the path is u → parent(u) → ... → 1.
+
+So, for each u, the sum from u to j is the sum of t's from u to j.
+
+So, perhaps for each u, we can precompute a prefix sum array that allows us to get the sum from u to any node in its subtree.
+
+But that's not efficient.
+
+Alternatively, for each node u, the sum from u to j is the sum of the t's along the path from u to j.
+
+So, for each u, j, this sum can be found by the path from u up to j.
+
+So, the sum is t_u + t_parent(u) + ... + t_j.
+
+So, to compute this, for each u, j, we can traverse the path from u to j, but this is O(k) where k is the depth of u, which could be up to 2e5, leading to O(n^2) time, which is not feasible.
+
+So, this approach is not efficient.
+
+So, we need a way to compute this sum quickly.
+
+Hmm. So, perhaps the key is to precompute for each node u, the sum from u to its parent, and then for each j, find the sum from u to j by adding the sum from u to its parent and the sum from parent to j.
+
+Wait, but that would require knowing the sum from parent to j, which is the sum along the path from parent to j.
+
+So, perhaps we can precompute for each node u, the sum from u to its parent, and also for each node u, the sum from u to each of its descendants.
+
+Wait, but that's not feasible.
+
+Alternative idea: For each node u, precompute the sum from u to its parent, and for any node j, which is a descendant of u, the sum from u to j is the sum from u to the root plus the sum from root to j, minus the sum from root to u.
+
+Wait, no. The sum from u to j is the sum of t's along the path from u to j.
+
+So, the sum from u to j is the sum from u to root plus the sum from root to j minus the sum from u to root.
+
+Which is (sum from u to root) + (sum from root to j) - (sum from u to root).
+
+So, it's equal to sum from root to j minus sum from u to root.
+
+Wait, that's correct.
+
+Because sum from u to j is sum from u to root plus sum from root to j minus sum from u to root.
+
+So, sum(u to j) = sum(root to j) - sum(u to root).
+
+So, if we can precompute for each node u, the sum from u to root, and for each node j, the sum from root to j, then for any u, j, the sum(u to j) is sum(root to j) - sum(u to root).
+
+So, this is a crucial observation.
+
+So, the steps are:
+
+- Precompute for each node u, sum_u_root: the sum of t's from u to root.
+
+- Precompute for each node j, sum_root_j: the sum of t's from root to j.
+
+Then, for any u, j, the sum from u to j is sum_root_j - sum_u_root.
+
+So, this way, for any u, j, we can compute the distance quickly.
+
+So, this is a great insight.
+
+So, the plan is:
+
+1. Read the tree.
+
+2. Build the tree with parent pointers.
+
+3

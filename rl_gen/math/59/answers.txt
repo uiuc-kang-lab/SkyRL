@@ -1,0 +1,53 @@
+0
+\frac{22}{102}
+Okay, so I've got this problem here: a bin has 10 black balls and 8 white balls. Someone is going to draw 3 balls at random, and we need to find the probability that all three are the same color. Hmm, let me think about how to approach this.
+
+First, I remember that probability is usually about favorable outcomes over total possible outcomes. So, I should figure out how many ways there are to draw all three balls the same color and then divide that by the total number of ways to draw any three balls from the bin.
+
+Alright, let's break it down. The bin has 10 black and 8 white balls, so that's a total of 18 balls. When we're drawing 3 balls, the total number of possible combinations is the combination of 18 taken 3 at a time. I think the formula for combinations is n choose k, which is n! / (k!(n-k)!). So, total combinations would be 18C3.
+
+Now, the favorable outcomes are the cases where all three are black or all three are white. So, I need to calculate the number of ways to draw 3 black balls and the number of ways to draw 3 white balls, then add those together.
+
+Starting with the black balls: there are 10 of them, so the number of ways to choose 3 black balls is 10C3. Similarly, for the white balls, there are 8, so it's 8C3. Then, the total favorable outcomes would be 10C3 + 8C3.
+
+Let me write that out:
+
+Total combinations: 18C3
+Favorable combinations: 10C3 + 8C3
+
+So, the probability P is (10C3 + 8C3) / 18C3.
+
+Now, let me compute these values. I'll need to calculate each combination separately.
+
+Starting with 10C3: that's 10! / (3!(10-3)!) = (10×9×8) / (3×2×1) = 120.
+
+Next, 8C3: that's 8! / (3!(8-3)!) = (8×7×6) / (3×2×1) = 56.
+
+So, adding those together: 120 + 56 = 176.
+
+Now, the total combinations 18C3: 18! / (3!(18-3)!) = (18×17×16) / (3×2×1) = (4896) / 6 = 816.
+
+So, the probability is 176 / 816.
+
+I can simplify this fraction. Let me see if both numerator and denominator are divisible by 8. 176 ÷ 8 = 22, and 816 ÷ 8 = 102. So, now it's 22/102. Hmm, can I simplify further? Let's check if 22 and 102 have a common divisor. 22 factors are 1,2,11,22; 102 factors are 1,2,3,6,17,34,51,102. So, the GCD is 2. Dividing numerator and denominator by 2 gives 11/51.
+
+So, the probability is 11/51. I think that's as simplified as it gets.
+
+Wait, let me double-check my calculations to make sure I didn't make a mistake.
+
+10C3: 120, that's correct because 10*9*8 / 6 = 120.
+
+8C3: 56, because 8*7*6 / 6 = 56. That's right.
+
+Total favorable: 120 + 56 = 176, correct.
+
+18C3: 816, because 18*17*16 / 6 = (18*17*16)/6. Let's compute 18/6=3, so 3*17*16=816. That's correct.
+
+176/816 simplifies to 11/51. Yep, that seems right.
+
+So, I think I've got it. The probability is 11/51.
+</think>
+
+The probability of drawing all three balls of the same color is calculated by finding the number of ways to draw three black balls and three white balls, then dividing by the total number of ways to draw three balls from the bin. This results in a probability of 11/51.
+
+\boxed{\dfrac{11}{51}}<｜end▁of▁sentence｜>

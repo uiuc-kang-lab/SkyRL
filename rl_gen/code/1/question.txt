@@ -1,0 +1,28 @@
+<｜begin▁of▁sentence｜><｜User｜>
+An array of integers $a_1,a_2,\cdots,a_n$ is beautiful subject to an integer $k$ if it satisfies the following:
+
+  * The sum of $a_{j}$ over all $j$ such that $j$ is a multiple of $k$ and $1 \le j \le n $, itself, is a multiple of $k$.    * More formally, if $\sum_{k | j} a_{j}$ is divisible by $k$ for all $1 \le j \le n$ then the array $a$ is beautiful subject to $k$. Here, the notation ${k|j}$ means $k$ divides $j$, that is, $j$ is a multiple of $k$. 
+
+Given $n$, find an array of positive nonzero integers, with each element less than or equal to $10^5$ that is beautiful subject to all $1 \le k \le n$.
+
+It can be shown that an answer always exists.
+
+Input Format:
+Each test contains multiple test cases. The first line contains the number of test cases $t$ ($1 \le t \le 100$). The description of the test cases follows.
+
+The first and only line of each test case contains a single integer $n$ ($1 \le n \le 100$) — the size of the array.
+
+Output Format:
+For each test case, print the required array as described in the problem statement.
+
+Tags:
+['constructive algorithms', 'math']
+
+Time Limit: 1000 ms
+Memory Limit: 256 MB
+
+Write Python code to solve the problem. Present the code in
+```python
+Your code
+```
+at the end.<｜Assistant｜><think>

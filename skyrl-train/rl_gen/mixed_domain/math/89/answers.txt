@@ -1,0 +1,189 @@
+\text{②}
+Okay, so I have this problem where I need to determine the truth of two propositions, A and B, for three different functions. Then, I need to find out which functions make both propositions true and number them. The functions are:
+
+① \( f(x) = |x+2| \)
+
+② \( f(x) = |x-2| \)
+
+③ \( f(x) = \cos(x-2) \)
+
+Proposition A says that \( f(x+2) \) is an even function. Proposition B says that \( f(x) \) is decreasing on \( (-\infty, 2) \) and increasing on \( (2, +\infty) \).
+
+First, I need to analyze each function separately to check the validity of A and B for each①,②,③.
+
+Starting with① \( f(x) = |x+2| \).
+
+Let's find \( f(x+2) \). replacing x with x+2:
+
+\( f(x+2) = |(x+2) + 2| = |x + 4| \).
+
+Now, proposition A claims that \( f(x+2) \) is even. An even function satisfies \( g(x) = g(-x) \). So let's check \( g(x) = |x + 4| \) and \( g(-x) = |-x + 4| = |4 - x| \).
+
+Are \( |x + 4| \) and \( |4 - x| \) equal for all x? Nope, because |x+4| = |x - (-4)| and |4 - x| = |x - 4|. These are not the same unless x is specific, not for all x. For example, let x=0: |0+4|=4, |0-4|=4, same. x=1: |5|=5, |3|=3, not same. So g(x) ≠ g(-x), except possibly at x=4 and x=-4. Wait, actually, let me test x=4: |4+4|=8, |4-4|=0, not same. So no, they are not equal for all x. Therefore, proposition A is false for①.
+
+Now, proposition B for①: is \( f(x) = |x+2| \) decreasing on \( (-\infty, 2) \) and increasing on \( (2, +\infty) \)?
+
+The function \( |x+2| \) is V-shaped with the vertex at x=-2. For x < -2, it is decreasing, and for x > -2, it is increasing. So on \( (-\infty, -2) \), it's decreasing, and on \( (-2, 2) \), it's increasing. Beyond 2, it's still increasing. So proposition B is only partially true on \( (-\infty, 2) \), but exactly at x=2, it's zero. So strictly speaking, on \( (-\infty, 2) \), it's not entirely decreasing because before -2 it is decreasing, then from -2 to 2, it's increasing. So overall, proposition B is false for①.
+
+Moving to② \( f(x) = |x-2| \).
+
+Similarly, \( f(x+2) = |(x+2) - 2| = |x| \.
+
+Proposition A: is \( |x| \) an even function? Yes, because |x| = | -x |, so it is even. So proposition A is true for②.
+
+Proposition B: is \( f(x) = |x-2| \) decreasing on \( (-\infty, 2) \) and increasing on \( (2, +\infty) \)?
+
+The function \( |x-2| \) is V-shaped with vertex at x=2. For x <2, it is decreasing, and for x >2, it is increasing. At x=2, it's zero. So on \( (-\infty, 2) \), it is decreasing, and on \( (2, +\infty) \), it is increasing. So proposition B is true for②.
+
+Now onto③ \( f(x) = \cos(x - 2) \.
+
+Proposition A: is \( f(x+2) = \cos((x+2) - 2) = \cos(x) \) an even function? Yes, cos(x) is even because cos(-x) = cos(x). So proposition A is true for③.
+
+Proposition B: is \( f(x) = \cos(x - 2) \) decreasing on \( (-\infty, 2) \) and increasing on \( (2, +\infty) \)?
+
+To analyze this, I need to look at the derivative of \( f(x) \). The derivative of \( cos(x - 2) is -sin(x - 2). So f'(x) = -sin(x - 2.
+
+Now, the behavior of cos(x - 2) depends on where x is. The function cos(x - 2) is periodic with period 2π. To determine where it is increasing or decreasing, we look at the derivative.
+
+Proposition B is claiming that it is decreasing before x=2 and increasing after x=2. Let's check x=1 (which is <2): f'(1) = -sin(1 -2) = -sin(-1) = -(-sin1) = sin1 >0. So derivative is positive, meaning function is increasing at x=1.
+
+x=3 (which >2): f'(3) = -sin(3 -2) = -sin1 <0. So derivative is negative, meaning function is decreasing at x=3.
+
+Wait, but x=1 is less than 2, so according to proposition B, it should be decreasing on (-∞,2) and increasing on (2,∞). But from the derivative, at x=1, which is <2, the function is increasing (derivative positive). At x=3, which >2, the function is decreasing (derivative negative). So proposition B is actually false for③, because the function is increasing before 2 and decreasing after 2, which means it is decreasing on (2,∞) and increasing on (-∞,2), which is the opposite of proposition B's claim. So proposition B is false for③.
+
+Wait, let me double-check. The derivative is -sin(x -2). So f'(x) = -sin(x -2.
+
+When x <2, x -2 <0. So sin(x -2) is sin of a negative angle, which is -sin(2 -x). So f'(x) = -(-sin(2 -x)) = sin(2 -x). So for x <2, 2 -x >0, so sin(2 -x) is positive when 2 -x >π/2, but generally, it's positive for small angles up to π. So for x <2, essentially all x near 2 from left are x <2, so x -2 <0, but x can be less than 0 as well.
+
+Wait, perhaps a better approach is to consider the intervals.
+
+Let me consider x -2 = y. So y <0 when x <2.
+
+f'(x) = -sin(y), where y <0.
+
+sin(y) = -sin(-y), so sin(y) is negative when y <0 登 ascendance vs descendance.
+
+Wait, sin(y) for y <0 is negative, because sin is negative in third and fourth quadrants, which corresponds to negative angles.
+
+So sin(y) <0 when y <0.
+
+Therefore, f'(x) = -sin(y) = -sin(x -2). Since sin(y) <0, -sin(y) >0. So f'(x) >0 when x <2, and f'(x) <0 when x >2.
+
+Wait, this is important. Let me recompute.
+
+y = x -2.
+
+f'(x) = -sin(y) = -sin(x -2.
+
+When x <2, y <0. sin(y) = sin(-|y|) = -sin(|y|), so sin(y) <0. Therefore, -sin(y) >0. So f'(x) >0 when x <2.
+
+When x >2, y >0. sin(y) >0, so -sin(y) <0. So f'(x) <0 when x >2.
+
+Therefore, f(x) = cos(x -2) is increasing on (-∞,2) and decreasing on (2,∞). So proposition B states that it is decreasing on (2,∞) and increasing on (-∞,2), which is exactly what we just found. So proposition B is true for③.
+
+Wait, wait, no. Proposition B says: f(x) is decreasing on (-∞,2) and increasing on (2,∞). From my analysis, f(x) is increasing on (-∞,2) and decreasing on (2,∞). So proposition B is false because it claims decreasing on left and increasing on right, but reality is opposite.
+
+So for③, proposition B is false.
+
+Therefore, summarizing:
+
+①: A false, B false
+
+②: A true, B true
+
+③: A true, B false
+
+So now, the question is: which functions make both A and B true?
+
+So for a function to make both A and B true, it must satisfy both A and B.
+
+Let's see:
+
+①: A false, B false → both false→ not both true
+
+②: A true, B true→ both true→ yes
+
+③: A true, B false→ only A true→ not both true
+
+Therefore, only② makes both A and B true.
+
+Wait, let me confirm for② again.
+
+②: f(x) = |x -2|
+
+f(x+2) = |(x+2) -2| = |x|→ g(x) = |x|
+
+Proposition A: is g(x) = |x| even? Yes.
+
+Proposition B: is f(x) = |x -2| decreasing on (-∞,2) and increasing on (2,∞)→ Yes, as we analyzed earlier.
+
+So yes, both A and B are true for②.
+
+For①, even if A is false, but let's check B again.
+
+①: f(x+2) = |x +4|→ B would be checking if |x +4| is decreasing on (-∞,2) and increasing on (2,∞). |x +4| is V-shaped with vertex at x=-4. So for x < -4, it is decreasing, for x > -4, it is increasing. So on我又 peripherals,...
+
+But proposition B is about (-∞,2), so not including -4. So for x < -4, it is decreasing, which is a subset of x <2. So overall, |x +4| is not decreasing on entire (-∞,2) because beyond -4, it is increasing, but between -4 and2, it is increasing. So overall, it's not decreasing on entire (-∞,2). At x=-5, | -5 +4 | =1, at x=-3, | -3 +4 |=1 as well. So it is constant between -4 and infinity. So strictly speaking, it's not decreasing on (-∞,2) because it's constant between -4 and2. So yes, proposition B is false for①.
+
+而对于③， Even if A is true, B is false， �所以only② satisfies both A and B.
+
+所以答案是②。
+
+但为了确保，让我再检查③，因为 sometimes periodic functions can have different behaviors。
+
+③：f(x) = cos(x -2)
+
+A: f(x+2) = cos(x)→ even→ yes
+
+B: f(x) = cos(x -2)→ derivative -sin(x -2)→ which is positive when x -2 <π/2 and negative when x -2 >π/2,...
+
+更准确的说，sin(y) is positive when y ∈ (0, π), negative when y ∈ (π, 2π), etc.
+
+所以 -sin(y) is positive when y ∈ (-π,0), negative when y ∈ (0, π), positive when y ∈ (π, 2π), etc.
+
+所以 for y = x -2, f'(x) = -sin(y) = -sin(x -2.
+
+所以当 x -2 ∈ (-π/2, π/2) + 2kπ，即 x ∈ (2 - π/2 + 2kπ, 2 + π/2 + 2kπ)，f(x) 是 increasing 或 decreasing？
+
+让我更清晰些：
+
+f'(x) = -sin(x -2.
+
+当 x -2 ∈ (0, π) + 2kπ，即 x ∈ (2, 2 + π + 2kπ)，then sin(x -2) >0, so f'(x) <0→ f(x) decreasing
+
+当 x -2 ∈ (-π,0) + 2kπ，即 x ∈ (2 - π + 2kπ, 2)，then sin(x -2) <0, so f'(x) >0→ f(x) increasing
+
+所以 f(x) = cos(x -2) is increasing on (2 - π + 2kπ, 2) and decreasing on (2, 2 + π + 2kπ)
+
+所以它不是在整个(2, � infinity) decreasing，Only part of it is decreasing near2+, while elsewhere it's increasing.
+
+所以命题B说在整个(2, � infinity)它都是 decreasing，而实际上它只部分下降，所以命题B false。
+
+所以only②满足 both A and B.
+
+所以答案是②。
+
+\boxed{2}
+</think>
+
+为了确定哪些函数使得命题A和B both true，我们分析了三个函数① \( f(x) = |x+2| \)，② \( f(x) = |x-2| \)，③ \( f(x) = \cos(x-2) \)。
+
+### 分析：
+
+1. **函数① \( f(x) = |x+2| \)**：
+   - \( f(x+2) = |x+4| \) 不是偶函数，因为 \( |x+4| \neq |x-4| \) 对所有x成立。
+   - \( f(x+2) \) 不是减函数再增函数，因为 \( |x+4| \) 在整个实数域上 Neither decreasing nor increasing consistently。
+
+2. **函数② \( f(x) = |x-2| \)**：
+   - \( f(x+2) = |x| \) 是偶函数，因为 \( |x| = |-x| \)。
+   - \( f(x+2) \) 在 \( (-\infty, 2) \) 上是增函数（因为 \( |x| \) 在这种区间上随x增大而增大），在 \( (2, \infty) \) 上是减函数（因为 \( |x| \) 在这种区间上随x增大而减小）。因此，命题B正确。
+
+3. **函数③ \( f(x) = \cos(x-2) \)**：
+   - \( f(x+2) = \cos(x) \) 是偶函数，因为 \( \cos(x) = \cos(-x) \)。
+   - \( f(x+2) \) 在 \( (2, \infty) \) 上是减函数（因为 \( \cos(x) \) 在这种区间上随x增大而减小），在 \( (-\infty, 2) \) 上是增函数（因为 \( \cos(x) \) 在这种区间上随x增大而增函数）。因此，命题B错误。
+
+### 结论：
+
+只有函数②使得both命题A和B true。
+
+\boxed{2}<｜end▁of▁sentence｜>

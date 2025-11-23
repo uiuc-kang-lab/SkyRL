@@ -1,0 +1,600 @@
+0
+Okay, let's try to figure out this problem. So, the problem is about Ivan who has written all integers from l to r on a board. He can perform an operation where he picks two numbers x and y, erases them, and writes 3x and floor(y/3). The goal is to make all numbers on the board zero with the minimum number of operations. We need to find the minimum number of operations required for this.
+
+Hmm, let's think about what each operation does. When you replace x and y with 3x and floor(y/3), the sum of the numbers on the board changes. Let's see: the sum before was x + y. After, it's 3x + floor(y/3). So the sum increases by 3x + floor(y/3) - x - y = 2x + floor(y/3) - y.
+
+Wait, that's interesting. So each operation increases the sum. But our target is to reach all zeros, which would have a sum of zero. So how can we get from the initial sum to zero?
+
+Wait, no. Because each operation increases the sum, the only way to reach zero is by performing operations until the sum can be reduced to zero. But that doesn't make sense because each operation increases the sum. So maybe I need to think differently.
+
+Wait, no. Let's think about the process. Suppose we have numbers x and y. We replace them with 3x and floor(y/3). So the total sum after the operation is 3x + floor(y/3). So the sum is 3x + floor(y/3) = 3x + (y/3 if y is divisible by 3, else (y//3)). So the sum increases by 2x + (y//3 if y is not divisible by 3, else 0) - y.
+
+Wait, let's compute the change in sum:
+
+Change = (3x + floor(y/3)) - (x + y) 
+
+= 2x + floor(y/3) - y 
+
+If y is a multiple of 3, floor(y/3) is y/3. So change is 2x + (y/3) - y = 2x - (2y/3) = 2(x - y/3).
+
+Hmm, but x is less than y because x and y are two numbers from l to r, and l < r. So x < y, so x - y/3 is positive if x > (y/3). Which it is, since x < y. Wait, no. For example, x=2, y=6: x - y/3 is 2 - 2 = 0. So change is zero.
+
+Wait, maybe I'm getting stuck here. Let me think about the problem differently.
+
+We need all numbers to be zero. So each operation must somehow reduce the numbers until they reach zero. But since each operation replaces two numbers with larger and possibly smaller ones, it's not immediately clear how to proceed.
+
+Wait, but perhaps the key is to consider the frequency of each number. For example, if a number is a power of 3, then perhaps it can be reduced to zero in one step. Or maybe not, but let's think.
+
+Wait, let's consider that each operation can be thought of as a way to split a number into larger and smaller parts. So for a number y, the way to reduce it is to split it into 3x and y/3 (if y is divisible by 3). So, for example, starting with y, after one operation, we have 3x and y/3. Then, for y/3, if it's divisible by 3, we can split it further.
+
+So, for a number y, the number of operations needed to reduce it to zero is the number of times you can divide it by 3 until it becomes zero, plus the number of times you can split it into 3x and y/3. Wait, but that's not correct because each split creates new numbers that need to be processed.
+
+Hmm, perhaps the minimal number of operations is determined by the maximum number of times you can divide a number by 3, but considering the way the operations can be applied.
+
+Wait, let's think about the process. Each time we split a number y into 3x and y/3, we're effectively reducing y by a factor of 3, but also increasing x by a factor of 3. So, for each y, the number of operations it contributes is the number of times you can split it until it becomes zero. But since x is another number on the board, which may be split further, this might complicate things.
+
+Alternatively, perhaps the minimal number of operations is determined by the count of numbers that are not divisible by 3, and how they can be split. Or perhaps it's about the maximum number of times a number can be divided by 3 plus the count of numbers that are not divisible by 3.
+
+Wait, another approach: let's consider the binary representation of the numbers. Or, perhaps, the minimal number of operations is the sum of the number of times each number is not divisible by 3, plus the number of times a number is a multiple of 3.
+
+Wait, perhaps the minimal number of operations is the sum over all numbers in the range [l, r] of the number of times you can divide the number by 3, but only for the numbers that are not divisible by 3. Or maybe it's the maximum number of times any number can be divided by 3.
+
+Wait, let's think about a few examples.
+
+Case 1: l = 1, r = 2.
+
+Numbers are 1 and 2. Both are not divisible by 3. So, how many operations? Let's see.
+
+We can't perform any operations because we need two numbers. So, the operation is not applicable. So the answer is 0 operations because all numbers are already zero? Wait, no, wait. Wait, the initial numbers are 1 and 2. They are not zero. So we need to perform operations until all are zero.
+
+Wait, but in this case, it's impossible because each operation replaces two numbers with 3x and floor(y/3). So for 1 and 2, the first operation would replace them with 3 and 0. Now the numbers are 3 and 0. But 3 is still not zero. So we can't perform any more operations because we need two numbers. So the answer is 1 operation: replace 1 and 2 with 3 and 0. Now the numbers are 3 and 0. Now, 3 is not zero. So we can't perform any more operations because we need two numbers. So the answer is 1 operation. Or wait, no. Because after the operation, the numbers are 3 and 0. So to make them zero, we need to process 3. So the next step is to perform another operation on 3 and 0. But wait, we can't do that because 0 is not a positive integer. So perhaps in this case, it's impossible, but the problem statement says it's always possible.
+
+Wait, maybe I'm misunderstanding the problem. Let's read it again.
+
+The problem says that it's always possible, so I don't have to worry about that. So, in the case where l=1 and r=2, what's the minimal number of operations?
+
+Wait, initial numbers: 1, 2.
+
+We can perform an operation on 1 and 2, getting 3 and 0. Now the numbers are 3 and 0.
+
+We need to make all numbers zero. So the 3 has to be reduced to zero. But how?
+
+We can't perform any more operations because we only have one number (3) and one zero. So, perhaps we can perform another operation on 3 and 0. Let's see: pick 3 and 0. Replace them with 9 and 0. That's worse. Hmm, but this seems like it's not helpful.
+
+Wait, perhaps I'm approaching this wrong. Maybe in this case, we can't reduce 3 to zero, so the answer is impossible, but the problem says it's always possible. So perhaps my initial assumption is wrong.
+
+Wait, perhaps the problem allows us to perform operations on any two numbers, even if one is zero. So, in the case where we have 3 and 0, we can perform an operation on them, getting 9 and 0, but that's not helpful. So perhaps in this case, it's impossible to reach all zeros. But the problem statement says it's always possible, so maybe I'm missing something.
+
+Wait, perhaps the initial numbers are l to r. So when l=1, r=2, we have two numbers: 1 and 2. So the first operation is to replace them with 3 and 0. Now, the numbers are 3 and 0. Now, the goal is to make all zeros. So we have 3 and 0. We can't perform any more operations because we need two numbers. So after the first operation, we have one non-zero and one zero. So we can't proceed further, so the answer is 1 operation. Or is it possible to perform another operation on 3 and 0? Let's see.
+
+After the first operation, the numbers are 3 and 0. So we can't perform an operation on them because that would result in 9 and 0. Wait, no. Because the operation requires picking two numbers. So in this case, we have two numbers: 3 and 0. So the operation is possible. So replacing them with 3*3=9 and floor(0/3)=0. So the numbers become 9 and 0. Now, we're back to a state with a non-zero number. So this approach isn't helpful.
+
+Hmm, so perhaps the initial approach is not correct. Maybe the minimal number of operations isn't just about splitting numbers into 3x and y/3, but also considering how many times we can split a number.
+
+Wait, perhaps the minimal number of operations is determined by the maximum number of times a number can be divided by 3. Let's think about that.
+
+For example, take a number y. The number of times we can perform an operation on y is equal to the number of times y can be divided by 3 until it becomes 1, or until it's not divisible by 3 anymore.
+
+Wait, no. Let's think about the process. Each time you split a number y into 3x and y/3, the y becomes y/3, which may be further split.
+
+So for a number y, the number of operations required to reduce it to 0 is the number of times you can divide it by 3 until it's zero. But since each split creates a new number, which may need to be split further, the total number of operations is the sum over all numbers of the number of times they can be divided by 3.
+
+But that doesn't make sense because each split creates new numbers that need to be processed.
+
+Wait, perhaps the minimal number of operations is the sum of the exponents in the prime factorization of each number, but only for 3. Or perhaps it's the sum of the number of times each number can be divided by 3.
+
+Alternatively, perhaps the minimal number of operations is the sum of the maximum exponents of 3 in the prime factors of each number.
+
+Wait, let's look at some examples.
+
+Example 1: l=1, r=2.
+
+Numbers are 1 and 2. Both are not divisible by 3. So the sum is 0.
+
+But the sample I thought about earlier required 1 operation, which contradicts this.
+
+Hmm, perhaps I'm misunderstanding the problem. Let me re-read the problem statement.
+
+The operation is: pick two numbers x and y, erase them, and write 3x and floor(y/3).
+
+So, each operation replaces two numbers with two new numbers. The sum increases by 2x + floor(y/3) - y.
+
+So, the sum is not a fixed point. It's possible to increase the sum over time.
+
+Wait, but the goal is to reach all zeros, which has a sum of zero. So how can we reach zero if the sum is increasing?
+
+This suggests that perhaps the initial approach is wrong. So maybe the problem is not as straightforward as I thought.
+
+Wait, perhaps the key is to realize that the numbers can be reduced to zero by repeatedly applying the operation in a way that reduces their values.
+
+Wait, but each operation increases the sum. So, unless the sum is somehow being reduced, which it isn't, this seems impossible.
+
+Wait, this can't be. So, perhaps I'm misunderstanding the problem. Let me re-read it.
+
+Oh! Wait a minute. The problem says that all numbers on the board are written down by Ivan. So, the initial numbers are l, l+1, ..., r. Then, in each operation, he picks two numbers x and y, erases them, and writes 3x and floor(y/3). So, the sum increases by 3x + floor(y/3) - x - y = 2x + floor(y/3) - y.
+
+Which, as I thought earlier, is 2x - (y - floor(y/3)).
+
+Since y - floor(y/3) is the remainder when y is divided by 3. So, it's either y mod 3 or 3 - (y mod 3), depending on whether y is a multiple of 3.
+
+Wait, for example, y=4: 4 mod 3 is 1. So floor(4/3)=1. So y - floor(y/3) is 4-1=3.
+
+So, the change in sum is 2x - 3.
+
+So, for each operation, the sum increases by 2x - 3.
+
+Hmm, but x is less than y, which is in l to r. So x is at least l, which is >=1.
+
+So, 2x could be as small as 2l. So, if l is 1, 2x is 2, which makes the change 2 - 3 = -1. So the sum decreases by 1.
+
+Wait, that's interesting. So, if we have x=1 and y=4, the sum changes from 1+4=5 to 3*1=3 and floor(4/3)=1. So the new sum is 3+1=4. So the sum decreases by 1.
+
+So, in this case, the sum is being reduced.
+
+Hmm, this suggests that it's possible to reduce the sum over time, which is a crucial insight.
+
+So, the minimal number of operations is related to the sum of the numbers, but I'm not sure how to model this.
+
+Wait, perhaps the key is to find the minimal number of operations such that the sum of the numbers is reduced to zero, but that seems unlikely because each operation increases or decreases the sum.
+
+Wait, perhaps the problem is to find the minimal number of operations to make the sum of all numbers zero. But that's impossible because each operation increases the sum, so it's only possible if the initial sum is zero, which it's not.
+
+So, perhaps I'm misunderstanding the problem. Let me read the problem again.
+
+Ah! Wait, no. Wait, the problem says that the goal is to make all numbers zero. So, the sum must be zero. But each operation increases the sum, so it's impossible unless the initial sum is zero, which it's not.
+
+So, this suggests that the problem is impossible, but the problem statement says that it's always possible. So, I must have misunderstood the operation.
+
+Wait, perhaps the operation is to replace x and y with 3x and (y-1)/3, but that would require y to be divisible by 3. Or perhaps it's floor(y/3), which is rounded down.
+
+Wait, the problem says floor(y/3). So, for example, if y is 4, floor(4/3) is 1.
+
+So, the sum after the operation is 3x + 1.
+
+The change is 3x + 1 - x - 4 = 2x -3.
+
+So, as before.
+
+So, for x=1, the change is 2*1 -3 = -1. So the sum decreases by 1.
+
+So, in this case, the sum can be reduced.
+
+So, the minimal number of operations is the number of times we can perform such operations until the sum is zero.
+
+But wait, how?
+
+So, the initial sum is S = sum(l to r). We need to find the minimal number of operations such that S becomes zero.
+
+But each operation can either increase or decrease S, depending on x and y.
+
+Wait, but I'm not sure. Let's think about the sum.
+
+Each operation takes two numbers x and y, and replaces them with 3x and floor(y/3). So, the sum changes by 2x + floor(y/3) - x - y = x - y + floor(y/3).
+
+So, the sum after the operation is S' = S - x + floor(y/3).
+
+Hmm, so the sum can increase or decrease based on the values of x and y.
+
+So, the problem is not about reducing the sum but about reaching zero.
+
+But how?
+
+Wait, perhaps the key is to find the minimal number of operations such that all numbers can be reduced to zero. So, the process is to repeatedly apply the operation until all numbers are zero.
+
+So, for each operation, we can choose any two numbers, but we have to do it until all are zero.
+
+So, the minimal number of operations is the minimal number of steps needed to reach all zeros.
+
+So, how can we model this?
+
+Perhaps the way to approach this is to model the problem as a tree, where each node represents a set of numbers on the board, and each edge represents an operation. We need to find the shortest path from the initial set to the set with all zeros.
+
+But this approach is computationally impossible for large l and r, as t can be up to 1e4 and l up to 2e5.
+
+So, we need a mathematical approach.
+
+Another idea: perhaps the minimal number of operations is the sum of the number of times each number is not divisible by 3, plus the number of times numbers can be split.
+
+Wait, for example, take a number y. If y is not divisible by 3, then it needs to be split once. If y is divisible by 3, it can be split into 3x and y/3. Then, x may or may not need to be split.
+
+So, perhaps the minimal number of operations is the sum of the exponents in the prime factors of each number, but only for 3.
+
+Wait, for example, the number 9 is 3^2. So, it can be split twice: 9 → 27 and 3, then 3 → 9 and 1. So, two operations.
+
+But wait, what's the minimal number of operations to get all zeros? Let's see:
+
+Initial: 9, 3, 1.
+
+First operation: split 9 and 3 into 27 and 1, and 3 into 9 and 1. So, new numbers are 27, 1, 1, 1.
+
+Second operation: split 27 and 1 into 81 and 0, and 1 into 3 and 0. So, new numbers are 81, 3, 0, 0.
+
+Third operation: split 81 and 3 into 243 and 1, and 3 into 9 and 1. So, new numbers are 243, 1, 1, 0, 0.
+
+And so on. So, each time we split a number y into 3x and y/3, where y is a multiple of 3^k, it will take k steps to split it down to zero.
+
+Wait, but each split reduces the number of steps needed.
+
+Hmm, perhaps the minimal number of operations is the sum of the exponents of 3 in the prime factors of each number in the range [l, r], plus the number of times we can split each number into x and y/3.
+
+Wait, but I'm not sure.
+
+Alternatively, perhaps the minimal number of operations is the sum of the number of operations needed for each number to be reduced to zero, which is the number of times you can divide it by 3 until it's zero.
+
+So, for each number y in [l, r], the number of operations needed is the number of times you can divide y by 3 until it's not divisible by 3 anymore.
+
+So, the total number of operations is the sum of these counts for all y in [l, r].
+
+For example, let's take l=1, r=2.
+
+Numbers are 1 and 2. Both are not divisible by 3. So, the sum is 0.
+
+But earlier, I thought that required one operation, which contradicts this.
+
+Wait, perhaps I was wrong in that example. Let's see.
+
+With l=1, r=2: numbers are 1 and 2.
+
+We can perform an operation on 1 and 2, which gives us 3 and 0. Now, numbers are 3 and 0.
+
+We can't perform any more operations because we need two numbers. So, the minimal number of operations is 1.
+
+So, according to this approach, the sum is 0, but the actual minimal number is 1.
+
+So, this approach is incorrect.
+
+Hmm, so I need to think differently.
+
+Another idea: perhaps the minimal number of operations is the sum of the number of times each number can be split into 3x and y/3, plus the number of times each number can be split further.
+
+Wait, but how?
+
+Alternatively, perhaps the minimal number of operations is the sum of the number of times each number is not divisible by 3. For example, for a number y, the number of times it can be split is equal to the number of times it can be divided by 3, which is the exponent in the prime factorization.
+
+So, for a number y that is 9, it can be split twice: 9 → 27 and 3; 3 → 9 and 1; 1 can't be split. So, two operations.
+
+So, for each number y, the number of operations needed is the number of times it can be split, which is the exponent of 3 in its prime factorization.
+
+So, the total number of operations is the sum over all y in [l, r] of the exponents of 3 in y's prime factorization.
+
+Let me test this with the previous example.
+
+l=1, r=2: sum is 0. But the minimal operations are 1. So, this approach is incorrect.
+
+Hmm, perhaps the minimal number of operations is the sum of the exponents of 3 in the prime factorization of each y, plus the number of numbers that are not powers of 3.
+
+Wait, not sure.
+
+Another approach: think about the process. Each operation reduces the sum of the numbers. So, the minimal number of operations is the sum of the exponents of 3 in the prime factorization of each number.
+
+Wait, but that's not correct for the example where l=1, r=2.
+
+Wait, let's see:
+
+Numbers 1 and 2. Exponents of 3 are zero. So sum is zero.
+
+But the minimal operations is 1, which is not zero.
+
+So, that's not correct.
+
+Hmm, perhaps the minimal number of operations is the sum of the exponents of 3 in the prime factorization of each number, plus the number of numbers that are not divisible by 3.
+
+In the example l=1, r=2:
+
+Sum of exponents is 0 + 0 = 0.
+
+Number of numbers not divisible by 3: 2.
+
+So, total operations is 0 + 2 = 2. But the minimal is 1, so this is incorrect.
+
+Wait, perhaps the minimal number of operations is the sum of the exponents of 3 in the prime factorization of each number, plus the number of numbers that are not divisible by 3, but subtract the number of times a number is a multiple of 3 more than once.
+
+Wait, I'm getting stuck.
+
+Let me think differently.
+
+Each time we perform an operation on x and y, we're effectively replacing them with 3x and floor(y/3). So, the sum increases by 2x + floor(y/3) - x - y = x - y + floor(y/3).
+
+So, the sum can increase or decrease depending on x and y.
+
+But the goal is to reach a state where all numbers are zero. So, the minimal number of operations is the minimal number of steps to make all numbers zero, starting from the initial set.
+
+So, perhaps the problem can be modeled as a graph where each node is a state of the board, and edges represent operations. We need to find the shortest path from the initial state to the all-zero state.
+
+But this is computationally infeasible for large l and r.
+
+So, perhaps we need to find a pattern or formula.
+
+Let me think about the process again.
+
+Each operation takes two numbers x and y and replaces them with 3x and floor(y/3).
+
+So, the process continues until all numbers are zero.
+
+Each operation increases the sum, as we've seen.
+
+So, perhaps the minimal number of operations is the sum of the exponents of 3 in the prime factorization of all numbers in the range [l, r], plus the number of numbers that are not divisible by 3.
+
+Wait, for l=1, r=2:
+
+Sum of exponents is 0, number of non-divisible numbers is 2. So total operations 2. But minimal is 1.
+
+So, this is incorrect.
+
+Another approach: perhaps the minimal number of operations is the sum of the number of times each number can be split into 3x and y/3 until it becomes zero.
+
+So, for each number y, the number of operations is the number of times it can be divided by 3.
+
+So, for y=9, it's 2 operations.
+
+So, for the example l=1, r=2: sum is 0, which is wrong.
+
+Hmm.
+
+Wait, perhaps the minimal number of operations is the sum of the number of times each number can be divided by 3, but not including the numbers that are zero.
+
+So, for l=1, r=2, sum is 0, which is wrong.
+
+Hmm.
+
+I'm stuck. Let's try to find another way.
+
+Let's think about the process in reverse.
+
+We need to reach all zeros. So, the last operation must have been the one that produced zeros.
+
+What could have been the previous step?
+
+Suppose before the last operation, there were two numbers a and b. After the operation, they became 3a and floor(b/3). If 3a is zero, then a must have been zero. So, a was zero. And floor(b/3) is zero. So, b must have been zero.
+
+Wait, that's not possible because we started with non-zero numbers.
+
+Wait, maybe the last operation was between two numbers that are not zero. So, perhaps before the last operation, there were two numbers c and d, which were not zero. After the operation, they became 3c and floor(d/3). But since the end state is all zeros, 3c must be zero and floor(d/3) must be zero.
+
+So, 3c=0 implies c=0, but that's not possible because c is a positive integer. So, this suggests that the last operation cannot be performed on any two non-zero numbers, which is a contradiction. So, perhaps the process ends when all numbers are zero.
+
+Wait, but how?
+
+Hmm, perhaps the process can't proceed further once all numbers are zero. So, the last operation must have been the one that produced zeros from a previous step.
+
+So, perhaps the last operation was between two numbers a and b, which after the operation became zero and zero. So, 3a must be zero, which is impossible. So, that's not possible.
+
+So, perhaps the process must have ended earlier.
+
+This is getting complicated. Maybe I should look for a pattern in the sample cases.
+
+Let's think about the sample where l=1, r=2.
+
+Numbers are 1 and 2.
+
+We can perform an operation on them, replacing them with 3 and 0. Now, the numbers are 3 and 0.
+
+We can't perform any more operations because we need two numbers. So, the minimal number of operations is 1.
+
+So, the sum went from 3 to 3, then to 3, then to 3, then to 3, then to 3, but in the first step, the sum increased by 2 (from 3 to 3+0=3). So, the sum is 3.
+
+Wait, no. Initial sum is 1+2=3.
+
+After operation: 3+0=3. So, sum remains 3.
+
+Hmm, so the sum doesn't change in this case.
+
+So, perhaps the minimal number of operations is 1, but the sum remains the same.
+
+So, the sum is not a factor here.
+
+So, perhaps the minimal number of operations is determined by the maximum number of times a number can be split into 3x and y/3.
+
+So, for l=1, r=2, the numbers are 1 and 2.
+
+They cannot be split further because 1 is not divisible by 3, and 2 is not divisible by 3.
+
+So, the minimal number of operations is 1, which is the number of times we can split the numbers until they become zero.
+
+Wait, but in this case, the numbers are 1 and 2, which are not zero. So, we need to split them.
+
+So, the minimal number of operations is 1.
+
+Another example: l=2, r=3.
+
+Numbers are 2 and 3.
+
+We can perform an operation on 2 and 3.
+
+After operation: 6 and 1.
+
+Now, numbers are 6 and 1.
+
+We can perform an operation on 6 and 1.
+
+After operation: 18 and 0.
+
+Now, numbers are 18 and 0.
+
+We can't perform any more operations. So, minimal operations is 2.
+
+So, the sum goes from 5 to 6 (after first operation), then to 18 (after second operation). So, the sum increases each time.
+
+So, the minimal number of operations is 2.
+
+So, the sum is not a factor here.
+
+So, perhaps the minimal number of operations is the sum of the exponents of 3 in the prime factors of each number in the range [l, r].
+
+Wait, for l=2, r=3:
+
+Numbers are 2 and 3.
+
+Exponent of 3 in 2 is 0. Exponent in 3 is 1. So sum is 1.
+
+Which matches the minimal operations.
+
+Another example: l=3, r=4.
+
+Numbers are 3 and 4.
+
+Exponent of 3 in 3 is 1. Exponent in 4 is 0. Sum is 1.
+
+So, minimal operations is 1.
+
+Let's see:
+
+Operation on 3 and 4: 9 and 1.
+
+Now, numbers are 9 and 1.
+
+Exponent of 3 is 2 in 9. So, sum is 2.
+
+So, minimal operations is 1.
+
+Yes, that's correct.
+
+Another example: l=4, r=5.
+
+Numbers are 4 and 5.
+
+Exponent of 3 is 0 in both. So sum is 0. So minimal operations is 0? But we can't perform any operations because 4 and 5 are not divisible by 3. So, the minimal number of operations is 0, but this is impossible because we need to perform operations until all numbers are zero.
+
+So, this suggests that the sum being zero is a necessary condition, but not sufficient.
+
+So, perhaps the minimal number of operations is the sum of the exponents of 3 in the prime factors of each number minus the count of numbers that are powers of 3.
+
+Wait, perhaps not.
+
+Hmm, this is getting complicated. Maybe I should think about the problem differently.
+
+Another approach: each time we perform an operation, we replace x and y with 3x and floor(y/3). So, the operation can be thought of as a way to decrease y and increase 3x.
+
+But since 3x is larger than x, this suggests that the process can create larger numbers, which may not be helpful for reaching zero.
+
+So, perhaps the minimal number of operations is the sum of the exponents of 3 in the prime factors of each number, but we have to subtract 1 for each number that is a multiple of 3 more than once.
+
+Wait, for example, 9 is 3^2. So, it can be split twice: 9→27 and 3, then 3→9 and 1. So, two operations.
+
+So, for 9, the exponent is 2, and the number of operations is 2.
+
+Which is equal to the exponent.
+
+So, perhaps the minimal number of operations is the sum of the exponents of 3 in the prime factors of each number in the range [l, r].
+
+So, let's test this.
+
+In the example where l=1, r=2: sum is 0, which is correct.
+
+In the example l=2, r=3: sum is 1, which is correct.
+
+In the example l=3, r=4: sum is 1, which is correct.
+
+In the example l=4, r=5: sum is 0, which is correct.
+
+Another example: l=9, r=10.
+
+Numbers are 9 and 10? Wait, no, r is 10. So, numbers are 9 and 10.
+
+Exponent of 3 in 9 is 2. Exponent in 10 is 0. Sum is 2.
+
+So, minimal operations is 2.
+
+Let's see:
+
+First operation: split 9 and 10.
+
+Replace with 27 and 3.
+
+Now, numbers are 27 and 3.
+
+Second operation: split 27 and 3.
+
+Replace with 81 and 1.
+
+Now, numbers are 81 and 1.
+
+Third operation: split 81 and 1.
+
+Replace with 243 and 0.
+
+Now, numbers are 243 and 0.
+
+Fourth operation: split 243 and 0.
+
+Wait, but 0 can't be split. So, no more operations.
+
+So, this approach is taking four operations, but the sum approach suggests two operations.
+
+Hmm, that's a problem. So, the sum approach is not correct.
+
+So, this approach is wrong.
+
+Hmm, perhaps I'm missing something.
+
+Wait, in the first operation, splitting 9 and 10 gives 27 and 3.
+
+So, numbers are 27 and 3.
+
+In the second operation, split 27 and 3 into 81 and 1, and 9 and 1. So, the numbers are 81, 1, 9, 1.
+
+Wait, no. Because when you split 27 and 3, you get 81 and 1, and 3 is split into 9 and 1. So, the new numbers are 81, 1, 9, 1.
+
+Now, numbers are 81, 9, 1, 1.
+
+Third operation: split 81 and 9 into 243 and 3, and 27 and 3. So, 243, 3, 27, 3.
+
+Now, numbers are 243, 3, 27, 3, 1, 1.
+
+This is getting complicated.
+
+But according to the sum approach, the minimal number of operations is 2, but according to this, it's taking more.
+
+So, perhaps the sum approach is not correct.
+
+Hmm.
+
+Another Idea: The minimal number of operations is the sum of the number of times each number is divided by 3, but only for the exponents in the prime factors.
+
+Wait, but in the example of 9, it's 2 exponents, so 2 operations.
+
+Which is correct.
+
+So, perhaps for each number y, the number of operations is the exponent of 3 in y's prime factorization.
+
+So, the minimal number of operations is the sum of exponents of 3 in all numbers from l to r.
+
+So, for l=9, r=10, the sum is 2 (from 9), so minimal operations is 2.
+
+Let's see:
+
+First operation: split 9 and 10 into 27 and 3.
+
+Now, numbers are 27 and 3.
+
+Second operation: split 27 and 3 into 81 and 1.
+
+Now, numbers are 81 and 1.
+
+But there's no way to split 81 further into 3x and floor(y/3) since 1 is not divisible by 3.
+
+So, we have to find a way to get zeros.
+
+Wait, but how?
+
+Hmm, perhaps after the second operation, we have 81 and 1. How can we get zeros from here.
+
+Wait, perhaps we can split 81 and 1 again.
+
+But 1 can't be split into 3x and floor(1/3)=0.
+
+So, the operation would be replacing 81 and 1 with 243 and 0.
+
+Now, numbers are 243 and 0.
+
+So, after two operations, we have 243 and 0. So, the process is done.
+
+So, yes, the minimal number of operations is 2.
+
+So, this approach seems to work.
+
+So, the minimal number of operations is the sum of the exponents of 3 in the prime factors of each number in [l, r].
+
+So, the plan is:
+
+For each test case, compute for each number y in [

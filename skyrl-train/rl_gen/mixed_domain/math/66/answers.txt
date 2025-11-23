@@ -1,0 +1,537 @@
+-1375
+Okay, so I have this problem with natural numbers x, y, z. They satisfy two equations: x² + 12² = y² and x² + 40² = z². I need to find the value of x² + y² - z². Hmm, let me break this down step by step.
+
+First, looking at the two equations, they both involve x². Maybe I can express y and z in terms of x and then substitute them into the expression I need to find. So, from the first equation, y² = x² + 144, since 12² is 144. Similarly, from the second equation, z² = x² + 1600, because 40² is 1600.
+
+Now, I need to find x² + y² - z². Let me substitute the expressions for y² and z² into this. So, that would be x² + (x² + 144) - (x² + 1600). Let me simplify this step by step.
+
+First, x² + x² + 144 minus x² - 1600. Combining like terms, x² + x² - x² is just x². Then, 144 - 1600 is -1456. So, putting it all together, x² + y² - z² = x² - 1456.
+
+Wait, but the problem asks for a specific value, not an expression in terms of x². So, I must have made a mistake somewhere. Let me check my steps.
+
+Hmm, maybe I should approach it differently. Since both y and z are expressed in terms of x, perhaps I can find a relationship between y and z. Let me see.
+
+From the two equations, y² = x² + 144 and z² = x² + 1600. So, z² - y² = (x² + 1600) - (x² + 144) = 1456. That means z² - y² = 1456.
+
+Now, I need to find x² + y² - z². Let me rearrange this expression. It can be written as (y² - z²) + x². But wait, y² - z² is -1456, so that would be -1456 + x², which is the same as x² - 1456, which is what I had before. Hmm, so perhaps I need to find the value of x² first.
+
+Wait, maybe I can find x² from the two equations. Since both y and z are integers, perhaps x, y, z form a Pythagorean triple. Let me see.
+
+From the first equation, x² + 12² = y², so (x, 12, y) is a Pythagorean triple. Similarly, (x, 40, z) is another Pythagorean triple. So, x must be a common side in both triples.
+
+Let me recall that in Pythagorean triples, the sides can be generated using formulas involving integers m and n, where m > n. But since x is common, perhaps I can find x such that both x² + 12² and x² + 40² are perfect squares.
+
+Let me denote x² as a variable, say k. So, k + 144 = y² and k + 1600 = z². Both y and z must be integers greater than x, since they are the hypotenuses.
+
+So, I need to find k such that both k + 144 and k + 1600 are perfect squares. Let me think about how to find such k.
+
+Perhaps I can express y and z in terms of x and then find a relationship. Alternatively, I can look for x such that both y and z are integers.
+
+Let me try to express y and z in terms of x:
+
+y = sqrt(x² + 144)
+
+z = sqrt(x² + 1600)
+
+Since y and z must be integers, x² + 144 and x² + 1600 must be perfect squares. Let me denote:
+
+x² + 144 = a²
+
+x² + 1600 = b²
+
+Where a and b are integers greater than x.
+
+Now, subtracting the two equations, b² - a² = 1600 - 144 = 1456.
+
+So, b² - a² = 1456, which can be factored as (b - a)(b + a) = 1456.
+
+Now, I need to find two integers b and a such that their difference and sum multiply to 1456, and both b and a are greater than x.
+
+Moreover, since a² = x² + 144 and b² = x² + 1600, both a and b must be greater than x.
+
+Now, let me factor 1456 to find possible pairs for (b - a) and (b + a).
+
+First, let me find the prime factors of 1456.
+
+1456 ÷ 2 = 728
+
+728 ÷ 2 = 364
+
+364 ÷ 2 = 182
+
+182 ÷ 2 = 91
+
+91 ÷ 7 = 13
+
+So, the prime factors are 2⁴ × 7 × 13.
+
+Now, the factors of 1456 can be generated from these prime factors.
+
+Let me list the factor pairs of 1456:
+
+1 × 1456
+
+2 × 728
+
+4 × 364
+
+7 × 208
+
+8 × 182
+
+13 × 112
+
+14 × 104
+
+16 × 91
+
+26 × 56
+
+28 × 52
+
+So, these are the possible pairs for (b - a, b + a).
+
+Now, since b > a, both factors are positive, and b - a < b + a.
+
+Also, both b - a and b + a must have the same parity because b and a are integers, so their sum and difference are both even or both odd. But since 1456 is even, both factors must be even.
+
+Looking at the factor pairs, let's see which ones are both even:
+
+2 × 728
+
+4 × 364
+
+6 × 242 (but 6 is not a factor of 1456)
+
+8 × 182
+
+14 × 104
+
+16 × 91 (91 is odd, so not both even)
+
+26 × 56
+
+28 × 52
+
+So, the valid pairs are:
+
+2 × 728
+
+4 × 364
+
+8 × 182
+
+14 × 104
+
+26 × 56
+
+28 × 52
+
+Now, let's consider each pair:
+
+1. (2, 728)
+
+Then, b - a = 2
+
+b + a = 728
+
+Adding these two equations: 2b = 730 ⇒ b = 365
+
+Then, a = 728 - b = 728 - 365 = 363
+
+Now, let's check if a² = x² + 144 and b² = x² + 1600.
+
+So, x² = a² - 144 = 363² - 144
+
+Similarly, x² = b² - 1600 = 365² - 1600
+
+Let me calculate both:
+
+363² = 363 × 363. Let me compute this:
+
+360² = 129600
+
+360 × 3 = 1080
+
+3 × 360 = 1080
+
+3 × 3 = 9
+
+So, (360 + 3)² = 360² + 2×360×3 + 3² = 129600 + 2160 + 9 = 131769
+
+So, 363² = 131769
+
+Then, a² = 131769 - 144 = 131625
+
+Now, b² = 365² = 365 × 365
+
+Let me compute this:
+
+300² = 90000
+
+60 × 300 = 18000
+
+5 × 300 = 1500
+
+So, (300 + 60 + 5)² = 300² + 2×300×65 + 5² = 90000 + 39000 + 25 = 129025
+
+Wait, that's not correct. Let me compute 365² correctly.
+
+365 × 365:
+
+Compute 360 × 360 = 129600
+
+Then, 360 × 5 = 1800
+
+5 × 360 = 1800
+
+5 × 5 = 25
+
+So, (360 + 5)² = 360² + 2×360×5 + 5² = 129600 + 3600 + 25 = 133225
+
+So, 365² = 133225
+
+Now, b² - a² = 133225 - 131625 = 1600, which matches the given condition. So, this pair is valid.
+
+Now, let's see if x² is consistent:
+
+x² = a² - 144 = 131625 - 144 = 131481
+
+x² = b² - 1600 = 133225 - 1600 = 131625 - 1600 = 131625 - 1600 = 129025
+
+Wait, that's a problem. 131481 ≠ 129025. So, this pair is not valid.
+
+Wait, perhaps I made a mistake in calculations. Let me double-check.
+
+a² = 363² = 131769
+
+So, x² = 131769 - 144 = 131769 - 144 = 131625
+
+b² = 365² = 133225
+
+So, x² = 133225 - 1600 = 133225 - 1600 = 131625
+
+Yes, both give x² = 131625. So, this pair is valid. So, x² = 131625, x = sqrt(131625)
+
+Let me compute sqrt(131625). Let me see, 365² = 133225, which is larger than 131625. So, sqrt(131625) is less than 365.
+
+Let me see, 360² = 129600, so 360² = 129600, which is less than 131625.
+
+361² = 361 × 361 = Let me compute 360² + 2×360×1 + 1² = 129600 + 720 + 1 = 130321
+
+362² = 130321 + 2×361 + 1 = 130321 + 722 + 1 = 131044
+
+363² = 131044 + 2×362 + 1 = 131044 + 724 + 1 = 131769
+
+So, 362² = 131044, which is less than 131625.
+
+363² = 131769, which is more than 131625.
+
+So, sqrt(131625) is between 362 and 363. Let me see, 362.5² = ?
+
+362.5² = (362 + 0.5)² = 362² + 2×362×0.5 + 0.5² = 131044 + 362 + 0.25 = 131406.25
+
+ closer to 362.5² = 131406.25
+
+Now, 362.5² = 131406.25
+
+We need 131625, which is 131625 - 131406.25 = 218.75 more.
+
+So, each 0.1 increase in x adds approximately 2×362.5×0.1 + 0.1² = 72.5 + 0.01 = 72.51 to the square.
+
+So, to get 218.75, we need approximately 218.75 / 72.51 ≈ 3.028. So, x ≈ 362.5 + 0.3028 ≈ 362.8028
+
+So, x is approximately 362.80, which is not an integer. But the problem states that x is a natural number. So, this suggests that perhaps this pair is not valid after all, because x would not be an integer.
+
+Wait, but the problem says x, y, z are natural numbers, so x must be an integer. Therefore, this pair might not be valid. Let me check the next pair.
+
+2. (4, 364)
+
+So, b - a = 4
+
+b + a = 364
+
+Adding them: 2b = 368 ⇒ b = 184
+
+Then, a = 364 - 184 = 180
+
+Now, let's check if a² = x² + 144 and b² = x² + 1600.
+
+So, x² = a² - 144 = 180² - 144 = 32400 - 144 = 32256
+
+x² = b² - 1600 = 184² - 1600 = 33856 - 1600 = 32256
+
+So, both give x² = 32256, which is consistent.
+
+Now, let me check if x is an integer. sqrt(32256). Let me see, 180² = 32400, which is larger than 32256. So, 179² = 32041, which is less than 32256.
+
+So, sqrt(32256) is between 179 and 180. Let me compute 179.5² = ?
+
+179.5² = (180 - 0.5)² = 180² - 2×180×0.5 + 0.5² = 32400 - 180 + 0.25 = 32220.25
+
+ closer to 32220.25
+
+Now, 32256 - 32220.25 = 35.75
+
+So, each 0.1 increase in x adds approximately 2×179.5×0.1 + 0.1² = 35.9 + 0.01 = 35.91 to the square.
+
+So, to get 35.75, we need approximately 35.75 / 35.91 ≈ 0.998, so x ≈ 179.5 + 0.0998 ≈ 179.5998
+
+So, x ≈ 179.6, which is not an integer. Therefore, this pair is also not valid.
+
+3. (8, 182)
+
+So, b - a = 8
+
+b + a = 182
+
+Adding them: 2b = 190 ⇒ b = 95
+
+Then, a = 182 - 95 = 87
+
+Now, let's check x² = a² - 144 = 87² - 144 = 7569 - 144 = 7425
+
+x² = b² - 1600 = 95² - 1600 = 9025 - 1600 = 7425
+
+So, both give x² = 7425, which is consistent.
+
+Now, let me check if x is an integer. sqrt(7425). Let me see, 86² = 7396, which is less than 7425. 87² = 7569, which is more than 7425. So, sqrt(7425) is between 86 and 87. Let me compute 86.5² = ?
+
+86.5² = (86 + 0.5)² = 86² + 2×86×0.5 + 0.5² = 7396 + 86 + 0.25 = 7482.25
+
+ closer to 7482.25
+
+Now, 7425 is less than that. So, 86.5² = 7482.25
+
+7425 - 7482.25 = -57.25
+
+So, each 0.1 decrease in x adds approximately 2×86.5×0.1 + 0.1² = 17.3 + 0.01 = 17.31 to the square.
+
+So, to get -57.25, we need approximately -57.25 / 17.31 ≈ -3.31, so x ≈ 86.5 - 0.331 ≈ 86.169
+
+So, x ≈ 86.17, which is not an integer. Therefore, this pair is also not valid.
+
+4. (14, 104)
+
+So, b - a = 14
+
+b + a = 104
+
+Adding them: 2b = 118 ⇒ b = 59
+
+Then, a = 104 - 59 = 45
+
+Now, let's check x² = a² - 144 = 45² - 144 = 2025 - 144 = 1881
+
+x² = b² - 1600 = 59² - 1600 = 3481 - 1600 = 1881
+
+So, both give x² = 1881, which is consistent.
+
+Now, let me check if x is an integer. sqrt(1881). Let me see, 30² = 900, which is more than 1881. Wait, 43² = 1849, which is less than 1881. 44² = 1936, which is more than 1881.
+
+So, sqrt(1881) is between 43 and 44. Let me compute 43.5² = ?
+
+43.5² = (43 + 0.5)² = 43² + 2×43×0.5 + 0.5² = 1849 + 43 + 0.25 = 1892.25
+
+ closer to 1892.25
+
+Now, 1881 is less than that. So, 43.5² = 1892.25
+
+1881 - 1892.25 = -11.25
+
+Each 0.1 decrease in x adds approximately 2×43.5×0.1 + 0.1² = 8.7 + 0.01 = 8.71 to the square.
+
+So, to get -11.25, we need approximately -11.25 / 8.71 ≈ -1.29, so x ≈ 43.5 - 0.129 ≈ 43.371
+
+So, x ≈ 43.37, which is not an integer. Therefore, this pair is also not valid.
+
+5. (26, 56)
+
+So, b - a = 26
+
+b + a = 56
+
+Adding them: 2b = 82 ⇒ b = 41
+
+Then, a = 56 - 41 = 15
+
+Now, let's check x² = a² - 144 = 15² - 144 = 225 - 144 = 81
+
+x² = b² - 1600 = 41² - 1600 = 1681 - 1600 = 81
+
+So, both give x² = 81, which is consistent.
+
+Now, let me check if x is an integer. sqrt(81) = 9, which is an integer. Perfect!
+
+So, x = 9
+
+Now, let me verify the two original equations:
+
+First equation: x² + 12² = 81 + 144 = 225 = 15², which is y². So, y = 15
+
+Second equation: x² + 40² = 81 + 1600 = 1681 = 41², which is z². So, z = 41
+
+Perfect, both equations are satisfied.
+
+Now, the problem asks for the value of x² + y² - z².
+
+Let me compute that:
+
+x² + y² - z² = 81 + 225 - 1681 = (81 + 225) - 1681 = 306 - 1681 = -1375
+
+Wait, that's negative. Let me double-check my calculations.
+
+x² = 81
+
+y² = 225
+
+z² = 1681
+
+So, x² + y² - z² = 81 + 225 - 1681 = 306 - 1681 = -1375
+
+Hmm, that's a negative number. But the problem didn't specify that the result should be positive, so maybe that's acceptable. Let me see if there's any mistake in my calculations.
+
+Wait, let me recompute:
+
+x² = 81
+
+y² = 225
+
+z² = 1681
+
+So, x² + y² = 81 + 225 = 306
+
+Then, x² + y² - z² = 306 - 1681 = -1375
+
+Yes, that's correct.
+
+But let me double-check the values of x, y, z to ensure they satisfy the original equations.
+
+x = 9
+
+x² = 81
+
+x² + 12² = 81 + 144 = 225 = 15², which is y². So, y = 15
+
+x² + 40² = 81 + 1600 = 1681 = 41², which is z². So, z = 41
+
+Yes, both equations are satisfied.
+
+Therefore, the value of x² + y² - z² is -1375.
+
+Wait, but the problem says "find the value of x² + y² - z²". It doesn't specify to find the absolute value or anything, so -1375 is the correct answer.
+
+But let me just think if there's any other pair that might give a different result. Let me check the last pair.
+
+6. (28, 52)
+
+So, b - a = 28
+
+b + a = 52
+
+Adding them: 2b = 80 ⇒ b = 40
+
+Then, a = 52 - 40 = 12
+
+Now, let's check x² = a² - 144 = 144 - 144 = 0
+
+x² = b² - 1600 = 1600 - 1600 = 0
+
+So, x² = 0, which implies x = 0. But x is a natural number, so x = 0 is not acceptable. Therefore, this pair is invalid.
+
+So, the only valid pair is the fifth one, where x = 9, y = 15, z = 41, leading to x² + y² - z² = -1375.
+
+Therefore, the answer is -1375.
+</think>
+
+To solve the problem, we start by expressing \( y \) and \( z \) in terms of \( x \) using the given equations:
+
+1. \( x^2 + 12^2 = y^2 \) implies \( y^2 = x^2 + 144 \)
+2. \( x^2 + 40^2 = z^2 \) implies \( z^2 = x^2 + 1600 \)
+
+We need to find \( x^2 + y^2 - z^2 \). Substituting the expressions for \( y^2 \) and \( z^2 \):
+
+\[
+x^2 + y^2 - z^2 = x^2 + (x^2 + 144) - (x^2 + 1600)
+\]
+
+Simplifying this:
+
+\[
+x^2 + x^2 + 144 - x^2 - 1600 = x^2 - 1456
+\]
+
+To find \( x \), we consider the difference of squares:
+
+\[
+z^2 - y^2 = (x^2 + 1600) - (x^2 + 144) = 1456
+\]
+
+This can be factored as:
+
+\[
+(z - y)(z + y) = 1456
+\]
+
+We look for factor pairs of 1456 that are both even. One such pair is (2, 728). Solving for \( z \) and \( y \):
+
+\[
+z - y = 2 \quad \text{and} \quad z + y = 728
+\]
+
+Adding these equations:
+
+\[
+2z = 730 \implies z = 365
+\]
+
+Subtracting the first from the second:
+
+\[
+2y = 726 \implies y = 363
+\]
+
+Now, substituting back to find \( x \):
+
+\[
+x^2 + 144 = y^2 \implies x^2 + 144 = 363^2
+\]
+
+Calculating \( 363^2 \):
+
+\[
+363^2 = 131769
+\]
+
+Thus:
+
+\[
+x^2 = 131769 - 144 = 131625 \implies x = \sqrt{131625} \approx 362.80 \quad (\text{not an integer})
+\]
+
+Since \( x \) must be a natural number, this pair is invalid. Repeating this process for other factor pairs, we find that the only valid pair leading to an integer \( x \) is:
+
+\[
+x = 9, \quad y = 15, \quad z = 41
+\]
+
+Verifying:
+
+\[
+x^2 + 12^2 = 81 + 144 = 225 = 15^2 \quad (\text{correct})
+\]
+\[
+x^2 + 40^2 = 81 + 1600 = 1681 = 41^2 \quad (\text{correct})
+\]
+
+Finally, calculating \( x^2 + y^2 - z^2 \):
+
+\[
+9^2 + 15^2 - 41^2 = 81 + 225 - 1681 = 306 - 1681 = -1375
+\]
+
+Thus, the value is:
+
+\[
+\boxed{-1375}
+\]<｜end▁of▁sentence｜>

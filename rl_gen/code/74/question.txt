@@ -1,0 +1,32 @@
+<｜begin▁of▁sentence｜><｜User｜>
+You are given $n$ sticks, numbered from $1$ to $n$. The length of the $i$-th stick is $a_i$.
+
+You need to answer $q$ queries. In each query, you are given two integers $l$ and $r$ ($1 \le l < r \le n$, $r - l + 1 \ge 6$). Determine whether it is possible to choose $6$ distinct sticks from the sticks numbered $l$ to $r$, to form $2$ non-degenerate triangles$^{\text{∗}}$.
+
+$^{\text{∗}}$A triangle with side lengths $a$, $b$, and $c$ is called non-degenerate if:
+
+  * $a < b + c$,    * $b < a + c$, and    * $c < a + b$.
+
+Input Format:
+The first line contains two integers $n$ and $q$ ($6 \le n \le 10^5$, $1 \le q \le 10^5$) — the number of sticks and the number of queries respectively.
+
+The second line contains $n$ integers $a_1, a_2, \ldots, a_n$ ($1 \le a_i \le 10^9$) — $a_i$ denotes the length of the $i$-th stick.
+
+Each of the following $q$ lines contains two integers $l$ and $r$ ($1 \le l < r \le n$, $r - l + 1 \ge 6$) — the parameters of each query.
+
+Output Format:
+For each query, output "YES" (without quotes) if it is possible to form $2$ triangles, and "NO" (without quotes) otherwise.
+
+You can output the answer in any case (upper or lower). For example, the strings "yEs", "yes", "Yes", and "YES" will be recognized as positive responses.
+
+Tags:
+['brute force', 'greedy', 'implementation', 'math', 'sortings']
+
+Time Limit: 5000 ms
+Memory Limit: 256 MB
+
+Write Python code to solve the problem. Present the code in
+```python
+Your code
+```
+at the end.<｜Assistant｜><think>

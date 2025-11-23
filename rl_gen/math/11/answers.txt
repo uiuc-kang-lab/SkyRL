@@ -1,0 +1,491 @@
+0
+2\sqrt{3}
+Alright, so I've got this triangle problem to solve. Let me read it again.
+
+"In the triangle ABC, sin A = sin B = -cos C. 
+1. Find the angles A, B, and C.
+2. If the median AM from the vertex A to the side BC has a length of sqrt{7}, find the area of triangle ABC."
+
+Okay, first step is to tackle part 1: finding angles A, B, and C given that sin A = sin B = -cos C.
+
+Hmm, so I remember that in a triangle, the sum of angles is 180 degrees, or π radians. So, A + B + C = π.
+
+Given that sin A = sin B and sin A = -cos C, let me think.
+
+Since sin A = sin B, that implies either A = B or A = π - B.
+
+But in a triangle, if A = π - B, then A + B would be π, which would make angle C 0, which isn't possible. So, A must equal B. So, A = B.
+
+So, that simplifies things a bit. So, triangle is isosceles with A = B.
+
+So, A + A + C = π, so 2A + C = π, which means C = π - 2A.
+
+Okay, so angles A and B are equal, and angle C is π - 2A.
+
+Now, given that sin A = -cos C.
+
+So, sin A = -cos(π - 2A).
+
+I need to evaluate cos(π - 2A). I remember that cos(π - x) = -cos x, so cos(π - 2A) = -cos(2A).
+
+Therefore, sin A = -(-cos 2A) = cos 2A.
+
+So, sin A = cos 2A.
+
+Let me write that equation: sin A = cos 2A.
+
+Hmm, I can use some trigonometric identities to solve this.
+
+I know that cos 2A can be expressed in terms of sin or cos. Let's see.
+
+Also, sin A = cos(π/2 - A). So, sin A = sin(π/2 + 2A) because cos 2A = sin(π/2 + 2A). Wait, is that correct?
+
+Wait, no. cos x = sin(π/2 - x). So, cos 2A = sin(π/2 - 2A). Therefore, sin A = sin(π/2 - 2A).
+
+So, sin A = sin(π/2 - 2A). So, when is sin x = sin y?
+
+Either x = y + 2π n or x = π - y + 2π n, where n is integer.
+
+So, in this case, either:
+
+1. A = π/2 - 2A + 2π n, or
+
+2. A = π - (π/2 - 2A) + 2π n.
+
+Let me solve both cases.
+
+First case:
+
+A = π/2 - 2A + 2π n
+
+Bring 2A to the left:
+
+3A = π/2 + 2π n
+
+So, A = π/6 + (2π/3) n
+
+Second case:
+
+A = π - π/2 + 2A + 2π n
+
+Simplify:
+
+A = π/2 + 2A + 2π n
+
+Subtract A:
+
+0 = π/2 + A + 2π n
+
+So, A = -π/2 - 2π n
+
+But since angles in a triangle are between 0 and π, and n is integer, let's check for n=0.
+
+Case 1: A = π/6 + (2π/3) n
+
+For n=0: A = π/6 ≈ 30 degrees. Okay.
+
+For n=1: A = π/6 + 2π/3 = π/6 + 4π/6 = 5π/6 ≈ 150 degrees. But in a triangle, each angle must be less than 180, so 150 is possible, but let's check if it works.
+
+But wait, if A is 5π/6, then B is also 5π/6, which would make A + B = 5π/3, which is more than π, which is impossible. Therefore, n=1 is invalid.
+
+For n=-1: A = π/6 - 2π/3 = π/6 - 4π/6 = -3π/6 = -π/2, which is negative and invalid.
+
+So, only n=0 gives a valid angle, A=π/6.
+
+Case 2: A = -π/2 - 2π n
+
+Again, n=0: A = -π/2, which is negative, invalid.
+
+n=-1: A = -π/2 - 2π*(-1) = -π/2 + 2π = 3π/2, which is more than π, invalid.
+
+So, only the first case gives a valid angle. So, A = π/6.
+
+Therefore, angle A = π/6, angle B = π/6, angle C = π - 2*(π/6) = π - π/3 = 2π/3.
+
+So, angles A and B are 30 degrees, angle C is 120 degrees.
+
+So, part 1 is solved.
+
+Moving on to part 2: If the median AM from vertex A to side BC has length sqrt{7}, find the area of triangle ABC.
+
+Alright, so we need to find the area given that the median AM is sqrt{7}.
+
+First, let me recall that in a triangle, a median connects a vertex to the midpoint of the opposite side. So, in this case, M is the midpoint of BC.
+
+Given that, since ABC is a triangle with angles A = 30°, B = 30°, C = 120°, and sides opposite to these angles are a, b, c.
+
+Wait, actually, in standard notation, side a is opposite angle A, side b opposite angle B, and side c opposite angle C.
+
+So, angle A = 30°, side a is BC; angle B = 30°, side b is AC; angle C = 120°, side c is AB.
+
+So, sides BC = a, AC = b, AB = c.
+
+Since angles A and B are equal, sides opposite them are equal, so side a = side b.
+
+Therefore, triangle ABC is isosceles with sides AC = BC.
+
+Therefore, sides AC = BC = a = b.
+
+So, sides AC and BC are equal.
+
+So, the triangle has two equal sides, AC and BC, with angle C = 120°, between them.
+
+Therefore, it's an isosceles triangle with two sides equal and the included angle 120°, and the base angles 30° each.
+
+So, given that, perhaps we can use the Law of Sines to find the sides.
+
+But before that, since we have the median, let me recall that the length of the median can be calculated using the formula:
+
+In triangle ABC, the length of the median from A to BC is given by:
+
+m_a = (1/2) * sqrt(2b^2 + 2c^2 - a^2)
+
+Wait, is that correct? Let me recall.
+
+Yes, the formula for the length of a median is:
+
+m_a^2 = (2b^2 + 2c^2 - a^2)/4
+
+So, m_a = (1/2) * sqrt(2b^2 + 2c^2 - a^2)
+
+So, in our case, the median AM is m_a, which is sqrt{7}.
+
+So, sqrt{7} = (1/2) * sqrt(2b^2 + 2c^2 - a^2)
+
+But since in our triangle, sides AC = BC = a, so b = a, and side AB = c.
+
+So, let's plug in b = a, c = c.
+
+Therefore:
+
+sqrt{7} = (1/2) * sqrt(2a^2 + 2c^2 - a^2)
+
+Simplify inside the square root:
+
+2a^2 + 2c^2 - a^2 = a^2 + 2c^2
+
+So, sqrt{7} = (1/2) * sqrt(a^2 + 2c^2)
+
+Multiply both sides by 2:
+
+2*sqrt{7} = sqrt(a^2 + 2c^2)
+
+Now, square both sides:
+
+(2*sqrt{7})^2 = a^2 + 2c^2
+
+So, 4*7 = a^2 + 2c^2
+
+28 = a^2 + 2c^2
+
+So, equation (1): a^2 + 2c^2 = 28
+
+Now, we need another equation to relate a and c.
+
+Since we have triangle ABC with sides a, a, c, and angles opposite to them 30°, 30°, 120°, respectively.
+
+We can use the Law of Sines to relate sides and angles.
+
+Law of Sines: a / sin A = b / sin B = c / sin C
+
+But in our case, angle A = 30°, angle B = 30°, angle C = 120°, and sides a, a, c.
+
+So, sides opposite 30°, 30°, and 120°, so sides a, a, c.
+
+So, a / sin 30° = a / sin 30° = c / sin 120°
+
+So, compute sin 30° = 1/2, sin 120° = sqrt{3}/2.
+
+So, the ratio is a / (1/2) = c / (sqrt{3}/2)
+
+So, 2a = (2c)/sqrt{3}
+
+Simplify:
+
+2a = (2c)/sqrt{3} => Multiply both sides by sqrt{3}/2:
+
+a = c / sqrt{3}
+
+So, a = c / sqrt{3} => Multiply numerator and denominator by sqrt{3}:
+
+a = (c sqrt{3}) / 3
+
+So, a = (c sqrt{3}) / 3
+
+So, equation (2): a = (c sqrt{3}) / 3
+
+Now, let me substitute equation (2) into equation (1):
+
+From equation (1): a^2 + 2c^2 = 28
+
+Substitute a = (c sqrt{3}) / 3:
+
+[(c sqrt{3}/3)^2] + 2c^2 = 28
+
+Compute [(c sqrt{3}/3)^2]:
+
+= (c^2 * 3) / 9
+
+= c^2 / 3
+
+So, equation becomes:
+
+(c^2 / 3) + 2c^2 = 28
+
+Combine like terms:
+
+c^2 / 3 + 2c^2 = (1/3 + 2)c^2 = (7/3)c^2
+
+So, (7/3)c^2 = 28
+
+Multiply both sides by 3/7:
+
+c^2 = 28*(3/7) = 12
+
+So, c^2 = 12 => c = sqrt{12} = 2*sqrt{3}
+
+Since lengths are positive, c = 2 sqrt{3}
+
+Now, from equation (2): a = (c sqrt{3}) / 3
+
+Plug in c = 2 sqrt{3}:
+
+a = (2 sqrt{3} * sqrt{3}) / 3
+
+Compute sqrt{3}*sqrt{3} = 3
+
+So, a = (2*3)/3 = 6/3 = 2
+
+So, a = 2
+
+So, sides BC = a = 2, AC = b = 2, AB = c = 2 sqrt{3}
+
+Therefore, triangle ABC has sides 2, 2, 2 sqrt{3}, with angles 30°, 30°, 120°.
+
+Now, we need to find the area.
+
+One formula for the area is (1/2)*base*height.
+
+But since we know two sides and the included angle, we can use the formula:
+
+Area = (1/2)*a*b*sin C
+
+But wait, in our case, sides a and b are both 2, and the included angle is angle C = 120°.
+
+So, Area = (1/2)*2*2*sin 120°
+
+Compute:
+
+(1/2)*4*(sqrt{3}/2) = (1/2)*4*(sqrt{3}/2) = (2)*(sqrt{3}/2) = sqrt{3}
+
+Alternatively, we can compute area using Heron's formula.
+
+But let's verify.
+
+Alternatively, since the triangle is isosceles with sides 2, 2, and base 2 sqrt{3}, we can compute the height.
+
+Let me try that.
+
+If we split the triangle into two right triangles by the median, each with base (c)/2 = sqrt{3}, height h, and hypotenuse a = 2.
+
+Wait, actually, the median in an isosceles triangle also acts as an altitude.
+
+Wait, is that correct?
+
+Wait, in an isosceles triangle, the median from the apex (vertex C) is also the altitude and the angle bisector.
+
+But in our case, the triangle is not necessarily with apex at C, because angle C is 120°, which is the largest angle.
+
+Wait, actually, in our case, triangle ABC with sides a=2, b=2, c=2 sqrt{3}, so sides AC=BC=2, and AB=2 sqrt{3}.
+
+So, vertex C is between sides AC and BC, each of length 2, and the included angle is 120°, so it's not an isosceles triangle with two sides equal and base equal, but wait, actually, wait.
+
+Wait, hold on. If sides AC and BC are both 2, and the included angle is 120°, then the side opposite angle C is AB, which is 2 sqrt{3}. So, this is consistent with the Law of Cosines.
+
+Law of Cosines: c^2 = a^2 + b^2 - 2ab cos C
+
+So, (2 sqrt{3})^2 = 2^2 + 2^2 - 2*2*2 cos 120°
+
+Compute:
+
+12 = 4 + 4 - 8 cos 120°
+
+12 = 8 - 8*(-1/2) [since cos 120° = -1/2]
+
+12 = 8 + 4 = 12
+
+Yes, that works out.
+
+So, triangle ABC with sides 2, 2, 2 sqrt{3}, included angle 120°, so area is (1/2)*a*b*sin C = (1/2)*2*2*sin 120° = 2*(sqrt{3}/2) = sqrt{3}
+
+Alternatively, using Heron's formula.
+
+Compute semi-perimeter: s = (2 + 2 + 2 sqrt{3}) / 2 = (4 + 2 sqrt{3}) / 2 = 2 + sqrt{3}
+
+Then, area = sqrt[s(s - a)(s - b)(s - c)]
+
+So, plug in:
+
+sqrt[(2 + sqrt{3})(2 + sqrt{3} - 2)(2 + sqrt{3} - 2)(2 + sqrt{3} - 2 sqrt{3})]
+
+Simplify each term:
+
+s = 2 + sqrt{3}
+
+s - a = 2 + sqrt{3} - 2 = sqrt{3}
+
+s - b = same as s - a, which is sqrt{3}
+
+s - c = 2 + sqrt{3} - 2 sqrt{3} = 2 - sqrt{3}
+
+So, area = sqrt[(2 + sqrt{3})(sqrt{3})(sqrt{3})(2 - sqrt{3})]
+
+Multiply terms:
+
+First, note that sqrt{3} * sqrt{3} = 3
+
+So, area = sqrt[(2 + sqrt{3})(2 - sqrt{3}) * 3]
+
+Compute (2 + sqrt{3})(2 - sqrt{3}) = 4 - 3 = 1
+
+So, area = sqrt[1 * 3] = sqrt{3}
+
+So, same result.
+
+Alternatively, since we have the sides and the included angle, we can also use the formula:
+
+Area = (1/2)*a*b*sin C
+
+Which we already did, and it's sqrt{3}
+
+Therefore, the area is sqrt{3}
+
+Wait, but just to double-check, let me think about another approach.
+
+Alternatively, since the median is given, maybe we can compute the area using the formula involving the median.
+
+But I'm not sure if that's straightforward. Alternatively, perhaps using coordinates.
+
+Let me place the triangle in coordinate system to compute area.
+
+Let me place vertex A at (0,0), vertex B at (c,0) = (2 sqrt{3}, 0). Then, since it's an isosceles triangle with AC = BC = 2, and angle at C is 120°, so vertex C is somewhere above the base AB.
+
+Wait, no. Wait, actually, in our triangle, sides AC and BC are 2, and AB is 2 sqrt{3}, so actually, the triangle is such that vertex C is above the base AB, but given that AB is longer than AC and BC, it's going to be a bit tricky.
+
+Wait, perhaps coordinates:
+
+Let me place point A at (0,0), point B at (2 sqrt{3}, 0). Now, we need to find coordinates of point C such that AC = BC = 2, and angle at C is 120°.
+
+Wait, no. Wait, actually, side AC and BC are both 2, and side AB is 2 sqrt{3}. So, in this coordinate system, point C is somewhere above the x-axis, but it's not necessarily directly above the midpoint of AB.
+
+Wait, actually, since sides AC and BC are both 2, point C lies on the intersection of two circles: one centered at A (0,0) with radius 2, and another centered at B (2 sqrt{3}, 0) with radius 2.
+
+Let me find the coordinates of point C.
+
+The equations are:
+
+x^2 + y^2 = 4 (circle centered at A)
+
+(x - 2 sqrt{3})^2 + y^2 = 4 (circle centered at B)
+
+Subtract the first equation from the second:
+
+(x - 2 sqrt{3})^2 + y^2 - x^2 - y^2 = 4 - 4
+
+Expand (x - 2 sqrt{3})^2:
+
+x^2 - 4 sqrt{3} x + 12 + y^2 - x^2 - y^2 = 0
+
+Simplify:
+
+-4 sqrt{3} x + 12 = 0 => -4 sqrt{3} x = -12 => x = (-12)/(-4 sqrt{3}) = 3 / sqrt{3} = sqrt{3}
+
+So, x = sqrt{3}
+
+Then, plug back into first equation:
+
+(sqrt{3})^2 + y^2 = 4 => 3 + y^2 = 4 => y^2 = 1 => y = 1 or y = -1
+
+Since it's a triangle above the x-axis, y = 1.
+
+Therefore, point C is at (sqrt{3}, 1)
+
+So, coordinates are:
+
+A: (0,0)
+
+B: (2 sqrt{3}, 0)
+
+C: (sqrt{3}, 1)
+
+Now, to compute the area of triangle ABC, we can use the shoelace formula.
+
+Formula:
+
+Area = (1/2)|sum_{i=1 to n} (x_i y_{i+1} - x_{i+1} y_i)|
+
+So, list the coordinates in order: A(0,0), B(2 sqrt{3}, 0), C(sqrt{3}, 1), back to A(0,0)
+
+Compute each term:
+
+x_A y_B - x_B y_A = 0*0 - 2 sqrt{3}*0 = 0
+
+x_B y_C - x_C y_B = 2 sqrt{3}*1 - sqrt{3}*0 = 2 sqrt{3}
+
+x_C y_A - x_A y_C = sqrt{3}*0 - 0*1 = 0
+
+Sum these terms: 0 + 2 sqrt{3} + 0 = 2 sqrt{3}
+
+Take absolute value and multiply by 1/2:
+
+Area = (1/2)*|2 sqrt{3}| = (1/2)*2 sqrt{3} = sqrt{3}
+
+Same result as before.
+
+So, that's consistent. Therefore, the area is sqrt{3}.
+
+Therefore, the answers are:
+
+1. Angles A = 30°, B = 30°, C = 120°
+
+2. Area = sqrt{3}
+
+So, writing this in LaTeX:
+
+For part 1:
+
+\boxed{30^\circ}, \boxed{30^\circ}, \boxed{120^\circ}
+
+For part 2:
+
+\boxed{\sqrt{3}}
+
+**Final Answer**
+
+1. The angles are $\boxed{30^\circ}$, $\boxed{30^\circ}$, and $\boxed{120^\circ}$.
+
+2. The area of $\triangle ABC$ is $\boxed{\sqrt{3}}$.
+</think>
+
+Given the triangle $\triangle ABC$ with $\sin A = \sin B = -\cos C$, we need to find the angles $A$, $B$, and $C$, and then determine the area of the triangle given that the median $AM$ from vertex $A$ to side $BC$ has a length of $\sqrt{7}$.
+
+### Part 1: Finding the Angles
+
+1. Since $\sin A = \sin B$, we conclude that $A = B$ because in a triangle, angles opposite equal sides are equal.
+2. Therefore, $A = B$ and the triangle is isosceles with $AC = BC$.
+3. Given $\sin A = -\cos C$, and knowing that $\sin A = \sin B$ and $A + B + C = \pi$, we find that $C = \pi - 2A$.
+4. Using the identity $\sin A = \cos(\pi/2 - A)$, we solve $\sin A = \cos(\pi/2 - 2A)$, leading to $A = \pi/6$.
+5. Thus, $A = B = \pi/6$ and $C = \pi - 2(\pi/6) = 2\pi/3$.
+
+### Part 2: Finding the Area
+
+1. Using the Law of Sines, we find the sides of the triangle. With $A = 30^\circ$, $B = 30^\circ$, and $C = 120^\circ$, we determine the sides $AC = BC = 2$ and $AB = 2\sqrt{3}$.
+2. The median $AM$ is given as $\sqrt{7}$. Using the formula for the median, we verify the sides and confirm the area using the formula for the area of a triangle with sides $a$, $b$, and included angle $C$:
+   \[
+   \text{Area} = \frac{1}{2} \cdot a \cdot b \cdot \sin C = \frac{1}{2} \cdot 2 \cdot 2 \cdot \sin 120^\circ = \frac{1}{2} \cdot 4 \cdot \frac{\sqrt{3}}{2} = \sqrt{3}
+   \]
+
+### Final Answers
+
+1. The angles are $\boxed{30^\circ}$, $\boxed{30^\circ}$, and $\boxed{120^\circ}$.
+2. The area of $\triangle ABC$ is $\boxed{\sqrt{3}}$.<｜end▁of▁sentence｜>

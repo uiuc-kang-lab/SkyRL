@@ -1,0 +1,638 @@
+0
+Okay, I have this problem where I need to find the minimal number of pairs of vertices in a connected undirected graph after removing exactly one edge. The goal is to minimize the number of pairs that are connected by a path. So, I need to figure out which edge to remove so that the number of disconnected pairs is as small as possible.
+
+Hmm, let's think about the problem. The number of pairs of vertices is n choose 2, which is n*(n-1)/2. Removing an edge might split the graph into two components, increasing the number of disconnected pairs. But wait, no, wait. Removing an edge can increase the number of disconnected pairs. Because each connected component contributes (size choose 2) pairs, and the total is the sum of these for all components.
+
+So, the initial number of connected pairs is nC2. When we remove an edge, the graph splits into two components, say of sizes k and n-k. So the new number of connected pairs is (k*(k-1)/2) + ((n-k)*(n-k-1)/2). The difference between the initial and this new number is the increase in disconnected pairs.
+
+Wait, no. Because initially, all pairs are connected. So the initial number of connected pairs is nC2, and the disconnected pairs is zero. Wait, no, the problem says to count the number of pairs that are connected by a path. So initially, all possible pairs are connected, so the disconnected pairs are zero. When we remove an edge, some pairs become disconnected. So the problem is to find the edge whose removal results in the minimal number of disconnected pairs.
+
+Wait, no, the problem says to minimize the number of pairs that are connected by a path. So in the original graph, all pairs are connected, so the count is nC2. After removing an edge, some pairs are no longer connected. So the count is the number of pairs that are disconnected, which is nC2 minus the number of connected pairs after removal.
+
+Wait, no. Wait, the problem says to minimize the number of pairs of vertices that are connected by a path. So in the original graph, all pairs are connected. So the initial value is nC2. When we remove an edge, some pairs are no longer connected. So the value after removal is (number of connected pairs) which is the number of pairs u < v where u and v are in the same component after the edge is removed.
+
+So to minimize the number of connected pairs, we need to maximize the number of pairs that remain connected, which is achieved by splitting the graph into two components such that the sum of (k choose 2) + ((n-k) choose 2) is as large as possible. Because initially, the connected pairs are nC2, so the disconnected pairs is nC2 - [k choose 2 + (n-k) choose 2]. Wait, no, wait.
+
+Wait, the initial number of connected pairs is nC2. After removing an edge, the number of connected pairs is (size of component A choose 2) + (size of component B choose 2), where A and B are the two components after removing the edge. The number of disconnected pairs is then (nC2) - [ (k choose 2) + (n-k choose 2) ]. So to minimize the number of connected pairs, we need to maximize (k choose 2 + (n-k) choose 2). So the problem reduces to finding the edge whose removal will split the graph into two components, and the sum of the combinations is maximized.
+
+Wait, no. Because if I remove an edge, the graph splits into two components. The number of connected pairs is the sum of the combinations in each component. So the number of disconnected pairs is the initial number (nC2) minus the sum of the combinations. So, yes, to minimize the number of connected pairs, we need to maximize the sum of the combinations in the two components.
+
+So, the problem is to find the edge whose removal will split the graph into two components such that the sum of (size choose 2) for both components is as large as possible. Because then, the number of connected pairs is maximized, so the number of disconnected pairs is minimized.
+
+So the approach is: for each edge, when removed, the graph is split into two components. For each such split, compute the sum of (k choose 2) + ((n -k) choose 2), and find the maximum of this sum. The maximum sum minus the initial number of pairs (nC2) will give the minimal number of connected pairs, which is our answer.
+
+So, the steps are:
+
+1. For each test case, compute the initial number of connected pairs, which is nC2.
+
+2. For each edge, when removed, compute the sum of (k choose 2) + (n-k choose 2), where k is the size of one of the components.
+
+3. Find the maximum sum across all possible edges.
+
+4. Subtract this maximum sum from the initial nC2. This gives the minimal number of connected pairs, which is the number of disconnected pairs.
+
+Wait, no. Wait, the initial number of connected pairs is nC2, which is the maximum possible. So, when you remove an edge, the number of connected pairs is (k choose 2) + ((n-k) choose 2). The number of disconnected pairs is nC2 - [(k choose 2) + ((n-k) choose 2)].
+
+So, to minimize the number of connected pairs, we need to maximize (k choose 2) + ((n-k) choose 2). So the process is to find the edge whose removal gives the maximum sum, and then the minimal disconnected pairs is nC2 minus this sum.
+
+So, the problem reduces to finding, for each edge, the sum of (k choose 2) + (n-k choose 2) for the two components after removing the edge. The maximum of these sums is what we're looking for.
+
+So, the key is to compute, for each edge, the size of the two components that would result from removing that edge, and then compute the sum of their combinations.
+
+The challenge is to compute this efficiently for each edge.
+
+How can we do this?
+
+Well, one approach is to, for each edge, consider the two components that would result if the edge is removed. Then, the size of each component is the size of the connected component on either side of the edge. So, for each edge, the sum is k*(k-1)/2 + (n -k)*(n -k -1)/2, where k is the size of one of the components.
+
+So, for each edge, the sum is (k choose 2) + (n -k choose 2).
+
+So, to compute this for each edge, we need to know the size of the two components that would result from removing the edge.
+
+So, how can we compute the size of these components for each edge?
+
+We can model the graph as an adjacency list, and for each edge, when removed, the graph is split into two components. The size of one of these components is the number of vertices in one part of the split.
+
+So, for each edge u-v, when removed, the graph is split into two components: one containing u, and the other containing v. Wait, no, because the graph is connected, removing the edge will split it into two connected components.
+
+So, for each edge u-v, the size of the component containing u is k, and the size of the component containing v is n -k.
+
+So, for each edge u-v, the sum is k*(k-1)/2 + (n -k)*(n -k -1)/2.
+
+So, the problem is to find, for each edge, the value of k, and compute this sum.
+
+But how do we compute k for each edge efficiently?
+
+Well, one way is to perform a traversal of the graph, and for each node, keep track of the size of the component it's in. Then, for each edge u-v, if u and v are in the same component, then removing the edge won't split the graph. But since the graph is connected, every edge is part of a spanning tree, and removing it will split the graph into two components.
+
+Wait, but in a general graph, edges can be part of cycles. So, when you remove an edge, the graph may still be connected if it's part of a cycle. Wait no, because in a connected graph, removing any edge will split it into exactly two connected components.
+
+Wait, no. For example, consider a triangle (3 nodes). If you remove one edge, the graph is split into two components: one edge remains, and the other two form a separate component. So, the graph is split into two components of size 1 and 2.
+
+So, in this case, for the edge that's removed, the sum is 1C2 + 2C2 = 0 + 1 = 1.
+
+So, the approach is: for each edge, compute the size of the two components that result from its removal, and then compute the sum of the combinations.
+
+So, to compute this for each edge, we can do the following:
+
+1. Compute the size of each connected component in the graph.
+
+2. For each edge u-v, if u and v are in the same component, then removing the edge will split the component into two parts. The size of one part is the size of the component minus 1 (since we removed the edge). The size of the other part is 1 (since the edge is between u and v, which are now in different parts).
+
+Wait, no. Wait, when you remove an edge u-v, which is part of a component, the component is split into two parts: one part is the component minus u, the other is the component minus v. So, the sizes are (size of component - 1) and 1.
+
+Wait, no. For example, in the triangle, the component is size 3. Removing one edge (u-v) splits it into two components: one of size 2 (u and the other node) and one of size 1 (v). So, the sum is 2C2 + 1C2 = 1 + 0 = 1.
+
+So, for each edge u-v, when removed, the two components have sizes (s-1) and 1, where s is the size of the component containing u (and v, since the edge is between u and v).
+
+Wait, but what if the edge is part of a larger component? For example, imagine a chain of 4 nodes: 1-2-3-4. The edge between 2 and 3 is part of the component of size 4. If we remove that edge, the component is split into 1-2 and 3-4, both of size 2. So the sum is 2C2 + 2C2 = 1 + 1 = 2.
+
+So, in this case, the sum is 2.
+
+So, the approach is: for each edge, if it's part of a component of size s, then removing the edge will split the component into two parts: one of size s-1 and the other of size 1. So, the sum is (s-1 choose 2) + 1 choose 2.
+
+Alternatively, if the edge is part of a component of size s, then the sum is (s-1)(s-2)/2 + 0, because 1C2 is 0.
+
+So, for each edge u-v, the sum is max( (s-1)*(s-2)/2 + 0, (s-1)*(s-2)/2 + 0 ), but wait, no. Because when you remove the edge, the component is split into two parts: s-1 and 1. So, the sum is (s-1 choose 2) + (1 choose 2) = (s-1)(s-2)/2 + 0 = (s-1)(s-2)/2.
+
+Wait, no. 1 choose 2 is 0, because you can't choose 2 elements from 1.
+
+So, for each edge u-v, the sum is (s-1 choose 2) + 0 = (s-1)(s-2)/2.
+
+So, the sum is (s-1)(s-2)/2, where s is the size of the component that contains u and v.
+
+So, for each edge, to compute the sum, we need to find the size s of the component that contains u and v, and then compute (s-1)(s-2)/2.
+
+So, the algorithm becomes:
+
+For each test case:
+
+1. Read n and m.
+
+2. Read m edges, build an adjacency list.
+
+3. Compute the size of each connected component.
+
+4. For each edge u-v:
+
+   a. Find the size s of the component that contains u (and v, since the edge is between them).
+
+   b. Compute the sum: (s-1)*(s-2) // 2.
+
+5. Find the maximum sum across all edges.
+
+6. Compute the initial number of connected pairs, which is n*(n-1)/2.
+
+7. The minimal number of connected pairs after removing the edge with maximum sum is initial_pairs - maximum_sum.
+
+So, the answer is initial_pairs - maximum_sum.
+
+So, the key steps are:
+
+- Compute the size of each component.
+
+- For each edge, find the component size, compute the sum, and find the maximum.
+
+So, the problem reduces to:
+
+How to compute the component sizes efficiently.
+
+We can do this via a BFS or DFS for each component. But since n can be up to 1e5, and t up to 1e4, we need an efficient approach.
+
+Wait, but for each test case, the graph is connected. So, we can pick a root (like node 1) and perform a BFS or DFS to find all reachable nodes, which gives the size of the component.
+
+So, for each test case:
+
+- Read n and m.
+
+- Read m edges, build adjacency list.
+
+- Perform BFS/DFS starting from node 1 to find all reachable nodes, and the size of this component is s.
+
+- For all other nodes, they are not reachable from node 1. But since the graph is connected, this approach will find the entire component.
+
+Wait, no. Because the graph is connected, and the BFS/DFS from node 1 will visit all nodes, so the size s is n. So, all nodes are in the same component.
+
+Wait, no. Because the graph is connected, but the BFS/DFS from node 1 will visit all nodes, so s is n.
+
+Wait, that's correct. So, for all test cases, the initial component size is n.
+
+So, for each edge u-v, the component size is n, because the graph is connected.
+
+Wait, no. Because the edge u-v is part of the graph, which is connected. So, the component containing u is the entire graph, because the graph is connected.
+
+So, for each edge u-v, the component size s is n.
+
+So, for each edge u-v, the sum is (n-1)(n-2)/2.
+
+Wait, that can't be right. Because in the initial graph, all pairs are connected, so the initial number of connected pairs is nC2.
+
+When we remove an edge, the sum is (n-1 choose 2) + 1 choose 2 = (n-1)(n-2)/2 + 0 = (n-1)(n-2)/2.
+
+So, the initial number is nC2, which is n*(n-1)/2.
+
+So, the number of connected pairs after removing an edge is (n-1)(n-2)/2.
+
+So, the number of disconnected pairs is initial_pairs - (n-1)(n-2)/2 = [n(n-1)/2] - [(n-1)(n-2)/2] = (n-1)(n - (n-2)) / 2 = (n-1)*2 / 2 = n-1.
+
+Wait, that's interesting. So, for any edge removed, the number of connected pairs is (n-1 choose 2), which is (n-1)(n-2)/2. So, the number of connected pairs is fixed, regardless of which edge is removed. So, the number of disconnected pairs is always n-1.
+
+Wait, that's not possible. Because in the sample input, for example, if n=3, m=2, edges 1-2 and 2-3.
+
+So, initial connected pairs: 3C2=3.
+
+If we remove edge 1-2, the connected pairs are (2,3) and (1,3) and (2,3), so 2 pairs. So, the number of disconnected pairs is 1.
+
+Wait, but according to the formula, (n-1 choose 2) is 2 choose 2=1. So, the number of connected pairs is 1, and the number of disconnected pairs is 3-1=2, which contradicts the actual calculation.
+
+Hmm, so my earlier reasoning must be wrong.
+
+Wait, let's re-calculate.
+
+Wait, when we remove an edge, the graph splits into two components. Let's say the edge u-v is removed. The two components are A and B, with sizes k and (n-k).
+
+So, the number of connected pairs is (k choose 2) + (n-k choose 2).
+
+The initial number of connected pairs is nC2.
+
+The number of disconnected pairs is nC2 - [(k choose 2) + (n-k choose 2)].
+
+So, for the sample input where n=3, m=2, edges 1-2 and 2-3.
+
+When we remove edge 1-2, the graph splits into two components: {1} and {2,3}.
+
+So, k=1, n-k=2.
+
+So, the connected pairs are (1 choose 2) + (2 choose 2) = 0 + 1 = 1.
+
+So, the initial connected pairs are 3C2=3.
+
+So, the number of connected pairs after removal is 1. The number of disconnected pairs is 3-1=2.
+
+But according to the earlier approach, for any edge removed, the sum is (n-1)(n-2)/2, which is 2*1/2=1, which matches.
+
+So, the initial connected pairs are 3.
+
+After removing edge 1-2, the sum is 1, which is (n-1 choose 2) = 1.
+
+So, the number of connected pairs is 1.
+
+So, the number of disconnected pairs is 3-1=2.
+
+Wait, but according to the formula I thought earlier, the number of connected pairs after removal is (n-1 choose 2), which is 1. So, the number of connected pairs is 1, and the number of disconnected pairs is 3-1=2.
+
+So, for this test case, the answer is 2.
+
+But in the sample input, the initial number of connected pairs is 3. So, when you remove any edge, the number of connected pairs is 1, and the number of disconnected pairs is 2.
+
+So, the minimal number of connected pairs is 1, but in this case, the problem asks for the minimal number of connected pairs, not the maximum.
+
+Wait, no. The problem says: find the minimal number of pairs of vertices that are connected by a path.
+
+So, in this case, after removing edge 1-2, the connected pairs are 1, which is the minimal possible. So, the answer is 1.
+
+Wait, but according to the problem statement, the initial graph is connected, so all pairs are connected. So, the initial value is 3.
+
+When you remove an edge, the connected pairs are 1, which is the minimum possible. So, the answer is 1.
+
+So, the approach is to find, for each edge, the sum (k choose 2) + (n-k choose 2), and find the minimal possible sum. Because the minimal sum means the maximum number of connected pairs, which minimizes the number of disconnected pairs.
+
+So, the problem is to find the edge whose removal gives the minimal sum of (k choose 2) + (n-k choose 2), which in turn maximizes the number of connected pairs.
+
+So, the minimal number of connected pairs is initial_pairs - minimal_sum.
+
+So, the steps are:
+
+For each test case:
+
+1. Compute initial_pairs = n*(n-1)/2.
+
+2. For each edge, compute the sum s = (k choose 2) + (n -k choose 2), where k is the size of the component after removing the edge. But since the graph is connected, the component is the entire graph, so k = n. So, s = (n choose 2) = n*(n-1)/2. So, this can't be right.
+
+Wait, that's not possible. Because when you remove an edge, the component size is n-1. So, for example, in n=3, removing an edge reduces the component size to 2.
+
+So, the sum is (2 choose 2) + (1 choose 2) = 1 + 0 = 1.
+
+Which matches the sample.
+
+So, the earlier reasoning was wrong. So, the correct approach is to compute for each edge u-v, the sum (k choose 2) + (n-k choose 2), where k is the size of the component after removing the edge.
+
+But since the graph is connected, the component after removing the edge is n-1, but that's not correct because the edge is part of the graph, so the component remains n.
+
+Wait, no. Because the edge u-v is part of the graph, so when you remove it, the graph is split into two components. So, the component containing u is some size k, and the component containing v is size n -k.
+
+So, the sum is (k choose 2) + (n -k choose 2).
+
+So, the problem is to find, for each edge, the value of (k choose 2) + (n-k choose 2), and find the maximum of this sum.
+
+Because this sum is the number of connected pairs after removing the edge.
+
+So, the minimal number of connected pairs is initial_pairs - max_sum.
+
+So, the problem reduces to finding the maximum sum of (k choose 2) + (n -k choose 2) over all edges.
+
+So, how to compute this.
+
+The key is to find, for each edge, the size of the two components that result after removing the edge.
+
+So, the approach is:
+
+For each edge u-v:
+
+- Find the size of the component that contains u (and v, since the edge is between them).
+
+- Compute the sum s = (k choose 2) + (n -k choose 2), where k is the size of the component.
+
+- Keep track of the maximum s.
+
+So, the question is, how to compute k for each edge.
+
+This can be done by performing a BFS or DFS to find the size of the component for each node, and then for each edge, the size is the size of the component of one of its endpoints.
+
+So, the steps are:
+
+For each test case:
+
+1. Read n, m.
+
+2. Read m edges, build an adjacency list.
+
+3. Perform a BFS or DFS from node 1 to compute the size of each connected component. Since the graph is connected, the size is n for all nodes.
+
+Wait, no. Because the graph is connected, but the BFS from node 1 will visit all nodes, so the size is n. So, for each edge u-v, the component size is n.
+
+Wait, but that can't be right. Because in the sample input, the initial component size is 3, and for an edge between 1-2, the component size is 2, because when you remove the edge, the component size is 2.
+
+So, perhaps I'm misunderstanding the approach.
+
+Wait, perhaps the initial component size is n, but when you remove an edge, the component size is split into two parts, not necessarily the entire graph.
+
+So, for each edge u-v, the component size is the size of the component that includes u. So, to find the size of the component when the edge is removed, we need to find the size of the component that contains u, which is the same as the size of the component that contains v.
+
+So, for each edge, the sum is (k choose 2) + (n -k choose 2), where k is the size of the component containing u.
+
+So, the approach is:
+
+- For each node, compute the size of its component.
+
+- For each edge u-v, find the size of the component containing u (which is the same as v).
+
+- Compute the sum for this edge as (k choose 2) + (n -k choose 2), where k is the component size.
+
+So, the problem now is to find, for each edge, the size of the component that contains u.
+
+So, how to compute this.
+
+We can perform a BFS or DFS starting from node 1 and mark the size of each component. Then, for each node, we have a component size. For each edge u-v, the component size of u is known. So, for each edge, the sum is (s_u choose 2) + (s_v choose 2), but since s_u and s_v are the same, it's 2*(s choose 2).
+
+Wait, no. Because the component size is s, so it's (s choose 2) + (n - s choose 2).
+
+Wait, no. Because when you remove the edge u-v, the component containing u has size s, and the component containing v has size (n - s). So, the sum is s*(s-1)/2 + (n -s)*(n -s -1)/2.
+
+So, for each edge u-v, the sum is s*(s-1)/2 + (n-s)*(n-s-1)/2, where s is the size of the component containing u.
+
+So, the plan is:
+
+1. For each test case, read n, m, and the edges.
+
+2. Perform a BFS to compute the size of each component. Since the graph is connected, all nodes are in one component, but wait, no. Because the BFS from node 1 will mark all nodes as part of the component. So, the component size is n.
+
+Wait, no. Because the BFS starts at node 1, but the graph is connected, so all nodes are reachable, so the component size is n.
+
+So, for any edge u-v, the component size for u is n. So, the sum is (n choose 2) + (0 choose 2) = n(n-1)/2 + 0 = n(n-1)/2.
+
+But that's the initial sum, which can't be right.
+
+Hmm, this is getting confusing.
+
+Let me try to think with the sample input.
+
+Sample input:
+
+n=3, m=2.
+
+Edges: 1-2, 2-3.
+
+So, the component size for node 1 is 3.
+
+When we remove edge 1-2, the component size for 1 is 2, and for 2 is 1.
+
+So, the sum is (2 choose 2) + (1 choose 2) = 1 + 0 = 1.
+
+Which is correct.
+
+So, the approach is:
+
+For each edge u-v, find the component size s of u, then compute (s choose 2) + (n - s choose 2).
+
+So, in the sample, for edge 1-2, s is 3. So, (3 choose 2) + 0 = 3. But that's not correct.
+
+Wait, no. Because when you remove the edge, the component size becomes 2 and 1.
+
+So, the sum is (2 choose 2) + (1 choose 2) = 1 + 0 =1.
+
+So, how can we compute this?
+
+So, the component size s is 2, because after removing the edge, the component containing u is 2.
+
+So, the component size for u is 2, and for v is 1.
+
+So, the sum is 1 + 0 =1.
+
+So, the approach is:
+
+For each edge u-v, the sum is (s choose 2) + (n - s choose 2), where s is the component size of u (same as v).
+
+So, to find s, we need to find the size of the component that contains u (and v) when the edge is removed.
+
+But wait, no. Because when the edge u-v is removed, the component size is s for u and (n-s) for v. So, the sum is s*(s-1)/2 + (n-s)*(n-s-1)/2.
+
+So, the sum depends on s, which is the size of the component containing u.
+
+So, the approach is:
+
+For each edge u-v:
+
+- Find s, the size of the component that contains u.
+
+- The sum is s*(s-1)/2 + (n -s)*(n -s -1)/2.
+
+So, the problem is, how to compute s for each edge.
+
+So, the way to do this is:
+
+1. For each test case, build the adjacency list.
+
+2. Choose a root (like node 1), perform BFS or DFS to compute the size of each component.
+
+3. For each node, store its component size.
+
+4. For each edge u-v, u is in a component of size s. So, for the edge u-v, the sum is s*(s-1)/2 + (n -s)*(n -s -1)/2.
+
+So, the maximum sum is the maximum of this value over all edges.
+
+So, this approach should work.
+
+So, in code, for each test case:
+
+- Read n, m.
+
+- Read m edges, build adjacency list.
+
+- Perform BFS starting from node 1 (or any node, since the graph is connected), compute the component size for each node.
+
+- For each edge u-v, get s = component_size[u].
+
+- Compute sum = s*(s-1)//2 + (n - s)*(n - s -1)//2.
+
+- Keep track of the maximum sum.
+
+- The answer is (n*(n-1)//2) - maximum_sum.
+
+So, now, the code can be written.
+
+Testing the sample:
+
+n=3, m=2.
+
+Edges:
+
+1-2, 2-3.
+
+Component size for all nodes is 3.
+
+For edge 1-2, s=3.
+
+sum = 3*2/2 + 0 = 3 +0=3.
+
+For edge 2-3, s=3.
+
+sum=3+0=3.
+
+So, maximum sum is 3.
+
+So, initial_pairs is 3.
+
+3-3=0.
+
+Wait, that's not correct.
+
+Wait, in the sample, when you remove an edge, the sum is 1.
+
+So, something's wrong with the approach.
+
+Wait, perhaps the component size s is the size of the component that contains u, which is the same as v.
+
+So, for edge u-v, s is the size of the component containing u.
+
+So, in the sample, for edge 1-2, s is 2 (because when you remove the edge, the component containing 1 is size 2, and the component containing 2 is size 1).
+
+So, the sum is (2 choose 2) + (1 choose 2) = 1 + 0 =1.
+
+So, how to compute s for each edge.
+
+Wait, the component size s is the size of the component that contains u, but after the edge is removed.
+
+So, for each edge u-v, the component size s is the size of the component that u is in, which is the same as v's component.
+
+So, the sum is (s choose 2) + (n - s choose 2), where s is the component size of u.
+
+So, to compute s, we need to find the size of the component that u is in, but after the edge u-v is removed.
+
+Wait, but this is the same as the size of the component that u is in, because when the edge is removed, the component size of u is the same as before.
+
+Wait, no. Because the edge is removed, the component size of u is the size of the component that u is in, which is the same as the size of the component that v is in.
+
+So, for edge u-v, the component size is s, which is the size of u's component.
+
+So, to find s, we need to find the size of the component that u is in.
+
+So, the approach is:
+
+1. For each test case, build the adjacency list.
+
+2. For each node, perform a BFS or DFS to find the component size.
+
+3. For each edge u-v, the component size is the size of the component that u is in.
+
+So, for each edge, s = component_size[u].
+
+Then, the sum is (s choose 2) + (n - s choose 2).
+
+So, in the sample:
+
+Component_size[u=1] is 3.
+
+So, sum is (3 choose 2) + 0 =3.
+
+Which is incorrect.
+
+But when the edge is removed, the sum is 1.
+
+So, something's wrong with this approach.
+
+Wait, perhaps the component size after removing the edge u-v is not the same as the component size before.
+
+Wait, no. Because the edge is part of the graph, so when you remove it, the component sizes are split into two parts.
+
+So, for edge u-v, the component size of u is s, and the component size of v is n - s.
+
+So, the sum is (s choose 2) + (n - s choose 2).
+
+So, for edge u-v, the sum is (s choose 2) + (n - s choose 2).
+
+So, to compute s for each edge, we need to find the size of the component containing u, which is the same as the component containing v.
+
+So, for each edge u-v, s = component_size[u].
+
+So, in the sample, s is 3 for edge 1-2.
+
+So, sum is 3*2/2 + 0 =3.
+
+But in reality, when the edge is removed, the sum is 1.
+
+So, this suggests that the approach is incorrect.
+
+So, I think I'm misunderstanding the problem.
+
+Wait, perhaps the sum is (s choose 2) + (n - s choose 2), where s is the component size of u, but in the case where the edge is removed, the component size of u is s -1.
+
+No, that can't be.
+
+Wait, perhaps the component size after removing the edge is s, but how?
+
+No, because when you remove the edge u-v, u is in a component of size s, and v is in a component of size n - s.
+
+So, the sum is (s choose 2) + (n - s choose 2).
+
+So, the approach is correct.
+
+So, in the sample, the sum is 3 choose 2 + 0 =3.
+
+But when you remove the edge, the sum is 1.
+
+So, where is the mistake?
+
+Wait, I think I'm mixing up the component sizes.
+
+When the edge u-v is removed, the component size of u is s, and the component size of v is n - s.
+
+So, the sum is (s choose 2) + (n - s choose 2).
+
+So, for edge 1-2, s is 3, so the sum is 3*2/2 +0=3.
+
+Which is wrong, as in the sample, the sum is 1.
+
+So, what's wrong here?
+
+Wait, perhaps the component size s is not the same as the size of the component that u is in, but the size of the component that includes u, including the edge.
+
+No, because when you remove the edge, the component size of u is s-1.
+
+So, perhaps the correct approach is:
+
+After removing the edge, the component size of u is s-1, and the component size of v is n - (s-1).
+
+So, the sum is (s-1 choose 2) + (n - (s-1) choose 2).
+
+So, in the sample, s is 3.
+
+So, sum is (2 choose 2) + (2 choose 2) =1 +1=2.
+
+Which is still not correct.
+
+Wait, but in the sample, after removing edge 1-2, the connected pairs are 1.
+
+So, the sum is 1.
+
+So, perhaps the formula is (s-1 choose 2) + (n - (s-1) choose 2).
+
+Which is (1 choose 2) + (2 choose 2) =0 +1=1.
+
+Which is correct.
+
+So, the correct formula is (s-1 choose 2) + (n - (s-1) choose 2).
+
+So, for each edge u-v, s is the component size of u.
+
+sum = (s-1 choose 2) + (n - (s-1) choose 2).
+
+So, in the sample:
+
+s=3.
+
+sum = (2 choose 2) + (1 choose 2) =1 +0=1.
+
+Which is correct.
+
+So, the correct approach is:
+
+For each edge u-v, s = component_size[u].
+
+sum = (s-1 choose 2) + (n - (s-1) choose 2).
+
+So, the code needs to compute this.
+
+So, the steps are:
+
+1. For each test case, read n, m.
+
+2. Read m edges, build adjacency list.
+
+3. Perform BFS starting from node 1 to compute component sizes for all nodes.
+
+4. For each edge u-v, compute s = component_size[u].
+
+sum = (s-1 choose 2) + (n - (s-1) choose 2).
+
+5. Find the maximum sum.
+
+6. The answer is initial_pairs - maximum_sum.
+
+So, the code should implement this.
+
+Now, let's test this.
+
+Sample input:
+
+n=3

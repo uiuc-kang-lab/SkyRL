@@ -1,0 +1,124 @@
+4x^2 - 20xy + 25y^2 + 158x + 156y + 16 = 0
+Okay, so I need to find the equation of a parabola given its focus and directrix. The focus is at (1, -2) and the directrix is the line 5x + 2y = 10. The goal is to express the parabola's equation in the general form ax² + bxy + cy² + dx + ey + f = 0, where a, b, c, d, e, f are integers, a is positive, and the greatest common divisor of all coefficients is 1.
+
+First, I recall that a parabola is the set of all points equidistant from a fixed point (the focus) and a fixed line (the directrix). So, for any point (x, y) on the parabola, the distance to the focus must equal the distance to the directrix.
+
+The distance from (x, y) to the focus (1, -2) can be calculated using the distance formula: sqrt[(x - 1)² + (y + 2)²]. 
+
+The distance from (x, y) to the directrix 5x + 2y - 10 = 0 can be found using the formula for the distance from a point to a line: |5x + 2y - 10| / sqrt(5² + 2²) = |5x + 2y - 10| / sqrt(29).
+
+Since these distances are equal, I can set up the equation:
+
+sqrt[(x - 1)² + (y + 2)²] = |5x + 2y - 10| / sqrt(29)
+
+To eliminate the square roots and the absolute value, I'll square both sides:
+
+[(x - 1)² + (y + 2)²] = (|5x + 2y - 10|²) / 29
+
+Since squaring removes the absolute value, I can write:
+
+[(x - 1)² + (y + 2)²] = (5x + 2y - 10)² / 29
+
+Now, to eliminate the denominator, I'll multiply both sides by 29:
+
+29[(x - 1)² + (y + 2)²] = (5x + 2y - 10)²
+
+Next, I'll expand both sides.
+
+Starting with the left side:
+
+29[(x² - 2x + 1) + (y² + 4y + 4)] = 29(x² - 2x + 1 + y² + 4y + 4) = 29x² - 58x + 29 + 29y² + 116y + 116
+
+Combining like terms:
+
+29x² + 29y² - 58x + 116y + (29 + 116) = 29x² + 29y² - 58x + 116y + 145
+
+Now, the right side:
+
+(5x + 2y - 10)² = (5x)² + (2y)² + (-10)² + 2*(5x)*(2y) + 2*(5x)*(-10) + 2*(2y)*(-10)
+= 25x² + 4y² + 100 + 20xy - 100x - 40y
+
+So, putting it all together:
+
+29x² + 29y² - 58x + 116y + 145 = 25x² + 4y² + 20xy - 100x - 40y
+
+Now, I'll move all terms to the left side:
+
+29x² - 25x² + 29y² - 4y² - 20xy + (-58x + 100x) + (116y + 40y) + 145 = 0
+
+Calculating each term:
+
+4x² + 25y² - 20xy + 42x + 156y + 145 = 0
+
+Wait, let me double-check the coefficients:
+
+For x²: 29 - 25 = 4
+
+For y²: 29 - 4 = 25
+
+For xy: 0 - 20 = -20
+
+For x: -58 + 100 = 42
+
+For y: 116 + 40 = 156
+
+Constant term: 145
+
+So, the equation is:
+
+4x² + 25y² - 20xy + 42x + 156y + 145 = 0
+
+Now, I need to check if this can be simplified further. The coefficients are 4, 25, -20, 42, 156, 145. I need to check if there's a common factor. Let's see:
+
+4: factors 2²
+
+25: 5²
+
+20: 2²*5
+
+42: 2*3*7
+
+156: 2²*3*13
+
+145: 5*29
+
+There's no common factor across all coefficients except 1. So, the equation is already in the required form with a=4, b=-20, c=25, d=42, e=156, f=145.
+
+Wait, but the problem statement says to present it in the form ax² + bxy + cy² + dx + ey + f = 0. So, arranging the terms:
+
+4x² - 20xy + 25y² + 42x + 156y + 145 = 0
+
+Yes, that's correct. So, the final equation is:
+
+4x² - 20xy + 25y² + 42x + 156y + 145 = 0
+
+I think that's it. Let me just quickly check if I made any calculation errors during the expansion and moving terms.
+
+Left side after expansion: 29x² + 29y² - 58x + 116y + 145
+
+Right side: 25x² + 4y² + 20xy - 100x - 40y
+
+Moving right to left:
+
+29x² -25x² = 4x²
+
+29y² -4y² = 25y²
+
+-20xy remains
+
+-58x +100x = 42x
+
+116y +40y = 156y
+
+145 remains
+
+Yes, that's correct. So, the final equation is as above.
+</think>
+
+The equation of the parabola is:
+
+\[4x^2 - 20xy + 25y^2 + 42x + 156y + 145 = 0\]
+
+So, the final answer is:
+
+\[\boxed{4x^2 - 20xy + 25y^2 + 42x + 156y + 145 = 0}\]<｜end▁of▁sentence｜>

@@ -1,0 +1,572 @@
+0
+Okay, let's try to figure out how to solve this problem. So, the problem is about calculating the MEOW function for an array. Hmm. Let's break it down.
+
+First, the MEOW function is defined as the sum of MEX(b, |b| + 1) for all distinct subsets b of the array a. So for each subset b, we need to compute this MEX value and sum them all.
+
+Wait, what's MEX(S, k) again? Oh right, it's the k-th positive integer not present in the set S. So for example, if S is {3,2}, and k is 1, it's 1 because 1 is the first missing positive. If S is {4,2,1}, and k is 2, then the first two missing positives are 3 and 5, so MEX is 5.
+
+So for each subset b, we have to determine what is the (|b| + 1)th positive integer not present in b. Then sum all those values across all subsets.
+
+But wait, the array a consists of numbers 1 to n, so each element is unique, right? Because the array is of length n and contains 1,...,n. So no duplicates. So each subset is a unique combination of these numbers.
+
+Wait, but wait, the problem says 'distinct subsets b' — so subsets can be of any size, including the empty set.
+
+So the plan is: for each subset, compute MEX(b, |b|+1) and sum all these values.
+
+But for n up to 5000, the total number of subsets is 2^5000, which is way too big to handle directly. So we have to find a smarter way to compute the sum without enumerating all subsets.
+
+Hmm. So we need to find a way to calculate the sum by considering each possible x and determining how many subsets contribute to x being the MEX.
+
+Wait, perhaps we can model this as a problem where for each possible x, we calculate the number of subsets b where the MEX(b, |b|+1) is x. Then the total sum is the sum over x multiplied by the number of such subsets.
+
+So our task is, for each x, find the number of subsets b where the (|b| + 1)-th missing positive integer is x. Then, multiply each x by that count and sum all.
+
+But how do we model this? Let's think about it.
+
+The MEX of subset b with k = |b|+1 is the k-th missing positive integer in b. So for a subset b, the MEX is the smallest positive integer not in b such that the count of missing numbers up to x is exactly k.
+
+Wait, perhaps another approach is better. Let's think about the condition that the MEX is x for a subset b with size m. So the MEX is x if and only if all numbers from 1 to x-1 are present in b, and x is not present in b. Or wait, no: because in the subset, numbers 1 to x-1 may or may not be present. But the MEX is the k-th missing, which is x where k is the size of the subset plus one.
+
+Wait, no. Let's think again. For a subset b, the MEX is the first missing positive integer. So, for example, if b is {1,2,4}, then MEX is 3, regardless of the size.
+
+Wait, no. Wait, the MEX is the k-th missing positive. So if |b| is m, then k = m+1. So for subset {1,2,4}, m is 3, so k is 4. The missing positives are 3,5,6,... So the 4th missing is 7. Because missing in order: 3,5,6,7? Wait, no, wait. Wait, 1 is present, 2 is present, 3 is missing, 4 is present, 5 is missing, 6 is missing, 7 is missing. Oh wait, no, for {1,2,4}, the missing positives are 3,5,6,7,... So the first missing is 3, the second is 5, third is 6, fourth is 7. So MEX is 7.
+
+Wait, so when |b| is m, the MEX is the (m+1)-th missing positive integer. So for {1,2,4}, the missing are 3,5,6,7,... So the first is 3 (mex 1), second 5 (mex 2), third 6 (mex 3), fourth 7 (mex4). So for subset {1,2,4}, MEX is 7.
+
+But for the subset {1,2}, size m=2, k=3. The missing positive is 3, so MEX is 3.
+
+So, the MEX depends on all the missing numbers up to a certain point.
+
+Hmm. So for a subset b, the MEX is the smallest x where x is not in b, and the number of missing numbers from 1 to x is equal to k, which is the size of b plus one.
+
+Wait, perhaps another approach is to model the problem as counting for each x, the number of subsets b where the MEX is x, with |b|+1 = k, which is the number of missing numbers before x.
+
+Wait, perhaps a better approach is to model for each x, the subset b must satisfy certain conditions:
+
+- All numbers from 1 to x-1 must be present in b (if x > 0). Wait, no. Because for the MEX to be x, it's the (k)-th missing, where k is the size of the subset plus one. So for x to be the MEX, the subset must contain all numbers from 1 to x-1, but must not contain x, and the count of numbers missing up to x is exactly k.
+
+Wait, I'm getting a bit stuck. Maybe let's think of it this way: for the MEX of b to be x, the following must hold:
+
+1. All numbers from 1 to x-1 must be present in b. Because if any of them is missing, then the MEX would be at most that number, which is less than x.
+
+Wait, no. For example, if b is {2,3}, then the MEX is 1. So x is 1, and 1 is not present in b. So in this case, the condition is not met.
+
+Wait, perhaps another way: the MEX is x if and only if x is the first positive integer not present in the subset. So for x to be the MEX, it must be that:
+
+- All integers from 1 to x-1 are present in the subset.
+
+- The integer x is not present in the subset.
+
+But wait, this can't be right because in the example where b is {1,2}, the MEX is 3. So, 1 and 2 are present, 3 is not. So x is 3. So the condition is that 1 and 2 are present (x-1=2), and x is not present.
+
+Yes, that makes sense.
+
+So, for a subset b, MEX(b, |b|+1) is x if and only if:
+
+- All integers from 1 to x-1 are present in b.
+
+- The integer x is not present in b.
+
+Wait, but then what about when x is 1? For example, if b is empty, then the MEX is 1, which is 1-1=0, so x-1=0. So the condition is that all 0 numbers are present (which is trivially true) and x=1 is not present. So the MEX is 1.
+
+So the general condition is:
+
+MEX(b, m) = x where m is |b| + 1.
+
+So, for x to be the MEX, the subset must contain all integers from 1 to x-1, and must not contain x.
+
+But wait, no. Because for example, if the subset has x but also contains x-1, then the MEX is x only if all 1 to x-1 are present but x is not. So the condition is that 1 to x-1 are present, x is not present.
+
+But this can't be right because, for example, consider the subset {1,3}. Then x is 2. Because 1 is present, 2 is not. So MEX is 2.
+
+But according to this condition, x=2, so 1 must be present (which it is), and 2 must not be present. Which is correct.
+
+Another example: subset {2,3}, x is 1. Because 1 is not present. So the condition is that x-1=0 is present (which is trivially true) and x=1 is not present. So MEX is 1.
+
+So the condition is correct.
+
+Therefore, for a subset b, MEX is x if and only if all 1..x-1 are in b and x is not in b.
+
+So, for each x, we need to count the number of subsets b where:
+
+- All 1..x-1 are present in b.
+
+- x is not present in b.
+
+And then, for each such subset, the MEX is x. So the contribution to the sum is x multiplied by the number of such subsets.
+
+So, the problem reduces to, for each x, compute the number of subsets b where:
+
+1. All 1..x-1 are in b.
+
+2. x is not in b.
+
+Additionally, the subset b can have any other elements, except that x is not present.
+
+Wait, but the array a consists of numbers from 1 to n, and each element is unique. So in the subset b, the elements are a subset of a, which contains all numbers from 1 to n.
+
+So for a subset b to satisfy the condition for x, it must include all 1..x-1, exclude x, and can include any other elements from a, except x.
+
+So, the approach is to, for each x, compute the number of subsets that include all 1..x-1, exclude x, and can include any other elements (including those >=x+1 or not, as long as they are not x).
+
+Wait, but the array a only contains numbers up to n, so including x is not allowed. So the subset b must consist of all numbers from 1..x-1, and any subset of the numbers not in {1..x} (but not including x itself).
+
+Wait, no. Because 1..x-1 must be present, x is not present, and the subset can include any other elements except x.
+
+But wait, the subset can include numbers less than x-1, as long as they are present. Or wait, no. Because the condition is that all 1..x-1 are present.
+
+So for example, if x=3, then the subset must include 1 and 2, but can include 3, 4, ..., n, but cannot include 3. Wait, no, because x is 3, so the subset cannot contain 3. So the subset can include 4, 5, etc., but must include 1 and 2, and cannot include 3.
+
+Wait, but the subset can have any elements except x, but must include all 1..x-1. So for x=3, the subset must include 1 and 2, but cannot include 3, and can include any other elements (like 4,5, etc.), as long as they are in a.
+
+Wait, but a is of size n, and in a, the numbers are 1..n, so the subset can't include any number outside 1..n.
+
+So, for x, the subset must include all 1..x-1, cannot include x, and can include any other numbers in 1..n except x.
+
+Wait, but the numbers 1..x-1 are all included. So for x=3, the subset must include 1 and 2, and cannot include 3. It can include 4,5, etc., up to n.
+
+So the subset is composed of the union of {1,2}, {4,5,...n}, and any combination of these.
+
+Wait, but the subset can't include x, which is 3 in this case.
+
+So, the minimal subset is {1,2}, and the rest can be any subset of the numbers in a that are not x and not in 1..x-1.
+
+Wait, but a is exactly 1..n. So the numbers not in 1..x-1 are x, x+1, ..., n. But x is excluded because the subset cannot include x. So the subset can consist of any combination of the numbers x+1, x+2, ..., n, in addition to {1,2}.
+
+Wait, but in this case, the subset must include 1 and 2, and can include any subset of {x+1, x+2, ..., n}.
+
+So, the number of such subsets is equal to 2^(n - (x-1) - 1). Because the subset must include 1 and 2 (2 elements), and the rest can be any subset of {x+1, x+2, ...,n} (since x is excluded). The size of {x+1, ..., n} is (n - x) elements. So the number of subsets is 2^{n - x}.
+
+Wait, no. Because 1 and 2 are mandatory. So the total size of the subset is at least 2 (from 1,2), and can add any combination of the other elements (from x+1 to n). The number of other elements is (n - x) because x+1 to n is (n - x) elements. So the number of subsets is 2^{(n - x)}.
+
+But wait, the subset can also include elements less than x-1. No, wait, because for x=3, the subset must include all 1 and 2, but can include any number of elements from 4,5,...,n. So the subset can be {1,2,4}, {1,2,5}, etc. So the other elements are from x+1 to n, which is (n - x) elements.
+
+So the number of subsets for x is 2^{(n -x)}.
+
+Wait, but wait. Suppose x is larger than n. For example, x is 10, but n is 5. Then, x is 10, which is larger than n. So in this case, the subset cannot include x because x is larger than n, and since a only contains 1..n, the subset can't include x. But 1..x-1 is 1..9, but a only has up to n=5. So if x is 10, then 1..9 must be present in the subset, but a only has 1..5. So it's impossible. So, for x > n, the number of subsets is zero.
+
+Similarly, for x=0, which is not possible because x is a positive integer.
+
+So, for each x, if x > n, the number of subsets is zero. Otherwise, the number of subsets is 2^{(n - x)}.
+
+Wait, but wait, for x=1, the condition is that all 1..0 are present (which is trivially true) and x=1 is not present. So the subset can't include 1. So the subset is empty, or any subset that doesn't include 1, but includes all 0 numbers (so nothing). So the number of subsets is the number of subsets of a \ {1} that are non-empty? No, wait, no: the subset must include all 1..x-1, which for x=1 is 0 elements, which is trivially satisfied. Also, x is not in the subset.
+
+Wait, wait, let's re-express the condition for x=1. For x=1, the subset must include all 1..0, which is nothing. So the subset can be any subset that does not include 1. So the number of such subsets is (2^n) - 1, but wait no. Because the subset is any subset that doesn't include 1. So the elements can be any subset of {2,3,...,n}.
+
+So the number of subsets is 2^{(n-1)}.
+
+Wait, because the subset must not contain 1, but can contain any of the other n-1 elements.
+
+But for x=1, the MEX is 1 only if the subset is empty, or contains 1 but not 2. Wait, no. Because for x=1, the subset must include all 1..0 (nothing) and must not include 1. So the subset is empty.
+
+So the number of subsets for x=1 is 1 (only the empty subset).
+
+Wait, but according to our formula 2^{n -x} = 2^{n-1}, which is 2^(n-1). But for x=1, the correct count is 1.
+
+So that formula is incorrect.
+
+Hmm. So my initial approach is wrong. So I need to find another way.
+
+Wait, perhaps I should think differently. For a subset to satisfy the condition for x, it must contain all 1..x-1, and not contain x. It can contain any other elements, but can't contain x.
+
+But the subset can contain elements less than x-1, as long as they are in the array a.
+
+Wait, but in the array a, the elements are 1..n. So for a subset to include all 1..x-1, it can include elements less than x-1, as long as they are in a.
+
+But wait, no. Because the subset is a subset of a, which contains 1..n. So for x=3, the subset must include 1 and 2. It can include any other elements from a, but cannot include 3.
+
+But a can have elements like 4,5,...,n, which are >=3.
+
+So, the subset can include any combination of elements from {1,2}, but must not include 3, and can include any subset of {4,5,...,n}.
+
+Wait, but 1 and 2 must be present, but the subset can include any other elements, including those less than 3, but wait, the array a is from 1 to n, so 1 and 2 are already included in the 1..x-1.
+
+So, the subset must include 1 and 2, and can include any of the elements in a, except x.
+
+So, the subset is formed by {1,2} plus any subset of a \ {x}.
+
+But a \ {x} is {1,2, x+1, x+2, ...,n}.
+
+So for x=3, a \ {3} is {1,2,4,5,6,7,8,9,10} (assuming n=10).
+
+So the subset must include 1 and 2, and any subset of the remaining elements. So the number of subsets is 2^{(n - (x))}.
+
+Wait, because the remaining elements are a \ {x}, which has size (n - x).
+
+So the number of subsets is 2^{(n - x)}.
+
+But wait, for x=1, a \ {x} is {2,3,4,...,n}, which has size (n-1). So 2^{n-1} is the count.
+
+But for x=1, the subset can be any of the subsets of a \ {x}, but must include 1 and 2? No, because the subset must include all 1..x-1, which for x=1 is 0 elements. So the subset can be any subset of a \ {1}, which is {2,3,...,n}.
+
+So the count is 2^{n-1}.
+
+But for x=1, the MEX is 1, which is only when the subset is empty. Because if the subset is non-empty, it includes 1, so MEX would be 2.
+
+So in this case, the count is 1 (only the empty subset) plus 2^{n-1} -1 (all subsets that include 1 but not 2, etc.)?
+
+Wait, no. Because for x=1, the MEX is 1 only if the subset is empty. So the count is 1.
+
+But according to the initial formula, for x=1, it's 2^{n-1}, which is 2^0=1 when n=1. Which is correct. So for n=1, x can be 1.
+
+So perhaps the formula is correct, but the initial reasoning about the empty subset is wrong.
+
+Wait, no. Because for x=1, the subset must include all 1..0 (nothing) and not include 1. So the subset is empty. So the count is 1.
+
+But according to the formula 2^{n - x}, for x=1, it's 2^{n-1}.
+
+Wait, that's a problem because for n=1, 2^{n-1} is 1, which is correct. For n=2, 2^{1} = 2, but the number of subsets for x=1 is 1 (only the empty subset).
+
+So something's wrong here.
+
+Wait, perhaps the formula is 2^{(n - x)} multiplied by the number of subsets that include 1 and 2.
+
+Wait, no. Because for x=1, 1 is the MEX only when the subset is empty. So the formula is not correct.
+
+Hmm, perhaps the correct formula is:
+
+The number of subsets for x is 2^{(n - x)} multiplied by the product of whether 1 and 2 are present.
+
+Wait, no, that's not correct.
+
+Alternatively, perhaps the formula is 2^{(n - x)} * whether 1 and 2 are present. But that's not helpful.
+
+Wait, maybe another approach. Let's model the subset as including certain elements. For a subset to have MEX x, it must include all of 1..x-1, and not include x.
+
+The subset can include any elements from a, except x, but must include 1..x-1.
+
+So, the elements in the subset are a superset of {1, 2, ..., x-1} and a subset of a \ {x}.
+
+So, the number of such subsets is the product of the number of ways to choose elements from {1,2,...,x-1} (which is 1, since they must all be included) and the number of subsets of a \ {x}, which is 2^{n - x}.
+
+So, the count is 2^{n - x}.
+
+But for x=1, this gives 2^{n-1}, which is the number of subsets that include {1} and any subset of {2,3,...,n}.
+
+Wait, but for x=1, the subset must not include 1. So the count should be 1 (the empty subset).
+
+So the initial formula is wrong.
+
+Hmm. So perhaps the formula is:
+
+If x is 0: 0 (since x must be positive)
+
+Else, if x > n: 0 (since a can't have x)
+
+Else, if x == 1: 1 (only the empty subset is valid)
+
+Else, the number is 2^{n -x}.
+
+But how to handle x=1.
+
+So, perhaps for x >=1:
+
+if x > n: 0
+
+elif x == 1: 1
+
+else: 2^{n -x}
+
+But then for x=2, the count is 2^{n-2}.
+
+But let's test this for n=2.
+
+For x=2:
+
+The subset must include 1 and not include 2.
+
+So the subset can be {1}, {1,3}, etc. Wait, but n=2, so a is {1,2}.
+
+Wait, for x=2, the subset must include all 1..1 (which is 1), must not include 2.
+
+So the subset can be {1}, or any subset that includes 1 and excludes 2.
+
+Wait, in this case, the subset can be {1}, {1,3}, but n=2, so 3 is not in a. So the subset can only be {1}, {1, (no other elements)}.
+
+Wait, wait, no. Because a is {1,2}, and the subset can include elements from a. So, for x=2, the subset must include 1 (since 1..x-1=1), and must not include 2.
+
+So the subset can be {1}, or {1, something else}.
+
+Wait, but in a, the only other element is 2, which is excluded. So the only subset is {1}.
+
+So the number of subsets is 1.
+
+According to the formula, for x=2, n=2, 2^{n -x} = 2^{0} =1. Which is correct.
+
+So for n=2, x=2: 1 subset.
+
+But for x=1, 2^{n -x} = 2^{1} =2, but the correct count is 1.
+
+So perhaps the formula is:
+
+if x ==1: 1
+
+else if x >n:0
+
+else: 2^{n -x}
+
+So, the total sum is sum over x=1 to n of (count for x) * x.
+
+But wait, for x=1, the count is 1, and x=1, so contributes 1.
+
+For x=2, if n >=2, the count is 2^{n-2}, and x=2, so contributes 2*2^{n-2} = 2^{n-1}.
+
+Wait, let's see for n=2:
+
+x=1: count=1, contributes 1.
+
+x=2: count=1, contributes 2.
+
+x=3: n=2, so x> n, count=0.
+
+So the sum is 1 + 2 =3.
+
+But let's compute the MEOW function for n=2.
+
+The subsets are:
+
+{}, {1}, {2}, {1,2}.
+
+For each:
+
+- {}: MEX is 1, since the first missing positive is 1. |b|+1=1, so MEX is 1.
+
+- {1}: MEX is 2. |b|+1=2, MEX is 2.
+
+- {2}: MEX is 1. |b|+1=2, so MEX is 1.
+
+- {1,2}: MEX is 3, |b|+1=3, so MEX is 3.
+
+So the sum is 1 + 2 +1 +3 =7.
+
+But according to the formula, the sum is 1*1 + 2 *1 =3, which is way off.
+
+So the formula is incorrect.
+
+Hmm, that's a problem. So the initial approach is wrong.
+
+So perhaps the initial approach is not considering that the subset can include other elements besides 1 and x-1. So for x=2, the subset can include other elements, as long as it includes 1, but not 2.
+
+So for x=2, the subsets are:
+
+- {1}: MEX is 2.
+
+- {1,3}: but n=2, so a doesn't have 3.
+
+So for n=2, the subsets are:
+
+- {1}: count 1.
+
+- {1, any other elements except 2}: but n=2, so no other elements. So only {1}.
+
+So the count for x=2 is 1.
+
+So the sum is 1*1 + 2*1=3.
+
+But according to the correct MEOW function, it's 7. So the formula is wrong.
+
+So, the problem is that the formula counts only the subsets that include all 1..x-1 and exclude x, but the subset can include any other elements in a, as long as they are not x.
+
+Wait, but in the case of n=2, the subsets that contribute to x=2 are {1}, and any subset that includes 1 but not 2 and any other elements.
+
+Wait, no, because for x=2, the subset must not include 2, but can include 1, but also can include any other elements except 2. But in n=2, the other elements are 1 and 2. So the subsets that include 1 and exclude 2 are {1}, {1,3} (but 3 is not present). So only {1}.
+
+So the count is 1.
+
+So the formula is correct, and the sum is 3, but according to MEOW function, it's 7. So the formula is wrong.
+
+So this suggests that the initial approach is incorrect.
+
+Hmm. So perhaps the initial approach needs to be adjusted.
+
+Alternative approach: For each x, the number of subsets is the number of subsets that include all 1..x-1, do not include x, and can include any of the other elements except x.
+
+So, the elements other than 1..x-1 and x can be included or not, but 1..x-1 must be included.
+
+So the count is 2^{k}, where k is the number of elements in a \ {1..x-1, x}.
+
+So, the size of a \ {1..x-1, x} is (n - (x-1) -1) = n -x.
+
+So the count is 2^{n -x}.
+
+But for x=1, 1..x-1 is empty, so the count is 2^{n -1}.
+
+But the problem is that for x=1, the subset must not include 1. So the count is not 2^{n-1}, but 1.
+
+So, the formula is correct except for x=1.
+
+So, perhaps the correct formula is:
+
+count(x) = 0 if x >n.
+
+count(1) = 1.
+
+count(x) = 2^{n -x} for x >=2 and x <=n.
+
+So, the sum is sum_{x=1}^n count(x) *x.
+
+But in the example n=2, according to this formula, the sum is 1*1 + 2*1=3. But the correct MEOW sum is 7.
+
+So, that's a problem.
+
+So, perhaps the initial reasoning is incorrect in the way it counts the subsets.
+
+Wait, perhaps the initial reasoning is missing that the subset can include any number of elements in a \ {1..x-1, x}, including those less than x-1.
+
+Wait, but 1..x-1 are already included, but a \ {1..x-1, x} includes elements larger than x-1.
+
+So, in the case of x=2, a \ {1,2} is empty. So the count is 1, which is correct.
+
+In the case of n=3, x=2, the count is 2^{3-2} =2.
+
+So the subsets are {1}, {1,3}.
+
+So for x=2, the MEX is 2.
+
+So the sum for x=2 is 2 * 2 =4.
+
+But let's compute the MEOW function for n=3.
+
+The subsets:
+
+- {}: MEX is 1.
+
+- {1}: MEX is 2.
+
+- {2}: MEX is 1.
+
+- {3}: MEX is 1.
+
+- {1,2}: MEX is 3.
+
+- {1,3}: MEX is 2.
+
+- {2,3}: MEX is 1.
+
+- {1,2,3}: MEX is4.
+
+So sum is 1 + 2 +1 +1 +3 +2 +1 +4 = 15.
+
+According to the formula, the sum is 1*1 + 2*2 +3*2= 1+4+6=11. Which is less than 15.
+
+So the formula is still wrong.
+
+So the initial approach is missing something.
+
+Hmm. So what's wrong with the initial approach?
+
+The initial approach counts only the subsets that include all 1..x-1 and exclude x, but in reality, the subset can include any elements from a \ {x}, including those less than x-1, as long as they are present.
+
+Wait, but in that case, for x=2, the subset must include 1, but can include any other elements except 2.
+
+So, for x=2, the count is the number of subsets of a \ {1,2} (which is {3}), and must include 1.
+
+So the count is 2^{1} =2.
+
+So, for n=3, x=2, the count is 2.
+
+So, in the MEOW function, the subsets for x=2 are {1}, {1,3}.
+
+Each contributes 2 to the count for x=2.
+
+So, the sum is 1*1 + 2*2 + 3 * 2 = 1 +4 +6=11.
+
+But according to the manual calculation, the MEOW sum is 15.
+
+So the formula is undercounting.
+
+So, the initial approach is incorrect.
+
+So, perhaps the correct approach is to find for each x, the number of subsets that include all 1..x-1, do not include x, and can include any subset of the remaining elements (a \ {1,...,x-1, x}).
+
+But in the initial approach, the subsets are counted as any subset that includes all 1..x-1, excludes x, and can include any subset of the other elements.
+
+But when a has elements less than x-1, those can be included in the subset or not, so the count is 2^{n -x}.
+
+But in the example of n=3 and x=2, the subsets are:
+
+- {1}: includes 1, excludes 2, includes 3 (but 3 is greater than x=2, so it's not in 1..x-1, but can be included or not.
+
+Wait, no. Because for x=2, the subset must include all 1..x-1 (which is 1), but can include any other elements except 2.
+
+So the other elements are 3. So the subsets are:
+
+- {1}: includes 1, excludes 2, includes 3? No, 3 is not in a \ {1,2}, so the subset can't include 3.
+
+Wait, this is confusing.
+
+Wait, a is {1,2,3}.
+
+For x=2, the subset must include 1, exclude 2.
+
+So the subset can include any elements from a \ {1,2}, which are {3}.
+
+So the possible subsets are:
+
+- {1}: includes 1, excludes 2, excludes 3.
+
+- {1,3}: includes 1, excludes 2, includes 3.
+
+So the count is 2.
+
+Which is 2^{3-2} = 2.
+
+So the formula is correct.
+
+But the MEOW function for n=3 is 15, not 11.
+
+So the formula is undercounting.
+
+So why is that?
+
+Because in the MEOW function, the subset {1,3} has MEX 2, which is correct, but according to the formula, it's counted as contributing 2 to x=2.
+
+But in the MEOW function, the subset contributes 2 * 2, which is 4.
+
+But according to the manual calculation, the subset {1,3} contributes 2 to the sum.
+
+So, the formula is correct, but in the MEOW function, the subset {1,3} is counted twice.
+
+Wait, no. The subset {1,3} is part of the subsets that contribute to x=2, so it should be counted once.
+
+But according to the formula, the count is 2, so the subset contributes 2 * 2 =4.
+
+But in the MEOW function, the subset contributes 2.
+
+So that's a problem.
+
+So the initial approach is incorrect.
+
+Hmm. So, what's wrong with the initial approach?
+
+The initial approach assumes that the subset can include any elements except x, but in reality, the element x-1 is less than x, and can be included or not, as long as all 1..x-1 are present.
+
+But in the MEOW function, the subset {1,3} is counted when x=2, but is it being counted correctly?
+
+Yes, because for x=2, the subset {1,3} is included in the count.
+
+But according to the formula, the count is 2, which is correct.
+
+So, the formula is correct, but the MEOW function is counting each subset multiple times.
+
+So, for the MEOW function, each subset is contributing exactly once to the sum, regardless of how many x's it satisfies.
+
+So, the initial approach is correct, but the MEOW function is not computing the sum correctly.
+
+So, in the example of n=3, the sum is 15, but according to the formula, it's 11.
+
+Which is a problem.
+
+So why is the formula giving 11, but the actual sum is 15?
+
+Because for x=3, the subsets that include all 1 and 2, and exclude 3.
+
+So, the subsets are:
+
+- {1,2}: MEX is 3.
+
+- {1,2,4} but n=3, so 4 is not present.
+
+So the only subset is {1,2}.
+
+So the count is 1. So

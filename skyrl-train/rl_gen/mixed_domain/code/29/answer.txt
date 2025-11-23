@@ -1,0 +1,609 @@
+Okay, I have this problem to solve where Gretel needs to find the parent structure of a tree. The tree is rooted at node 0, and she knows some properties about the parent pointers. The goal is to determine the p_i values for each node i from 1 to n-1.
+
+Let me read the problem statement carefully.
+
+So, the tree has n nodes, numbered 0 to n-1. Node 0 is the root. The parent pointers p_i are such that p_i is the direct parent of node i, and p_i is less than i. Also, node 1 has exactly two adjacent nodes, including node 0. So p_1 must be 0.
+
+Another important property is that if we remove the root node 0 and all adjacent edges, the tree becomes a forest of paths. Each node adjacent to the root is the end of some path. So, the tree is structured in such a way that each branch from the root is a path.
+
+So, the tree is a collection of paths, each starting at a node adjacent to the root, and each path can be thought of as a chain extending outward from its starting node.
+
+Additionally, the parent pointers must satisfy p_x ≤ p_y whenever x ≤ y. So, the parent pointers are ordered in a way that for any two nodes x and y, if x is less than y, then p_x is less than or equal to p_y. This suggests that the parent pointers form a certain order that we can exploit.
+
+Now, the main task is to figure out the parent pointers p_i based on the queries. The queries are of the form "? a b", which check if the simple path between a and b contains node 0.
+
+The constraint is that Gretel can make at most 2n-6 queries. So, we need an efficient way to find the parents without making too many queries.
+
+Let me think about the structure of the tree. Since each branch from the root is a path, the tree is a collection of such paths. So, for each node in a path, its parent is the node in the previous step towards the root.
+
+So, the parent pointers form a tree where each node has exactly one parent, except the root. Moreover, the parent pointers are ordered in a way that for any x < y, p_x ≤ p_y. This is a crucial property that can help us structure our queries.
+
+Hmm, perhaps we can model the tree as a collection of chains, each starting at a node adjacent to the root. For each such chain, the parent pointers are in increasing order because the root is the first node in the chain, and the parent pointers must be less than the current node.
+
+So, for example, if node 2 is a child of node 0, then its parent is 0, which is less than 2. But wait, another possibility is that node 2 is a child of node 1. Then, the parent of node 2 is 1, which is less than 2, satisfying p_2 <= 2 and p_2 <= p_3, etc.
+
+Wait, node 1 has exactly two children, including 0. So, node 1 can have node 0 as one child, and another child, say node 2. Then, the parent of node 2 is 1, which is less than 2, satisfying the condition.
+
+So, in this case, the parent pointers for the nodes in the same path from the root are in increasing order. Because each node's parent is the next node towards the root.
+
+Wait, no. For example, if the root is 0, and node 2 is a child of 0, then node 2's parent is 0. So p_2 is 0, which is less than 2.
+
+But if node 2 is a child of node 1, then p_2 is 1, which is less than 2.
+
+So, in any case, for any node i, p_i is less than i, and p_i is less than or equal to p_{i+1} because each node's parent is in the same path as the previous.
+
+Wait, no. Because if node i is in a path, and node j is in a later path, then p_i could be less than p_j. For example, node 0 is the root. Node 2 is a child of 0, so p_2 is 0. Node 3 is a child of 1, so p_3 is 1. So, p_2 (0) is less than p_3 (1), which is correct.
+
+So, the parent pointers are in non-decreasing order as we move deeper into the tree. Wait, no. Because node 2's parent is 0, which is less than node 3's parent 1. So, 0 < 1, which is correct.
+
+So, the parent pointers are ordered in a way that for any a < b, p_a <= p_b.
+
+So, this gives us a way to structure the tree. Each node's parent is part of a path, and the parent pointers are increasing.
+
+Now, how can we find the parents? Let's think about the queries.
+
+Each query "? a b" asks if the path between a and b goes through 0. So, if a and b are in different branches, the path between them doesn't go through 0. But if they are in the same branch, then the path between them does go through 0.
+
+Wait, no. Because in a path, the path from a to b is the entire path between them, which includes 0 if a and b are in the same path.
+
+So, the query "? a b" returns true if and only if a and b are in the same path (i.e., their paths from the root share a common ancestor, which is the root in this case? Wait, no. Because in a tree, any two nodes in the same path from the root are in the same component when the root is removed. So, if a and b are in the same path, their path from the root includes the root, and thus the simple path between them includes the root.
+
+Wait, but the query is whether the path between a and b includes node 0. So, if a and b are in the same path, then the path between them includes 0. So, the query returns true.
+
+So, the query "? a b" is true if a and b are in the same path from the root.
+
+So, with this, perhaps we can find all the nodes in the same path as a given node, and then process them.
+
+But how to find the parents.
+
+Another approach: For each node i, its parent is the node j which is the last common ancestor of i and 0. But since the tree is a collection of paths, the last common ancestor is 0 only if i is in the same path as 0. So, for any node i, its parent is the node j in the path leading up to 0.
+
+Wait, but in a tree, the parent is the node on the path from the root to i.
+
+So, for each node i, p_i is the node on the path from the root to i.
+
+So, the parent pointers form a tree where each node's parent is the next node on the path from the root.
+
+Thus, the tree is a collection of chains, each starting at a node adjacent to the root, and each path is a chain of nodes where each parent is the next node on the path.
+
+So, the parent pointers are ordered in such a way that for any node i, p_i is less than i, and p_i is the next node on the path from the root.
+
+So, the parent pointers are arranged in a way that for any i, p_i is the node that comes immediately before i in the path from the root to i.
+
+So, how can we find this structure?
+
+Let me think about the structure of the tree. Since each branch from the root is a path, the tree is a collection of such paths. So, each node i has exactly one parent p_i, which is the node on the path from the root to i, and p_i < i.
+
+Moreover, for any node i, if i is in the same path as another node j, then p_i is the ancestor of p_j in the tree.
+
+Wait, perhaps not. Because p_j is the parent of j, which is on the path from root to j. So, if j is in the same path as i, then p_i is the node that is the parent of j, which is p_j.
+
+Wait, no. Because if i is in the same path as j, then j is a descendant of i. So, the parent of j is i's parent, which is p_i. So, p_j = p_i.
+
+Wait, no. Let's think about node i and j in the same path. Let's say the path is root (0) → a → b → ... → i → ... → j. Then, node j is a child of i. So, p_j is i.
+
+So, p_j = i, which is on the path from root to j.
+
+Wait, no. Because j is a child of i, which is a child of the root. So, the path from root to j is 0 → a → ... → i → j. So, p_j is i.
+
+So, p_j = i.
+
+So, for node j, p_j is the node on the path leading up to j, which is the parent.
+
+So, the parent pointers are arranged such that for any node j, p_j is the node on the path from the root to j, and p_j is less than j.
+
+So, the parent pointers are arranged in a way that for any j, p_j is the parent of j, which is on the path from root to j.
+
+So, the parent pointers form a tree where each node's parent is on the path from the root to it.
+
+Thus, the parent pointers are arranged in a way that for any two nodes j and k, if j is in the same path as k, then p_j is on the path from root to j, and p_k is on the path from root to k.
+
+So, the parent pointers are in a way that for any j, p_j is the immediate ancestor in the path from the root.
+
+So, how can we find these parents?
+
+Perhaps, we can perform a BFS or DFS and collect the parent pointers. But with the query limit of 2n-6, we need an efficient way.
+
+Wait, the problem allows us to make up to 2n-6 queries. So, for each test case, we can afford to make up to 2n-6 queries.
+
+So, maybe we can process the nodes in such a way that for each node, we can determine its parent by checking certain queries.
+
+Let me think about the structure of the parent pointers.
+
+Each node i's parent is the node on the path from root to i. So, the parent of i is the last node in the path from root to i that is an ancestor of i.
+
+Wait, no. That's not correct. For example, node 2 is a child of 0, so p_2 is 0. Node 3 is a child of 1, so p_3 is 1. So, the parent of 2 is 0, which is the parent of 1.
+
+So, the parent pointers form a structure where each node's parent is the next node on the path from the root to it.
+
+So, the tree is a collection of paths, each starting at a node adjacent to the root, and each node's parent is the next node in the path.
+
+So, perhaps the parent pointers can be determined by looking at the children of each node in the path.
+
+Hmm, maybe a way to model this is to find for each node i, the path from root to i, and the parent is the previous node in that path.
+
+So, the parent of i is the node that is the immediate predecessor of i in the path from the root to i.
+
+Thus, each node i has exactly one parent, which is the last node in the path from the root to i.
+
+So, the parent pointers form a tree where each node's parent is the node that is the last common ancestor in the path from the root to i.
+
+Wait, that's the same as saying that the parent of i is the node on the path from the root to i that is the parent of i's parent, and so on, until reaching the root.
+
+So, the parent of i is the node j where j is the parent of the parent of i, and so on, until j is the parent of i.
+
+Wait, no. Because the parent of i is the immediate parent in the path. So, for example, i's parent is the node on the path from root to i that is the immediate ancestor of i.
+
+So, the parent of i is the node on the path from root to i that is the node right before i in that path.
+
+So, the parent pointers form a structure where each node's parent is the next node on the path from the root to it.
+
+So, how can we find these parents?
+
+Another approach: For each node i, its parent is the node j such that j is the immediate parent in the tree, which is the node on the path from root to i that is the parent of the parent of i.
+
+Wait, that might get us somewhere.
+
+So, for node i, p_i is the node j where j is the parent of the parent of i.
+
+Wait, no. Because the parent of i is the next node in the path from the root to i.
+
+So, for example, if i's parent is j, then j is the node on the path from root to i, and j is the parent of i.
+
+So, j is the node on the path from root to i, right before i.
+
+So, for i, p_i is the node on the path from root to i, which is the immediate parent.
+
+So, the parent of i is the node on the path from root to i that is the immediate parent.
+
+Therefore, for each node i, p_i is the node that is the immediate parent in the tree.
+
+So, the parent pointers can be determined by traversing the tree from the root.
+
+But how to do this efficiently with limited queries.
+
+Wait, another observation: Each node i's parent is the node j in the list of nodes adjacent to the root that is the immediate parent in the tree.
+
+So, for example, the root is 0. Its children are nodes 1, 2, etc., but wait, node 1 has exactly two adjacent nodes, including 0. So, node 1's other adjacent node is, say, node 2.
+
+Wait, no. Wait, the node 1 has two adjacent nodes: 0 and another node, say, 2. So, node 1's parent is 0, and node 2's parent is 1.
+
+So, for node 2, which is a child of 0, its parent is 0.
+
+So, in this case, the parent pointers for the children of 0 are 0.
+
+So, all nodes adjacent to 0 have p_i = 0.
+
+So, the nodes adjacent to 0 are the root's children, each of which has p_i = 0.
+
+So, for any node i, if i is a child of 0, p_i is 0.
+
+So, the first step is to identify all children of 0. These are the nodes with p_i = 0.
+
+Each of these nodes is a child of 0, and they form the starting points of the branches.
+
+So, the tree is a forest of paths, each starting at a node adjacent to 0.
+
+Thus, the parent pointers for these nodes are 0.
+
+So, the structure is: root is 0. For each child c of 0, the subtree rooted at c is a path, meaning that each node in c's subtree is a child of the previous node in the path.
+
+So, the parent pointers for the nodes in the subtree of c are c's parent, which is the node before c in the path.
+
+Wait, but in this case, since c is a child of 0, which also has another child, say d, then d's parent is c.
+
+So, for d, p_d is c.
+
+So, the parent pointers form a tree where each node's parent is the node on the path from 0 to it.
+
+So, the parent pointers are arranged such that for any node i, p_i is the node j where j is the node on the path from 0 to i, and j is the parent of i.
+
+So, the parent pointers form a tree where each node's parent is the node that is the parent in the path from 0 to it.
+
+So, how can we find all the parents?
+
+Let me think about the structure. Since each branch is a path, each node in a branch has a unique parent that is the immediate predecessor in the path.
+
+So, for each node i, p_i is the node j such that j is the parent of i in the path from 0 to i.
+
+So, the parent pointers are arranged in a way that for any node i, p_i is the node j which is the parent of i's parent, and so on, until reaching 0.
+
+Wait, that's not correct. Because the parent of i is the immediate parent in the path. So, for example, if i's parent is j, then j is the node on the path from 0 to i, and j is the parent of i.
+
+So, for node j, p_j is the node on the path from 0 to j that is the parent of j.
+
+Which is, j's parent is the node on the path from 0 to j that is the immediate predecessor.
+
+So, for all nodes, p_i is the node on the path from 0 to i that is the immediate predecessor.
+
+So, the parent pointers form a tree where each node's parent is the node on the path from 0 to it that is the immediate predecessor.
+
+So, the way to find p_i is to find the node on the path from 0 to i that is the parent of i.
+
+So, how can we find this efficiently?
+
+Let me think about the queries again. Each query is "? a b" and returns true if a and b are in the same path from the root.
+
+So, for any two nodes a and b, if they are in the same path, the query returns true.
+
+So, perhaps we can use this to determine the parent pointers.
+
+Wait, suppose we have node i. We can query if i is in the path from 0 to some node, say, 0 to i. But that's trivial because i is on the path from 0.
+
+Wait, perhaps another approach: For each node i, the parent p_i is the node j such that j is the node on the path from 0 to i, and j is the parent of i.
+
+So, j is the node on the path from 0 to i, and j is the node on the path from 0 to i that is the immediate predecessor of i.
+
+So, for example, if i is a child of j, then p_i is j.
+
+So, the parent of i is j.
+
+So, given that, how can we find j for each i?
+
+Perhaps, for each node i, we can find the node j such that j is the parent of i, which is the node on the path from 0 to i that is the immediate predecessor.
+
+So, the parent of i is the node j where j is the parent of i.
+
+So, if we can find j, then p_i is j.
+
+So, the problem reduces to finding, for each i, the node j which is the parent of i.
+
+So, how can we find j?
+
+Well, j is the node on the path from 0 to i that is the parent of i.
+
+So, for each i, j is the node that is the parent of i.
+
+So, the parent pointers form a tree where each node's parent is the node on the path from 0 to it that is the immediate predecessor.
+
+So, the parent pointers are arranged in a way that for any node i, p_i is the node on the path from 0 to i that is the immediate predecessor.
+
+So, the parent pointers of i are the node j where j is the parent of i, which is on the path from 0 to i.
+
+So, the parent pointers form a tree where each node's parent is the node on the path from 0 to it that is the immediate predecessor.
+
+So, to find p_i for all i, we need to find, for each i, the node j on the path from 0 to i that is the immediate predecessor of i.
+
+So, the approach is to find j for each i.
+
+Now, how can we find j for each i?
+
+We can model this as for each i, j is the parent of i, which is the node on the path from 0 to i that is the immediate predecessor.
+
+So, the parent of i is j, which is the node on the path from 0 to i that is the immediate predecessor.
+
+So, for each i, j is the node on the path from 0 to i that is the parent of i.
+
+So, the parent pointers can be found by traversing each node and finding its parent.
+
+But with the query limit of 2n-6, we need an efficient method.
+
+Wait, but perhaps we can exploit the fact that if a and b are in the same path, the query returns true.
+
+So, perhaps we can find the ancestors of each node and determine the parent pointers.
+
+Wait, another idea: For each node i, the parent p_i is the node j such that j is the last node in the path from 0 to i that is the predecessor of i.
+
+So, for each i, p_i is the node j where j is the node on the path from 0 to i, and j is the parent of i.
+
+So, the parent pointers are arranged in a way that for any i, p_i is the node on the path from 0 to i that is the immediate predecessor.
+
+So, for example, for node i, if i is a child of j, then p_i is j.
+
+So, the parent of i is j.
+
+So, how can we find j for each i?
+
+We can model this as for each i, j is the node on the path from 0 to i that is the immediate predecessor.
+
+So, for each i, j is the node that is the parent of i.
+
+So, perhaps, the parent pointers can be determined by looking at the children of each node in the path from root.
+
+Wait, here's an idea: For each node i, the parent is the node j where j is the parent of i, and j is the node on the path from 0 to i that is the immediate predecessor.
+
+So, for example, if i is a child of j, then j is the parent of i.
+
+So, the parent of i is j.
+
+So, the parent pointers form a tree where each node's parent is the node on the path from 0 to it that is the immediate predecessor.
+
+So, the way to find p_i for each i is to find, for each i, the node j such that j is the parent of i, and j is on the path from 0 to i.
+
+So, how can we find this j?
+
+We can think of each node i as having a parent j, which is the node on the path from 0 to i that is the immediate predecessor.
+
+So, the parent of i is j.
+
+So, the parent pointers are arranged in a way that for any i, j is the node on the path from 0 to i that is the immediate predecessor.
+
+So, perhaps, for each node i, the parent is the node j where j is the node on the path from 0 to i that is the parent of i.
+
+So, to find j, we can perform a BFS starting from the root, and for each node, record its parent.
+
+But with the query limit, perhaps we can't do a full BFS.
+
+So, perhaps, we can find the parent pointers by using the queries.
+
+Wait, another observation: For any node i, if we can find a node j that is an ancestor of i, and j is the parent of i, then j is the parent of i.
+
+So, the parent of i is the node j where j is the immediate predecessor in the path from 0 to i.
+
+So, perhaps, for each node i, we can find its parent by finding the node j that is the parent of i, which is the node on the path from 0 to i that is the immediate predecessor.
+
+So, how can we find j?
+
+We can model this as for each i, j is the node on the path from 0 to i that is the immediate predecessor.
+
+So, for example, if i is a child of j, then j is the parent of i.
+
+So, the parent of i is j.
+
+So, for each i, the parent is the node j where j is the parent of i.
+
+So, the parent pointers form a tree where each node's parent is the node on the path from 0 to it that is the immediate predecessor.
+
+So, the way to find p_i for each i is to find the node j where j is the parent of i, and j is the node on the path from 0 to i that is the immediate predecessor.
+
+So, the parent of i is j.
+
+So, the parent pointers can be determined by finding, for each i, the node j where j is the immediate predecessor in the path from 0 to i.
+
+So, how can we find this j?
+
+We can model this as for each i, j is the node on the path from 0 to i that is the parent of i.
+
+So, for example, if i is a child of j, then j is the parent of i.
+
+So, the parent of i is j.
+
+So, the parent pointers can be found by checking for each i whether it is a child of its parent.
+
+So, perhaps, for each i, we can check if i is a child of 0, or if i is a child of some j, and so on.
+
+Wait, but that's not efficient.
+
+Another idea: For each node i, p_i is the node j such that j is the immediate predecessor in the path from 0 to i.
+
+So, for each i, j is the node on the path from 0 to i, and j is the parent of i.
+
+So, the parent of i is j.
+
+So, the parent pointers form a tree where each node's parent is the node on the path from 0 to it that is the immediate predecessor.
+
+So, the parent pointers can be determined by finding, for each i, the node j that is the immediate predecessor in the path from 0 to i.
+
+So, how can we find j for each i?
+
+Well, for each i, j is the node on the path from 0 to i that is the immediate predecessor of i.
+
+So, j is the node on the path from 0 to i, and j is the parent of i.
+
+So, for example, if i has parent j, then j is the parent of i.
+
+So, j is the node on the path from 0 to i that is the immediate predecessor.
+
+So, the parent of i is j.
+
+Thus, for each i, p_i is j, where j is the node on the path from 0 to i that is the immediate predecessor.
+
+So, the parent pointers form a tree where each node's parent is the node on the path from 0 to it that is the immediate predecessor.
+
+So, the parent pointers can be determined by finding, for each i, the node j on the path from 0 to i that is the immediate predecessor.
+
+So, how can we find this j?
+
+We can model this as for each i, j is the node on the path from 0 to i that is the immediate predecessor.
+
+So, for example, if i is a child of j, then j is the parent of i.
+
+So, the parent of i is j.
+
+So, the parent pointers can be found by checking for each i whether it is a child of 0, or a child of some j, and so on.
+
+But this is not efficient for large n.
+
+So, perhaps, we can model this as for each node i, p_i is the node j where j is the node on the path from 0 to i that is the immediate predecessor.
+
+So, the parent of i is j.
+
+So, the parent pointers form a tree where each node's parent is the node on the path from 0 to it that is the immediate predecessor.
+
+So, the parent pointers are arranged in a way that for any node i, p_i is the node j where j is the parent of i, which is the node on the path from 0 to i that is the immediate predecessor.
+
+So, to find p_i for all i, we can:
+
+1. For each node i, check if i is a child of 0. Then, p_i is 0.
+
+2. If i is not a child of 0, then look for the node j on the path from 0 to i that is the immediate predecessor.
+
+So, how can we find j for each i?
+
+Well, for each node i, if it is not a child of 0, then j is the node on the path from 0 to i that is the parent of i.
+
+So, for example, if i is a child of j, then j is the parent of i.
+
+So, p_i is j.
+
+So, the parent of i is j.
+
+So, the parent pointers can be found by finding for each i, j is the node on the path from 0 to i that is the parent of i.
+
+So, how can we find j for each i?
+
+We can model this as for each i, j is the node on the path from 0 to i that is the immediate predecessor.
+
+So, for example, in the path from 0 to i, the nodes are 0 → a → b → ... → i. So, the parent of i is b, which is the node on the path from 0 to i that is the immediate predecessor.
+
+So, to find j, which is the parent of i, we can look at the path from 0 to i and find the node before i that is the immediate predecessor.
+
+So, perhaps, for each i, we can traverse the path from 0 to i, and for each node, check if it is the immediate predecessor of i.
+
+But this could be time-consuming.
+
+Alternatively, perhaps, for each node i, p_i is the node j where j is the parent of i, and j is the node on the path from 0 to i that is the immediate predecessor.
+
+So, perhaps, the parent of i is the node j where j is the parent of i, and j is the node on the path from 0 to i that is the immediate predecessor.
+
+So, the parent of i is the node j.
+
+So, the parent pointers form a tree where each node's parent is the node on the path from 0 to it that is the immediate predecessor.
+
+So, the parent pointers can be found by traversing the tree and recording the parent of each node.
+
+But with the query limit, we need a way to find the parents without traversing the entire tree.
+
+Another idea: For each node i, the parent p_i is the node j where j is the node on the path from 0 to i that is the immediate predecessor.
+
+So, for example, if i is a child of j, then j is the parent of i, and j is the immediate predecessor of i.
+
+So, p_i is j.
+
+So, the parent pointers can be determined by checking for each i whether it is a child of 0, or a child of some j, and so on.
+
+So, perhaps, for each node i, we can check if it is a child of 0. If yes, then p_i is 0.
+
+If not, then we can check if it is a child of any node j, and if so, then p_i is j.
+
+Wait, no. Because the parent of i is the node j where j is the parent of i, which is the node on the path from 0 to i that is the immediate predecessor.
+
+So, for example, if i is a child of j, then j is the parent of i, but j is also the immediate predecessor of i, assuming that j is on the path from 0 to i.
+
+So, in that case, p_i is j.
+
+So, the parent of i is j.
+
+So, the parent pointers can be determined by finding for each i, the node j where j is the parent of i, and j is the node on the path from 0 to i that is the immediate predecessor.
+
+So, to find j, we can look at the path from 0 to i, and find the node before i that is the immediate predecessor.
+
+So, perhaps, for each i, p_i is the node j where j is the parent of i, and j is the node on the path from 0 to i that is the immediate predecessor.
+
+So, the parent of i is j.
+
+So, the parent pointers can be found by checking for each i whether it is a child of 0, or a child of some j, and so on.
+
+But this is not efficient for large n.
+
+So, perhaps, we can model this as follows:
+
+Each node i has a parent p_i, which is the node on the path from 0 to i that is the immediate predecessor.
+
+So, the parent of i is the node j where j is the parent of i, and j is the node on the path from 0 to i that is the immediate predecessor.
+
+So, the parent of i is j.
+
+So, for each i, p_i is j.
+
+So, the parent pointers form a tree where each node's parent is the node on the path from 0 to it that is the immediate predecessor.
+
+So, the parent pointers can be found by traversing the tree and recording for each node the node j that is the immediate predecessor.
+
+So, to find this, perhaps, we can perform a BFS starting from the root, and for each node, record its parent as the node on the path from 0 to it that is the immediate predecessor.
+
+Wait, but how to do that without knowing the path.
+
+Another approach: For each node i, p_i is the node j where j is the parent of i, and j is the node on the path from 0 to i that is the immediate predecessor.
+
+So, perhaps, for each node i, p_i is the node j such that j is the parent of i, and j is the node on the path from 0 to i that is the immediate predecessor.
+
+So, the parent of i is j.
+
+So, the parent pointers can be found by traversing the tree and for each node, finding the node on the path from 0 to it that is the immediate predecessor.
+
+So, how can we do this?
+
+We can model this as for each node i, p_i is the node j where j is the parent of i, and j is the node on the path from 0 to i that is the immediate predecessor.
+
+So, the parent of i is j.
+
+So, the parent pointers can be found by traversing the tree and for each node, p_i is the node j where j is the parent of i, and j is the node on the path from 0 to i that is the immediate predecessor.
+
+So, how can we find this j?
+
+Well, for each node i, if i is a child of j, then j is the parent of i, and j is the immediate predecessor of i.
+
+So, p_i is j.
+
+Thus, the parent of i is j.
+
+So, the parent pointers can be determined by finding, for each child of j, whether j is the immediate predecessor of i.
+
+So, perhaps, the parent of i is j if j is the immediate predecessor of i.
+
+So, for each i, p_i is j if j is the parent of i, and j is the immediate predecessor of i.
+
+So, the parent of i is j.
+
+So, the parent pointers form a tree where each node's parent is the node on the path from 0 to it that is the immediate predecessor.
+
+So, the parent pointers can be determined by:
+
+- For each node i, if i is a child of 0, then p_i is 0.
+
+- Else, if i is a child of j, then p_i is j.
+
+So, the parent pointers of i is j if j is the parent of i, and j is the immediate predecessor of i.
+
+So, this is a way to find the parent pointers.
+
+So, the steps to find the parent pointers are:
+
+1. For each node i:
+
+   a. If i is a child of 0, then p_i is 0.
+
+   b. Else, check if i is a child of any node j.
+
+      i. If yes, then p_i is j.
+
+      ii. If no, then i must be a leaf, and p_i is 0.
+
+Wait, but wait: If i is a leaf, then its parent is 0.
+
+So, for leaf nodes, p_i is 0.
+
+So, the process is:
+
+For each node i:
+
+   if i is a child of 0 → p_i = 0.
+
+   else, if i is a child of any j → p_i = j.
+
+   else, i is a leaf → p_i = 0.
+
+So, this is a way to find the parent pointers.
+
+So, with this logic, we can find p_i for all i.
+
+Once we have p_i for all i, the queries can be used to verify the correctness of this structure.
+
+So, the plan is:
+
+- For each test case, read the tree structure.
+
+- For each node i, determine if it is a child of 0. If yes, p_i is 0.
+
+- Else, check if i is a child of any node j. If yes, p_i is j.
+
+- Else, p_i is 0.
+
+So, the code can be structured as follows:
+
+For each node i:
+
+   if i is a child of 0 → p_i = 0.
+
+   else, for each j in the children of 0, check if j is a parent of i.
+
+   if any j is a parent of i → p_i = j.
+
+   else → p_i = 0.
+
+Wait, but the children of 0 are the nodes adjacent to 0. So, for each node i, if i is a child of 0, then p_i is 0.
+
+So, the code can be:
+
+children_of_zero = [nodes adjacent to

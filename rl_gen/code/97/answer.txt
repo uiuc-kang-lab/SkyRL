@@ -1,0 +1,596 @@
+0
+Okay, I have to solve this problem where I'm given a permutation p of length n, and I need to find the number of index pairs (i, j) such that i < j and p_i * p_j is divisible by i * j. Hmm, that's the main condition.
+
+First, let me understand the problem. So for each pair (i, j) where i < j, I need to check if p_i * p_j is divisible by i * j. If it is, I count that pair. The permutation means that each number from 1 to n appears exactly once, so p is a rearrangement of 1 to n.
+
+The constraints are up to 5e5 for n, and the sum of n across all test cases is also up to 5e5. So, the solution needs to be efficient, probably O(n^2) is too slow. So I need to find a way to compute this efficiently.
+
+Let me think about the condition. p_i * p_j must be divisible by i*j. So, (p_i * p_j) mod (i*j) should be zero. Alternatively, (p_i / i) * (p_j / j) must be an integer, because i divides p_i, and j divides p_j since p is a permutation. Oh right, because p is a permutation, each p_k is k's value, but wait no, p is a permutation, so p is a rearrangement of 1 to n. So for each k, p_k is some number between 1 and n, but each appears exactly once.
+
+Wait, wait. So p is a permutation, so p_i is equal to some number from 1 to n, but each number appears exactly once. So for each i, p_i is a number between 1 and n, and for each j, p_j is also a number between 1 and n. So for each i, p_i / i is a rational number, but since p_i is a multiple of i? No, not necessarily. Like, if i is 2 and p_i is 3, then 3/2 is 1.5, which is not an integer.
+
+Wait, but wait a second. Since p is a permutation, for each i, p_i is some number from 1 to n, but for i to divide p_i, p_i must be a multiple of i. Because if i divides p_i, then p_i = k * i for some integer k. But since p_i is between 1 and n, k can be at most n/i. But for each i, p_i could be any number, not necessarily a multiple of i. So, that approach might not work.
+
+Hmm, so what's another way to think about the condition? Let's see. The condition is (p_i * p_j) mod (i * j) == 0. Which can be written as (p_i / i) * (p_j / j) must be an integer. Because (p_i * p_j) / (i * j) is equal to (p_i / i) * (p_j / j). So, if this product is an integer, then the division is exact, meaning the original condition is satisfied.
+
+So, for each i and j, I need to check if (p_i / i) * (p_j / j) is an integer. But since p_i and i are integers, p_i / i is a rational number. So, the product of two such rationals must be an integer.
+
+Wait, but how do I represent this? Let's think in terms of fractions. Let me represent each p_i as a fraction p_i / i. Then, for the product of two such fractions to be an integer, the denominator of their product must be 1.
+
+So, if I have (a/b) * (c/d) = (a*c)/(b*d). For this to be an integer, the denominator after simplifying (a*c)/(b*d) must be 1. So, the product must have all prime factors in the numerator.
+
+So, the product (p_i / i) * (p_j / j) must be an integer. So, the product's denominator after simplifying must be 1.
+
+Wait, but how can I compute this efficiently? Because for each i, I need to know p_i and i, and then see for each j>i whether (p_i * p_j) is divisible by i*j.
+
+But if I do this naively, for each pair (i,j), I would check whether i*j divides p_i*p_j. But since n can be up to 5e5, the number of pairs is O(n^2), which is way too big.
+
+So, I need a smarter approach.
+
+Let me think about the condition again: p_i * p_j is divisible by i*j. So, (p_i * p_j) mod (i*j) == 0.
+
+Which can be written as (p_i / i) * (p_j / j) must be an integer. So, the product of two fractions must be integer.
+
+But how to represent this. Maybe for each i, I can precompute some value that allows me to quickly find j's that satisfy the condition.
+
+Alternatively, perhaps I can think in terms of the greatest common divisor (GCD). Let's see.
+
+Suppose I have (p_i / i) = a and (p_j / j) = b. Then, a*b must be an integer. So, the product must have all the prime factors present in both a and b. So, the denominator of a*b is 1 when the product of the denominators is 1.
+
+Wait, but a and b are fractions, so their denominators are the factors of i and j respectively. So, the denominators in a and b are i's factors and j's factors.
+
+Wait, perhaps I'm overcomplicating this. Let me think differently.
+
+Let me consider that for (p_i * p_j) to be divisible by i*j, it's necessary that i divides p_i * p_j, and j divides p_i * p_j. Wait, no. Because i divides p_i * p_j, and j divides p_i * p_j is not necessarily true. Because i and j are different. So, that approach isn't correct.
+
+Wait, no. Because i and j are different, the condition is that i divides p_i * p_j and j divides p_i * p_j. Is that correct?
+
+No, that's not correct. Because i * j is the divisor, not each of them individually. So, for example, if i is 2 and j is 4, and p_i is 2, p_j is 4, then 2*4=8 is divisible by 2*4=8. So, in this case, both i and j divide p_i*p_j, but that's a coincidence. So, the condition is that the product p_i*p_j is divisible by the product i*j, not necessarily each of i or j.
+
+Hmm, so perhaps another approach is needed. Let's think about the condition in terms of exponents of primes.
+
+For the product p_i * p_j to be divisible by i * j, for each prime number p, the exponent of p in i*j must be less than or equal to the exponent of p in p_i * p_j.
+
+So, for each prime p, let's denote:
+
+v_p(i) = exponent of p in i
+
+v_p(j) = exponent of p in j
+
+v_p(p_i) = exponent of p in p_i
+
+v_p(p_j) = exponent of p in p_j
+
+Then, the condition is:
+
+v_p(i) + v_p(j) <= v_p(p_i) + v_p(p_j) for all p.
+
+If this holds for all primes p, then i*j divides p_i*p_j.
+
+So, for each pair (i,j), we need to check for all primes p whether the sum of exponents in i and j is less than or equal to the sum in p_i and p_j.
+
+But with n up to 5e5, checking for all primes for each pair is impractical.
+
+So, this approach is not feasible.
+
+Hmm, so I need a way to represent the condition in a way that can be checked quickly for each pair.
+
+Let me think about the ratio (p_i / i) * (p_j / j) must be an integer. So, (p_i * p_j) must be divisible by (i * j). So, the product of the two fractions must be an integer.
+
+Let me denote a = p_i / i and b = p_j / j. Then, a*b must be an integer.
+
+So, for each i, I can compute a = p_i / i, which is a rational number. Then, for each j > i, I need to check if a * (p_j / j) is an integer.
+
+Wait, no. Because a is p_i / i, and b is p_j / j. So, a * b is (p_i * p_j)/(i*j). So, for this to be an integer, i*j must divide p_i * p_j.
+
+Which is exactly the condition we need. So, the condition is equivalent to (p_i * p_j) mod (i*j) == 0.
+
+So, the problem reduces to, for each pair (i, j), check if (p_i * p_j) is divisible by (i * j).
+
+But how do we compute this efficiently.
+
+Another idea: for each i, precompute the value of p_i / i, and then for each j, compute p_j / j. Then, check if their product is an integer.
+
+But again, this is O(n^2), which is not feasible.
+
+So, we need a way to represent the p_i / i in such a way that for any j, we can quickly determine if (p_i * p_j) is divisible by (i * j).
+
+Wait, perhaps we can represent p_i / i as a reduced fraction. Let me think about it.
+
+Each p_i is a number from 1 to n, and i is from 1 to n. So, p_i / i can be written as a fraction a_i / b_i, where a_i and b_i are coprime.
+
+So, a_i = p_i / gcd(p_i, i), b_i = i / gcd(p_i, i).
+
+Wait, no. Let me correct that. The fraction p_i / i can be reduced to its simplest form by dividing numerator and denominator by their GCD. So, a_i = p_i / g, b_i = i / g, where g = gcd(p_i, i).
+
+So, a_i and b_i are coprime.
+
+So, the condition is that (a_i * a_j) is divisible by (b_i * b_j). Because (p_i * p_j) / (i * j) = (a_i * b_i) * (a_j * b_j) / (b_i * b_j * b_i * b_j) ? Wait, maybe I'm getting confused.
+
+Wait, p_i = a_i * b_i, and i = b_i * g_i, where g_i is the gcd(p_i, i). So, p_i / i = a_i * b_i / (b_i * g_i) ) = a_i / g_i.
+
+Wait, no. Let me re-express p_i as a_i multiplied by b_i, where a_i and b_i are coprime. So, p_i = a_i * b_i. Similarly, i = g_i * b_i, where g_i is the gcd(p_i, i). Because, the gcd of p_i and i is g_i, so i can be written as g_i multiplied by the part that is coprime with p_i.
+
+So, p_i = a_i * b_i, i = g_i * b_i. So, b_i is the gcd of p_i and i.
+
+So, the condition is (p_i * p_j) / (i * j) = (a_i * a_j * b_i * b_j) / (g_i b_i * g_j b_j) ) = (a_i a_j) / (g_i g_j) * (b_i b_j) / (b_i b_j) = (a_i a_j) / (g_i g_j).
+
+Wait, no. Wait, let's compute:
+
+p_i = a_i * b_i
+
+p_j = a_j * b_j
+
+i = g_i * b_i
+
+j = g_j * b_j
+
+So, p_i * p_j = a_i a_j b_i b_j
+
+i * j = g_i g_j b_i b_j
+
+So, (p_i * p_j) / (i * j) = (a_i a_j b_i b_j) / (g_i g_j b_i b_j) ) = a_i a_j / (g_i g_j )
+
+So, this fraction must be an integer. So, the condition is that a_i * a_j must be divisible by g_i * g_j.
+
+So, for each pair (i, j), the product of a_i and a_j must be divisible by the product of g_i and g_j.
+
+This is a crucial insight. So, the condition can be rephrased as (a_i * a_j) mod (g_i * g_j) == 0.
+
+So, now, the problem reduces to, for each pair (i, j), check if a_i * a_j is divisible by g_i * g_j.
+
+So, the steps are:
+
+1. For each i, compute a_i = p_i / g_i, where g_i is the gcd(p_i, i). So, since p_i and i are coprime after division by their gcd, a_i is an integer.
+
+Wait, no. Wait, p_i is a permutation, so p_i can be any number from 1 to n. So, for each i, g_i is the gcd(p_i, i). So, a_i = p_i / g_i is an integer, and since g_i is the gcd, a_i and i / g_i are coprime.
+
+Wait, no. Because a_i = p_i / g_i, and since g_i is the gcd of p_i and i, then p_i / g_i is co-prime with i / g_i. So, a_i and (i / g_i) are coprime.
+
+So, a_i is the part of p_i that is coprime with i.
+
+Similarly, g_i is the part of i that is coprime with p_i.
+
+So, for each i, a_i is the part of p_i that is coprime with i, and g_i is the part of i that is coprime with p_i.
+
+So, with this, the condition for a pair (i, j) is that a_i * a_j must be divisible by g_i * g_j.
+
+So, the problem is now to find the number of pairs (i, j) where i < j and (a_i * a_j) mod (g_i * g_j) == 0.
+
+This seems more manageable.
+
+So, the plan is:
+
+- For each i, compute g_i = gcd(p_i, i), a_i = p_i // g_i.
+
+- Then, for each pair (i, j), check if (a_i * a_j) is divisible by (g_i * g_j).
+
+If this is true, count the pair.
+
+So, the question is, how to compute this efficiently.
+
+Now, the issue is how to compute this for all pairs.
+
+The brute force approach would be O(n^2), which is not feasible for n up to 5e5.
+
+So, we need a smarter way.
+
+Hmm.
+
+Let me think about the condition a_i * a_j mod (g_i * g_j) == 0.
+
+Which is equivalent to (a_i mod (g_i * g_j / d)) * (a_j mod (g_i * g_j / d)) == 0 mod (g_i * g_j / d), where d is the gcd of a_i * a_j and g_i * g_j.
+
+Wait, perhaps that's not helpful.
+
+Alternatively, the condition is that a_i * a_j must be a multiple of g_i * g_j. So, for each i, j, (a_i * a_j) / (g_i * g_j) must be an integer.
+
+Let me denote d_i = g_i.
+
+So, d_i = gcd(p_i, i).
+
+a_i = p_i / d_i.
+
+g_i = d_i.
+
+So, the condition is (a_i * a_j) must be divisible by d_i * d_j.
+
+So, a_i * a_j must be a multiple of d_i * d_j.
+
+So, the problem now is to find the number of pairs (i, j) where i < j, and (a_i * a_j) mod (d_i * d_j) == 0.
+
+Hmm.
+
+So, how can I represent this condition in a way that allows me to compute it efficiently.
+
+Wait, perhaps for each i, I can precompute some value that, when paired with j, allows me to quickly determine if the condition holds.
+
+For example, for each i, let me compute the value of a_i / g_i. Wait, no, because a_i is p_i / d_i, and g_i is d_i. So, a_i is p_i / d_i, and g_i is d_i. So, a_i is p_i / g_i, since g_i = d_i.
+
+Wait, no. Because a_i is p_i / g_i, and g_i is d_i.
+
+So, a_i is p_i divided by the gcd of p_i and i.
+
+So, a_i is an integer, and a_i is coprime with i / g_i.
+
+Hmm.
+
+So, for each i, a_i is p_i / g_i, and g_i is the gcd of p_i and i.
+
+So, the condition is (a_i * a_j) must be divisible by (g_i * g_j).
+
+So, the condition is (a_i * a_j) mod (g_i * g_j) == 0.
+
+Which can be written as (a_i / g_i) * (a_j / g_j) must be an integer.
+
+Wait, because a_i = g_i * (a_i / g_i), and g_i is the gcd of p_i and i.
+
+So, a_i / g_i is p_i / (g_i^2).
+
+Wait, no. Let me think again.
+
+Wait, a_i is p_i / g_i.
+
+g_i is the gcd(p_i, i).
+
+So, p_i = g_i * k, where k is an integer.
+
+So, a_i = p_i / g_i = k.
+
+So, a_i is an integer.
+
+So, the condition is (a_i * a_j) must be divisible by (g_i * g_j).
+
+So, (k_i * k_j) must be divisible by (g_i * g_j).
+
+But k_i is a_i, which is p_i / g_i.
+
+So, this is equivalent to:
+
+(p_i / g_i) * (p_j / g_j) must be divisible by (g_i * g_j).
+
+Which is the same as (p_i p_j) / (g_i g_j) must be divisible by g_i g_j.
+
+Wait, no. Wait, the condition is (p_i p_j) / (i j) must be integer.
+
+But i j is (g_i b_i) (g_j b_j), where b_i is i / g_i and b_j is j / g_j. So, i j = g_i g_j b_i b_j.
+
+So, (p_i p_j) / (i j) = (a_i b_i * a_j b_j) / (g_i g_j b_i b_j) ) = (a_i a_j) / (g_i g_j).
+
+So, the condition is that (a_i a_j) / (g_i g_j) is integer.
+
+Which can be written as (a_i a_j) mod (g_i g_j) == 0.
+
+So, that's the condition.
+
+So, the problem is to find all pairs (i, j) where i < j, and (a_i a_j) is divisible by (g_i g_j).
+
+So, how to compute this efficiently.
+
+Let me think of the problem in terms of exponents.
+
+Each a_i and g_i are known.
+
+So, for each i, I can represent it as a pair (a_i, g_i).
+
+Then, for each j, I can compute the product (a_i a_j) and see if it's divisible by (g_i g_j).
+
+Wait, but for each i, checking all j > i is O(n^2), which is too slow.
+
+So, I need a way to find for each i, the number of j's > i such that (a_i a_j) mod (g_i g_j) == 0.
+
+Hmm, but how?
+
+Wait, let's think about the condition (a_i a_j) mod (g_i g_j) == 0.
+
+This can be rewritten as (a_i mod (g_i g_j / d)) * (a_j mod (g_i g_j / d)) == 0 mod (g_i g_j / d), where d is the gcd of a_i a_j and g_i g_j.
+
+Wait, not sure.
+
+Alternatively, perhaps for each i, I can find the set of j's where g_j divides a_i a_j, but that's not clear.
+
+Another approach: for each i, the condition can be rewritten as a_i a_j must be a multiple of g_i g_j.
+
+Which is equivalent to (a_i / g_i) * (a_j / g_j) must be an integer.
+
+Because a_i a_j / (g_i g_j) = (a_i / g_i) * (a_j / g_j).
+
+So, if (a_i / g_i) * (a_j / g_j) is integer, then the condition is satisfied.
+
+Wait, that's an interesting way to look at it.
+
+So, for each i, compute c_i = a_i / g_i. Then, the condition is c_i * c_j must be an integer.
+
+So, for each pair (i, j), if c_i * c_j is integer, then the condition is satisfied.
+
+Wait, because a_i a_j / (g_i g_j) = (a_i / g_i) * (a_j / g_j) = c_i * c_j.
+
+So, the condition is c_i * c_j is integer.
+
+So, the problem reduces to counting the number of pairs (i, j) where i < j and c_i * c_j is integer.
+
+This is a significant simplification.
+
+So, now, the problem is to find the number of pairs (i, j) where i < j and c_i * c_j is integer.
+
+So, this is easier to think about.
+
+So, the steps are:
+
+1. For each i, compute c_i = a_i / g_i, where a_i = p_i / g_i, and g_i is the gcd(p_i, i).
+
+2. Then, for each pair (i, j) where i < j, check if c_i * c_j is integer.
+
+3. Count the number of such pairs.
+
+So, now, the problem is to compute the number of pairs (i, j) where i < j and c_i * c_j is integer.
+
+This is a more manageable problem.
+
+So, now, how to compute this efficiently.
+
+Let me think about the possible values of c_i.
+
+Each c_i is a rational number. But since p_i is an integer and g_i is the gcd, c_i is a reduced fraction.
+
+Wait, because c_i = a_i / g_i, and a_i is p_i / g_i, which is an integer. So, a_i is divisible by g_i? No, wait, a_i is p_i / g_i, which is an integer because g_i is the gcd of p_i and i.
+
+Wait, no. Wait, g_i is the gcd of p_i and i. So, p_i is a multiple of g_i, because g_i divides p_i. So, a_i = p_i / g_i is an integer.
+
+Similarly, g_i divides i, because g_i is the gcd of p_i and i.
+
+So, g_i is a divisor of i.
+
+So, c_i = a_i / g_i = (p_i / g_i) / g_i = p_i / (g_i)^2.
+
+Wait, no. Because a_i is p_i / g_i, and g_i is the gcd of p_i and i.
+
+So, g_i divides i, so i = g_i * k for some integer k.
+
+Similarly, p_i = g_i * m for some integer m.
+
+So, c_i = m.
+
+Wait, because c_i is a_i / g_i = (p_i / g_i) / g_i = p_i / (g_i^2).
+
+Wait, no, a_i is p_i / g_i, which is m. So, a_i = m.
+
+So, c_i = a_i / g_i = m / g_i.
+
+Which is equal to (p_i / g_i) / g_i = p_i / (g_i^2).
+
+So, c_i is p_i / (g_i^2).
+
+So, c_i is p_i divided by (g_i squared).
+
+So, now, the condition is c_i * c_j is integer.
+
+Which is (p_i / g_i^2) * (p_j / g_j^2) must be integer.
+
+So, the product (p_i p_j) / (g_i^2 g_j^2) must be integer.
+
+So, the condition is that (p_i p_j) is divisible by (g_i^2 g_j^2).
+
+Hmm, that's a different way to look at it.
+
+So, the problem is to find pairs (i, j) with i < j where p_i p_j is divisible by g_i^2 * g_j^2.
+
+So, the condition is (p_i p_j) mod (g_i^2 g_j^2) == 0.
+
+Hmm, not sure if that helps.
+
+But perhaps, for each i, I can precompute some information that allows me to quickly find j's where this condition holds.
+
+Let me think about the factors involved.
+
+Each c_i is p_i / (g_i^2). So, c_i is an integer only if p_i is a multiple of g_i squared.
+
+Wait, no. Because c_i is p_i / (g_i^2). So, c_i is an integer if and only if g_i^2 divides p_i.
+
+So, for c_i to be integer, p_i must be a multiple of g_i squared.
+
+So, for each i, if p_i is not divisible by g_i^2, then c_i is a fraction, and thus, for the product c_i * c_j to be integer, c_j must have a denominator that cancels out the numerator of c_i.
+
+Wait, but this seems complicated.
+
+Alternatively, perhaps for each i, the denominator of c_i (in reduced form) is g_i^2.
+
+Because c_i is p_i / (g_i^2), which is an integer only if p_i is a multiple of g_i^2.
+
+Wait, no. For example, if p_i is 4, g_i is 2. Then, c_i is 4/(2^2) = 1, which is integer. So, yes.
+
+If p_i is 3, g_i is 1. Then, c_i is 3/1^2=3, integer.
+
+So, in general, c_i is p_i/(g_i^2), which is an integer only if p_i is divisible by g_i squared.
+
+So, for each i, c_i is either an integer or a fraction.
+
+So, for the product c_i * c_j to be integer, we have two possibilities:
+
+1. Both c_i and c_j are integers. Then, their product is an integer.
+
+2. One of c_i or c_j is a fraction, and the other's denominator divides the numerator of the other.
+
+So, case 1 is easy: if both c_i and c_j are integers, then their product is integer.
+
+Case 2: c_i is an integer, c_j is a fraction. Then, c_i must be divisible by the denominator of c_j.
+
+Similarly, if c_j is an integer and c_i is a fraction, c_j must be divisible by the denominator of c_i.
+
+So, let's break this down.
+
+Case 1: c_i and c_j are both integers.
+
+In this case, the product is automatically integer, so all such pairs contribute to the count.
+
+Case 2: c_i is integer, c_j is a fraction.
+
+So, c_j is equal to k / m, where m is the denominator, and k is the numerator.
+
+So, c_i must be divisible by m. Because when you multiply c_i (integer) by c_j (k/m), the result is (c_i * k) / m, which must be integer.
+
+So, c_i must be divisible by m.
+
+So, for each j where c_j is a fraction, I need to find the number of i's where c_i is divisible by the denominator of c_j.
+
+Similarly, if c_j is integer, and c_i is a fraction, then c_j must be divisible by the denominator of c_i.
+
+So, the approach is:
+
+- For all i, compute c_i.
+
+- For each i, determine whether c_i is an integer or a fraction.
+
+- For each i, store the denominator of c_i, and whether c_i is an integer.
+
+Then, for each j, when considering pairs (i, j), we can:
+
+- If c_i is integer, check if c_j is integer, or if c_j is a fraction and c_i is divisible by c_j's denominator.
+
+- If c_i is a fraction, check if c_j is integer, or if c_i is divisible by c_j's denominator.
+
+So, this seems manageable.
+
+So, the plan is:
+
+1. For each i, compute c_i = p_i / (g_i^2).
+
+   a. If g_i^2 divides p_i, then c_i is integer. So, store the denominator as 1.
+
+   b. Else, c_i is a fraction, so store the denominator as g_i^2, and numerator as p_i / g_i^2 (which is an integer since c_i is a fraction).
+
+2. For each i, if c_i is integer, store the denominator as 1.
+
+3. For each i, if c_i is a fraction, store the denominator and numerator.
+
+4. Now, for all pairs (i, j) where i < j, check if the product c_i * c_j is integer.
+
+   a. If both c_i and c_j are integers, then count the pair.
+
+   b. Else, one is integer, the other is a fraction. So, check if c_i is divisible by the denominator of c_j, or c_j is divisible by the denominator of c_i.
+
+Wait, no. Because when c_i is integer and c_j is a fraction, then c_i must be divisible by the denominator of c_j.
+
+Similarly, when c_j is integer and c_i is a fraction, c_j must be divisible by the denominator of c_i.
+
+So, the steps for case 2:
+
+For each j, when considering i < j:
+
+- If c_i is integer:
+
+   - Check if c_j is integer: if yes, count +=1.
+
+   - Else, check if c_i is divisible by the denominator of c_j: if yes, count +=1.
+
+- Else (c_i is a fraction):
+
+   - Check if c_j is integer: if yes, count +=1.
+
+   - Else, check if c_j's denominator divides the numerator of c_i: because c_j is k/m, and c_i is n/d. So, for c_i * c_j to be integer, d must divide n * m.
+
+Wait, no. Because c_i is n/d, c_j is k/m. So, their product is (n k) / (d m). For this to be integer, d m must divide n k.
+
+But this seems complicated.
+
+Alternatively, the product is integer if and only if d divides n k / m.
+
+Hmm, this is getting complicated.
+
+Wait, perhaps I should represent c_i as a fraction in its reduced form. So, for each i, c_i is represented as (num_i, den_i), where den_i is the denominator in reduced form.
+
+So, for case 2 when c_i is a fraction:
+
+- c_j is integer: so, c_j is (k, 1). So, the product is (num_i / den_i) * (k / 1) = (num_i k) / den_i. For this to be integer, den_i must divide num_i k.
+
+But since c_j is integer, its numerator is k, denominator 1. So, the product is (num_i k) / den_i. For this to be integer, den_i must divide num_i k.
+
+But since c_j is integer, we can represent it as (k, 1). So, the product is (num_i k) / den_i.
+
+So, this is integer if and only if den_i divides num_i k.
+
+But k is an integer, so den_i must divide num_i k.
+
+But since c_j is integer, k can be any integer, but the product depends on k.
+
+Wait, no, because for a given j, c_j is fixed. So, when c_j is integer, it's (k, 1). So, the product is (num_i / den_i) * (k / 1) = (num_i k) / den_i.
+
+So, this is integer if and only if den_i divides num_i k.
+
+But k can vary for each j, so this approach might not be feasible.
+
+Hmm, this is getting complicated.
+
+Alternative approach: for each j, when c_j is integer, then for each i < j where c_i is a fraction, we need to check if c_j is divisible by the denominator of c_i.
+
+Because c_i is a fraction n/d, c_j is integer k/1. So, the product is (n/d) * (k/1) = (n k)/d. For this to be integer, d must divide n k.
+
+But since c_j is integer, k can be any integer, but for the product to be integer, d must divide n k. So, for a given j, where c_j is integer, the number of i < j where c_i is a fraction and d_i divides n_j * k_j, but k_j is arbitrary.
+
+Wait, no, because for a given j, c_j is fixed as an integer. So, for each i < j, if c_i is a fraction, then the product is (n_i / d_i) * (k_j) = (n_i k_j) / d_i.
+
+For this to be integer, d_i must divide n_i k_j.
+
+But k_j is fixed for j. So, for a given j, the number of i < j where d_i divides n_j * k_j, but this depends on k_j.
+
+Wait, no. Because k_j is the numerator of c_j, which is p_j / (g_j^2). So, for j, k_j is p_j / (g_j^2), which is an integer.
+
+So, for j, c_j is k_j / 1. So, the product is (n_i / d_i) * (k_j / 1) = (n_i k_j) / d_i.
+
+So, for this to be integer, d_i must divide n_i k_j.
+
+But k_j is fixed for j. So, for each j, the number of i < j where d_i divides (n_i * k_j).
+
+But this seems tricky.
+
+So, perhaps for each j, we can compute d_j, which is the denominator of c_j. Since c_j is integer, d_j is 1.
+
+So, for j, d_j is 1.
+
+So, for any i < j, if c_i is a fraction, then d_i is the denominator of c_i.
+
+So, for the product to be integer, (n_i / d_i) * c_j (which is an integer) must be integer.
+
+Wait, no. Because c_j is an integer, so (n_i / d_i) * c_j is integer if and only if d_i divides n_i * c_j.
+
+Because (n_i / d_i) * c_j = (n_i c_j) / d_i.
+
+So, this is integer if and only if d_i divides n_i c_j.
+
+So, for j, c_j is an integer, so c_j is known.
+
+So, for each j, d_j is 1, because c_j is integer.
+
+So, the condition is that d_i divides n_i * c_j.
+
+So, for each j, the number of i < j where d_i divides n_i * c_j.
+
+But for j, c_j is k_j = p_j / (g_j^2), which is integer.
+
+So, for each j, the denominator d_j is 1.
+
+So, the condition is that d_i divides n_i * k_j.
+
+So, for each j, the number of i < j where d_i divides (n_i * k_j).
+
+So, this is manageable.
+
+So, the approach is:
+
+For each j, compute k_j = p_j / (g_j^2).
+
+Then, for each j, the number of i < j where d_i divides (n_i * k_j).
+
+So, for each j, we need to find the count of i < j where d_i divides (n_i * k_j).
+
+So, the problem reduces to, for each j, count the number of i's before j where d_i divides (n_i * k_j).
+
+This can be done efficiently if we precompute for each j, the number of i's before j where d_i is a divisor of (n_i * k_j).
+
+But how?
+
+We can precompute for each j, the value (n_j * k_j), but wait, no.
+
+Wait, for j, we need to look for i < j where d_i divides (n_i * k_j).
+
+So, for each j, the count is the

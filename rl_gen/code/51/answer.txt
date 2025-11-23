@@ -1,0 +1,460 @@
+1
+Okay, I have this problem where I need to find the minimum number of operations to reduce a number n to zero by subtracting any power of k. Hmm, each operation allows me to subtract k^x where x is a non-negative integer. So for each step, I can choose any x, subtract that from n, and continue until it's zero.
+
+Wait, the key is to find the minimal number of such steps. So I should think about how to break down n into the sum of as few k^x terms as possible, but in a way that each subtraction is a power of k.
+
+Let me think about some examples. Like, if n is 1 and k is 2. Then in one step I can subtract 1 (which is 2^0), so the answer is 1. If n is 3 and k is 2: 3-2=1, and then another step subtract 1. So that's two steps. Alternatively, could I do 3-1=2, then 2-2=0, which is also two steps. So same result.
+
+Another example: n=5, k=3. What's the minimal steps? Let's see. 5-3=2. Then 2 can't be subtracted by 3, but maybe subtract 1 (3^0). So two steps. Alternatively, 5-1=4. 4 can be 3+1, so two steps. So either way, two steps.
+
+Wait, but wait: 5 is 3 + 2. Wait, 3 is 3^1, and 2 is 3^0 +1? Or wait, 2 is not a power of 3. So maybe the best approach is to find the largest possible power of k that is <= the current value of n, and subtract it, then repeat.
+
+Wait, but perhaps sometimes it's better to subtract a smaller power of k to reach a point where the remaining can be handled with fewer steps.
+
+Hmm, this is getting a bit tricky. Let's think about the problem more formally.
+
+Let me denote the minimal number of steps required to reduce n to zero as f(n). We can model this recursively: f(n) = 1 + min over all possible x (f(n - k^x)), provided that n >= k^x. But since n can be up to 1e9, a recursive approach with memoization might not be feasible due to time constraints, especially with t up to 1e4.
+
+So, I need a way to compute f(n) efficiently, perhaps with a mathematical approach.
+
+Let's think about the binary representations of n and k. Maybe the number of set bits in n's binary representation can give some insight, but that's probably not the case because the allowed operations are subtracting any power of k, not just powers of 2.
+
+Alternatively, perhaps the problem can be viewed as a greedy approach: at each step, subtract the largest possible power of k that is less than or equal to the current value. But wait, subtracting the largest possible power might not always lead to the minimal steps. For example, let's say n is 5 and k is 3. The largest power less than 5 is 3. Subtracting that leaves 2, which requires one more step (subtract 1, which is 3^0). So total two steps. But what if n is 4 and k is 3: subtract 3, then subtract 1—two steps as well. So that works.
+
+Wait, what's another example where this approach might fail. Let's say n is 6 and k is 4. The largest power is 4. Subtract that, leaving 2. Then subtract 1 (4^0) twice—no, wait, 2 can't be subtracted by 4, but wait, 2 is 2, which is not a power of 4. So in this case, the alternative is to subtract 2, but 2 isn't a power of 4. So the only option is to subtract 1 twice. That would take two steps. But 6-4=2, then 2-1=1, then 1-1=0. That's three steps. But wait, maybe there's a better way.
+
+Wait, wait, 6 is 4+2. But 2 is not a power of 4. So in this case, the greedy approach of subtracting 4 gives two steps: 6-4=2, then 2-1=1, then 1-1=0. Three steps. But another approach: 6-2=4, then 4-4=0. That's two steps. Oh right! Because 2 is a power of 2, but k is 4. So wait, in this case, 2 is not a power of 4. So that approach is not allowed. Oh right, because each operation can only subtract a power of k. So in this example, 6 can't be reduced to zero in two steps because after subtracting 4, you have 2, which isn't a power of 4, so you have to subtract 1 twice. So in this case, the minimal steps are 3.
+
+Wait, but wait: Wait, 6 is 4+2, but 2 is not a power of 4. So the only way is to subtract 4, then subtract 1 twice, which is 3 steps. Alternatively, is there a way to subtract 2 once (but 2 is not a power of 4), so no. So the greedy approach of subtracting the largest possible power gives 3 steps, which is correct.
+
+But wait, perhaps think differently: 6 can be written as 4 + 2, but 2 is not a power of 4. So the only way is to subtract 4, then 2, which isn't allowed, so you have to do 2 steps, but that's not possible. So in this case, the minimal steps are 3.
+
+So, the greedy approach works here.
+
+Another example: n=7, k=3.
+
+Largest power is 3^1=3. Subtracting gives 4, which can be subtracted by 3, then 1. So two steps: 7-3=4, 4-3=1, 1-1=0. So total 3 steps. Alternatively, 7-1=6, which requires 3 steps as before (6-4-1-1). So the same.
+
+Wait, but wait: 7 is 3+3+1, which is 3 steps. Alternatively, 7-3=4, then subtract 3, then subtract 1. So 3 steps, same as before.
+
+Hmm, so the greedy approach seems to work here.
+
+Wait, another example: n=8, k=3.
+
+Largest power is 3^1=3. Subtract, get 5. Then, 5 can be 3+2, but 2 is not a power of 3. 5-3=2, which is 1+1, so subtract 1 twice. So total steps: 1 (3) + 1 (3) + 2 (1) = 4 steps.
+
+Is there a better way? Let's see. 8 can be written as 8, but 8 is 2^3, which is not a power of 3. So 8 is a power of 3? No, 3^1 is 3, 3^2 is 9. So 8 isn't a power of 3. So the options are to subtract 3^1, 3^0, etc.
+
+So, 8-3 =5. Then 5 can be 3+2, but 2 isn't a power of 3. So subtract 3, then subtract 1 twice. That's 4 steps.
+
+Alternatively, what if we subtract 3^0 (1) each time? 8-1=7, 7-1=6, etc. That's 8 steps, which is worse.
+
+So the initial approach of subtracting the largest possible each time gives 4 steps, which is the minimal.
+
+Hmm, so perhaps the greedy approach works here.
+
+So, the strategy is to subtract the largest possible power of k at each step.
+
+But wait, let's think about another example. Suppose n=5 and k=2.
+
+Largest power is 4. Subtracting 4 gives 1, which requires 1 step. So total 2 steps: 5-4=1-1=0. That's two steps.
+
+Alternatively, what if I subtract 2 once, leaving 3. Then subtract 2 again, leaving 1. Then subtract 1. That's three steps, which is worse.
+
+So the greedy approach is better.
+
+Another example: n=9, k=3. The largest power is 9. Subtracting it in one step. So one step.
+
+What if n is 10 and k=3. Largest is 9. Subtract, get 1. Then subtract 1. So two steps. Or, 10-3=7, then 7-3=4, then 4-3=1, then 1-1=0. That's four steps. So the greedy approach is better.
+
+So, seems like the greedy approach is correct.
+
+Wait, but what about when n is a multiple of k, but n/k is not a power of k.
+
+Wait, for example, n=12, k=3.
+
+Largest power is 9. Subtract, 12-9=3. Then subtract 3, 12-9-3=0. So two steps.
+
+Which is correct.
+
+But if n=12, k=4.
+
+Largest power is 8. 12-8=4. Then subtract 4. So two steps.
+
+So, that's correct.
+
+Another example: n=16, k=4. 16 is 4^2. So subtract 16 in one step. So one step.
+
+Hmm, but what about n=17, k=4.
+
+17-16=1. Then subtract 1. Two steps.
+
+Yes, correct.
+
+So, perhaps the strategy is to at each step subtract the largest possible power of k that is <= the current n.
+
+So, the approach is:
+
+At each step, subtract the maximum possible power of k that is <= current n. Add 1 to the count.
+
+But wait, what if after subtracting that power, the remaining is zero? Then we're done.
+
+But what about when the remaining is not zero, and the next step can still subtract a power of k, but perhaps in a way that the remaining can be subtracted in one step.
+
+Wait, for example, n=6, k=4.
+
+Largest power is 4. Subtract 4, n becomes 2. But 2 is not a multiple of 4, so can't subtract it. So the remaining is 2, which requires two steps (each 1). So total steps are 3.
+
+But what if we subtract 2 (if it's allowed) but 2 is not a power of 4. So no, cannot.
+
+So, the greedy approach is correct.
+
+So, the algorithm is:
+
+Initialize steps = 0.
+
+Loop:
+
+While n > 0:
+
+   Find the largest x such that k^x <= n.
+
+   Subtract k^x from n.
+
+   steps +=1.
+
+Return steps.
+
+But how to find the largest x for each step.
+
+Wait, but for each step, we can compute the maximum possible power of k that is <= the current n.
+
+But doing this for each step recursively would be time-consuming for large n.
+
+But for n up to 1e9, the number of steps would be manageable if each step reduces n by a factor of k, so the worst case is O(log n), which is acceptable for t=1e4.
+
+So, let's think about how to compute the maximum x for each n:
+
+For a given n, find the largest x such that k^x <= n.
+
+This can be done by computing the logarithm and taking the floor, but since k is an integer, perhaps a binary search approach is better.
+
+Alternatively, we can compute it with a loop, but for large k, it's better to compute it via binary search.
+
+Wait, let's think about when k is 1: but in the problem statement, k is at least 1. So if k is 1, then each operation is subtract 1. So n steps needed.
+
+But when k=1, the problem is easy: the minimal steps are n.
+
+But in the problem statement, k can be 1, but the code must handle that.
+
+So, back to the algorithm.
+
+Implementing the steps:
+
+For each test case:
+
+   Read n and k.
+
+   if k == 0: no, because k is given as >=1.
+
+   if k ==1: return n.
+
+   else:
+
+      steps =0
+
+      while n >0:
+
+          find the largest x where k^x <=n.
+
+          if k^x ==0: that's not possible. Wait, no, because k is >=1, and x is a non-negative integer.
+
+          steps +=1
+
+          n -= k^x.
+
+      return steps.
+
+But how to find the largest x for each step.
+
+Alternatively, during each step, find the maximum possible power of k that is <= current n and subtract it.
+
+So, for each n:
+
+   if n ==0: break.
+
+   find the maximum x where k^x <=n.
+
+   subtract k^x.
+
+But how to compute x.
+
+We can compute it using logarithms, but we have to be careful with floating point precision.
+
+Another approach is to find the maximum x by using a loop, starting from 0, compute k^x until it's larger than n.
+
+Wait, but for n up to 1e9 and k up to 1e9, the maximum x is 30, since 2^30 is about 1e9.
+
+So for each step, it's manageable.
+
+So, the steps for each test case:
+
+count =0
+
+while n>0:
+
+   max_power = 1
+
+   x=0
+
+   temp =1
+
+   while (max_power *k) <=n:
+
+       max_power *=k
+
+       x +=1
+
+   count +=1
+
+   n -= max_power
+
+return count
+
+Yes, that's the plan.
+
+But wait, for k=1, this would compute max_power as 1 each time, but in this case, each step subtracts 1, so it's O(n) steps, which is not acceptable for n up to 1e9.
+
+So, we need to handle the case when k=1 separately.
+
+Similarly, when k is 1, the minimal steps is n, so we can just return n.
+
+Otherwise, proceed with the loop.
+
+So, in code:
+
+for each test case:
+
+   n, k = map(int, input().split())
+
+   if k ==1:
+
+       print(n)
+
+       continue
+
+   steps =0
+
+   while n>0:
+
+       max_power =1
+
+       x=0
+
+       while True:
+
+           next_power = max_power *k
+
+           if next_power >n:
+
+               break
+
+           max_power = next_power
+
+           x +=1
+
+       steps +=1
+
+       n -= max_power
+
+   print(steps)
+
+Yes, that should handle it.
+
+Let's test this logic with some examples.
+
+Test case 1: n=1, k=2.
+
+steps=0.
+
+max_power starts at 1. Next_power is 2>1, so break. steps=1. n=0. So steps=1. Correct.
+
+Test case 2: n=3, k=2.
+
+max_power is 1, then 2. Next_power=2*2=4>3. So subtract 2, steps=1. n=1.
+
+Loop again: max_power is 1. Subtract 1, steps=2. n=0. So steps=2. Correct.
+
+Test case3: n=5, k=3.
+
+max_power: 3 is <=5. Next is 9>5. So subtract 3, steps=1. n=2.
+
+Next iteration: max_power is 1, next is 2*1=2 <=2. So subtract 1, steps=2. n=1.
+
+Again, subtract 1, steps=3. n=0. So 3 steps.
+
+Which is correct.
+
+Another test case: n=6, k=4.
+
+max_power is 4. subtract 4, steps=1. n=2.
+
+Next: max_power is 1, subtract 1, steps=2. n=1.
+
+Again, subtract 1, steps=3. n=0. So 3 steps.
+
+Which is correct.
+
+Another test case: n=7, k=3.
+
+max_power is 3. subtract, n=4.
+
+max_power for 4 is 3 again. Subtract, n=1.
+
+Subtract 1, steps=3.
+
+Which is correct.
+
+Another test case: n=8, k=3.
+
+max_power is 3. subtract, n=5.
+
+max_power is 3. subtract, n=2.
+
+max_power is 1. subtract, steps=3. n=1.
+
+Subtract 1, steps=4. So 4 steps.
+
+But wait, 8 can be represented as 3+3+3-1? No, 3+3+3 is 9, which is more than 8. So no, the minimal steps are 4.
+
+Wait, but wait: 8 can be written as 3+3+2. But 2 is not a power of 3. So that's not allowed. So the only way is to subtract 3, then 3, then 3, then 1. So 4 steps. Which matches the code.
+
+Another test case: n=9, k=3.
+
+Subtract 9, steps=1. Correct.
+
+Another test case: n=10, k=3.
+
+Subtract 9, steps=1. n=1. Subtract 1, steps=2. Correct.
+
+Another test case: n=0, which is not possible since n>=1 as per the problem statement.
+
+So, the code seems to handle all these cases.
+
+Thus, the approach is to, in each step, find the largest possible power of k that is <= current n, subtract it, and count steps until n is zero.
+
+And when k is 1, the steps are n, since each operation subtracts 1.
+
+So, the code should handle all cases correctly.
+
+Now, let's write the Python code.
+
+The code will read t test cases, each with n and k.
+
+For each case, if k is 1, output n and continue.
+
+Else, proceed to compute the steps as described.
+
+So, the code:
+
+Read t.
+
+for each test case:
+
+   read n and k.
+
+   if k ==1:
+
+       print(n)
+
+       continue
+
+   steps =0
+
+   while n>0:
+
+       max_power =1
+
+       x=0
+
+       while True:
+
+           next_power = max_power *k
+
+           if next_power >n:
+
+               break
+
+           max_power = next_power
+
+           x +=1
+
+       steps +=1
+
+       n -= max_power
+
+   print(steps)
+
+Yes, that should do it.
+
+Testing it with the examples:
+
+Test case: n=1, k=2: steps=1. Correct.
+
+n=3, k=2: steps=2. Correct.
+
+n=5, k=3: 3, 2: steps=3.
+
+n=6, k=4: 4, 2: steps=3.
+
+n=7, k=3: 3,3,1: steps=3.
+
+n=8, k=3: 3,3,3,1: steps=4.
+
+All correct.
+
+So, the code should work.
+</think>
+
+To solve this problem, we need to determine the minimum number of operations required to reduce a given integer \( n \) to zero by subtracting any power of \( k \) in each operation. 
+
+### Approach
+1. **Problem Analysis**: Each operation allows us to subtract \( k^x \) where \( x \) is a non-negative integer. The goal is to minimize the number of such operations. 
+2. **Key Insight**: The optimal strategy is to subtract the largest possible power of \( k \) at each step. This greedy approach ensures that we reduce \( n \) as quickly as possible.
+3. **Algorithm**:
+   - For each test case, if \( k \) is 1, the result is simply \( n \) since each operation subtracts 1.
+   - Otherwise, repeatedly subtract the largest possible power of \( k \) from \( n \) until \( n \) becomes zero, counting each operation.
+4. **Complexity**: The algorithm efficiently handles each test case in \( O(\log n) \) time due to the logarithmic reduction in \( n \) at each step.
+
+### Solution Code
+```python
+import sys
+
+def min_operations(n, k):
+    if k == 1:
+        return n
+    steps = 0
+    while n > 0:
+        max_power = 1
+        x = 0
+        while True:
+            next_power = max_power * k
+            if next_power > n:
+                break
+            max_power = next_power
+            x += 1
+        steps += 1
+        n -= max_power
+    return steps
+
+t = int(sys.stdin.readline())
+for _ in range(t):
+    n, k = map(int, sys.stdin.readline().split())
+    print(min_operations(n, k))
+```
+
+### Explanation
+- **Reading Input**: The code reads multiple test cases.
+- **Handling Special Case for \( k = 1 \)**: If \( k \) is 1, each operation subtracts 1, so the result is \( n \).
+- **Greedy Subtraction**: For each \( n \), the largest power of \( k \) is subtracted in each step, reducing \( n \) efficiently.
+- **Efficiency**: The approach ensures minimal operations by leveraging the largest possible power of \( k \) at each step, leading to an optimal solution in logarithmic time relative to \( n \).<｜end▁of▁sentence｜>

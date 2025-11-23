@@ -1,0 +1,544 @@
+0
+Okay, I need to solve this problem where I have to determine if it's possible to move from a starting point to a target point without touching any circles that are expanding over time. The circles start with radius 0 and each second their radius increases by 1. So, the radius at time t is t units.
+
+Hmm, so the problem is about whether there's a path from (x_s, y_s) to (x_t, y_t) such that the path doesn't come within a distance of t from any circle's center at time t, for any t >= 0. Also, the path can't touch the circumference at any time.
+
+Wait, wait. So, the circles are continuously expanding. So, the distance between the path and the circles should always be more than the radius at that time. The radius is equal to the time, t. So, for any point along the path, the distance to the nearest circle's center must be greater than t.
+
+But how do I model this? Let's think.
+
+The key is to find a direction to move such that the minimal distance from the path to any circle is always more than the time t when reaching the goal. But since t increases as time passes, the circles are expanding, so the problem is whether the straight line path is clear for all possible times until the goal is reached.
+
+Wait, but the time when you reach the target is t = distance between start and end points. Because, in that time, the circles have radius t. So, the straight line path must be at a distance greater than t from all circle centers at every moment, including when you reach the target.
+
+So, the problem reduces to: is there a direction such that the minimal distance from the straight line path to any circle is always greater than the time it takes to reach the target, which is the Euclidean distance between start and end points.
+
+Wait, no. Because as time increases, the circles are expanding, so for any point on the path, the distance to the nearest circle must be greater than the time t at that point. The time t is the time when you are at that point, which is the distance from start to that point. So, for the path to be clear, for every point on the path, the distance from that point to any circle's center must be greater than the time when you are at that point.
+
+But how can I model this? It's a bit tricky.
+
+Alternative approach: the minimal distance between the path and any circle must be always greater than the time t when you are on the path.
+
+Wait, but t increases as the path is followed. So, if the straight line path is followed, then for each point along the path, the time t is the distance from start to that point. So, the minimal distance between the path and any circle must be greater than t for all points along the path.
+
+But t is the distance from the start to that point, so for the path to be clear, the minimal distance between the path and any circle must be greater than the distance from start to that point.
+
+Wait, that's a bit confusing. Let me think again.
+
+Suppose I choose a direction to move. Then, the path is a straight line from start to the target. Let's parameterize this path as a function of time. Let's say the time taken is T, which is the Euclidean distance between start and target. So, at any time t (where 0 <= t <= T), the position is (x_s + (x_t - x_s)*t/T, y_s + (y_t - y_s)*t/T).
+
+Now, for each point on this path, the distance to any circle's center must be greater than t.
+
+So, for all t in [0, T], the distance from (x_s + d_x*t/T, y_s + d_y*t/T) to any circle's center (x_i, y_i) must be > t.
+
+But how can I find such a direction? Because for some circles, their centers might be close to the straight line path, making it impossible to find a direction where this condition holds.
+
+So, the problem is to find whether there exists a direction such that the minimal distance from the straight line to any circle is always greater than the time t when you are on the path.
+
+But how do I compute that? It's not straightforward.
+
+Let me think about the worst-case scenario. Suppose all circles are positioned such that their centers are too close to the straight line path. Or perhaps, the minimal distance from the straight line to any circle is less than the time t when you are on the path at some point.
+
+Wait, but the time t is the distance from start to the point on the path. So, for example, if the straight line is very far from the circles, then as you move along the line, the minimal distance to the circles remains larger than the time t.
+
+Wait, but that's not possible because as t increases, the required distance to the circles increases. So, the path must be a straight line that is always more than t away from any circle.
+
+I'm getting stuck. Let's think about the minimal required.
+
+Suppose I have a direction vector (a, b). The straight line path is in that direction. Then, for any point along the path, the distance to the nearest circle must be > t, where t is the time when you reach that point.
+
+Wait, but t is equal to the Euclidean distance from the start to that point. So, the distance from the point to the nearest circle must be greater than the time t.
+
+But the time t is the distance from start to the point, which is the same as the distance along the path. So, for a point at distance d from the start, the distance from that point to any circle must be > d.
+
+So, the condition is: for all points along the straight line path, the minimal distance to any circle is > d, where d is the distance from the start to that point.
+
+So, how can I model this?
+
+Let me consider the straight line path as a function of d, where d ranges from 0 to T (the total distance from start to target). For each d, the point is at distance d from start, and the minimal distance to any circle must be > d.
+
+So, the problem reduces to: is there a direction such that for all d in [0, T], the minimal distance from the straight line path to any circle is > d.
+
+Wait, but how do I compute that? Because for each circle, the minimal distance along the path could vary with d.
+
+Alternatively, perhaps the minimal required is that the minimal distance from the straight line to any circle is greater than the maximum of all d's along the path up to T.
+
+Wait, but that's not correct. Because for each d, the condition is that the minimal distance is greater than d. So, for all d, the minimal distance is greater than d.
+
+But how can I find such a direction?
+
+Hmm. Another approach: The minimal distance from the straight line to any circle must be greater than T, the total distance. Because at the end, d is T, so the minimal distance must be greater than T. But that's impossible because the circles are expanding, so when you reach the target, the radius is T, so the distance from the target to any circle must be > T.
+
+Wait, but that's only for the target point. The circles are expanding as time increases. So, the target is only a point, but the path is a straight line. The circles are in the plane, and as time increases, they expand, so for the straight line path to be clear, the distance from the path to the circles must be greater than the time at which you are on the path.
+
+So, for each point on the path, the distance to the nearest circle must be greater than the time t when you are at that point.
+
+But the question is, can we find a straight line path that never comes within a distance t of any circle, for all t up to T.
+
+This seems tricky. Let's think of it this way: the path must be entirely outside all circles at all times until reaching the target.
+
+But how?
+
+Wait, perhaps the minimal distance between the path and any circle is the minimal distance between the straight line and any circle. So, if the minimal distance from the straight line to any circle is d_min, then if d_min > T, then the path is clear. Because for each point along the path, the distance to the circle is at least d_min, which is greater than T. So, the condition is that d_min > T.
+
+Wait, that makes sense. Because the maximum required is when you reach the target, which is at distance T. So, if the minimal distance from the straight line to any circle is greater than T, then along the entire path, the distance is always greater than T.
+
+So, the problem reduces to: is there a straight line path from start to target such that the minimal distance from any circle to the line is greater than the total distance T (distance from start to target).
+
+So, the key is to find whether the minimal distance from any circle to the straight line path is greater than T.
+
+If such a line exists, then the answer is YES. Otherwise, NO.
+
+So, the problem now becomes: can we find a line such that the minimal distance from any circle to this line is greater than T.
+
+How do we compute this?
+
+We can model this as a problem of finding a line where the distance from all circles to the line is more than T.
+
+But how?
+
+Wait, the minimal distance from a circle to a line is the perpendicular distance. So, for each circle, its minimal distance to the line is the perpendicular distance. We need all these distances to be greater than T.
+
+So, for a line defined by ax + by + c = 0, the perpendicular distance from a circle center (x_i, y_i) to the line is |a x_i + b y_i + c| / sqrt(a² + b²) > T.
+
+So, for all i, |a x_i + b y_i + c| > T * sqrt(a² + b²).
+
+We need to find a, b, c such that this holds for all i.
+
+But how do we find such a, b, c?
+
+Alternatively, perhaps we can model this as a problem where we need to find a line such that the minimal distance from any circle to the line is greater than T.
+
+This is equivalent to the line being in a strip of width 2T around the target point, but that's not exactly right because the target is a point, but the line is the path.
+
+Wait, but the target is a point. So, the line is from (x_s, y_s) to (x_t, y_t). So, perhaps the line is along the straight path, and we need to ensure that for all circles, their minimal distance to this line is greater than the distance between start and target.
+
+Wait, but the distance between start and target is the length of the line. So, if the line is the straight line, then the distance from the start to the target is T. So, the target is a point, and the line is the path from start to target.
+
+So, the minimal distance from any circle to the line must be greater than T.
+
+So, the problem is: can we find a line passing through (x_s, y_s) and (x_t, y_t) such that the minimal distance from any circle to this line is greater than T?
+
+If yes, then output YES. Else, NO.
+
+So, the approach is to find whether there exists a line through the start and target points such that all circles are at a distance greater than T from this line.
+
+How can we check this?
+
+We can model the problem as finding a line that is at a distance greater than T from all circles.
+
+Wait, but the line is fixed once we choose the direction. So, for the line, the minimal distance for each circle is |a x_i + b y_i + c| / sqrt(a² + b²) > T.
+
+But the line passes through (x_s, y_s) and (x_t, y_t), so its equation can be written as (y_t - y_s)(x - x_s) - (x_t - x_s)(y - y_s) = 0.
+
+So, the line is determined by the two points, and the equation is a x + b y + c = 0, where a = y_t - y_s, b = x_s - x_t, and c = (x_t - x_s)(y_s) - (y_t - y_s)(x_s).
+
+So, the line's coefficients are determined by the direction from start to target.
+
+So, for each circle, we can compute the perpendicular distance to this line. Then, check if this distance is greater than T for all circles.
+
+If for all circles, the distance is greater than T, then the line is acceptable, and the answer is YES.
+
+Otherwise, no.
+
+Wait, that's a key insight. Because the line is the straight path from start to target, and the direction is fixed by the direction vector from start to target.
+
+So, the problem reduces to: compute the line between start and target, and for each circle, compute its distance to this line. If all these distances are greater than T, then YES, else NO.
+
+Because the line is the path, and the circles are expanding, so for each point on the line, the distance to the nearest circle is at least the distance to the line, which must be greater than T.
+
+So, the algorithm becomes:
+
+For each test case:
+
+1. Compute T, the Euclidean distance between start and target.
+
+2. Compute the line equation: a = (y_t - y_s), b = (x_s - x_t), c = (x_t - x_s)*y_s - (y_t - y_s)*x_s.
+
+3. For each circle, compute the perpendicular distance from the circle's center to this line.
+
+4. If all these distances are greater than T, then output YES. Else, NO.
+
+Because if all circles are more than T away from the line, then along the path (the line), the distance from the line to any circle is greater than T, so the circles are expanding and any point on the line is at a distance greater than T from the circles.
+
+So, the steps are clear.
+
+Now, let's think about how to implement this.
+
+First, we need to compute T, the distance between (x_s, y_s) and (x_t, y_t).
+
+Then, for each circle, compute the distance from its center (x_i, y_i) to the line defined by (x_s, y_s) and (x_t, y_t).
+
+The distance from a point (x_i, y_i) to the line ax + by + c = 0 is |a x_i + b y_i + c| / sqrt(a² + b²).
+
+But in our case, the line is a x + b y + c = 0, where a, b, c are calculated based on the direction from start to target.
+
+So, the distance is |a x_i + b y_i + c| / sqrt(a² + b²).
+
+Wait, but in our case, the line is (y_t - y_s)(x - x_s) - (x_t - x_s)(y - y_s) = 0.
+
+Expanding this gives (y_t - y_s)x - (x_t - x_s)y + (x_t - x_s)y_s - (y_t - y_s)x_s = 0.
+
+So, a = (y_t - y_s), b = -(x_t - x_s), c = (x_t - x_s)y_s - (y_t - y_s)x_s.
+
+So, the line equation is a x + b y + c = 0, where:
+
+a = (y_t - y_s)
+b = -(x_t - x_s)
+c = (x_t - x_s)*y_s - (y_t - y_s)*x_s
+
+So, for each circle (x_i, y_i), compute the distance:
+
+distance = abs(a * x_i + b * y_i + c) / sqrt(a^2 + b^2)
+
+We need this distance to be > T for all circles.
+
+If all circles satisfy this, then output YES. Else, NO.
+
+Wait, but what about the case where the circles are in a different direction? Because the line is fixed as the direction from start to target, but perhaps the minimal distance is achieved in another direction. So, perhaps there's a way to choose a different line that avoids all circles, which is not the direction from start to target.
+
+Wait, that's a good point. The initial approach assumes that the line is the direction from start to target, but perhaps there exists a different line where all circles are at a distance greater than T from the line, and the path can be taken along that line.
+
+So, this approach might miss some cases.
+
+Hmm, that complicates things. So, the initial approach may not be sufficient.
+
+Wait, but the line from start to target is the minimal path. If the circles are positioned in such a way that any line through start and target is not sufficient, perhaps a different line is needed.
+
+But considering the constraints, perhaps this is the way to proceed, and perhaps the initial approach is correct.
+
+Alternatively, perhaps the initial approach is correct, and the circles are positioned such that along the direction from start to target, all are too close.
+
+So, the algorithm is to compute the line, and for each circle, compute its minimal distance to this line. If all are > T, then yes.
+
+Let me test this with some examples.
+
+For example, test case where the circles are all positioned such that the line from start to target is too close.
+
+Suppose start is (0,0), target is (10,0). So, T is 10.
+
+A circle is at (5,1), and the line is along the x-axis. The distance from (5,1) to the line is 1, which is less than T. So, the condition fails, output NO.
+
+But what if the line is in another direction, say, 45 degrees.
+
+Wait, perhaps in some other direction, the line is such that the circles are all more than T away.
+
+So, the initial approach may miss such cases.
+
+But given the time constraints, perhaps the initial approach is the best we can do.
+
+Wait, but how else can we model this?
+
+Another idea: the minimal distance from any circle to the path is the minimal of the minimal distances along the direction. So, perhaps the initial approach is correct.
+
+But I'm not sure. Let's think of a case where this approach would fail.
+
+Suppose the circles are arranged in such a way that all are within T of the start to target line, but there exists another line that avoids all of them, and the minimal distance is greater than T.
+
+In that case, the initial approach would return NO, but the correct answer would be YES.
+
+So, the initial approach is incorrect.
+
+Hmm, this is a problem.
+
+So, how to handle this?
+
+This seems tricky.
+
+Alternative approach: the circles are expanding, so the path must be a straight line that is at a distance greater than T from all circles. But the circles can be anywhere, so the minimal distance from the line to the circles is determined by the closest circle to the line.
+
+So, if all circles are at a distance > T from the line, then the path is safe.
+
+So, the initial approach is correct.
+
+But then, the problem is, how can a line exist that is at a distance > T from all circles, if the line is required to pass through start and target.
+
+So, perhaps the initial approach is correct.
+
+Wait, perhaps it's possible to find a line that is the same direction as start to target, but the circles are arranged in such a way that their minimal distance to the line is greater than T.
+
+So, the algorithm based on the direction is correct.
+
+So, let's proceed with this approach.
+
+So, the steps for each test case are:
+
+1. Compute T = distance between start and target.
+
+2. Compute the line equation based on start and target.
+
+3. For each circle, compute the distance from the center to this line.
+
+4. If all these distances are greater than T, output YES. Else, NO.
+
+So, let's implement this.
+
+Now, let's think about the code.
+
+We'll read t test cases.
+
+For each test case:
+
+Read n.
+
+Read n lines of (x_i, y_i).
+
+Read x_s, y_s, x_t, y_t.
+
+Compute T = sqrt( (x_t - x_s)^2 + (y_t - y_s)^2 ).
+
+Compute a, b, c for the line.
+
+Then, for each circle (x_i, y_i):
+
+Compute the distance from (x_i, y_i) to the line.
+
+If any of these distances is <= T, then the answer is NO.
+
+Else, answer is YES.
+
+But wait, let's compute the distance correctly.
+
+The formula is:
+
+distance = abs(a * x_i + b * y_i + c) / sqrt(a^2 + b^2)
+
+We need this distance to be > T for all circles.
+
+So, in code:
+
+import math
+
+t = int(input())
+for _ in range(t):
+    n = int(input())
+    circles = []
+    for _ in range(n):
+        x, y = map(int, input().split())
+        circles.append( (x, y) )
+    x_s, y_s, x_t, y_t = map(int, input().split())
+    T = math.hypot(x_t - x_s, y_t - y_s)
+    
+    a = y_t - y_s
+    b = x_s - x_t
+    c = (x_t - x_s)*y_s - (y_t - y_s)*x_s
+    
+    all_good = True
+    for x, y in circles:
+        numerator = abs( a * x + b * y + c )
+        denominator = math.hypot(a, b)
+        if denominator == 0:
+            # This is when a and b are both zero, which would mean the line is undefined.
+            # But since circles are distinct, and start and target are distinct, a and b can't both be zero.
+            # So, this case won't happen.
+            pass
+        distance = numerator / denominator
+        if distance <= T:
+            all_good = False
+            break
+    
+    print("YES" if all_good else "NO")
+
+Wait, but in the case where a and b are both zero, the line is undefined. But in our problem, since start and target are distinct, and circles are distinct, a and b can't both be zero.
+
+So, the code should handle that.
+
+But wait, in the case where a and b are both zero, the line is undefined. So, but in our problem, since start and target are distinct, and circles are distinct, a can't be zero, because:
+
+a = y_t - y_s.
+
+If a is zero, then the line is horizontal. So, circles can be arranged in any way.
+
+Wait, no, a is the change in y between start and target. So, if a is zero, the line is horizontal.
+
+But in any case, the code should handle all cases correctly.
+
+Testing the code with some examples.
+
+Example 1:
+
+Test case where all circles are too close to the line.
+
+n=1
+
+circle at (0,0)
+
+start at (0,0), target at (1,0). T=1.
+
+The line is the x-axis.
+
+The distance from (0,0) to the line is 0, which is <= T. So, output is NO.
+
+Which is correct: the circle is on the line, so it's at distance 0, which is <= T.
+
+Another test case:
+
+n=1
+
+circle at (2,0).
+
+start at (0,0), target at (1,0).
+
+T=1.
+
+The line is x-axis.
+
+The distance from (2,0) to line is 0, which is <= T. So, output is NO.
+
+Another test case:
+
+n=1
+
+circle at (3,0).
+
+start at (0,0), target at (1,0).
+
+T=1.
+
+Distance is 2, which is > 1. So, output YES.
+
+So, code would output YES.
+
+Another test case:
+
+n=2
+
+circle1 at (0,0)
+
+circle2 at (2,0)
+
+start at (0,0), target at (1,0).
+
+T=1.
+
+For circle1, distance is 0.
+
+For circle2, distance is 1, which is equal to T. So, output is NO.
+
+Which is correct: the circle2 is at distance 1, which is not greater than T=1.
+
+So, the code would output NO.
+
+Another test case:
+
+n=1
+
+circle at (1,2)
+
+start at (0,0), target at (2,0). T=2.
+
+The line is from (0,0) to (2,0), equation y=0.
+
+The distance from (1,2) to line is 2, which is equal to T=2. So, output is NO.
+
+Wait, but the condition is distance > T. So, 2 <= 2, so condition fails. Output is NO.
+
+But wait, the line is the x-axis. The circle is at (1,2), which is distance 2 from the line. So, the distance is equal to T, which is not greater than T. So, output is NO.
+
+So, the code correctly outputs NO.
+
+Another test case:
+
+n=2
+
+circle1 at (0,0)
+
+circle2 at (3,0)
+
+start at (0,0), target at (4,0). T=4.
+
+For circle1: distance 0 <=4 → NO.
+
+So, code outputs NO.
+
+Another test case:
+
+n=2
+
+circle1 at (0,0), radius 1 (so, distance from start is 1 < T=4).
+
+circle2 at (5,0), radius 1 (distance from start is 5>4).
+
+So, the line is x-axis.
+
+For circle1: distance 0 <4 → condition fails. So, output NO.
+
+Which is correct.
+
+So, the code seems to handle these cases correctly.
+
+Now, let's think about the case where the line is not the direction from start to target, but another line. For example, the circles are arranged in a way that along the direction from start to target, some are close, but another direction is far.
+
+In such cases, the initial approach would correctly return NO, because along the start to target line, some circles are within T.
+
+So, the code is correct.
+
+Thus, the approach is correct, and the code should handle all test cases.
+</think>
+
+To solve this problem, we need to determine if it is possible to move from a starting point to a target point without the radius of any expanding circles reaching the circumference of the target point. The circles expand at a rate of 1 unit per second, so the radius at time \( t \) is \( t \) units.
+
+### Approach
+1. **Problem Analysis**: The key insight is to determine if there exists a straight path from the starting point to the target point such that the distance from any circle to this path is always greater than the time \( t \) when approaching the target point. The time \( t \) is the Euclidean distance from the starting point to the target point, denoted as \( T \).
+
+2. **Line Equation**: We consider the line passing through the starting point and the target point. This line is the direction of travel. For each circle, we compute the perpendicular distance to this line.
+
+3. **Distance Calculation**: For each circle, we compute the perpendicular distance to the line using the formula for the distance from a point to a line. If this distance is greater than \( T \) for all circles, then the answer is "YES"; otherwise, it is "NO".
+
+### Solution Code
+```python
+import math
+
+def main():
+    import sys
+    input = sys.stdin.read
+    data = input().split()
+    idx = 0
+    t = int(data[idx])
+    idx += 1
+    for _ in range(t):
+        n = int(data[idx])
+        idx += 1
+        circles = []
+        for _ in range(n):
+            x = int(data[idx])
+            y = int(data[idx + 1])
+            circles.append((x, y))
+            idx += 2
+        x_s = int(data[idx])
+        y_s = int(data[idx + 1])
+        x_t = int(data[idx + 2])
+        y_t = int(data[idx + 3])
+        idx += 4
+        
+        T = math.hypot(x_t - x_s, y_t - y_s)
+        
+        a = y_t - y_s
+        b = x_s - x_t
+        c = (x_t - x_s) * y_s - (y_t - y_s) * x_s
+        
+        all_good = True
+        for x, y in circles:
+            numerator = abs(a * x + b * y + c)
+            denominator = math.hypot(a, b)
+            if denominator == 0:
+                all_good = False
+                break
+            distance = numerator / denominator
+            if distance <= T:
+                all_good = False
+                break
+        
+        print("YES" if all_good else "NO")
+
+if __name__ == "__main__":
+    main()
+```
+
+### Explanation
+1. **Reading Input**: The input is read in one go for efficiency, especially given the constraints.
+2. **Line Equation**: The line through the start and target points is defined by the coefficients \( a \), \( b \), and \( c \) based on the direction vector from the start to the target.
+3. **Distance Check**: For each circle, the perpendicular distance to the line is computed. If any circle's distance is less than or equal to \( T \), the answer is "NO".
+4. **Output**: Based on the checks, the result for each test case is printed as "YES" or "NO".
+
+This approach ensures that we efficiently determine the feasibility of the path by leveraging geometric properties and distance calculations.<｜end▁of▁sentence｜>

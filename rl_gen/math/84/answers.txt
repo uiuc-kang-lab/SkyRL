@@ -1,0 +1,41 @@
+1
+7
+Okay, so I need to figure out how many more digits the base-2 representation of 2500 has compared to its base-7 representation. Hmm, let me start by recalling how to convert numbers from base-10 to other bases.
+
+First, I'll convert 2500 from base-10 to base-2. To do that, I can repeatedly divide the number by 2 and keep track of the remainders. Let me see:
+
+2500 divided by 2 is 1250 with a remainder of 0.
+1250 divided by 2 is 625 with a remainder of 0.
+625 divided by 2 is 312 with a remainder of 1.
+312 divided by 2 is 156 with a remainder of 0.
+156 divided by 2 is 78 with a remainder of 0.
+78 divided by 2 is 39 with a remainder of 0.
+39 divided by 2 is 19 with a remainder of 1.
+19 divided by 2 is 9 with a remainder of 1.
+9 divided by 2 is 4 with a remainder of 1.
+4 divided by 2 is 2 with a remainder of 0.
+2 divided by 2 is 1 with a remainder of 0.
+1 divided by 2 is 0 with a remainder of 1.
+
+Now, writing the remainders from last to first, the base-2 representation is 100111001000. Let me count the digits: 1,0,0,1,1,1,0,0,1,0,0,0. So that's 12 digits.
+
+Next, I'll convert 2500 to base-7. This might be a bit more involved. I'll divide 2500 by 7 and keep track of the remainders.
+
+2500 divided by 7 is 357 with a remainder of 1.
+357 divided by 7 is 51 with a remainder of 0.
+51 divided by 7 is 7 with a remainder of 2.
+7 divided by 7 is 1 with a remainder of 0.
+1 divided by 7 is 0 with a remainder of 1.
+
+So, reading the remainders from last to first, the base-7 representation is 10201. Let me count the digits: 1,0,2,0,1. That's 5 digits.
+
+Now, I need to find how many more digits the base-2 representation has than the base-7. So, 12 (base-2) minus 5 (base-7) equals 7. Therefore, the base-2 representation has 7 more digits than the base-7 representation.
+
+Wait, let me double-check the conversions to make sure I didn't make a mistake. For base-2, 100111001000 is indeed 12 digits. For base-7, 10201 is 5 digits. So, 12 - 5 = 7. Yep, that seems correct.
+</think>
+
+The base-2 representation of \(2500_{10}\) has 12 digits, and the base-7 representation has 5 digits. Therefore, the base-2 representation has \(12 - 5 = 7\) more digits.
+
+\[
+\boxed{7}
+\]<｜end▁of▁sentence｜>

@@ -1,0 +1,616 @@
+Okay, I've got this problem to solve. Let's try to understand it step by step.
+
+So, the problem is about a grid that needs to be beautiful. A beautiful grid has the property that for any subgrid, the XOR of the four corners is zero. That's an interesting condition. I remember that XOR has some properties, so maybe I can find a pattern or a condition that the entire grid must satisfy.
+
+Let me think about what this condition implies. For any i1 < i2 and j1 < j2, the XOR of A[i1][j1], A[i1][j2], A[i2][j1], A[i2][j2] is zero. So, A[i1][j1] XOR A[i1][j2] = A[i2][j1] XOR A[i2][j2]. Hmm, but wait, that's not necessarily obvious. Maybe I can rearrange it.
+
+Wait, let's consider the XOR operation. XOR is associative and commutative, so the order doesn't matter. But I'm not sure how that helps yet.
+
+Another approach: perhaps the entire grid must satisfy some kind of dependency between the cells. Like, maybe all the cells can be expressed in terms of some base variables, and the rest must conform to those constraints.
+
+Wait, I recall a concept from linear algebra over GF(2), where certain cells can be expressed as linear combinations of others. Maybe that's applicable here.
+
+Let me think about the grid's structure. For any two rows i1 and i2, and two columns j1 and j2, the XOR of the four corners is zero. That means:
+
+A[i1][j1] XOR A[i1][j2] = A[i2][j1] XOR A[i2][j2]
+
+Which can be rewritten as:
+
+A[i1][j1] XOR A[i1][j2] XOR A[i2][j1] XOR A[i2][j2] = 0
+
+Wait, but that's for any i1 < i2 and j1 < j2. So, this condition must hold for all such subgrids.
+
+Hmm, perhaps the grid is such that all the cells lie on a certain line or satisfy a particular pattern. Let's think of a simpler case.
+
+Suppose the grid is filled with the same value. Then for any subgrid, the four corners' XOR is the same value XOR itself three times, which is zero. So that's a valid case.
+
+Another case: suppose the grid is filled with a certain pattern like a checkerboard. Wait, but even that might not satisfy the condition. Let's see.
+
+Wait, another approach: think about the grid as a matrix. For the condition to hold for any subgrid, perhaps all the cells must lie on a certain affine space.
+
+Wait, perhaps the grid must have a certain linear structure. Let's model the grid as a vector space over GF(2). Each cell can be represented as a variable, and the conditions impose linear equations. The solution space would be the set of all grids that satisfy these equations, and the number of solutions is 2^d, where d is the dimension of the solution space.
+
+So, the problem reduces to finding the dimension d of this solution space, and then for the current state of the grid, the number of ways to fill in the unfilled cells is 2^d.
+
+But how do we model the constraints?
+
+Let me think about the constraints for the grid. For any two rows and any two columns, the condition must hold. So, for rows r1 < r2 and cols c1 < c2, the condition is:
+
+A[r1][c1] XOR A[r1][c2] XOR A[r2][c1] XOR A[r2][c2] = 0.
+
+Wait, but this is for any r1 < r2 and c1 < c2. So, the variables are all the cells in the grid, and the constraints are that for every such pair of rows and columns, this equation must hold.
+
+But considering all possible pairs would be computationally expensive, especially since the grid can be up to 1e5x1e5. So, we can't check each possible pair.
+
+So, we need a way to represent the constraints without explicitly computing them for every possible pair.
+
+Let me think about the condition in terms of the XOR of the two rows and the two columns. Maybe the condition can be rephrased as A[r1][c1] + A[r1][c2] = A[r2][c1] + A[r2][c2], where '+' is XOR. Wait, because XOR is addition in GF(2), where 1+1=0, etc.
+
+Alternatively, the condition is A[r1][c1] + A[r1][c2] + A[r2][c1] + A[r2][c2] = 0. So, that's equivalent to A[r1][c1] + A[r1][c2] = A[r2][c1] + A[r2][c2].
+
+Hmm, perhaps this can be thought of as a linear equation in GF(2). So, for each pair (r1, r2, c1, c2), this equation must hold.
+
+But again, considering all pairs is not feasible. So, we need a way to model all these constraints in a way that can be represented efficiently.
+
+Wait, perhaps the constraints can be broken down into certain variables that are free to be set, and the others are determined by them.
+
+Let me consider the rows and columns as variables. Suppose we have a base set of variables, and all other variables can be expressed in terms of them.
+
+Wait, another idea: for any two rows, the differences between their cells must form a certain pattern. Or perhaps the grid is such that all the cells in the same row or column are determined by certain variables.
+
+Alternatively, maybe the grid can be represented as a grid where the cell (r, c) can be expressed as a linear combination of a few variables. For example, perhaps the grid is built such that for any cell (r, c), its value is equal to a certain function of r and c, plus some base variables that can be set.
+
+Wait, perhaps the grid is such that the value of any cell (r, c) is equal to some function of r and c, plus a base variable. But I'm not sure.
+
+Wait, let's think about the constraints. For any two cells in the same row, and any two in the same column, the condition applies. Maybe we can model the grid in a way that each row has some base variables, and each column has some base variables, and the rest are determined by these.
+
+Wait, another approach: think about the grid as a bipartite graph where each row is connected to each column, and the constraints form certain edges. But I'm not sure how that would help.
+
+Hmm, perhaps the key is to find the number of independent constraints. Each constraint reduces the degrees of freedom by one. So, the total number of independent constraints is equal to (number of cells) minus (number of independent variables). Then, the number of solutions is 2^d, where d is the number of independent constraints.
+
+But how to compute d.
+
+Wait, perhaps the constraints can be broken down into rows and columns. Let me think about the variables. Let me denote the base variables as follows:
+
+- For each row r, let b_r be the value of A[r][1], the first column of row r.
+
+- For each column c, let b_c be the value of A[1][c], the first row of column c.
+
+But wait, that might not capture all constraints, as some constraints involve more than two cells.
+
+Another thought: perhaps the grid can be represented such that all cells (r, c) satisfy A[r][c] = b_r XOR b_c. Let's test this.
+
+If A[r][c] = b_r XOR b_c, then for any two cells in a row, say (r, c1) and (r, c2), their values are b_r XOR b_c1 and b_r XOR b_c2. The XOR of these two is (b_r XOR b_c1) XOR (b_r XOR b_c2) = (b_c1 XOR b_c2), since XOR is associative and commutative.
+
+Similarly, for any two cells in a column, say (r1, c) and (r2, c), their values are b_r1 XOR b_c and b_r2 XOR b_c. Their XOR is (b_r1 XOR b_r2) XOR (b_c XOR b_c) = b_r1 XOR b_r2.
+
+Now, the condition for the subgrid is that A[r1][c1] XOR A[r1][c2] XOR A[r2][c1] XOR A[r2][c2] = 0.
+
+Substituting A[r][c] = b_r XOR b_c:
+
+= (b_r1 XOR b_c1) XOR (b_r1 XOR b_c2) XOR (b_r2 XOR b_c1) XOR (b_r2 XOR b_c2)
+= [ (b_r1 XOR b_c1) XOR (b_r1 XOR b_c2) ] XOR [ (b_r2 XOR b_c1) XOR (b_r2 XOR b_c2) ]
+
+Simplify each part:
+
+Each part is (b_c1 XOR b_c2) XOR (b_c1 XOR b_c2) which is 0. So the entire expression is 0 XOR 0 = 0. So the condition holds.
+
+So, the grid where A[r][c] = b_r XOR b_c satisfies the beautiful condition. So that's a valid solution.
+
+So, any grid that can be expressed as A[r][c] = b_r XOR b_c for some choice of b_r and b_c will be beautiful.
+
+But wait, perhaps that's not the only possibility. Are there other grids that satisfy the condition?
+
+Wait, suppose the grid is such that A[r][c] = a + b + c for some a, b, c, but that might not hold. Wait, no, in GF(2) addition, it's XOR, so it's a + b + c mod 2.
+
+Wait, but in this case, the condition would require that for any four corners, A[r1][c1] XOR A[r1][c2] XOR A[r2][c1] XOR A[r2][c2] = 0.
+
+But in this case, A[r][c] is a + b + c, so A[r1][c1] is a_r1 + b_c1 + c1, and similarly for the others.
+
+So, let's compute the XOR:
+
+A[r1][c1] XOR A[r1][c2] XOR A[r2][c1] XOR A[r2][c2] 
+
+= (a_r1 + b_c1 + c1) XOR (a_r1 + b_c2 + c1) XOR (a_r2 + b_c1 + c2) XOR (a_r2 + b_c2 + c2)
+
+Simplify term by term:
+
+Each a term cancels out because XOR is associative and commutative. For example, a_r1 XOR a_r1 is 0, etc.
+
+Wait, let me compute each XOR step by step:
+
+First, compute A[r1][c1] XOR A[r1][c2] = (a_r1 + b_c1 + c1) XOR (a_r1 + b_c2 + c1) 
+
+Which is (a_r1 + b_c1 + c1) XOR (a_r1 + b_c2 + c1) 
+
+= [a_r1 XOR a_r1] XOR [b_c1 XOR b_c2] XOR [c1 XOR c1] 
+
+= 0 XOR (b_c1 XOR b_c2) XOR 0 
+
+= b_c1 XOR b_c2 
+
+Similarly, compute A[r2][c1] XOR A[r2][c2] = (a_r2 + b_c1 + c2) XOR (a_r2 + b_c2 + c2) 
+
+= (a_r2 XOR a_r2) XOR (b_c1 XOR b_c2) XOR (c2 XOR c2) 
+
+= 0 XOR (b_c1 XOR b_c2) XOR 0 
+
+= b_c1 XOR b_c2 
+
+So, overall, the XOR of all four terms is (b_c1 XOR b_c2) XOR (b_c1 XOR b_c2) = 0.
+
+So yes, any grid that is a linear combination of a, b, c as above will satisfy the condition. So, the general form is A[r][c] = a + b + c, where a, b, c are constants.
+
+But wait, in the problem statement, the grid is 0 <= A[r][c] < 2^30, which is the same as being in GF(2^30), but in our case, since the condition is in GF(2), the XOR is equivalent to addition modulo 2.
+
+So, the general solution is that the grid can be written as A[r][c] = a_r XOR b_c, where a_r is the value for row r, and b_c is the value for column c. Because a XOR b is the same as a + b in GF(2).
+
+Wait, no. Wait, in GF(2), adding is the same as XOR. So, a XOR b is the same as a + b mod 2.
+
+So, the grid can be expressed as A[r][c] = a[r] XOR b[c], where a[r] is the value of the r-th row, and b[c] is the value of the c-th column.
+
+So, the problem reduces to finding the number of ways to assign values to a[r] and b[c] such that all the given constraints are satisfied.
+
+But wait, the constraints are that for any pair of rows r1 < r2 and columns c1 < c2, the condition A[r1][c1] XOR A[r1][c2] XOR A[r2][c1] XOR A[r2][c2] = 0 must hold. Let's substitute A[r][c] = a[r] XOR b[c]:
+
+= (a[r1] XOR b[c1]) XOR (a[r1] XOR b[c2]) XOR (a[r2] XOR b[c1]) XOR (a[r2] XOR b[c2])
+
+Simplify this expression:
+
+Let me compute each XOR step by step.
+
+First, compute (a[r1] XOR b[c1]) XOR (a[r1] XOR b[c2]) = (a[r1] XOR a[r1]) XOR (b[c1] XOR b[c2]) = 0 XOR (b[c1] XOR b[c2]) = b[c1] XOR b[c2].
+
+Similarly, (a[r2] XOR b[c1]) XOR (a[r2] XOR b[c2]) = b[c1] XOR b[c2].
+
+So, the entire expression becomes (b[c1] XOR b[c2]) XOR (b[c1] XOR b[c2]) = 0.
+
+So, this condition is automatically satisfied for any a[r] and b[c]. That means that as long as the grid is of the form A[r][c] = a[r] XOR b[c], it satisfies the condition.
+
+So, the problem reduces to finding the number of ways to assign a[r] and b[c] such that all the unfilled cells (i.e., cells not yet filled) are compatible with these constraints.
+
+But wait, the initial grid may have some cells already filled, which impose constraints on a[r] and b[c]. So, we need to model these constraints and find the number of possible a and b assignments that satisfy all the constraints.
+
+Each filled cell (r, c) gives an equation: a[r] XOR b[c] = v, where v is the given value.
+
+So, the problem is now to find the number of solutions to a system of equations a[r] XOR b[c] = v for all (r, c) where the cell is filled.
+
+Each filled cell contributes an equation between a[r] and b[c].
+
+So, the variables are a[1], a[2], ..., a[n], and b[1], b[2], ..., b[m]. Each filled cell adds an equation a[r] XOR b[c] = v.
+
+We need to find the number of possible assignments to a and b that satisfy all these equations.
+
+But since the grid is large (n and m up to 1e5), we need an efficient way to model this.
+
+Now, the key is to model the dependencies between the a's and b's. Let's see.
+
+Each filled cell (r, c) gives a[r] XOR b[c] = v. Let's denote this as equation (r, c).
+
+We can process these equations and see if they are consistent.
+
+The variables are a_1, a_2, ..., a_n and b_1, b_2, ..., b_m.
+
+But wait, the number of variables is n + m, but the number of equations is k, which can be up to 1e5.
+
+But the equations are of the form a_r = b_c XOR v.
+
+So, for each filled cell (r, c), we have a_r = b_c XOR v.
+
+So, if we fix a variable, say a_1, then b_1 is determined as a_1 XOR v (from the equation for (1, c)).
+
+But wait, perhaps the dependencies can be modeled as a bipartite graph, where each filled cell connects a row and a column. Because each filled cell (r, c) implies that a_r and b_c are related.
+
+So, the problem is to model the dependencies between a's and b's, and find the number of possible assignments that satisfy all equations.
+
+Let me think about how to model this.
+
+Each filled cell (r, c) gives a constraint between a_r and b_c. So, for each such cell, a_r = b_c XOR v.
+
+So, if I fix a_r, then b_c is determined as a_r XOR v. Alternatively, if I fix b_c, then a_r is determined.
+
+This suggests that the variables a and b are linked via these constraints.
+
+Now, let's see if these constraints are consistent. For example, if two filled cells (r, c1) and (r, c2) both have the same a_r, then b_c1 XOR v must equal b_c2 XOR v, which implies b_c1 = b_c2.
+
+Similarly, if two filled cells (r1, c) and (r2, c) have the same b_c, then a_r1 must equal a_r2.
+
+So, the constraints must be consistent in the sense that the same a_r and b_c must not create conflicting assignments.
+
+Thus, the problem reduces to checking whether the constraints are consistent, and if so, finding the number of possible assignments.
+
+So, the approach is:
+
+1. For each filled cell (r, c), add the equation a_r = b_c XOR v.
+
+2. Check for consistency: for any two cells (r, c) and (r, c'), if a_r is fixed, then b_c must equal b_c' XOR v. Similarly, if b_c is fixed, a_r must equal a_r' XOR v.
+
+3. Once the equations are consistent, the number of possible assignments is 2^d, where d is the number of free variables.
+
+Wait, but the variables are a_1, a_2, ..., a_n, b_1, b_2, ..., b_m. So, the number of free variables is the number of variables minus the number of independent equations.
+
+Wait, but the number of variables is n + m. Each equation reduces the degrees of freedom.
+
+But how to model the dependencies among the variables.
+
+Let me think of the filled cells as edges in a bipartite graph between rows and columns. Each filled cell (r, c) is an edge connecting row r to column c. The value v is the XOR between a[r] and b[c].
+
+So, this forms a bipartite graph where nodes are rows and columns, and edges are the filled cells.
+
+Each connected component in this graph contributes to the number of free variables.
+
+For example, if a connected component has k rows and l columns, but some dependencies are already fixed by the edges, then the number of free variables is (k + l - 1) for that component.
+
+Because, in a connected bipartite graph, the number of connected components is c, and the number of edges is e. The number of connected components is c = (n + m - e + d) where d is the number of cycles, but perhaps that's not the right approach.
+
+Wait, the number of connected components in the bipartite graph is equal to the number of connected components in the rows and columns.
+
+Wait, here's an alternative way: each connected component in the bipartite graph has a certain number of rows and columns. The number of free variables for each connected component is (size of rows in component + size of columns in component - 1).
+
+Because, in a connected bipartite graph, you can assign variables to one set (rows or columns) based on the other, and the variables in the other set are determined by the first.
+
+But in our case, each filled cell is an edge between a row and a column. So, each connected component is a bipartite graph where all rows and columns are connected through the edges.
+
+So, for a connected component with R rows and C columns, if there are E edges, then the number of connected components is 1.
+
+But in our problem, the edges are all the filled cells. So, for each connected component in this bipartite graph, the number of free variables is (R + C - 1), because we can assign one variable freely, and the others are determined.
+
+So, for each connected component, the number of free variables is (R + C - 1), and each such component contributes a factor of 2 to the total number of solutions.
+
+So, the total number of solutions is 2^sum, where sum is the sum over all connected components of (R + C - 1).
+
+But wait, in our problem, the initial grid may have some cells already filled, which may cause some a_r or b_c to be fixed. So, after considering all the constraints, the number of free variables is the sum of (R + C - 1) for each connected component in the bipartite graph formed by the filled cells.
+
+But how to model this.
+
+Let me formalize this:
+
+- The bipartite graph is formed by the rows and columns as nodes, and each filled cell as an edge.
+
+- The connected components are the connected parts of this bipartite graph.
+
+- For each connected component, which has R rows and C columns, the number of free variables is (R + C - 1). Because, in a connected bipartite graph, you can choose one variable (say a_r) as a free variable, then all other a_r are determined, and similarly for the b_c variables.
+
+Wait, no. Because in a connected bipartite graph, for each connected component, the number of connected components in the bipartite graph is 1. So, for each connected component, the number of free variables is (number of rows in component + number of columns in component - 1).
+
+Because, you can choose one row and one column, and then assign a variable to one, and the rest are determined.
+
+So, for each connected component, the number of free variables is (R + C - 1), where R is the number of rows in the component, C the number of columns.
+
+Thus, the total number of solutions is 2^d, where d is the sum over all connected components of (R + C - 1).
+
+But wait, only if the constraints are consistent. So, first, we need to check if the constraints are consistent.
+
+How to do that?
+
+Each filled cell (r, c) gives a_r = b_c XOR v.
+
+We can model this as a bipartite graph where each connected component must have the same a_r and b_c values for all edges in the component.
+
+So, to check consistency, we can model this as a bipartite graph and perform a bipartition check.
+
+But how?
+
+Let me think of the bipartite graph as rows and columns. Each filled cell (r, c) is an edge from r to c, with weight v.
+
+But how to model the constraints.
+
+Another approach is to model this as a bipartite graph where for each connected component, the a_r and b_c must satisfy the constraints of all the edges in the component.
+
+So, for a connected component with R rows and C columns:
+
+- Choose a variable, say a_1, and assign it a value. Then, all other a_r are determined as a_r = a_1 XOR (b_c XOR v) for each edge (r, c) in the component.
+
+- Similarly, assign a value to b_1, then all other b_c are determined as b_c = b_1 XOR (a_r XOR v) for each edge (r, c).
+
+But in a connected bipartite graph, the a_r and b_c must satisfy the constraints for all edges. So, for the component, the constraints are consistent if and only if the a_r and b_c assignments are compatible.
+
+So, to model this, we can perform a bipartite graph check, but since it's a bipartition problem, if it's bipartite, then the constraints are consistent.
+
+Wait, but the bipartite graph is already a bipartite graph, so checking if it's bipartite is sufficient. Because each connected component is a bipartition between rows and columns.
+
+Wait, but in this case, the bipartition is between rows and columns. So, each edge connects a row and a column, and the bipartite graph is a bipartition of rows and columns.
+
+So, the bipartite graph is bipartite, and thus, the constraints are always consistent, because in a bipartite graph, the constraints can be satisfied.
+
+Wait, no. Because the bipartite graph is rows and columns, but the edges are between rows and columns, which are the two partitions. So, the bipartition is such that all edges go between the two partitions. Thus, the constraints are consistent because the bipartite graph is bipartite, and thus, it's possible to find a consistent assignment.
+
+Wait, but the bipartition is between rows and columns. So, the connected component's bipartition is fixed, and the constraints are consistent as long as the connected component is a bipartition.
+
+Which it is, being a bipartite graph.
+
+So, the constraints are always consistent. So, no additional checks are needed beyond what's given by the filled cells.
+
+So, the number of solutions is 2^d, where d is the sum over all connected components of (R + C - 1).
+
+Thus, the steps are:
+
+1. For each test case, process the initial grid.
+
+2. For each filled cell (r, c, v), add an edge between r and c in the bipartite graph.
+
+3. Find all connected components in this bipartite graph.
+
+4. For each component, determine R (number of rows in the component) and C (number of columns in the component).
+
+5. Compute d = sum over all components of (R + C - 1).
+
+6. The number of solutions is 2^d.
+
+But wait, what about the unfilled cells? How do their constraints affect the solution?
+
+The filled cells define the constraints, and the number of solutions is 2^d, which is the number of possible assignments to the a's and b's that satisfy all the constraints.
+
+So, the answer is 2^d, modulo 1e9+7.
+
+But wait, what about the initial grid's unfilled cells? They are not part of the constraints. So, as long as the initial grid's unfilled cells are consistent with the constraints, the number of solutions is 2^d, regardless of their values.
+
+So, the problem reduces to computing d based on the connected components in the bipartite graph formed by the filled cells.
+
+So, the problem is now to:
+
+- For each test case, build the bipartite graph of rows and columns connected by filled cells.
+
+- Find all connected components.
+
+- For each component, count the number of rows (R) and columns (C) in it.
+
+- Sum (R + C - 1) for all components. Let this be d.
+
+- The answer for each state (after each update) is 2^d mod 1e9+7.
+
+Wait, no. Because each update adds a new filled cell, which may change the bipartition, and thus the d.
+
+So, for each state after each update, we need to recompute d, which is the sum over all connected components of (R + C - 1).
+
+But the number of connected components can be up to n + m, which is 2e5, and with q up to 1e5, this seems computationally expensive for each test case.
+
+Wait, but for each test case, the number of connected components is the number of connected components in the bipartite graph formed by the filled cells. So, for each test case, the number of connected components is O(m + n), which is acceptable.
+
+So, the plan is:
+
+For each test case:
+
+- Read n, m, k, q.
+
+- Read the k filled cells, each as (r, c, v).
+
+- Build the bipartite graph where each filled cell (r, c, v) connects row r and column c.
+
+- Find the connected components of this graph.
+
+- For each connected component, determine R (number of rows) and C (number of columns).
+
+- Compute d as the sum of (R + C - 1) for all components.
+
+- The answer for each state after each update is 2^d mod MOD.
+
+But wait, the initial grid may have some unfilled cells, but their values are fixed as per the filled cells. So, these values are already in the constraints, so the number of solutions is 2^d, which is correct.
+
+So, the algorithm is:
+
+For each test case:
+
+1. Read n, m, k, q.
+
+2. Read the k filled cells.
+
+3. Build the bipartite graph where each edge is a filled cell (r, c, v).
+
+4. Find the connected components of this bipartite graph.
+
+5. For each component, count the number of rows (R) and columns (C) in it.
+
+6. Compute d = sum(R + C - 1) for all components.
+
+7. The answer after each update is 2^d mod 1e9+7.
+
+Wait, but what about the initial grid's unfilled cells? They are not part of the constraints, so their values are fixed as per the constraints. So, their values are already determined by the filled cells, and thus, the number of solutions is 2^d.
+
+So, the initial grid's filled cells are part of the constraints, and the number of solutions is 2^d.
+
+Thus, the approach is correct.
+
+Now, to implement this.
+
+But how to compute the connected components of a bipartite graph.
+
+An efficient way is to model the rows and columns as separate nodes, and model the edges between them.
+
+But since rows and columns are separate, we can represent them as two separate sets, and perform a BFS or DFS for each unvisited row or column.
+
+Alternatively, for each connected component, we can model it as a collection of rows and columns, and perform a BFS, keeping track of which rows and columns have been visited.
+
+So, here's the plan:
+
+- Create a visited array for rows and columns.
+
+- For each row, if it's not visited, start a BFS, and during BFS, mark all connected rows and columns as visited.
+
+- For each connected component, count the number of rows (R) and columns (C).
+
+- For each component, add (R + C - 1) to d.
+
+Now, the code.
+
+But let's think about the implementation.
+
+Each test case:
+
+- We have up to 1e5 rows and columns.
+
+We can represent the bipartite graph using adjacency lists.
+
+For each filled cell (r, c, v), add an edge from r to c.
+
+So, for each r, we can have a list of c's it's connected to.
+
+For each c, a list of r's it's connected to.
+
+Once the adjacency list is built, we can perform BFS for each unvisited node (row or column).
+
+But since rows and columns can be up to 1e5, using a dictionary or list for adjacency is manageable.
+
+But wait, in Python, for 1e5 nodes, using a list of lists is feasible.
+
+But rows can be numbered from 1 to n, and columns from 1 to m.
+
+So, for each test case:
+
+Initialize a visited array of size n+1 (for rows) and m+1 (for columns), to track visited nodes.
+
+Then, for each filled cell (r, c, v):
+
+Add r to the adjacency list of c, and c to the adjacency list of r.
+
+Wait, no. Because in the bipartite graph, each edge connects a row and a column. So, each filled cell (r, c, v) is an edge between r and c.
+
+So, the adjacency list for the bipartite graph is:
+
+adj[r] = [c's connected to r]
+
+adj[c] = [r's connected to c]
+
+So, for each filled cell, we add c to adj[r], and r to adj[c].
+
+Once the adjacency list is built, we can perform BFS for each connected component.
+
+But how to represent the visited nodes.
+
+In the BFS, for a row, when we visit it, we mark it as visited, and for a column, we mark it as visited.
+
+So, the code will look like:
+
+for each test case:
+
+    n, m, k, q = map(int, input().split())
+
+    adj = [[] for _ in range(n+1)]  # adj[r] contains columns connected to r
+
+    for _ in range(k):
+
+        r, c, v = map(int, input().split())
+
+        adj[r].append(c)
+
+        adj[c].append(r)
+
+    visited = [False] * (n + m + 1)  # indexes 0 to n+m, but rows are 1..n, columns 1..m.
+
+    d = 0
+
+    for r in range(1, n+1):
+
+        if not visited[r]:
+
+            # BFS for this component
+
+            queue = deque()
+
+            queue.append(r)
+
+            visited[r] = True
+
+            component = []
+
+            component_rows = 0
+
+            component_cols = 0
+
+            while queue:
+
+                node = queue.popleft()
+
+                component.append(node)
+
+                component_rows += 1
+
+                # process all edges from this node
+
+                for neighbor in adj[node]:
+
+                    if not visited[neighbor]:
+
+                        visited[neighbor] = True
+
+                        queue.append(neighbor)
+
+                        component_cols += 1
+
+            d += (component_rows + component_cols - 1)
+
+    # Now, compute 2^d mod MOD
+
+    MOD = 10**9 +7
+
+    ans = pow(2, d, MOD)
+
+    # But wait, the initial state is before any updates. So, for the first state, the answer is ans.
+
+    # Then, for each update, we add a new filled cell, which may change the bipartite graph.
+
+    # So, for each query (r, c, v), we need to:
+
+    # 1. Remove any existing edges between r and c.
+
+    # 2. Add the new edge (r, c, v) if it wasn't present before.
+
+    # 3. Recompute d and the answer.
+
+    # But wait, for k up to 1e5 and q up to 1e5, this approach is O(q*k), which is 1e10, which is way too slow.
+
+    # So, this approach is not feasible.
+
+    # So, we need a more efficient way.
+
+Hmm, so the initial approach is correct but the problem is that for each query, we need to update the bipartite graph, which is expensive.
+
+So, we need a way to handle the updates efficiently.
+
+Alternative approach: For each query (r, c, v), we can represent the filled cells as a bipartite graph and update the connected components.
+
+But with n and m up to 1e5, and q up to 1e5, we need an efficient way to manage the connected components.
+
+Each query adds a new edge or may remove an existing edge.
+
+So, perhaps we can model this with a Union-Find (Disjoint Set Union) data structure, but it's for undirected graphs.
+
+Wait, but the bipartite graph is a set of rows and columns, connected via edges. So, each edge connects a row to a column.
+
+So, perhaps we can model this as a bipartitioned graph, and use a DSU that can track the connectedness between rows and columns.
+
+But since rows and columns are in different sets, perhaps we can represent each row and column as a separate node, and edges between them.
+
+Wait, but DSU is for undirected graphs, and in our case, each edge connects a row and a column.
+
+So, the DSU can have nodes for rows and columns, but the edges are between them.
+
+Thus, for each query, when we add a new edge (r, c, v), we need to:
+
+- If r and c are already connected, do nothing.
+
+- Else, connect them.
+
+But how to manage the DSU for rows and columns.
+
+Wait, perhaps we can represent each row as a unique node, each column as another unique node, and each edge is between a row and a column.
+
+So, the DSU can have a size that includes all rows and columns.
+
+But with n and m up to 1e5, the DSU would need to handle up to 2e5 nodes.
+
+So, the DSU should support:
+
+- Adding edges between a row and a column.
+
+- Find the root of a row or column.
+
+The DSU can be implemented with path compression and union by rank.
+
+So, the plan is:
+
+For each test case:
+
+- Initialize a DSU for all rows and columns.
+
+- For each initial query

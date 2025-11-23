@@ -1,0 +1,781 @@
+Okay, I need to solve this problem where a girl wants to buy the maximum number of petals for her bouquet, but the condition is that the difference in petals between any two flowers is at most one. Also, she has a limited number of coins, which is equal to the sum of the petal counts of the flowers she buys. So, the goal is to maximize the total petals under these constraints.
+
+Let me think about the approach. Hmm, the first thing that comes to mind is that the flowers should be sorted. Because when sorted, it's easier to find a range where the petals are consecutive, which fits the condition. So, I should sort the array of petal counts.
+
+Once the array is sorted, I need to find a window of consecutive flowers where the maximum petal count is as high as possible without exceeding the number of coins m. But wait, it's not just about the maximum, because the total sum of the window must be <= m.
+
+Wait, right. So, the strategy is to find the largest possible window where the maximum petal count in the window is x, and the sum of the window is <= m. Then, among all such windows, we choose the one with the maximum total sum, which will give the maximum petals.
+
+Alternatively, maybe it's better to think of it as trying to find the maximum x such that there's a window of flowers where the maximum is x, and the sum of the window is <= m. Then, the total petals would be the sum of that window.
+
+So, how do I find this window efficiently?
+
+Let me outline the steps:
+
+1. Sort the array of petal counts in non-decreasing order.
+2. For each possible window [l, r] in the sorted array, check if the maximum is <= x (which would be the maximum in the entire array, but I think that's not the case). Wait, no. Because the maximum in the window can vary. So, perhaps it's better to fix the maximum x, and find the largest possible window where all elements are <= x, and the sum is <= m. Then, among all such x, find the maximum sum.
+
+But that might be computationally expensive if done naively. So, perhaps binary search can be used here. Let's think about binary search on x.
+
+Wait, binary search on x might not directly work because the sum is dependent on the window. Alternatively, perhaps we can perform binary search on the possible x values, trying to find the largest x such that there exists a window where the sum is <= m and the maximum is x.
+
+Hmm, maybe that's a way. But I'm not sure. Let me think differently.
+
+Another approach is to find all possible x values (the maximum petal count in the window) and for each x, find the maximum sum of a window where all elements are <= x and the sum is <= m. Then, take the maximum sum across all x.
+
+But how to find all x's efficiently.
+
+Wait, perhaps the optimal window will consist of a consecutive sequence of flowers where the maximum is as large as possible, but the sum doesn't exceed m. So, perhaps the process is:
+
+- Sort the array.
+- For each i, find the maximum j such that the sum of a[i..j] <= m. Then, the maximum j - i + 1 is the window size. Among these, we need to maximize the sum, which is the sum of a[i..j].
+
+Wait, but the sum is fixed once the window is determined by the sum condition. So, the maximum sum is the sum of that window, which is the sum of a[i..j] for the j that's as far as possible for each i.
+
+But that's O(n^2) which is not feasible for n up to 2e5.
+
+So, we need a more efficient way.
+
+Wait, perhaps we can precompute the prefix sums, then for each i, find the maximum j where prefix[j+1] - prefix[i] <= m. Then, for each i, the maximum sum is the maximum possible sum of a consecutive subarray starting at i, with sum <= m. We can then take the maximum sum across all possible i.
+
+Yes, that makes sense. So, let's see:
+
+- Sort the array a in non-decreasing order.
+- Compute prefix sums, where prefix[0] = 0 and prefix[k] = a[0] + a[1] + ... + a[k-1].
+- For each i from 0 to n-1, find the largest j such that prefix[j+1] - prefix[i] <= m. Then, the maximum sum for this i is the sum of a[i] to a[j], which is prefix[j+1] - prefix[i].
+- Keep track of the maximum such sum across all i.
+
+Then, the maximum sum is the answer.
+
+Wait, but how do I efficiently find j for each i? Because for each i, we can perform a binary search on j in the array a.
+
+So, for each i, we can binary search the prefix sum array to find the largest j where prefix[j+1] - prefix[i] <= m.
+
+But considering that n is up to 2e5, and each binary search is O(log n), the total time is O(n log n), which should be acceptable.
+
+Let me think about the steps in code:
+
+For each test case:
+
+1. Read n, m.
+2. Read the array a.
+3. Sort a in non-decreasing order.
+4. Compute prefix sums.
+5. Initialize max_petal to 0.
+6. For each i in 0 to n-1:
+   a. Binary search for the largest j where prefix[j+1] - prefix[i] <= m.
+   b. The sum is prefix[j+1] - prefix[i].
+   c. Update max_petal if this sum is larger.
+7. Output max_petal.
+
+Yes, that should work.
+
+Let me test this logic with some examples.
+
+Example 1:
+Input:
+1
+3
+5 5 5
+m is 15.
+
+After sorting, a is [5,5,5].
+
+prefix is [0,5,10,15].
+
+For each i=0:
+prefix[j+1] - prefix[0] <= 15.
+We can find j up to 2 (since 15 <=15). Sum is 15.
+
+For i=1:
+prefix[j+1] - 5 <=15.
+So, j can be up to 2, sum is 10.
+
+For i=2:
+sum is 5.
+
+So, max is 15.
+
+Which is correct.
+
+Another example:
+
+Input:
+1
+4
+1 2 3 4
+m is 5.
+
+Sorted a: [1,2,3,4]
+prefix: 0,1,3,6,10.
+
+For i=0:
+We look for j where prefix[j+1] - 0 <=5.
+j can be 3 (since 1+2+3+4=10>5, so j=2: sum is 6 (1+2+3=6). Or wait, wait, wait.
+
+Wait, for i=0, we are looking for the largest j where prefix[j+1] - prefix[0] <=5. So, what's the maximum j such that a[0..j] <=5?
+
+The sum is 1+2+3=6 which is <=5? No, wait, 6 is larger than 5. So, we need the largest j where the sum is <=5.
+
+Wait, 1+2=3 <=5. Then, 1+2+3=6>5. So j=1 (since prefix[2] is 3, which is <=5). Sum is 3.
+
+Wait, wait, no. Let me re-calculate.
+
+Wait, prefix is [0,1,3,6,10].
+
+For i=0, the maximum j is where prefix[j+1] - 0 <=5.
+
+We can compute prefix[j+1] <=5.
+
+Looking for the largest j where prefix[j+1] <=5.
+
+Looking through the prefix array:
+
+prefix[0] =0 <=5: yes.
+prefix[1] =1 <=5: yes.
+prefix[2] =3 <=5: yes.
+prefix[3] =6>5: no.
+So j+1 can be up to 2. So j=1.
+
+So sum is prefix[2] - prefix[0] =3-0=3.
+
+But wait, the window is a[0] to a[1], sum is 3.
+
+But wait, what about including a[2]?
+
+1+2+3=6>5, so no.
+
+So, for i=0, the maximum sum is 3.
+
+For i=1:
+
+prefix[j+1] -1 <=5.
+
+What's the largest j where prefix[j+1] <=6 (because 1+5=6).
+
+Looking for j+1 where prefix[j+1] <=6.
+
+prefix[3] is 6, which is <=6. So j can be 2.
+
+Sum is prefix[3] - prefix[1] =6-1=5.
+
+Which is allowed.
+
+So, sum is 5.
+
+For i=2:
+
+prefix[j+1] <=5 (since 2+3=5).
+
+Looking for prefix[j+1] <=5.
+
+prefix[3] is 6>5, so j+1=2. So j=1.
+
+Sum is prefix[2] - prefix[2] =0? No, wait, no.
+
+Wait, i=2, j can be 1. Because a[2] is 3, and a[3] is4. 3+4=7>5. So j can't be 2.
+
+So, j is 1. Sum is prefix[2] - prefix[2] =0.
+
+Wait, that can't be right. Wait, no. For i=2, j can be 1, so the sum is a[2] + a[1]?
+
+No, because the window is [i, j] in the sorted array, but the sum is prefix[j+1] - prefix[i]. So for i=2, j is 1. That would imply that the window is [2,1], which is invalid as j can't be less than i. So perhaps I'm making a mistake here.
+
+Wait, no. Because in the sorted array, j must be >=i, right? Because the window is [i, j], with j >=i. So, in the binary search, j can be >=i.
+
+So, for i=2, j can be 1, which is less than i, so it's not considered. So, we have to find j >=i.
+
+So, for i=2, prefix[j+1] - prefix[2] <=5.
+
+What's the maximum j where this is true.
+
+Looking at prefix array:
+
+prefix[2] is 3 (sum up to index 1).
+
+Looking for prefix[j+1] <=5 +3=8.
+
+Looking for the largest j where prefix[j+1] <=8.
+
+prefix[3] is6<=8, prefix[4] is10>8. So j can be 2.
+
+So j is 2, so the sum is prefix[3] - prefix[2]=6-3=3.
+
+So sum is3.
+
+Similarly, for i=3:
+
+prefix[j+1] -4 <=5.
+
+prefix[j+1] <=9.
+
+Looking for the largest j where prefix[j+1] <=9.
+
+prefix[3] is6<=9, prefix[4] is10>9. So j+1 is3, j=2.
+
+Sum is prefix[3]-prefix[3] =0? No, that's not right.
+
+Wait, wait, I'm getting a bit confused. Let me re-express.
+
+When i=3, the sum needs to be a[3] + a[2] + ... a[j], but since the array is sorted, j can't be less than i, so j must be >=i.
+
+Wait, no. Wait, the window is [i, j], which is a subarray starting at i and ending at j (i<=j). The sum is prefix[j+1] - prefix[i].
+
+So for i=3, j can be 3, because a[3] is4, and the sum is4 <=5.
+
+So, j+1 is4, prefix[4] is10>5. Wait, no. Wait, for i=3, j can be 3. Because prefix[j+1] is prefix[4]=10.
+
+But 10 - prefix[3] =10-6=4 <=5. So yes, j=3 is allowed.
+
+So, sum is4.
+
+So, for i=0, sum is3.
+
+i=1, sum is5.
+
+i=2, sum is3.
+
+i=3, sum is4.
+
+So, the maximum sum is5.
+
+Which is correct because the bouquet can have flowers 2 and3, sum is 2+3=5, which is allowed.
+
+So, the approach works.
+
+Now, the next step is to implement this in code.
+
+In Python, for each test case:
+
+- Read n, m.
+
+- Read the array a, which is a list of integers.
+
+- Sort a.
+
+- Compute the prefix sums.
+
+- Initialize max_petal to 0.
+
+- For each i in range(n):
+
+   - low = i
+
+   - high = n-1
+
+   - target = prefix[i]
+
+   - while low <= high:
+
+       - mid = (low + high) //2
+
+       - current_sum = prefix[mid+1] - prefix[i]
+
+       - if current_sum <=m:
+
+           - possible, try to find a larger mid.
+
+           - set low = mid +1
+
+           - update max_petal if current_sum is larger than current max.
+
+       - else:
+
+           - need to go lower.
+
+   So, perhaps it's better to perform a binary search for each i to find the maximum j where prefix[j+1] - prefix[i] <= m.
+
+Once j is found, the sum is prefix[j+1] - prefix[i], and we update max_petal if needed.
+
+Now, the binary search for each i needs to be O(log n), and for each i, that's O(log n) time. So overall, for each test case, it's O(n log n), which should be acceptable for n up to 2e5.
+
+Now, let's think about the edge cases.
+
+Test case 1:
+
+n=1, m=1.
+
+a = [5]
+
+After sorting, a is [5].
+
+prefix is [0,5].
+
+For i=0:
+
+binary search for j where prefix[j+1] -5 <=1.
+
+Looking for j+1 where prefix[j+1] <=6.
+
+prefix[1] is5 <=6: yes.
+
+So j can be 0, sum is5.
+
+max_petal is5.
+
+Which is correct.
+
+Another test case:
+
+n=2, m=3.
+
+a = [1,3]
+
+After sorting: [1,3]
+
+prefix: [0,1,4].
+
+For i=0:
+
+binary search for j where prefix[j+1] -0 <=3.
+
+Looking for prefix[j+1] <=3.
+
+prefix[1] =1 <=3: yes.
+
+prefix[2]=4>3: no.
+
+So j=0, sum is1.
+
+For i=1:
+
+prefix[j+1] -3 <=3.
+
+Looking for prefix[j+1] <=6.
+
+prefix[2] is4 <=6: yes.
+
+So j=1, sum is3.
+
+So, max_petal is3.
+
+So the bouquet can be just the 3 petal flower.
+
+Another test case:
+
+n=3, m=5.
+
+a = [2,2,2]
+
+sorted: [2,2,2]
+
+prefix: 0,2,4,6.
+
+For each i:
+
+i=0:
+
+looking for j where prefix[j+1] <=5.
+
+prefix[2] =4 <=5: yes.
+
+prefix[3] =6>5: no.
+
+So j=1, sum 2+2=4.
+
+i=1:
+
+looking for j where prefix[j+1] <=5-2=3.
+
+prefix[2]=4>3: no.
+
+So j must be 0, sum 2.
+
+i=2:
+
+sum is2.
+
+So the maximum sum is4.
+
+So the bouquet can be two flowers with 2 petals each.
+
+Which is allowed.
+
+Another test case:
+
+n=4, m=10.
+
+a = [1,2,3,4]
+
+sorted: [1,2,3,4]
+
+prefix: 0,1,3,6,10.
+
+For i=0:
+
+sum of 1+2+3=6 <=10.
+
+So j=2, sum6.
+
+i=1:
+
+sum of 2+3+4=9 <=10.
+
+sum9.
+
+i=2:
+
+sum3+4=7 <=10.
+
+sum7.
+
+i=3:
+
+sum4 <=10.
+
+So maximum is9.
+
+So the bouquet is 2,3,4, sum9.
+
+Yes.
+
+So, the approach seems solid.
+
+Now, let's think about implementing this in Python.
+
+We'll need to handle multiple test cases.
+
+For each test case:
+
+- Read n, m.
+
+- Read the array a.
+
+- Sort a.
+
+- Compute the prefix sum.
+
+- For each i in 0...n-1:
+
+   - Binary search for the maximum j where prefix[j+1] - prefix[i] <=m.
+
+   - Compute the sum.
+
+- Keep track of the maximum sum.
+
+Now, the code.
+
+But wait, in Python, the binary search can be implemented using the bisect module.
+
+Wait, because the prefix array is in increasing order (since a is sorted), bisect can be used.
+
+Wait, for each i, the target is prefix[i] + m. Because the sum of a[i..j] is prefix[j+1] - prefix[i] <=m.
+
+So, for each i, the maximum j is the largest where prefix[j+1] <= prefix[i] + m.
+
+So, we can compute for each i, the rightmost j such that prefix[j+1] <= prefix[i] + m.
+
+So, in code:
+
+import bisect
+
+prefix = [0] * (n+1)
+
+for i in range(n):
+    prefix[i+1] = prefix[i] + a[i]
+
+max_petal = 0
+
+for i in range(n):
+    target = prefix[i] + m
+    # find the largest j where prefix[j+1] <= target
+    j = bisect.bisect_right(prefix, target, i+1, n) -1
+    # the window is from i to j
+    current_sum = prefix[j+1] - prefix[i]
+    if current_sum > max_petal:
+        max_petal = current_sum
+
+Wait, but bisect_right returns the insertion point. So, for example, if all elements are <= target, it returns len(prefix), so j is len(prefix)-1.
+
+Which is correct.
+
+So, for each i, we find j as the largest index where prefix[j+1] <= target.
+
+Then, the sum is prefix[j+1] - prefix[i].
+
+So, that's the code.
+
+Now, let me test this code with the earlier example.
+
+Test case:
+
+n=3, m=5, a = [2,2,2]
+
+sorted a: [2,2,2]
+
+prefix: [0,2,4,6]
+
+For i=0:
+
+target = 0 +5=5.
+
+bisect_right(prefix,5,1,3) -> looking in the subarray prefix[1]=2, prefix[2]=4, prefix[3]=6.
+
+5 is between 4 and6. So bisect_right returns 3.
+
+j=3-1=2.
+
+sum is prefix[3] - prefix[0] =6-0=6.
+
+Which is correct.
+
+Similarly, for i=1:
+
+target =2+5=7.
+
+bisect_right(prefix,7,2,3) -> looking in prefix[2]=4, prefix[3]=6.
+
+7 is larger than6, so bisect_right returns3.
+
+j=3-1=2.
+
+sum isprefix[3] - prefix[1]=6-2=4.
+
+For i=2:
+
+target=4+5=9.
+
+bisect_right(prefix,9,3,3) is3.
+
+j=3-1=2.
+
+sum is6-4=2.
+
+So, the maximum is6.
+
+Which is correct.
+
+Another test case:
+
+n=4, m=10, a = [1,2,3,4].
+
+prefix is [0,1,3,6,10].
+
+For i=0:
+
+target=0+10=10.
+
+bisect_right(prefix, 10,1,4) is4.
+
+j=3.
+
+sum is10-0=10.
+
+Which is correct.
+
+So, the code should work.
+
+Now, let's write the code.
+
+But wait, the bisect module's bisect_right function returns the insertion point, which is the first element greater than target. So, the largest j where prefix[j+1] <= target is (bisect_right(prefix, target, i+1, n) -1).
+
+Yes.
+
+So, the code is as follows:
+
+Read t test cases.
+
+For each test case:
+
+Read n, m.
+
+Read a as list of integers.
+
+Sort a.
+
+Compute prefix sum.
+
+Compute for each i the maximum j.
+
+Update max_petal.
+
+Now, implement this.
+
+But in Python, for large n, it's better to use bisect.
+
+So, the code:
+
+import bisect
+
+t = int(input())
+for _ in range(t):
+    n, m = map(int, input().split())
+    a = list(map(int, input().split()))
+    a.sort()
+    prefix = [0] * (n+1)
+    for i in range(n):
+        prefix[i+1] = prefix[i] + a[i]
+    max_petal = 0
+    for i in range(n):
+        target = prefix[i] + m
+        # find the largest j where prefix[j+1] <= target
+        j = bisect.bisect_right(prefix, target, i+1, n) -1
+        current_sum = prefix[j+1] - prefix[i]
+        if current_sum > max_petal:
+            max_petal = current_sum
+    print(max_petal)
+
+Wait, but wait: the bisect_right function in Python returns the insertion point, which is the index where the target would be inserted to maintain the sorted order. So, for example, if the subarray is [2,4,6], and target is5, bisect_right returns 2, because it's inserted after 4.
+
+So, in the code, the j is the last index where prefix[j+1] <= target.
+
+Yes.
+
+So, for each i, the maximum j is the largest index where prefix[j+1] <= target.
+
+Thus, the code should correctly find the maximum sum.
+
+I think this should handle all cases.
+
+Let me test another case:
+
+Test case where all a[i] are 1, and m is 5.
+
+n=5, m=5.
+
+a = [1,1,1,1,1]
+
+sorted is same.
+
+prefix is [0,1,2,3,4,5]
+
+For i=0:
+
+target=0+5=5.
+
+bisect_right(prefix,5,1,5) is 5.
+
+j=4.
+
+sum is5.
+
+Which is correct.
+
+Another case:
+
+n=2, m=2.
+
+a = [1,2]
+
+sorted:1,2.
+
+prefix:0,1,3.
+
+i=0:
+
+target=0+2=2.
+
+bisect_right(prefix,2,1,2) is1.
+
+j=0.
+
+sum=1.
+
+i=1:
+
+target=1+2=3.
+
+bisect_right(prefix,3,2,2)=2.
+
+j=1.
+
+sum=2.
+
+So, max_petal is2.
+
+Which is correct.
+
+So, the code should work.
+
+Another test case:
+
+n=3, m=6.
+
+a = [1,2,4].
+
+prefix:0,1,3,7.
+
+i=0:
+
+target=0+6=6.
+
+bisect_right(prefix,6, 1,3) is3.
+
+j=2.
+
+sum=7.
+
+i=1:
+
+target=1+6=7.
+
+bisect_right(prefix,7,2,3)=3.
+
+j=2.
+
+sum=7-1=6.
+
+i=2:
+
+target=3+6=9.
+
+bisect_right(prefix,9,3,3)=3.
+
+sum=7-3=4.
+
+So, the maximum is7.
+
+Which is correct, because 1+2+4=7.
+
+So the code works.
+
+I think this should handle all cases correctly.
+</think>
+
+To solve this problem, we need to find the maximum number of petals a bouquet can have while ensuring that the difference in the number of petals between any two flowers in the bouquet does not exceed one. Additionally, the total cost of the bouquet must not exceed a given amount.
+
+### Approach
+1. **Sort the Flowers**: First, we sort the array of petals in non-decreasing order. This helps in efficiently finding the largest possible subarray where the difference between the maximum and minimum number of petals is at most one.
+2. **Prefix Sum Array**: Compute a prefix sum array to quickly calculate the sum of petals in any subarray. This allows us to efficiently determine the sum of petals for any given range.
+3. **Binary Search for Maximum Sum**: For each starting index in the sorted array, use binary search to find the farthest index such that the sum of petals from the starting index to this farthest index does not exceed the given cost. Track the maximum sum obtained from these subarrays.
+
+### Solution Code
+```python
+import bisect
+
+def main():
+    import sys
+    input = sys.stdin.read
+    data = input().split()
+    idx = 0
+    t = int(data[idx])
+    idx += 1
+    for _ in range(t):
+        n = int(data[idx])
+        m = int(data[idx + 1])
+        idx += 2
+        a = list(map(int, data[idx:idx + n]))
+        idx += n
+        a.sort()
+        prefix = [0] * (n + 1)
+        for i in range(n):
+            prefix[i + 1] = prefix[i] + a[i]
+        max_petal = 0
+        for i in range(n):
+            target = prefix[i] + m
+            j = bisect.bisect_right(prefix, target, i + 1, n) - 1
+            current_sum = prefix[j + 1] - prefix[i]
+            if current_sum > max_petal:
+                max_petal = current_sum
+        print(max_petal)
+
+if __name__ == "__main__":
+    main()
+```
+
+### Explanation
+1. **Sorting**: The flowers are sorted to facilitate the sliding window approach where we can efficiently find the maximum number of petals within a valid range.
+2. **Prefix Sum Array**: This array helps in quickly calculating the sum of petals in any subarray. The prefix sum at index `i` gives the sum of the first `i` elements.
+3. **Binary Search**: For each starting index `i`, we use binary search to find the farthest index `j` such that the sum of petals from `i` to `j` does not exceed the given cost `m`. This ensures that we efficiently find the maximum valid subarray sum.
+
+This approach ensures that we efficiently find the optimal bouquet while adhering to the constraints, making it suitable for large input sizes.<｜end▁of▁sentence｜>

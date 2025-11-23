@@ -1,0 +1,751 @@
+Okay, I need to solve this problem where Alice is playing a modified version of Connect the Dots. The task is to find the number of connected components after performing all the operations. Let's think about how to approach this.
+
+So, the problem says that for each operation, Alice selects points from a_i, a_i + d_i, ..., up to a_i + k_i * d_i, and connects each pair of these points with arcs. After all operations, I have to find how many connected components there are.
+
+Hmm. The key here is to model this as a graph where each point is a node, and the arcs are edges. The connected components are the groups of nodes where each is reachable from every other via some path.
+
+But doing this directly for each operation would be too slow, especially since n and m can be up to 2e5. So I need an efficient way to compute the connected components without explicitly building the graph.
+
+Wait, what's the structure of each operation? Each operation adds a set of points that are in an arithmetic sequence with step d_i, starting from a_i, and going up to k_i steps. So for each such sequence, all pairs of points in that sequence are connected.
+
+So, after all operations, the connected components are determined by these sequences. But how do these sequences overlap and connect?
+
+Let me think about the union of all the sequences. Each sequence is a set of points connected by their own edges. The connectedness is determined by whether two points are in the same sequence or connected through overlapping sequences.
+
+Wait, but each operation adds a set of points. So for example, if d_i is 1, the operation is connecting all consecutive points, which would form a single connected component. But if d_i is 2, it's connecting a_i, a_i+2, a_i+4, etc., which are all even steps.
+
+So, the problem reduces to determining which points are connected through these arithmetic sequences. Each point can be part of multiple sequences, and their connections are determined by the overlapping sequences.
+
+This sounds a lot like a problem where we can model the connectedness using a Union-Find (Disjoint Set Union) data structure. But the challenge is that each operation can create a lot of points, and for each, we need to perform union operations.
+
+But wait, if I have multiple operations, each adding a lot of points, doing a DSU for each operation is not feasible because it's too slow. So I need a smarter way.
+
+Perhaps, instead of processing each operation separately, I can find all the points involved in all operations and model how they are connected. But even that might not be efficient, especially if there are a lot of points.
+
+Another approach: think about the problem in terms of the minimal and maximal points in each sequence. Wait, but that's not directly helpful.
+
+Wait, each arithmetic sequence is a set of points that are in a straight line with a common step. So, for each such sequence, all points in the sequence are connected. So, the connectedness is determined by whether two points are in the same sequence or can be connected through overlapping sequences.
+
+Wait, but each operation adds a set of points, and connects all pairs, so any two points in the same sequence are connected. Moreover, if two points are in overlapping sequences, then they are connected via those sequences.
+
+So, the connectedness is determined by the minimal step that can connect any two points.
+
+Alternatively, maybe the connectedness can be determined by considering the greatest common divisor (GCD) of the steps. Because, overlapping sequences can be connected if their steps have a common divisor.
+
+Wait, perhaps this is similar to the problem of finding connected components in a graph where edges are added between nodes that are multiples of certain numbers.
+
+Let me think: Each arithmetic sequence is a set of points that are congruent to a_i modulo d_i. Because, for example, a_i, a_i + d_i, a_i + 2d_i, etc. So all points in this sequence are congruent to a_i mod d_i.
+
+So, for each operation, we're adding all points that are congruent to a_i mod d_i. Because when you add d_i each time, the remainder when divided by d_i stays the same.
+
+So, the union of all such congruence classes will give the connected components. Because any two points in the same congruence class are connected directly by the operation, and any two points in different congruence classes but connected via an intermediate point in another congruence class are connected via the union of those operations.
+
+Wait, no. Because each operation adds all possible pairs in its congruence class. So, all points in the same congruence class are in the same connected component.
+
+So, the connected components are exactly the union of all congruence classes from all operations. Because if two points are in the same congruence class from any operation, they are connected. Otherwise, maybe they can be connected via multiple operations.
+
+Wait, that's a crucial point. Because if two points are in different congruence classes but are connected through overlapping operations, they would be in the same component.
+
+So, the connected components are the union of all the congruence classes from the operations.
+
+So, the problem reduces to finding all the congruence classes (a_i mod d_i) for each operation, and then the number of connected components is equal to the number of distinct congruence classes.
+
+Wait, is that correct? Let me test this with a simple example.
+
+Suppose n=5, m=1, a=1, d=2, k=2. So the points are 1,3,5. So these form a single connected component.
+
+Another example: n=4, m=1, a=1, d=2, k=1. Points 1,3. So two connected components.
+
+Another example: n=5, m=2. First operation: a=1, d=2, k=1. So points 1,3. Second operation: a=3, d=2, k=1. So points 3,5. So the connected components are 1,3,5 (since 1-3 is connected, 3-5 is connected). So the connected components count is 3.
+
+Wait, but according to the congruence approach, 1 mod 2 is 1, 3 mod 2 is 1, 5 mod 2 is 1. So all in the same congruence class, so connected components count is 1. But in reality, the connected components are 1,3,5. So this approach is incorrect.
+
+Oh no, that's a problem. So my initial assumption is wrong. So I need to rethink.
+
+So, the initial approach is incorrect. So I need another approach.
+
+Hmm. So what's the correct way to model this.
+
+Each operation adds edges between all pairs in the arithmetic sequence. So, the connected components can be determined by the union of all these edges.
+
+But each edge is a direct connection between two points, but these edges can also bridge between different arithmetic sequences, leading to larger connected components.
+
+Wait, but the problem is to find all the connected components, which is the number of connected components after all operations.
+
+So, perhaps the correct way is to model the connected components as the equivalence classes under the relation where two points are connected if they can be reached via any sequence of operations.
+
+But how to compute this efficiently.
+
+Alternative approach: Each operation adds a set of edges. The connected components are the result of all these edges.
+
+But each operation's set of edges is a complete graph on the arithmetic sequence. So, for each operation, all pairs in the sequence are added.
+
+So, the connected components are built up as the union of these complete graphs.
+
+But for large n and m, processing each operation's edges is not feasible.
+
+So, perhaps we can model the connected components using a Union-Find (Disjoint Set Union) structure, but in a smart way.
+
+Wait, but each operation can add a lot of points. So, for each operation, we need to process all the points in the arithmetic sequence and connect them in the DSU. But with n up to 2e5 and m up to 2e5, this is O(m * average number of points per operation) which could be up to 2e10, which is way too slow.
+
+So, that's not feasible.
+
+Therefore, I need a smarter way to compute the connected components without explicitly processing each point.
+
+Let me think about the problem differently. What's the minimal set of constraints that determine the connectedness?
+
+Each operation defines a set of points that are all connected to each other. So, the connected components are the equivalence classes where two points are connected if they can be connected via a chain of such operations.
+
+But how to model this.
+
+Wait, perhaps each connected component is determined by the minimal step that can connect any two points in it.
+
+Wait, but that's vague.
+
+Another approach: for each point x, find the greatest common divisor (GCD) of the steps involved in its sequence. Or perhaps, find the minimal step that can connect x to any other point.
+
+Wait, perhaps each point x can be in a congruence class modulo some d. The minimal d for each x is the maximum possible.
+
+Wait, I'm getting stuck. Let's think of this differently.
+
+Each operation is a set of points S_i = {a_i, a_i + d_i, a_i + 2d_i, ..., a_i + k_i d_i}. All pairs in S_i are connected.
+
+So, for any two points in S_i, they are connected, and any other point not in S_i can be connected to them via some other operations.
+
+So, the connected components are the equivalence classes where any two points in the same component can be connected through a chain of such S_i's.
+
+So, the connectedness is determined by the union of all these S_i's.
+
+Wait, but this is similar to the problem of union-find where each S_i is connected, and the connected components are the union of all these S_i's.
+
+But again, with the number of points in S_i being up to 2e5, and m being up to 2e5, we can't process each point in S_i.
+
+So, perhaps we can model the connected components using the minimal and maximal steps.
+
+Wait, another idea: the connected components are determined by the minimal step that can connect any two points. So, for any two points x and y, if there exists a path of operations where each step connects two arithmetic sequences, then x and y are in the same component.
+
+But this seems abstract.
+
+Wait, perhaps the connected components are determined by the minimal and maximal points in each sequence and their congruence classes.
+
+Wait, let's think of the connectedness as follows: two points x and y are in the same connected component if and only if x ≡ y mod d for some d that is a divisor of the step used in some operation.
+
+Wait, no, perhaps not. Because each operation adds a specific d, but the connectedness is determined by whether x and y are in the same arithmetic sequence for at least one operation.
+
+Wait, no. Because, for example, x is in S_i (d_i = 2), and y is in S_j (d_j = 3). If the GCD of d_i and d_j is 1, then x and y are in the same connected component. Because there may be a point z that is in both S_i and S_j, which are connected via the operations.
+
+So, the connectedness is not determined by individual d's but by the union of all such d's.
+
+Hmm, this seems complicated.
+
+Let me think of the problem in terms of graph theory. The initial graph is empty. Each operation adds a clique (complete subgraph) on the points in the arithmetic sequence. The connected components are the result of all these cliques.
+
+The problem is to find the number of connected components after all operations.
+
+But for n up to 2e5, and m up to 2e5, we need an efficient way to represent the connected components.
+
+Another approach: For each point x, the connected component it belongs to is determined by the minimal step that can connect it to any other point via some operations.
+
+Wait, perhaps for each point x, the connected component is determined by the GCD of all d_i's of all operations that include x. Or something like that.
+
+Alternatively, perhaps the connected components can be determined by the equivalence classes of points under the relation where two points are connected if they can be connected via a chain of operations where each operation adds an arithmetic sequence.
+
+But again, not sure.
+
+Another idea: Since each operation adds a set of points that are congruent modulo d_i, we can model the connectedness as the union of all the congruence classes from the operations.
+
+So, the connected components are the union of all the congruence classes d_i mod something.
+
+Wait, but this isn't directly correct because two points from different congruence classes can be connected via overlapping operations.
+
+Wait, but if two points are in the same congruence class of any operation, they are connected. Otherwise, they are connected through other operations.
+
+So, the connected components are the set of points that are in the same congruence class modulo any d_i, and also, any two points can be connected through overlapping congruence classes.
+
+So, perhaps the connected components are determined by the equivalence classes formed by the GCD of d_i's across all operations.
+
+Wait, maybe the minimal step that can connect all the points is the GCD of all d_i's.
+
+Because, if all d_i's have a GCD of g, then any two points can be connected via a path of operations that involve steps of g.
+
+Wait, this is getting somewhere.
+
+Let me think: Suppose all d_i's have a GCD of g. Then, any two points can be connected via a series of operations that add steps of g.
+
+Because, for any two points, you can find a path where each step in the path is a multiple of g, thus connecting them.
+
+So, in this case, all points are connected into a single component, so the connected component count is 1.
+
+But if the d_i's have a GCD of d, then the connected components are the equivalence classes modulo d.
+
+Wait, perhaps.
+
+Wait, for example:
+
+Test case 1: n=5, m=1, a=1, d=2, k=2. So, the points are 1,3,5.
+
+The GCD of d=2 is 2. So, the connected components are {1,3,5}.
+
+Which is correct.
+
+Another test case: n=4, m=1, a=1, d=2, k=1. So points 1,3. GCD is 2. So connected components are 2.
+
+Another test case: n=5, m=2. First operation: a=1, d=2, k=1. Points 1,3. Second operation: a=3, d=2, k=1. Points 3,5. So the connected components are 1,3,5. GCD of d_i's is 2. So connected components count is 3.
+
+Wait, but according to the earlier example, if the GCD is g, then all points congruent mod g are in the same component.
+
+So, the number of connected components is equal to the number of distinct values of g, where g is the GCD of the d_i's.
+
+Wait, that can't be right because in the first example, the GCD is 2, and the connected components are 1,3,5. So, the count is 3.
+
+So, that's more than the number of GCD values.
+
+Hmm. So that approach is incorrect.
+
+Alternative approach: Let's consider that each operation adds a set of points in an arithmetic progression with step d_i. So, for each such operation, the points in the sequence are connected. Therefore, the connected components are the union of all these sequences.
+
+So, the connected components are the equivalence classes under the relation where two points are in the same component if there exists a path connecting them through overlapping sequences.
+
+So, the connected components can be determined by the minimal and maximal steps, but I'm not sure.
+
+Wait, perhaps the connected components are determined by the minimal possible step that can connect two points.
+
+Wait, perhaps the connected components are the equivalence classes under the relation where two points x and y are in the same component if and only if x ≡ y mod g, where g is the GCD of all d_i's.
+
+But that's not the case in the example where d_i's are 2 and 3. Then, the GCD is 1, so all points are connected, which would make the connected components count 1.
+
+But earlier, when d_i's are 2 and 3, the points 1,3,5 are in different congruence classes modulo 1, but according to this, all points would be in the same component, which is incorrect.
+
+So, that approach is wrong.
+
+Hmm. So, perhaps I need to think differently.
+
+Wait, perhaps each operation adds a clique (complete subgraph) on the points in its arithmetic sequence. So, the connected components are the union of all these cliques.
+
+So, two points x and y are in the same connected component if there exists a path of cliques that connects them.
+
+Now, two points x and y are in the same clique if they are in the same arithmetic sequence of some operation.
+
+So, x and y are in the same clique if x ≡ y mod d_i for some i.
+
+But they can be connected through a chain of cliques if for x and y, there exists a chain of d_i's such that x and y are in the same sequence for each step.
+
+Wait, perhaps I can model the connectedness as follows: two points x and y are connected if their positions are in the same residue class modulo some d, where d is a divisor of some d_i.
+
+But I'm not sure.
+
+Alternatively, perhaps the connected components are determined by the minimal steps that can be combined via overlapping operations.
+
+This is getting quite complicated.
+
+Let me think about the Union-Find approach.
+
+Each operation adds a set of points. So, for each operation, I can represent the set of points in the arithmetic sequence, and then perform unions between all pairs.
+
+But with n up to 2e5 and m up to 2e5, this is O(m * k_i * d_i), which could be up to 4e10 operations, which is way too slow.
+
+So, this approach is not feasible.
+
+Therefore, I need a smarter way to compute the connected components without explicitly processing each point in each operation.
+
+Alternative idea: For each operation, the points are added in an arithmetic sequence. The connected components can be determined by the minimal and maximal positions in the sequence.
+
+Wait, perhaps the connected components are determined by the intervals of the points in each arithmetic sequence.
+
+For example, the first operation adds points from a_i to a_i + k_i * d_i. So, the interval is [a_i, a_i + k_i * d_i]. The next operation could add points in another interval, and the connected components are the overlapping of these intervals.
+
+But that's not exactly right because the connectedness is determined by whether two points are in the same interval, or connected through overlapping intervals.
+
+Wait, but if two points are in the same interval, they are connected. If two points are in different intervals, but there's a chain of overlapping intervals connecting them, then they are connected.
+
+So, the connected components are the union of all intervals, but how?
+
+Perhaps the connected components are the intervals where any two points are connected through some overlapping intervals.
+
+But this is similar to the interval covering problem, where you have multiple intervals and you want to find the number of connected components.
+
+Wait, yes! Oh wait, this is a crucial insight.
+
+Because, each operation adds an interval [a_i, a_i + k_i * d_i], which is a set of points with consecutive d_i steps.
+
+So, the connected components are the union of these intervals, but the way they are connected is through overlapping intervals.
+
+So, two points x and y are in the same connected component if there exists a path of overlapping intervals that connects them.
+
+So, the problem reduces to: given a set of intervals, each of which is an arithmetic sequence with step d_i, find the number of connected components where two points are connected if they are in the same interval or connected via overlapping intervals.
+
+This is similar to the interval union problem, but with multiple intervals.
+
+In the interval union problem, the number of connected components is the number of gaps between the intervals. For example, if you have intervals [1-3], [5-7], [2-4], the connected components are 1-4 (connected), 5-7 (connected), and 8 is separate.
+
+So, the number of connected components is (max_end - min_start + 1) - (number of gaps where the next interval starts after the previous one ends + 1)).
+
+Wait, but in this problem, each operation adds an interval, and the connectedness is based on overlapping intervals.
+
+But in our case, each interval is an arithmetic sequence with step d_i. So, each interval is a contiguous block of points with step d_i.
+
+So, the connected components are the union of all these intervals, but the way they are connected is via overlapping.
+
+So, for example, if two intervals overlap, their union is a single interval. So, the connected components are the number of such merged intervals.
+
+Wait, no. Because, for example, if you have two intervals that are separate but their starting points are within each other, they are connected. So, the connected components are the overlapping merged intervals.
+
+So, the problem reduces to: given a set of intervals, each represented as [a_i, a_i + k_i * d_i], where the step is d_i, find the number of connected components formed by merging overlapping or adjacent intervals.
+
+So, the number of connected components is equal to the number of "gaps" in the merged intervals, which is (max_end - min_start + 1) minus the number of merged intervals.
+
+Wait, no. The number of connected components is equal to the number of intervals minus 1, plus any gaps.
+
+Wait, perhaps I should model this as a line sweep problem.
+
+So, for each interval, I can represent it as a point (start, end) and then merge overlapping intervals.
+
+The number of connected components is then equal to the number of merged intervals.
+
+Wait, no. For example, if you have intervals [1-3], [4-6], the connected components are two. So, the number of merged intervals is 2.
+
+Another example: [1-3], [2-4]. Merged into [1-4], so connected components count is 1.
+
+So, the number of connected components is indeed the number of merged intervals.
+
+Wait, no. Because in the first case, the connected components are two separate intervals, so the number of merged intervals is 2.
+
+Yes, so the number of connected components is equal to the number of merged intervals.
+
+So, the problem reduces to: for each test case, merge all the intervals [a_i, a_i + k_i * d_i] into as few as possible intervals, and the number of connected components is the number of merged intervals.
+
+So, the task is to compute the number of merged intervals after processing all operations.
+
+But how to do this efficiently.
+
+Each operation adds a set of points which form an arithmetic sequence. So, for each operation, the interval is [a_i, a_i + k_i * d_i], but since the points are in steps of d_i, the interval is a set of consecutive points.
+
+So, for each operation, the interval is [a_i, a_i + k_i * d_i], and each point in this interval is connected to the next d_i step.
+
+So, the problem is to merge all these intervals into as few as possible, and the count is the number of merged intervals.
+
+So, the algorithm would be:
+
+For each test case:
+
+1. Collect all the intervals as [a_i, a_i + k_i * d_i].
+
+2. Sort these intervals by their start.
+
+3. Merge overlapping or adjacent intervals.
+
+4. The number of merged intervals is the connected components count.
+
+This seems manageable.
+
+But wait, let's test this with the earlier example.
+
+Test case:
+
+n=5, m=2.
+
+Operation 1: a=1, d=2, k=2. So, points 1,3,5. Interval is [1,5].
+
+Operation 2: a=3, d=2, k=1. Points 3,5. Interval is [3,5].
+
+So, the intervals are [1,5] and [3,5].
+
+Merging them, we get [1,5], so number of connected components is 1.
+
+Which is correct.
+
+Another test case: n=5, m=1, a=1, d=2, k=1. Interval [1,3]. So, connected components is 1.
+
+Another test case: n=5, m=2. Operation 1: a=1, d=2, k=1. Interval [1,3]. Operation 2: a=3, d=2, k=1. Interval [3,5]. So, intervals [1,3] and [3,5]. Merged into [1,5]. So, connected components is 1.
+
+So, the approach seems correct.
+
+Another example:
+
+Test case:
+
+n=6, m=1.
+
+Operation 1: a=2, d=3, k=2. So, points 2,5. Interval [2,5].
+
+Number of connected components is 1.
+
+Another example:
+
+n=6, m=2.
+
+Operation 1: a=1, d=2, k=2. Points 1,3,5. Interval [1,5].
+
+Operation 2: a=2, d=2, k=2. Points 2,4,6. Interval [2,6].
+
+Merged intervals are [1,5] and [2,6], so the merged interval is [1,6]. So, connected components count is 1.
+
+So, the approach seems to work.
+
+So, the plan is:
+
+For each test case:
+
+- For each operation, compute the interval [a_i, a_i + k_i * d_i].
+
+- Collect all intervals.
+
+- Sort them by their start.
+
+- Merge overlapping or adjacent intervals.
+
+- The number of merged intervals is the connected components count.
+
+So, the implementation steps are:
+
+Read t test cases.
+
+For each test case:
+
+Read n and m.
+
+Read m operations, each a_i, d_i, k_i.
+
+Compute for each operation the interval [a_i, a_i + k_i * d_i].
+
+Sort the intervals by their starting points.
+
+Merge overlapping or adjacent intervals.
+
+The count is the number of merged intervals.
+
+So, the code can be written as follows.
+
+But wait, for large m, how do we handle this?
+
+We need to process each interval, sort them, and then merge.
+
+So, let's think about the code.
+
+Read t.
+
+For each test case:
+
+Read n, m.
+
+Read m lines of a_i, d_i, k_i.
+
+Compute for each operation the interval.
+
+Sort the intervals based on their start.
+
+Merge the intervals.
+
+Count the number of merged intervals.
+
+Output the count.
+
+But wait, the intervals are [a_i, a_i + k_i * d_i]. But for cases where d_i is 0? But according to the problem statement, d_i >= 1.
+
+So, no problem.
+
+So, now, the code:
+
+Implement the merge step.
+
+But how to handle the intervals.
+
+In Python, for a list of intervals, each is a tuple (start, end).
+
+We can sort by start.
+
+Then, merge:
+
+merged = []
+for interval in sorted_intervals:
+    if not merged:
+        merged.append(interval)
+    else:
+        last = merged[-1]
+        if interval[0] <= last[1] + 1:
+            # overlap or adjacent, merge them
+            new_start = last[0]
+            new_end = max(last[1], interval[1])
+            merged[-1] = (new_start, new_end)
+        else:
+            merged.append(interval)
+
+The number of merged intervals is len(merged).
+
+So, that's the plan.
+
+Testing this code with the earlier examples.
+
+Another example: n=5, m=2.
+
+Operation 1: a=1, d=2, k=2. Interval [1,5].
+
+Operation 2: a=3, d=2, k=1. Interval [3,5].
+
+Merged intervals: [1,5].
+
+So, count is 1.
+
+Another example: n=5, m=2.
+
+Operation 1: a=2, d=3, k=2. Interval [2,5].
+
+Operation 2: a=1, d=2, k=2. Interval [1,3].
+
+After sorting, the intervals are [1,3], [2,5].
+
+Merging them: 1-3 and 2-5. Since 2 is <=3, they are merged into [1,5]. So, count is 1.
+
+So, the code works.
+
+Now, let's think about the test case where n=5, m=0.
+
+Then, the connected components count is 1, since no operations are done.
+
+So, the code handles that.
+
+Another test case: n=5, m=3.
+
+Operations:
+
+1: a=1, d=2, k=2 → [1,5].
+
+2: a=2, d=3, k=1 → [2,5].
+
+3: a=4, d=1, k=5 → [4,9], but n is 5, so the interval is [4,5].
+
+So, the intervals are [1,5], [2,5], [4,5].
+
+Sort them.
+
+Merging:
+
+Start with [1,5].
+
+Next is [2,5]. It overlaps, so merge into [1,5].
+
+Next is [4,5]. It's within [1,5], so no change.
+
+So, merged intervals are [1,5]. Count is 1.
+
+So, the code returns 1.
+
+Which is correct, since all points are connected through overlapping operations.
+
+So, the approach seems solid.
+
+Now, the code can be written as follows.
+
+Read t.
+
+For each test case:
+
+Read n and m.
+
+Read m lines, each with a_i, d_i, k_i.
+
+Compute the interval [a_i, a_i + k_i * d_i].
+
+Collect all intervals.
+
+Sort them based on their start.
+
+Merge overlapping or adjacent intervals.
+
+The count is the number of merged intervals.
+
+So, the code in Python would be:
+
+Read t.
+
+For each test case:
+
+n, m = map(int, input().split())
+
+intervals = []
+
+for _ in range(m):
+
+    a, d, k = map(int, input().split())
+
+    end = a + k * d
+
+    intervals.append( (a, end) )
+
+# Sort intervals based on start
+
+intervals.sort()
+
+merged = []
+
+for interval in intervals:
+
+    if not merged:
+
+        merged.append( interval )
+
+    else:
+
+        last = merged[-1]
+
+        if interval[0] <= last[1] + 1:
+
+            # merge
+
+            new_start = last[0]
+
+            new_end = max( last[1], interval[1] )
+
+            merged[-1] = (new_start, new_end)
+
+        else:
+
+            merged.append( interval )
+
+print(len(merged))
+
+Wait, but wait! The interval is [a_i, a_i + k_i * d_i], but the points are a_i, a_i + d_i, a_i + 2d_i, ..., a_i + k_i*d_i. So, the interval is from a_i to a_i + k_i*d_i inclusive.
+
+Yes, that's correct.
+
+So, the code should work.
+
+Testing the examples:
+
+First example in the problem statement:
+
+Test case 1:
+
+n=5, m=1.
+
+Operation: a=1, d=2, k=2.
+
+Interval is [1, 1 + 2*2 =5].
+
+So, merged is 1 interval. Output is 1.
+
+Which is correct.
+
+Another test case:
+
+n=4, m=1.
+
+Operation: a=1, d=2, k=1.
+
+Interval [1,3].
+
+So, output is 1.
+
+Another test case:
+
+n=5, m=2.
+
+Operation 1: a=1, d=2, k=1 → [1,3].
+
+Operation 2: a=3, d=2, k=1 → [3,5].
+
+Intervals sorted as (1,3), (3,5). Merged into one interval. Output is 1.
+
+Another test case:
+
+n=5, m=2.
+
+Operation 1: a=2, d=3, k=2 → [2,5].
+
+Operation 2: a=1, d=2, k=2 → [1,3].
+
+Intervals sorted as (1,3), (2,5). Merged into one interval. Output is 1.
+
+Yes.
+
+So, the code seems to handle all these cases.
+
+Now, let's think about the performance.
+
+Each test case can have m up to 2e5, and for each test case, the code processes m intervals.
+
+Each interval is stored as a tuple, which is O(1) in Python.
+
+Sorting m intervals takes O(m log m) time.
+
+Merging is O(m) time.
+
+So, for t=1e5 test cases, but sum of n and m across all test cases is 2e5 each, the code should be efficient enough.
+
+Wait, no. Because for each test case, the code reads m lines, each with a_i, d_i, k_i. So, for each test case, it's O(m) time.
+
+Sum of m across all test cases is 2e5, so total time across all test cases is O(2e5 log (2e5)) per test case, but overall it's acceptable.
+
+Thus, the code should pass all test cases.
+</think>
+
+To solve this problem, we need to determine the number of connected components in a graph formed by connecting points on a straight line with arcs. Each operation connects a sequence of points with arcs, and we need to find the connected components after performing all operations.
+
+### Approach
+1. **Problem Analysis**: Each operation connects points in an arithmetic sequence. These operations can be represented as intervals on the number line. The goal is to determine how these intervals overlap to form connected components.
+
+2. **Interval Representation**: Each operation can be represented as an interval `[a_i, a_i + k_i * d_i]` where `a_i` is the starting point, `d_i` is the step size, and `k_i` is the number of steps. This interval represents all points connected by that operation.
+
+3. **Sorting and Merging Intervals**: To find the connected components, we need to merge overlapping or adjacent intervals. The number of merged intervals will give the number of connected components.
+
+4. **Algorithm**:
+   - For each test case, read the operations and convert them into intervals.
+   - Sort these intervals based on their start points.
+   - Merge overlapping or adjacent intervals to count the number of connected components.
+
+### Solution Code
+```python
+import sys
+
+def main():
+    input = sys.stdin.read
+    data = input().split()
+    idx = 0
+    t = int(data[idx])
+    idx += 1
+    results = []
+    
+    for _ in range(t):
+        n = int(data[idx])
+        m = int(data[idx + 1])
+        idx += 2
+        
+        intervals = []
+        for __ in range(m):
+            a = int(data[idx])
+            d = int(data[idx + 1])
+            k = int(data[idx + 2])
+            idx += 3
+            end = a + k * d
+            intervals.append((a, end))
+        
+        intervals.sort()
+        merged = []
+        for interval in intervals:
+            if not merged:
+                merged.append(interval)
+            else:
+                last = merged[-1]
+                if interval[0] <= last[1] + 1:
+                    new_start = last[0]
+                    new_end = max(last[1], interval[1])
+                    merged[-1] = (new_start, new_end)
+                else:
+                    merged.append(interval)
+        
+        results.append(len(merged))
+    
+    sys.stdout.write('\n'.join(map(str, results)) + '\n')
+
+if __name__ == "__main__":
+    main()
+```
+
+### Explanation
+1. **Reading Input**: The input is read in one go for efficiency, especially given the constraints.
+2. **Interval Extraction**: For each operation, convert the arithmetic sequence into an interval.
+3. **Sorting**: The intervals are sorted based on their start points to facilitate merging.
+4. **Merging Intervals**: Iterate through the sorted intervals, merging them if they overlap or are adjacent.
+5. **Result Collection**: The number of merged intervals is the number of connected components, which is collected and printed at the end.
+
+This approach ensures that we efficiently determine the connected components by leveraging interval sorting and merging, which runs in linear time relative to the number of operations, making it suitable for large input sizes.<｜end▁of▁sentence｜>

@@ -1,0 +1,865 @@
+Okay, let's try to figure out this problem. So, the task is to find the maximum possible size of a deck after buying some cards and optimally partitioning them. Hmm.
+
+So, the setup is that we have n types of cards. For each type i, we have a_i cards. We can buy up to k more cards, each of any type. Then, we need to partition all the cards into decks where each deck has the same size, and no two cards in a deck have the same value.
+
+So, the goal is to maximize the size of each deck. Let's think about what determines the deck size.
+
+The deck size is determined by two factors: the number of cards we can allocate to each deck, and the constraints from the initial a_i values and the k coins.
+
+Wait, the deck size s must be such that we can form as many decks as possible, each of size s. Each deck can have at most one card of each type, so the maximum number of decks is the minimum of the counts of each type. But since we can buy more cards, perhaps we can increase some a_i's.
+
+So, the approach is to find the largest s such that after buying up to k cards, the total number of cards allows for s decks, each of size s.
+
+Wait, no. Because each deck is of size s, and each deck can have at most one card of each type. So the maximum number of decks is the sum of 1 for each type, but if we have a_i's, the initial maximum number of decks is the minimum a_i. But after buying, we can add to some a_i's, increasing the total possible.
+
+Wait, no. Let me think differently.
+
+After buying, the total number of cards is the sum of a_i plus the number of cards bought. Since each deck is of size s, the number of decks is (sum + bought) / s, but it must be an integer. So, the sum plus bought must be >= s * m, where m is the number of decks. But since each deck is size s, the maximum m is floor( (sum + bought) / s ). But wait, actually, the number of decks is (sum + bought) / s, rounded down, but each deck is exactly s. So, the sum plus bought must be >= s * m, and m is the number of decks. But since we can choose m as large as possible, the maximum m is floor( (sum + bought) / s ). But we need to find the largest s such that this is possible.
+
+Wait, maybe that's not the right way to think. Let's rephrase: the deck size s is the maximum possible such that after buying up to k cards, the total number of cards is T = sum(a_i) + bought. Then, T must be >= s * m, where m is the number of decks. But each deck is s cards, and each deck has s distinct types, so m can't exceed the number of types, which is n. So, m is at most n. So, T must be >= s * m, and m can be up to n. But to maximize s, we need to find the largest s where there exists an m (<=n) such that s * m <= T, and T = sum(a_i) + bought, with bought <= k.
+
+So, the problem reduces to finding the maximum s such that there exists m <=n where s * m <= sum(a_i) + bought, and bought <=k.
+
+But wait, bought is the number of cards we can buy, which is the sum of (s-1) for each a_i that is less than s, because for each a_i, we can buy up to (s-1) more to make it s. Because if a_i is already >= s, then we don't need to buy any more. So, for each a_i, the maximum we can add is min(s-1, a_i). So, the total bought is sum( min(s-1, a_i) ) for all i.
+
+So, the condition is:
+
+sum( min(s-1, a_i) ) <= k.
+
+And, the sum of min(s-1, a_i) for all i must be <=k.
+
+So, for a given s, can we find m, the number of decks, such that m <=n and s*m <= sum(a_i) + sum( min(s-1, a_i) )? Wait, no. Because the sum(a_i) is the initial count, and the bought is sum( min(s-1, a_i) ), so the total is sum_initial + sum_bought.
+
+So, the equation is:
+
+sum_initial + sum_bought = sum_initial + sum( min(s-1, a_i) ) <= T.
+
+And, T must be >= s * m, where m is the number of decks. But m can be up to n, so the maximum possible m is n.
+
+So, the condition is:
+
+sum_initial + sum( min(s-1, a_i) ) >= s * m.
+
+But m can be as large as possible, but we can choose m up to n. So, for a given s, the maximum m is floor( (sum_initial + sum_bought) / s ). So, to have m <=n, we need sum_initial + sum_bought >= s * m, but since m can be up to n, the minimal condition is sum_initial + sum_bought >= s * 1, which is always true. So, the real constraint is sum_initial + sum_bought >= s * m, where m is the maximum possible, which is n.
+
+Wait, no. Because m can be any number up to n, but to maximize s, we need to find the largest s where there exists an m (<=n) such that s * m <= sum_initial + sum_bought.
+
+So, the maximum possible s is the largest s where sum_initial + sum_bought >= s * m, and m is <=n.
+
+So, for each s, the minimal m is 1, but that's not helpful. Instead, the maximum m is n, so the condition is sum_initial + sum_bought >= s * 1. So, for any s, as long as sum_initial + sum_bought >= s.
+
+But that's not the right way to look at it. Because sum_initial + sum_bought is T, and T must be >= s * m, which is at least m, but m can be up to n. So, to get the maximum s, we need the largest s such that sum_initial + sum_bought >= s * m, with m <=n.
+
+Wait, perhaps it's better to think that for a given s, the maximum possible m is the minimum between n and (sum_initial + sum_bought) // s.
+
+So, to find the maximum s, we can try all possible s values and find the largest one where sum_initial + sum_bought >= s * m, and m is <=n.
+
+But how do we find s efficiently?
+
+Hmm. The approach is to binary search for the maximum s. Because for each s, we can compute the minimal required sum_initial + sum_bought to have m <=n.
+
+Wait, no. Wait, for a given s, the maximum m is floor( (sum_initial + sum_bought) / s ), but m can't exceed n. So, if (sum_initial + sum_bought) >= s * n, then m can be n, which is allowed. So, the condition for s is sum_initial + sum_bought >= s * m, where m is <=n. So, the maximum s is the largest s where sum_initial + sum_bought >= s * m, and m is at most n.
+
+But how to find the maximum s?
+
+Let me think: for each s, the sum_initial + sum_bought is T. We need T >= s * m, where m is the number of decks. Since m can be up to n, the condition is T >= s * 1. Which is always true. So, that's not helpful.
+
+Wait, maybe I'm approaching this the wrong way. Let's think about the maximum possible s.
+
+The maximum s is determined by the sum_initial plus the maximum possible sum_bought. So, the maximum s is the maximum possible such that sum_initial + sum_bought >= s * m, where m is the number of decks, which can be as large as n.
+
+So, the maximum s is the maximum s where sum_initial + sum_bought >= s * m, and m is at least 1 and at most n.
+
+Wait, but we can choose m as high as possible, up to n. So, the maximum s is the largest s where sum_initial + sum_bought >= s * 1. Because m can be 1, which is the minimal, but that's not helpful. So, I'm stuck.
+
+Alternatively, perhaps the maximum s is the maximum s such that sum_initial + sum_bought >= s * m, where m is the maximum possible. So, m is the minimum between n and (sum_initial + sum_bought) // s.
+
+Wait, but that's circular.
+
+Another approach: For each s, the minimal sum_initial + sum_bought needed is s * m, where m is the number of decks. But m can be as large as possible, but we can choose m as the maximum possible, which is min(n, (sum_initial + sum_bought) // s). So, the condition is sum_initial + sum_bought >= s * m, with m = min(n, (sum_initial + sum_bought) // s).
+
+Wait, but that's still a bit unclear.
+
+Alternatively, perhaps the maximum s is the maximum s such that there exists m, 1 <= m <=n, where s * m <= sum_initial + sum_bought, and sum_bought is sum( min(s-1, a_i) ). So, for a given s, we can compute sum_bought, and see if sum_initial + sum_bought >= s * m, for some m <=n.
+
+But how do we find the maximum s?
+
+Hmm, perhaps binary search is the way to go. We can binary search s from 1 to some upper bound, and for each s, check if it's possible to have a deck size s.
+
+So, the steps would be:
+
+1. For each test case, compute the initial sum_initial = sum(a_i).
+
+2. The maximum possible s can't be larger than the sum_initial + k, because each card can be used to increase a_i by up to k, but each a_i can be increased up to s-1. So, the maximum possible s is when we can add as many as possible to some a_i's to reach s.
+
+Wait, but the sum_initial plus sum_bought is sum_initial + sum( min(s-1, a_i) ). So, for a given s, sum_bought is sum( min(s-1, a_i) ).
+
+So, for a given s, we can compute sum_bought, then see if sum_initial + sum_bought >= s * m, where m is the number of decks, which is at most n.
+
+Wait, but m can be any number up to n, so the maximum s is the largest s for which sum_initial + sum_bought >= s * m, with m <=n.
+
+But how do we find m for a given s? Since m can be up to n, the condition is sum_initial + sum_bought >= s * m, and m can be as large as possible, but no larger than n.
+
+Wait, perhaps for a given s, the maximum possible m is min(n, (sum_initial + sum_bought) // s). So, the condition is sum_initial + sum_bought >= s * m, with m being the minimum of n and (sum_initial + sum_bought) // s.
+
+Wait, no. Because for a given s, sum_initial + sum_bought is T. Then, m can be any number up to T//s, but also up to n. So, the maximum m is min(n, T // s). So, the condition is T >= s * m, where m is <=n. Which is always true if T >= s * 1, but that's not helpful.
+
+Hmm, maybe I'm approaching this the wrong way. Let's think about the maximum possible s.
+
+The maximum s is the largest s where sum_initial + sum_bought >= s * 1, because m can be 1. But that's always true, so that doesn't help.
+
+Wait, but sum_initial + sum_bought is T. So, for a given s, the maximum possible m is T // s. But m can't exceed n. So, the condition is T >= s * m, where m is at most n.
+
+So, for a given s, T must be >= s * m, and m is <=n. So, the maximum s is the largest s for which there exists an m (<=n) such that s * m <= T.
+
+But T is sum_initial + sum_bought.
+
+So, the condition is s * m <= sum_initial + sum_bought, where m <=n.
+
+So, the maximum possible s is when m is as large as possible, which is min(n, T // s).
+
+Wait, I'm getting stuck. Maybe another approach.
+
+Let's think about what's the maximum possible s.
+
+We can buy up to k cards. So, the sum_bought can be up to k.
+
+The sum_initial is fixed.
+
+So, the maximum possible sum_initial + sum_bought is sum_initial + k.
+
+So, the maximum possible T is sum_initial + k.
+
+So, s can be at most floor( (sum_initial + k) / 1 ), which is sum_initial +k. But that's not possible because m can't be larger than n.
+
+Wait, no. Because m is the number of decks, which is the number of cards divided by s. So, T must be >= s * m, and m <=n.
+
+So, for s to be possible, there must exist m <=n such that s*m <= T, where T = sum_initial + sum_bought.
+
+So, the maximum s is the maximum s such that s * m <= sum_initial + sum_bought, for some m <=n.
+
+So, the maximum s is the maximum possible s where sum_initial + sum_bought >= s * m, and m <=n.
+
+But how do I find that?
+
+Perhaps the maximum s is the maximum s where sum_initial + sum_bought >= s * 1, but that's always true. So, that doesn't help.
+
+Wait, perhaps the maximum s is the maximum s where sum_initial + sum_bought >= s * n, because m can be at most n. So, if sum_initial + sum_bought >= s *n, then m can be n, which is allowed.
+
+So, in that case, the maximum s is the maximum s where sum_initial + sum_bought >= s *n.
+
+So, sum_initial + sum_bought >= s *n.
+
+We can solve for s:
+
+s <= (sum_initial + sum_bought) / n.
+
+But sum_bought is the sum of min(s-1, a_i) for each i.
+
+So, this is a bit of a circular condition, but perhaps we can model it as:
+
+s <= (sum_initial + sum_bought) / n.
+
+And sum_bought >= s * n - sum_initial.
+
+But that's not helpful.
+
+Wait, perhaps the maximum s is the minimum between (sum_initial + sum_bought) // n and (sum_initial + k) // 1.
+
+Which is the sum_initial +k.
+
+But that can't be right because sum_initial +k may be larger than n, but m can't exceed n.
+
+Wait, let's think with an example.
+
+Example 1:
+
+n=2, k=5.
+
+a = [3,4]
+
+So, sum_initial is 7.
+
+We can buy up to 5 cards.
+
+What is the maximum s?
+
+We need to buy as many as possible to make s as large as possible.
+
+Suppose s is 5.
+
+sum_initial is 7. sum_bought is sum( min(4,5-1) ) for each a_i? Wait, no, for s=5, each a_i can contribute up to 4.
+
+So, sum_bought is min(3,4) + min(4,4) =4 +4=8. But k is 5. So, sum_bought can't exceed 5. So, sum_bought is 5.
+
+So, sum_initial + sum_bought is 12.
+
+s=5: 5 *5=25 >12. So, no.
+
+So, s can't be 5.
+
+What about s=4?
+
+sum_initial=7.
+
+sum_bought is 4-1=3 for each a_i, but a_1 is 3, which allows 3. a_2 is4, which allows 3 (since s=4, min(4,3)=3). So sum_bought is 3+3=6, but k is 5. So, sum_bought is 5.
+
+So, sum_initial + sum_bought is 12.
+
+s=4: 4*3=12. So, T=12 >=4*3=12. So, m=3, which is <=2? No, m=3 is more than n=2.
+
+So, that's a problem.
+
+So, s=4 is not possible, because m would be 3, which is more than n=2.
+
+So, we need to find a s where sum_initial + sum_bought >= s * m, with m <=n.
+
+So, for s=3.
+
+sum_bought is min(3,2) + min(4,2) =2+2=4. But k is 5, so sum_bought can be up to 5.
+
+Wait, no. For s=3:
+
+a_1 is3, so min(3, 2) is 2.
+
+a_2 is4, so min(4,2) is 2.
+
+sum_bought is 4. So, sum_initial + sum_bought is7+4=11.
+
+s=3: 3*m <=11.
+
+m can be up to 3 (since n=2, m can be up to 2). So, 3*2=6<=11.
+
+So, m=2, s=3 is possible.
+
+So, the deck size is 3.
+
+So, in this case, the maximum s is 3.
+
+So, the approach is to find the maximum s such that there exists m <=n where s*m <= sum_initial + sum_bought, and sum_bought is sum( min(s-1, a_i) ).
+
+So, the problem is to find the maximum s, such that sum_initial + sum( min(s-1, a_i) ) >= s * m, where m <=n.
+
+So, how do we compute this s?
+
+It's a bit tricky. Let's think about the binary search approach.
+
+We can binary search s between 1 and some upper limit, say, (sum_initial + k) since k is the maximum we can add.
+
+For each s, we compute sum_bought as the sum of min(s-1, a_i) for all i.
+
+Then, T = sum_initial + sum_bought.
+
+We need to find if there exists m <=n such that T >= s * m.
+
+Which is equivalent to T >= s * m, and m <=n.
+
+So, the maximum m is min(n, T // s).
+
+So, T >= s * m.
+
+So, for a given s, the condition is:
+
+sum_initial + sum( min(s-1, a_i) ) >= s * m, where m <=n.
+
+The maximum m is min(n, (sum_initial + sum_bought) // s).
+
+So, the condition is sum_initial + sum_bought >= s * min(n, (sum_initial + sum_bought) // s).
+
+Wait, no. Because m can be as large as possible, but it's bounded by n.
+
+So, for a given s, the maximum m is min(n, (sum_initial + sum_bought) // s).
+
+So, the condition is sum_initial + sum_bought >= s * m, where m is <=n.
+
+Which would be true if sum_initial + sum_bought >= s * 1, which is always true.
+
+But that's not helpful.
+
+Wait, perhaps the maximum s is the maximum s such that sum_initial + sum( min(s-1, a_i) ) >= s * m, where m is the number of decks, which is sum_initial + sum_bought // s.
+
+Wait, I'm getting stuck.
+
+Alternative approach: For a given s, the maximum m is min(n, (sum_initial + sum_bought) // s).
+
+So, the condition is sum_initial + sum_bought >= s * m.
+
+Which is sum_initial + sum_bought >= s * min(n, (sum_initial + sum_bought) // s).
+
+Wait, that's a bit recursive.
+
+Alternatively, perhaps for a given s, the maximum possible m is min(n, (sum_initial + sum_bought) // s).
+
+So, the condition is sum_initial + sum_bought >= s * m.
+
+Which is sum_initial + sum_bought >= s * min(n, (sum_initial + sum_bought) // s).
+
+Let me compute this for a sample.
+
+Take the example where n=2, k=5, a=[3,4].
+
+sum_initial=7.
+
+For s=3:
+
+sum_bought is min(2,3) + min(2,4) =2+2=4.
+
+sum_initial + sum_bought=11.
+
+m is min(2, 11//3)= min(2,3)=2.
+
+So, 3*2=6 <=111? 11 >=6, yes.
+
+So, for s=3, it's possible.
+
+What about s=4?
+
+sum_bought is min(3,3)=3, min(3,4)=3. So sum_bought=6.
+
+sum_initial + sum_bought=13.
+
+m is min(2,13//4)=2.
+
+4*2=8 <=13? Yes.
+
+So, for s=4, is it possible?
+
+Yes.
+
+Wait, but what's the maximum m?
+
+Because sum_initial + sum_bought is 13, and s=4.
+
+So, m can be up to 3 (since 13//4 is 3.25, so 3).
+
+But m can't exceed n=2.
+
+So, m is 2.
+
+4*2=8 <=13, so yes.
+
+So, s=4 can be possible.
+
+Wait, so earlier analysis was wrong. So, for s=4, it is possible.
+
+So, the maximum s is 4?
+
+But let me see.
+
+sum_initial + sum_bought is13.
+
+s=4, m=2, 4*2=8 <=13.
+
+Yes.
+
+So, the deck size is4.
+
+So, the maximum s is4.
+
+So, why in the earlier analysis for s=4, m=3 is not possible because m can't exceed n=2.
+
+So, in that case, the maximum s is4.
+
+So, in this case, the maximum s is4.
+
+So, perhaps the approach is to binary search s from 1 to (sum_initial +k) // something.
+
+Wait, but how do I compute sum_bought for a given s?
+
+sum_bought is sum( min(s-1, a_i) for each i).
+
+So, for each s, compute sum_bought as the sum of min(s-1, a_i) for all i.
+
+Then, T = sum_initial + sum_bought.
+
+Then, m = min(n, T // s).
+
+If T >= s * m, then s is possible.
+
+Wait, but T is sum_initial + sum_bought.
+
+So, for a given s, T = sum_initial + sum_bought.
+
+We need to find if there's an m <=n such that T >= s * m.
+
+Which is equivalent to m <= T // s.
+
+So, the condition is whether T >= s * m, where m is as large as possible, but <=n.
+
+So, the maximum m is min(n, T//s).
+
+So, the condition is T >= s * m, where m is min(n, T//s).
+
+So, T >= s * min(n, T//s).
+
+Wait, that's a bit circular.
+
+Alternatively, for a given s, compute T.
+
+If T >= s * n, then m can be n, which is allowed.
+
+So, in that case, s is possible.
+
+Otherwise, check if T >= s * (T//s).
+
+Wait, no.
+
+Alternatively, for a given s, the maximum possible m is T//s.
+
+So, if T >= s * m, where m is the maximum possible, which is T//s.
+
+So, if T >= s * (T//s), then it's possible.
+
+Wait, no.
+
+Wait, for example, T=10, s=3.
+
+T//s=3.
+
+3*3=9 <=10. So, yes.
+
+So, for s=3, m can be3, which is <=n.
+
+So, the condition is T >= s * m, where m is T//s.
+
+So, for a given s:
+
+if T >= s * (T // s), then it's possible.
+
+Wait, no. Because T//s is the maximum m.
+
+So, for s=3, T=10: T//s=0. So, 0*3=0 <=0.
+
+So, yes.
+
+So, perhaps the condition is T >= s * (T // s).
+
+So, for a given s, if T >= s * (T // s), then it's possible.
+
+But let's see:
+
+T=10, s=3: 3*3=9 <=10. So, yes.
+
+T=10, s=4: 4*2=8 <=10. So, yes.
+
+T=7, s=3: 3*2=6 <=7. So, yes.
+
+Yes, so the condition is T >= s * (T // s).
+
+So, the binary search approach is:
+
+- For each test case, compute sum_initial.
+
+- The maximum possible s is (sum_initial +k), because you can buy up to k cards.
+
+- Binary search s between 1 and (sum_initial +k).
+
+- For each s, compute sum_bought as sum( min(s-1, a_i) for each i).
+
+- T = sum_initial + sum_bought.
+
+- Check if T >= s * (T // s).
+
+- The maximum s for which this is true is the answer.
+
+Wait, but in the earlier example where s=4, T=13.
+
+s=4, T//s=3.
+
+So, 4*3=12 <=13. So, yes.
+
+So, s=4 is possible.
+
+What about s=5?
+
+sum_bought is min(4,3)=3, min(4,4)=4. So, sum_bought=7.
+
+T=7+7=14.
+
+s=5, T//s=2 (since 14//5=2).
+
+5*2=10 <=14. So, yes.
+
+So, s=5 is possible.
+
+Wait, but can we have a deck size of5?
+
+Because sum_initial is7, sum_bought is7, T=14.
+
+So, 14 /5=2.8, so m=2.
+
+So, 5*2=10 <=14.
+
+So, m=2.
+
+So, the deck size is5.
+
+So, the maximum s is5.
+
+Wait, but what's the sum_initial + sum_bought is14.
+
+s=5, m=2.
+
+So, 5*2=10 <=14.
+
+Yes.
+
+So, the maximum s is5.
+
+So, in this case, the maximum s is5.
+
+So, the approach is correct.
+
+So, the algorithm is:
+
+For each test case:
+
+1. Compute sum_initial = sum(a_i).
+
+2. Compute the maximum possible s as (sum_initial +k), because you can buy up to k cards.
+
+3. Binary search s between 1 and (sum_initial +k).
+
+   For each s:
+
+   a. Compute sum_bought = sum( min(s-1, a_i) for each i).
+
+   b. T = sum_initial + sum_bought.
+
+   c. Compute m = T // s.
+
+   d. Check if T >= s * m.
+
+   If yes, then s is possible. Try to find a larger s.
+
+   Else, try smaller s.
+
+So, binary search between low=1 and high= sum_initial +k.
+
+Wait, but let's test this with the earlier example where n=2, k=5, a=[3,4].
+
+sum_initial=7.
+
+sum_initial +k=12.
+
+So, high=12.
+
+So, binary search between 1 and12.
+
+Let's see:
+
+The maximum s is5, as we saw.
+
+So, when s=5:
+
+sum_bought = min(4,3)=3, min(4,4)=4. sum_bought=7.
+
+T=7+7=14.
+
+m=14//5=2.
+
+5*2=10 <=14.
+
+So, condition is true.
+
+So, s=5 is possible.
+
+What about s=6:
+
+sum_bought = min(5,3)=3, min(5,4)=4. sum_bought=7.
+
+T=14.
+
+m=14//6=2.
+
+6*2=12 <=14.
+
+Yes.
+
+So, s=6 is possible.
+
+Similarly, s=7:
+
+sum_bought= min(6,3)=3, min(6,4)=4. sum_bought=7.
+
+T=14.
+
+m=14//7=2.
+
+7*2=14 <=14. Yes.
+
+So, s=7 is possible.
+
+What about s=8:
+
+sum_bought= min(7,3)=3, min(7,4)=4. sum_bought=7.
+
+T=14.
+
+m=14//8=1.
+
+8*1=8 <=14. Yes.
+
+So, s=8 is possible.
+
+What about s=9:
+
+sum_bought= min(8,3)=3, min(8,4)=4. sum_bought=7.
+
+T=14.
+
+m=14//9=1.
+
+9*1=9>14? No, 9>14 is false. So, 9>14 is false, so 9*1=9 <=14. Yes.
+
+Wait, 9*1=9 <=14 is true.
+
+So, s=9 is possible.
+
+Wait, but sum_initial is7, sum_bought is7, T=14.
+
+So, m=14//9=1.
+
+So, 9*1=9 <=14? No, 9>4.
+
+Wait, no, 9*1=9 <=14, yes.
+
+So, condition is 14 >=9*1, which is 9 <=14, yes.
+
+So, s=9 is possible.
+
+What about s=10:
+
+sum_bought= min(9,3)=3, min(9,4)=4. sum_bought=7.
+
+T=14.
+
+m=14//10=1.
+
+10*1=10 <=14. Yes.
+
+So, s=10 is possible.
+
+Wait, but sum_initial is7, sum_bought is7, T=14.
+
+m=14//10=1.
+
+10*1=10 <=14. Yes.
+
+So, s=10 is possible.
+
+What about s=11:
+
+sum_bought= min(10,3)=3, min(10,4)=4. sum_bought=7.
+
+T=14.
+
+m=14//11=1.
+
+11*1=11 <=14. Yes.
+
+So, s=11 is possible.
+
+What about s=12:
+
+sum_bought= min(11,3)=3, min(11,4)=4. sum_bought=7.
+
+T=14.
+
+m=14//12=1.
+
+12*1=12 <=14. Yes.
+
+So, s=12 is possible.
+
+Wait, but what's the maximum possible s?
+
+Because sum_initial is7, and you can buy up to 5 more, so sum_bought can be up to5.
+
+Wait, no, because for s=12, sum_bought is min(11,3)=3 and min(11,4)=4. So sum_bought is 7.
+
+Wait, but that's more than 5. So, that's impossible because you can't buy more than k=5.
+
+So, in this case, sum_bought cannot exceed 5, because k=5.
+
+So, for s=12, sum_bought is min(11,3)=3 and min(11,4)=4, sum_bought=7, which is more than k=5.
+
+So, that's impossible. So, s=12 is not possible.
+
+Ah, right. So, the sum_bought can't exceed k. So, for s=12, sum_bought is min(11,3) + min(11,4) =3+4=7, which is more than k=5. So, that's not allowed.
+
+So, the binary search should take into account that sum_bought can't exceed k.
+
+So, the approach is:
+
+For a given s, sum_bought is sum( min(s-1, a_i) for each i), but sum_bought can't exceed k.
+
+So, sum_bought = min( sum( min(s-1, a_i) ), k )
+
+So, in the earlier example, for s=12, sum_bought is7, which is more than k=5. So, sum_bought is5.
+
+So, T=7+5=12.
+
+m=12//12=1.
+
+12*1=12 <=12.
+
+So, condition is true.
+
+So, s=12 is possible.
+
+Wait, but sum_bought is5, which is k=5.
+
+So, yes, sum_bought is5.
+
+So, T=7+5=12.
+
+m=12//12=1.
+
+12*1=12 <=12.
+
+So, s=12 is possible.
+
+So, what is the maximum s?
+
+So, sum_initial is7, k=5.
+
+So, the maximum s is7 +5=12.
+
+Wait, no. Because sum_initial is7, you can buy up to5 more, so T can be up to7+5=12.
+
+So, s can be up to12, since 12*1=12.
+
+So, s=12 is possible.
+
+So, the binary search should consider that sum_bought is min( sum( min(s-1, a_i) ), k ).
+
+So, in the code, for a given s, sum_bought is the sum of min(s-1, a_i) for each i, but cannot exceed k.
+
+So, sum_bought = min( sum( min(s-1, a_i) ), k )
+
+Thus, the code should compute sum_bought as such.
+
+So, the binary search approach is:
+
+low =1, high= sum_initial +k.
+
+max_s =0
+
+while low <= high:
+
+   mid = (low + high) //2
+
+   sum_bought = sum( min(mid-1, a_i) for a_i in a_list )
+
+   sum_bought = min( sum_bought, k )
+
+   T = sum_initial + sum_bought
+
+   m = T // mid
+
+   if T >= mid * m:
+
+       max_s = mid
+
+       low = mid +1
+
+   else:
+
+       high = mid -1
+
+So, in the case where s=12, let's see:
+
+sum_initial=7.
+
+sum_bought is min(1,3)=1, min(1,4)=1. sum_bought=2.
+
+T=9.
+
+m=9//2=4.
+
+2*4=8 <=9.
+
+So, condition is true.
+
+So, s=2 is possible.
+
+But in the earlier example, s=5 is possible.
+
+So, the binary search will find the maximum s.
+
+So, now, the code can be structured as follows.
+
+Read t test cases.
+
+For each test case:
+
+   Read n, k.
+
+   Read a list of n integers.
+
+   sum_initial = sum(a_list)
+
+   low=1
+
+   high = sum_initial +k
+
+   max_s=0
+
+   while low <= high:
+
+       mid = (low + high) //2
+
+       sum_bought = sum( min( mid-1, ai ) for ai in a_list )
+
+       sum_bought = min( sum_bought, k )
+
+       T = sum_initial + sum_bought
+
+       m = T // mid
+
+       if T >= mid * m:
+
+           max_s = mid
+
+           low = mid +1
+
+       else:
+
+           high = mid -1
+
+   print(max_s)
+
+Wait, but what about when mid is zero? But the loop starts with low=1, so mid can't be zero.
+
+Wait, no, mid is (low + high) //2, and low starts at 1, so mid is at least 1.
+
+So, the code should be okay.
+
+Let's test this logic with the earlier examples.
+
+Test case 1:
+
+n=2, k=5, a=[3,4]
+
+sum_initial=7.
+
+high=7+5=12.
+
+mid starts at 6.
+
+Compute sum_bought:
+
+mid-1=5.
+
+sum( min(5,3)=3, min(5,4)=4 )=7.
+
+sum_bought = min(7,5)=5.
+
+T=7+5=12.
+
+m=12//6=2.
+
+6*2=12 <=12: yes.
+
+max_s

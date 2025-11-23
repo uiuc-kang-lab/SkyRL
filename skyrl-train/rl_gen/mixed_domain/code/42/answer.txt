@@ -1,0 +1,446 @@
+Okay, let's try to figure out how to solve this problem. So, the task is to find the minimum number of pieces to cut a binary string into such that when we rearrange those pieces, they form a sorted binary string. Remember, a sorted binary string has all 0s followed by all 1s. 
+
+Hmm, so what's the approach here? Let's think step by step.
+
+First, let's understand the problem with an example. Suppose the string is "0101". The sorted version would be "0011". But wait, no, because the original string can be cut into pieces that can be rearranged. So how would that work? For example, if we cut into "01" and "01", then rearranged as "0101"? Wait, no, because when you rearrange those pieces, you can arrange them in any order. So for "0101", if we cut into "01" and "01", rearranged as "0101" would make "0101", which is not sorted. Wait, maybe I'm misunderstanding the problem.
+
+Wait, the problem says the rearranged string must be a sorted binary string. So the rearranged string must have all 0s before 1s. So the pieces when rearranged must form a string where 0s are all on the left and 1s on the right.
+
+Wait, but the pieces themselves are contiguous substrings. So when we cut the string into multiple pieces, each piece is a contiguous part of the original string. Then, by rearranging the pieces in any order, we can form the sorted string.
+
+So the goal is to arrange the pieces in such a way that when concatenated, the result is all 0s followed by all 1s, with the minimal number of pieces.
+
+Wait, but the pieces can be arranged in any order. So perhaps the minimal number of pieces is determined by how many 0s and 1s are in the string, but with some arrangement.
+
+Wait, let's think differently. The sorted string must have all 0s first, then all 1s. So the rearranged string will have some 0s and then some 1s. So, the pieces must consist of 0s and 1s in such a way that when arranged, all 0s come first, then all 1s.
+
+So the key is to find the minimal number of pieces that can be arranged in this way.
+
+Let's think about the structure of the original string. The string may have some 0s followed by some 1s, but maybe not. So, the first step is to find how many 0s and 1s are in the string.
+
+Let's denote the total number of 0s as zero_count and 1s as one_count.
+
+In the sorted string, all 0s come before 1s, so the final string must have zero_count 0s and one_count 1s, in that order.
+
+But the pieces can be arranged in any order. So perhaps the way to arrange the pieces is to have all 0s in one piece and all 1s in another. But wait, that might not always be possible.
+
+Wait, for example, suppose the string is "0101". The total 0s are 2, 1s are 2. So the sorted string is "0011". So the pieces must consist of all 0s in one piece and all 1s in another. So the minimal number of pieces is 2. Because we can't have all 0s in one piece and all 1s in another unless the string is like "0011" or "00001111". Wait, no, in "0101" the 0s are not contiguous. So cutting it into "0", "1", "0", "1" would give four pieces, which can be rearranged as "0011" by putting the two 0s together and the two 1s together. Or wait, no: each piece is a contiguous substring. So in "0101", if we cut into [0], [1], [0], [1], then the rearranged pieces could be [0], [1,1,0,0], but wait, no, the rearrangement is any order of the pieces. So for example, we can arrange the pieces in the order [0], [1,0,1], but that's not possible because the pieces must be contiguous in the original string.
+
+Wait no, the problem states that the pieces are contiguous substrings. So each piece is a contiguous part of the original string. So, when you rearrange the pieces, you can put them in any order, but each piece is taken as a separate element, and their order is rearranged.
+
+Wait, no, perhaps the arrangement is of the pieces themselves, not the order of the original string. So for example, if the original string is split into pieces A, B, C, then you can arrange the pieces in any order, say A, C, B, etc., and each piece is taken as a whole.
+
+So, in the example "0101", which is 0,1,0,1. The pieces are each of length 1. If we cut into two pieces: [01] and [01], then rearranged as [01][01], we get "0101", which is not sorted. But the sorted string would be "0011".
+
+Wait, wait. Maybe I'm approaching this wrong. Let me think differently.
+
+The sorted string is a string where all 0s are before all 1s. So the final string is a string of the form "000...111".
+
+So the problem is to split the original string into some pieces, each of which is a contiguous substring, such that when rearranged in any order, the concatenated string is a string of all 0s followed by all 1s.
+
+But the minimal number of pieces is to be found.
+
+So, the strategy is to find the minimal number of pieces such that when you arrange the pieces in the optimal order, the concatenated string is all 0s followed by all 1s.
+
+But how?
+
+Let me think about the structure of the original string.
+
+Suppose the original string has a certain number of 0s and 1s. For example, let's say the string is "0011". Then, the minimal number of pieces is 1, because we can just keep it as is.
+
+But if the string is "0101", then the minimal number is 2. Because the only way to get all 0s first is to have the 0s in one piece and the 1s in another. But in the original string, the 0s and 1s are not contiguous. So you have to split the string into two pieces: the first piece is "0" and the second is "101" — wait, no, that's not possible because the second piece is "101", which is not a contiguous substring. Oh wait, no, the second piece would have to be a substring of the original string. So in "0101", the possible pieces are:
+
+- "0", "1", "0", "1"
+- "01", "01"
+- "010", "1"
+- etc.
+
+But to get all 0s first, perhaps we need to arrange the pieces so that the pieces with 0s come before the 1s.
+
+Wait, but the pieces are arranged in any order. So, for example, if we have the pieces [0], [1], [0], [1], then we can arrange them as [0], [1, 0, 1], which is not allowed because the pieces are [0], [1,0], [1], but wait no. Each piece is a contiguous substring, so the entire string is split into separate pieces.
+
+Wait, perhaps the minimal number of pieces is determined by the maximal number of 0s that are in a block. Hmm, not sure.
+
+Wait, let's think about the structure of the original string. The sorted string is all 0s followed by all 1s. So the pieces, when arranged, must form such a string.
+
+What's the condition that the pieces must satisfy? Each piece must be a substring such that when arranged in some order, the concatenated string is all 0s followed by all 1s.
+
+So, for example, the pieces can't have any 1s that are not followed by all 0s and then all 1s.
+
+Wait, perhaps the key is to find the positions where the 0s are followed by 1s, and where that transition occurs.
+
+Let me think about the sorted string as a sequence of all 0s followed by all 1s. So the original string can be split into 0s and 1s such that the 0s are contiguous and the 1s are contiguous. But the original string may not be like that.
+
+Wait, perhaps the minimal number of pieces is equal to the number of transitions from 1 to 0 plus one. Because each transition from 1 to 0 represents a point where the 0s start. For example, in the string "0011", there are no transitions, so the minimal pieces are 1.
+
+In the string "0101", the transitions are from 0 to 1 (position 1), then 1 to 0 (position 2), then 0 to 1 (position 3). So there are two transitions from 1 to 0. So the minimal pieces are 3?
+
+Wait, that doesn't make sense. Because in the example, we can get away with 2 pieces.
+
+Wait, perhaps the minimal number of pieces is equal to the number of 1s that are before 0s minus one?
+
+Wait, another approach: the sorted string is a string of all 0s followed by all 1s. So, the original string can be split into two parts: the part containing all the 0s, and the part containing all the 1s. But the original string may not have all 0s before all 1s, so to make the sorted string, the 0s must be in a single contiguous block and the 1s must be in another contiguous block.
+
+Wait, but the original string may have 0s and 1s scattered. So, we need to split the string into multiple pieces such that all 0s are in one piece and all 1s in another. But the minimal number of pieces would be the number of such transitions plus one.
+
+Wait, perhaps the minimal number of pieces is the number of groups of 0s and 1s in the original string. Because each group must be a separate piece.
+
+Wait, for example, the string "0011" is one group of 0s and one group of 1s. So we can take all into one piece, which is the minimal.
+
+The string "0101" has two groups of 0s and 1s. So, we can split into two pieces: [0], [101]. But when we arrange them, we can't make the sorted string because the second piece is [101], which is not a contiguous substring. Wait, no, because the original string is split into two pieces, each being a contiguous substring. So [0] and [101] are two pieces.
+
+When rearranged, we can arrange them in any order. So for example, [101][0], which would give 1010, which is not sorted. Or [0][101], which is 0101, which is not sorted. So that doesn't work.
+
+Hmm, so perhaps the way to arrange the pieces is not just to arrange them in any order, but to find a way to arrange all the 0s first and then all the 1s.
+
+Wait, but the pieces themselves are contiguous substrings. So when you arrange the pieces in any order, you can only concatenate them in that order. So to get all 0s followed by all 1s, the only way is to have all the 0s in one piece and all the 1s in another. Because any other arrangement would mix the 0s and 1s, which would result in the 0s not being all before the 1s.
+
+So, the conclusion is that the only way to get a sorted string is to have all 0s in one piece and all 1s in another. So the original string must have all 0s in a single block and all 1s in another. Otherwise, it's impossible to split into pieces that can form a sorted string.
+
+Wait, no. Because the pieces can be any order. For example, if the original string is "0101", then the minimal number of pieces is 2.
+
+Wait, let's see:
+
+If we have pieces [0] and [101], and then arrange them as [101][0], that's 1010, which is not sorted.
+
+If we arrange as [0][101], that's 0101, which is not sorted.
+
+But what if the original string is "0011"?
+
+Then, the pieces can be [00][11], and when arranged as [00][11], the string is 0011, which is sorted.
+
+So, in this case, the minimal pieces is 2, but the original string's 0s are in a single contiguous block and 1s in a single contiguous block.
+
+Wait, but what if the string is "010"?
+
+The minimal pieces would be 3? Because the sorted string must be "0011"? No, wait, no. Wait, the sorted string is all 0s followed by 1s. So for "010", the minimal sorted string is "001", which has one 0 and two 1s. So the pieces must be arranged such that all 0s come first. So the pieces must consist of all 0s in one piece and the 1s in another.
+
+In "010", the 0s are at positions 0, 2. So the 0s are not contiguous. So to form the sorted string, the 0s must be in one piece. So the minimal number of pieces is 2: [0,0], and [1]. Then they can be arranged as [0][0][1], which is not sorted. Or [0][1][0], which is 010, not sorted.
+
+Wait, that doesn't seem right. So perhaps the approach is to find the minimal number of pieces such that when you arrange the pieces in the order of all 0s first, followed by 1s, the concatenated string is sorted.
+
+But how to model this.
+
+Maybe the key is to find the positions where the 0s change to 1s. So in the string, the number of such transitions is the number of times a 0 is followed by a 1.
+
+Each such transition indicates a point where a new 1 starts. So the minimal number of 0s is the number of 0s, and the minimal number of 1s is the number of 1s.
+
+Wait, perhaps the minimal number of pieces is the number of transitions from 0 to 1 in the original string. Because each transition would require a new piece.
+
+Wait, for example, the string "0101" has two transitions from 0 to 1. So the minimal number of pieces is 3: because you have to split into two 0s and two 1s, but that's not correct. Wait, in the example, the minimal pieces are 2, but according to this, the transitions are two, so the pieces would be 3.
+
+Hmm, perhaps this approach isn't correct.
+
+Let me think differently.
+
+The problem requires that after cutting, the pieces can be rearranged into a sorted binary string. So the sorted string is all 0s followed by all 1s. So all 0s must be in a single contiguous block, and all 1s must be in another contiguous block.
+
+Wait, no, that's not necessarily the case. For example, the string could be split into multiple pieces, some of which are 0s and others 1s, but when rearranged, all 0s come before 1s.
+
+Wait, but if the original string has multiple 0s and 1s scattered, then to get a sorted string, the 0s must be in one contiguous block and the 1s in another.
+
+Because any other arrangement would mix them, leading to a string where 0s are not all before 1s.
+
+So, the conclusion is that the original string must have all 0s in a single contiguous block and all 1s in another. Otherwise, it's impossible to split into pieces that can be rearranged into a sorted string.
+
+Wait, that's correct. Because if the original string has 0s and 1s not in contiguous blocks, then any split will result in some 0s and 1s in the same piece, which when rearranged, will not form a sorted string.
+
+Wait, no, that's not the case. For example, if the string is "010", you can split into [0] and [10]. Then, when you arrange them as [0][10], you get 010, which is not sorted. Or arrange as [10][0], which is 100, which is not sorted. So in this case, it's not possible to get a sorted string.
+
+So, the original string must have all 0s in a single contiguous block and all 1s in another contiguous block. Otherwise, it's impossible to split into pieces that can form a sorted string.
+
+So, the approach is as follows:
+
+1. Find the total number of 0s (zero_count) and 1s (one_count) in the string.
+
+2. Check if the string can be split into two parts: a prefix of 0s and a suffix of 1s. If so, then the minimal number of pieces is 2.
+
+3. Otherwise, the minimal number of pieces is (number of transitions from 1 to 0 in the string) + 1.
+
+Wait, perhaps not. Let me think again.
+
+Wait, the number of transitions from 1 to 0 is the number of times a 0 appears after a 1. Each such transition indicates a point where a new 0 starts.
+
+For example, in "0101", the transitions from 1 to 0 are at position 2 (from 1 to 0) and position 3 (from 0 to 1, not 1 to 0). So the number of transitions from 1 to 0 is 1.
+
+So the minimal number of pieces would be transitions_from_1_to_0 + 1.
+
+Wait, in the example "0101", transitions_from_1_to_0 is 1, so 1 + 1 = 2 pieces. Which matches the example.
+
+In the example "0011", transitions_from_1_to_0 is 0, so 0 + 1 = 1 piece. Which is correct.
+
+In the example "010", transitions_from_1_to_0 is 1, so 1 + 1 = 2 pieces. Which is correct.
+
+In the example "001100", transitions_from_1_to_0 is 0, so pieces is 1.
+
+In the case of "1100", transitions_from_1_to_0 is 1, so pieces is 2.
+
+So, the formula seems to hold.
+
+So the minimal number of pieces is 1 + the number of transitions from 1 to 0 in the original string.
+
+But wait, what about the case where the string starts with 0s and ends with 1s, but has no 0s in the middle? Then, the entire string is already a sorted string, and the minimal pieces is 1.
+
+Yes.
+
+So, the steps to solve the problem are:
+
+1. Compute the number of transitions from 1 to 0 in the string.
+
+2. The minimal number of pieces is 1 + the number of such transitions.
+
+Because each transition from 1 to 0 indicates a new 0 starts, which must be placed as a separate piece. So, for each 1 to 0 transition, we have to split the string into a new piece.
+
+So, for example:
+
+- "0011" has 0 transitions from 1 to 0. So pieces is 1.
+
+- "0101" has 1 transition from 1 to 0. So pieces is 2.
+
+- "010" has 1 transition from 1 to 0. Pieces is 2.
+
+- "001100" has 0 transitions. Pieces is 1.
+
+- "1010" has 2 transitions from 1 to 0 (1->0, 0->1, 1->0). Wait, wait, no. Let's see:
+
+Wait, the string "1010" is:
+
+1, 0, 1, 0.
+
+Transitions from 1 to 0: position 1, and position 3.
+
+So, the number of transitions is 2.
+
+So the minimal number of pieces is 3.
+
+Wait, but can we arrange this into 3 pieces?
+
+Yes.
+
+Each piece is a contiguous substring. So the pieces would be [1], [0], [1], [0]. Then, arrange them as [1,0,1,0], which is not sorted. Or perhaps [1,0], [1,0], which can be arranged as [1,0,1,0], which is not sorted. So that doesn't work.
+
+Wait, no, wait. The sorted string needs to be 00 11 00. So the pieces would have to be arranged as [1, 0, 1, 0] — but that's the same as the original string, which isn't sorted.
+
+Hmm, this suggests that the formula might not hold in all cases.
+
+Wait, perhaps I made a mistake. Because in the case of "1010", the minimal number of pieces is 3.
+
+But according to the formula, the number of transitions from 1 to 0 is 2, so 2+1=3, which is correct.
+
+But when I tried to split into [1], [0], [1], [0], and arrange them in any order, the concatenated string is not sorted.
+
+Wait, but perhaps the arrangement is [1, 0, 1, 0], which is 1010, which is the original string. Not sorted.
+
+Wait, but the sorted string is 001100. So how can the pieces be arranged to get exactly that?
+
+Wait, perhaps if the pieces are [1,0,1,0], but arranged in a way that they form 00 11 00. But the pieces are contiguous, so perhaps the arrangement is [0,1,0,1], but the pieces are [1,0,1,0]. No, that's the same as the original.
+
+Wait, perhaps I'm misunderstanding the problem. The original string must be split into some pieces, but the pieces themselves are not necessarily contiguous in the original string. Wait no, the pieces are contiguous in the original string. So each piece is a substring.
+
+Wait, perhaps the way to arrange the pieces is to arrange them in such a way that all the 0s come first, then all the 1s, but the arrangement of the pieces can be any order.
+
+Wait, but each piece is a substring. So, for example, if the original string is "1010", the pieces could be [1,0,1,0]. Then, arrange them as [1,0,1,0] — but that's not sorted. Alternatively, arrange them as [1,0], [1,0], which would give "1010", which is not sorted.
+
+Hmm, this suggests that the formula is not correct. So perhaps the formula needs to be adjusted.
+
+Wait, perhaps the formula is wrong. Because in the case of "1010", the formula suggests that the minimal number of pieces is 3, but perhaps it's possible to arrange the pieces in a way that the concatenated string is all 0s followed by all 1s.
+
+Wait, but the original string is "1010". So, to form a sorted string, all 0s must be first, then all 1s. So the pieces must be arranged as [00][11], but the original string doesn't have contiguous 0s and 1s.
+
+Wait, perhaps another approach is needed.
+
+Let me think about the sorted string as a target. The target is a string consisting of all 0s followed by all 1s. So the target has a certain length, say, m 0s and n 1s, where m + n = len(s).
+
+The problem is to split the original string into k pieces, such that the concatenation of any arrangement of these pieces is equal to the target. Or wait, no. The pieces can be arranged in any order, but their concatenation must be equal to the target.
+
+Wait, no. The pieces can be arranged in any order, but the concatenation must be the target string. So, each piece is a substring of the original string, and when you arrange the pieces in any order, the concatenated string is the target.
+
+But the target is unique: all 0s followed by all 1s.
+
+So, the key is that all the 0s in the target are in the beginning, and all the 1s are after.
+
+So, each piece must be a substring of the original string, and when arranged in any order, the concatenated string is the target.
+
+But this seems impossible unless the target is the same as the original string, except with some rearrangement.
+
+Wait, perhaps the target is fixed, and the pieces must be arranged such that their concatenation equals the target.
+
+So, for example, in the case of "1010", the target is "0011". So the pieces can be [1,0,1,0], but that's not possible because each piece is contiguous and the arrangement would have to be [1,0,1,0], which is not the target. So perhaps the formula is incorrect.
+
+This suggests that the formula is not sufficient, and perhaps the minimal number of pieces is not simply 1 + number of transitions from 1 to 0.
+
+Hmm.
+
+Alternative approach: find the minimal number of pieces such that the pieces can be arranged in any order to form all 0s followed by all 1s.
+
+Let me think about this.
+
+The target is a string where all 0s come first, then all 1s. So, any arrangement of the pieces must produce exactly this.
+
+So, the first piece must consist of all 0s, the second all 1s, etc. But that's not necessarily the case because the pieces can be arranged in any order.
+
+Wait, no. Because the pieces can be arranged in any order. So, the only way for the concatenation to form the target is that one of the pieces is exactly the 0s, and another is exactly the 1s, and the order is all 0s followed by 1s.
+
+Wait, because if any piece has both 0s and 1s, then when arranging them, it's possible that some of the 0s are in the wrong order.
+
+So, to form the target, the pieces must be either all 0s followed by all 1s. So, the only way is that one piece is all 0s, another is all 1s, and they are arranged in the target order.
+
+But in the case where the original string has other 0s and 1s not in contiguous blocks, this is impossible.
+
+Wait, perhaps this is the case.
+
+So, the minimal number of pieces is determined by the number of transitions from 1 to 0 plus one.
+
+Wait, but in the "1010" example, the formula says 3 pieces. But the pieces in that case are [1], [0], [1], [0], which when arranged in any order, the concatenation may not form the target.
+
+Wait, but perhaps the correct approach is to find the minimal number of pieces such that the pieces consist of all 0s in one contiguous block, and all 1s in another.
+
+So, the minimal number of pieces is the number of transitions from 1 to 0 plus 1.
+
+In the "1010" case, the number of transitions from 1 to 0 is 2, so minimal pieces is 3.
+
+But when you arrange the pieces as [1], [0], [1], [0], you can arrange them in any order. Let's say you arrange them as [0], [1], [0], [1], which gives 0101, which is not the target. So this arrangement doesn't work.
+
+So, perhaps this approach is incorrect.
+
+Alternatively, perhaps the minimal number of pieces is determined by the number of transitions from 0 to 1 plus one.
+
+Wait, in the "1010" case, the number of transitions from 0 to 1 is 1 (from 0 to 1 in the string "1010" is at position 1, and then again at position 3). So the formula would be 1 + 1 = 2.
+
+But with two pieces, can you arrange them as 0011?
+
+Wait, for example, the pieces could be [1,0,1,0]. Then, arrange them as [1,0], [1,0], which gives 1010, which is not the target.
+
+Alternatively, arrange them as [1,0,1,0] as a single piece, which is the same as the original string, which is not the target.
+
+Hmm, this is getting confusing.
+
+Let me think differently. Perhaps the minimal number of pieces is the number of 0s plus the number of 1s minus 1, minus something else.
+
+Alternatively, perhaps the minimal number of pieces is the number of times the pattern 01 appears in the string.
+
+Wait, perhaps the approach is to find the minimal number of pieces by grouping the string into regions where all 0s are in one group and all 1s are in another.
+
+So, the steps are:
+
+1. Split the string into two parts: the first part is all 0s, the second part is all 1s. The minimal number of pieces is 1 in this case.
+
+2. If the original string has 0s and 1s scattered, then the minimal number of pieces is the number of transitions from 1 to 0 plus 1.
+
+Wait, perhaps the correct approach is:
+
+The minimal number of pieces is equal to the number of transitions from 1 to 0 plus 1.
+
+Because each transition from 1 to 0 indicates a new 0 that must be placed as a separate piece. So, adding one more piece to account for this.
+
+So, in the "1010" case, there are two transitions from 1 to 0, so 2+1=3 pieces.
+
+But in that case, arranging the pieces as [1], [0], [1], [0] would give 1010, which is not the target. So perhaps this approach isn't correct.
+
+Alternatively, perhaps the minimal number of pieces is the number of transitions from 1 to 0 plus one, but the arrangement of the pieces must be such that all 0s are in the first group and all 1s are in the second.
+
+In that case, the minimal number of pieces is the number of transitions from 1 to 0 plus 1.
+
+So, for "1010", it's 3 pieces. But each piece can be rearranged as [0], [1], [0], [1], which arranged as [0, 1, 0, 1], which is not the target.
+
+Hmm, I'm stuck.
+
+Let me try to think about the target string. It's all 0s followed by all 1s. So, for the original string, the pieces, when arranged in any order, must form exactly this.
+
+So, the pieces must be such that one of them is exactly the 0s, another is exactly the 1s, and the order of arranging them must be all 0s followed by all 1s.
+
+So, the minimal number of pieces is the number of transitions from 1 to 0 in the string plus 1.
+
+In "0101", transitions are 1, so 2 pieces.
+
+In "0011", transitions are 0, so 1 piece.
+
+In "1010", transitions are 2, so 3 pieces.
+
+In "010", transitions are 1, so 2 pieces.
+
+In "1100", transitions are 1, so 2 pieces.
+
+In "1001", transitions from 1 to 0 is 1, so 2 pieces.
+
+So, the formula seems to hold.
+
+But, in the "1010" case, how do we split it into 3 pieces so that when arranged as [0], [1], [0], [1], it becomes 0101, which is not the target.
+
+Wait, no. Because the target is 0011. So, to get 0011, the pieces must consist of all 0s and then all 1s.
+
+So, for the string "1010", the minimal number of pieces is 2. But according to the formula, it's 3.
+
+This suggests that the formula is incorrect.
+
+Wait, perhaps I'm misunderstanding the problem.
+
+Wait, the problem says that the resulting pieces can be rearranged into a sorted binary string. So, the pieces, when rearranged, can form any permutation of the sorted binary string.
+
+So, the pieces can be arranged in any order, and when concatenated, form the target.
+
+In the "1010" case, the target is 00 11.
+
+So, the pieces can be [1,0,1,0], but when arranged as [1,0], [1,0], you get 1010, which is not the target.
+
+Alternatively, arrange the pieces as [1,0], [1,0], which is the same as before.
+
+Alternatively, arrange them as [1,0,1,0] as a single piece, which is 1010, not the target.
+
+Hmm, this suggests that the formula is incorrect.
+
+But wait, perhaps the formula is correct, and the problem can be solved by counting the transitions from 1 to 0 plus one.
+
+Wait, but in the "1010" case, the formula suggests 3 pieces, but upon trying to arrange them, it's not possible to get the target.
+
+So, perhaps the formula is correct, but the way the pieces are arranged is not limited to being the same as the original string's transitions.
+
+Wait, perhaps the pieces can be any combination of substrings, not necessarily contiguous.
+
+Wait, that's a possibility. Because the problem statement says that each piece must be a contiguous substring of the original string.
+
+So, perhaps the arrangement of the pieces is not limited to the order of the original string's transitions.
+
+So, in the "1010" case, perhaps the minimal number of pieces is 2.
+
+How?
+
+For example, the pieces could be [1010] as a single piece, and then arrange it as [1010], which is not the target.
+
+Or, perhaps the pieces are [10], [10], which can be arranged as [10,10], which is 1010, not the target.
+
+Alternatively, find a way to split the string into two pieces, each of which can be arranged in any order to form the target.
+
+Wait, but the target is 00 11. So, each piece must be either all 0s or all 1s.
+
+So, for the string "1010", the pieces could be [1, 0, 1, 0] — but that's the entire string. So, how can the pieces be split into two to form the target?
+
+Wait, perhaps the pieces are [1,0], [1,0]. Arranged as [1,0], [1,0], the concatenated string is 1010, which is not the target.
+
+Alternatively, arrange as [1,0,1,0] as a single piece, which is 1010, not the target.
+
+Hmm, so perhaps the formula is not correct.
+
+Wait, let's think differently.
+
+The target string is a string with all 0s followed by all 1s. So, the minimal number of pieces is the number of transitions from 1 to 0 plus 1.
+
+Because each transition from 1 to 0 indicates a new 0 that needs to be in a separate piece.
+
+So, for "1010", the number of transitions from 1 to 0 is 2, so 3 pieces.
+
+But each piece can be any contiguous substring.
+
+Wait, but if you have three pieces, perhaps their arrangement can form the target.
+
+But, perhaps the way to split is such that the 0s are in one piece and the 1s are in another.
+
+So, for "1010", the 0s are in the second and fourth positions. So, the pieces could be [1,0], [1,0], which is 1010 — not the target.
+
+Alternatively, the pieces could be [1,0,1], [0], which can be arranged as [0], [1,0,1], which is 0101 — not the target.
+
+So, perhaps the formula is incorrect.
+
+Hmm, this is getting complicated.
+
+Alternative approach: the minimal number of pieces is the number of 0s plus the number

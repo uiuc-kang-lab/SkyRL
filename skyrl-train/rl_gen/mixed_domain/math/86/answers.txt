@@ -1,0 +1,407 @@
+6314
+Okay, so I need to figure out if there's a four-digit number with a digit sum of 14 that's divisible by 14. Hmm, let me break this down step by step.
+
+First, a four-digit number ranges from 1000 to 9999. The digit sum is the sum of all four digits. So, each digit can be from 0 to 9, but the first digit can't be 0 because it's a four-digit number.
+
+Now, the digit sum needs to be 14. That means the four digits add up to 14. Let me think about how to approach this. Maybe I can list some possible combinations of four digits that add up to 14 and then check if any of them are divisible by 14.
+
+But that might take a long time. Maybe there's a smarter way. Since the number has to be divisible by 14, it must be divisible by both 2 and 7. Divisible by 2 means the last digit has to be even. Divisible by 7 is trickier, but I know there are rules for checking divisibility by 7, like doubling the last digit and subtracting it from the rest of the number, then seeing if the result is divisible by 7.
+
+But maybe I can first consider the divisibility by 2. So, the number must end with an even digit. That narrows it down a bit. Now, for the digit sum to be 14, I need four digits adding up to 14, with the last digit being even.
+
+Let me think about possible last digits. They can be 0, 2, 4, 6, or 8. Let's consider each case.
+
+Case 1: Last digit is 0. Then the first three digits must add up to 14. That's possible, for example, 5, 5, 4. So the number could be 5540. Is 5540 divisible by 14? Let's check. 5540 divided by 14 is 5540 / 14 = 395.714..., which is not an integer. So 5540 is not divisible by 14.
+
+Case 2: Last digit is 2. Then the first three digits add up to 12. For example, 3, 4, 5. So the number is 3452. Is 3452 divisible by 14? 3452 / 14 = 246.571..., not an integer. So no.
+
+Case 3: Last digit is 4. First three digits add up to 10. For example, 1, 2, 7. Number is 1274. 1274 / 14 = 91, which is an integer. So 1274 is divisible by 14. Wait, that's a solution!
+
+But let me check if there are more. Maybe 1274 is one, but are there others? Let me try another combination. For example, 3, 3, 4. So the number is 3344. 3344 / 14 = 238.857..., not an integer. So no.
+
+Another combination: 2, 4, 4. Number is 2444. 2444 / 14 = 174.571..., not an integer.
+
+Wait, so maybe 1274 is the only one in this case. But I should check other last digits as well.
+
+Case 4: Last digit is 6. Then the first three digits add up to 8. For example, 2, 3, 3. Number is 2336. 2336 / 14 = 166.857..., not an integer.
+
+Another example: 1, 3, 4. Number is 1346. 1346 / 14 = 96.142..., not an integer.
+
+Case 5: Last digit is 8. Then the first three digits add up to 6. For example, 1, 2, 3. Number is 1238. 1238 / 14 = 88.428..., not an integer.
+
+Wait, so the only number I found so far is 1274. Let me check if there are others. Maybe I missed some combinations.
+
+For example, in Case 3, last digit is 4, first three digits add to 10. Let's try 4, 3, 3. Number is 4334. 4334 / 14 = 310. So 4334 is divisible by 14. That's another one.
+
+Wait, but 4334 is a four-digit number, yes. So 4334 is another solution.
+
+Let me check that: 4 + 3 + 3 + 4 = 14, yes. And 4334 / 14 = 310, which is exact.
+
+So now I have two numbers: 1274 and 4334.
+
+Let me check if there are more. For example, in Case 3, last digit 4, first three digits 5, 2, 3. Number is 5234. 5234 / 14 = 374, which is exact. So 5234 is another one.
+
+Wait, that's three numbers: 1274, 4334, and 5234.
+
+Let me confirm these:
+
+1274: 1+2+7+4=14, 1274 ÷14=91.
+
+4334: 4+3+3+4=14, 4334 ÷14=310.
+
+5234: 5+2+3+4=14, 5234 ÷14=374.
+
+Yes, all correct.
+
+Are there more? Let me try another combination.
+
+In Case 3, last digit 4, first three digits 6, 1, 3. Number is 6134. 6134 ÷14=438.142..., not exact.
+
+Another: 7, 0, 7. But 0 is allowed, so 7074. 7+0+7+4=18, which is more than 14. So that's not valid.
+
+Wait, no, the sum needs to be exactly 14. So 7074's digit sum is 7+0+7+4=18, which is too much. So that's not a solution.
+
+Another example: 8, 0, 6. But 0 is allowed, but 8+0+6+0=14? Wait, 8+0+6+0=14, but the last digit is 0, so it's 8060. 8060 ÷14=575.714..., not exact.
+
+Wait, but 8+0+6+0=14, but last digit is 0. So 8060 is a candidate, but it's not divisible by 14.
+
+Hmm, so maybe 1274, 4334, and 5234 are the only ones.
+
+Wait, another combination: 3, 4, 4, 3. So the number is 3443. 3+4+4+3=14, and 3443 ÷14=245.928..., not exact.
+
+Wait, but 3443 is 3+4+4+3=14, but 3443 ÷14 is not exact. So that's not a solution.
+
+Another example: 2, 5, 4, 3. Number is 2543. 2+5+4+3=14, 2543 ÷14=181.642..., not exact.
+
+Wait, so maybe 1274, 4334, and 5234 are the only four-digit numbers with digit sum 14 divisible by 14.
+
+Wait, but let me check another combination in Case 3: last digit 4, first three digits 2, 6, 2. Number is 2624. 2+6+2+4=14, 2624 ÷14=187.428..., not exact.
+
+Another: 3, 3, 8. Number is 3384. 3+3+8+4=18, too much.
+
+Wait, no, 3+3+8+0=14, so 3380. 3380 ÷14=241.428..., not exact.
+
+Wait, maybe I'm overcomplicating. Let me list all possible four-digit numbers with digit sum 14 and check their divisibility by 14.
+
+But that's time-consuming. Alternatively, I can use the fact that if a number is divisible by both 2 and 7, it's divisible by 14. So I can look for numbers ending with an even digit and digit sum 14, and check if they're divisible by 7.
+
+But that's still a bit involved. Alternatively, since I found 1274, 4334, and 5234, maybe these are the only ones.
+
+Wait, let me check another combination: 4, 3, 5, 2. Number is 4352. 4+3+5+2=14, and 4352 ÷14=311, which is exact. So 4352 is another number.
+
+Wait, but earlier I thought 4334 was a solution. Let me check 4352: 4+3+5+2=14, yes, and 4352 ÷14=311, exact. So 4352 is another solution.
+
+Similarly, let's try another combination: 5, 2, 3, 4. Number is 5234, which we already have as a solution.
+
+Another: 6, 1, 6. But 1+6+6+1=14, but the last digit is 1, which is odd, so not divisible by 2, so no.
+
+Wait, no, the last digit needs to be even. So, for example, 7, 0, 6. Number is 7060. 7+0+6+0=13, which is less than 14, so that's not valid.
+
+Wait, 8, 0, 5, 1. Number is 8051, but last digit is 1, which is odd, so not divisible by 2, so not a solution.
+
+Wait, let me try 9, 0, 4, 1. Number is 9041, last digit 1, not even.
+
+Alternatively, 7, 1, 5, 1. Number is 7151, last digit 1, not even.
+
+So, perhaps 1274, 4334, 4352, and 5234 are the solutions.
+
+Wait, but let me check 4352: 4+3+5+2=14, and 4352 ÷14=311, exact.
+
+Similarly, 5234: 5+2+3+4=14, and 5234 ÷14=374, exact.
+
+And 4334: 4+3+3+4=14, and 4334 ÷14=310, exact.
+
+And 1274: 1+2+7+4=14, and 1274 ÷14=91, exact.
+
+So that's four numbers.
+
+But wait, are there more? Let me try another combination.
+
+For example, in Case 3, last digit 4, first three digits 0, 5, 9. But 0 is allowed, but then the number would be 0594, which is 594, a three-digit number. So that's not valid.
+
+Another example: 1, 5, 8. Number is 1584. 1+5+8+4=18, too much.
+
+Wait, no, 1+5+8+4=18, which is more than 14. So that's not valid.
+
+Wait, maybe 2, 3, 8. Number is 2384. 2+3+8+4=17, too much.
+
+Wait, 2, 4, 7. Number is 2474. 2+4+7+4=17, too much.
+
+Wait, 3, 4, 6. Number is 3464. 3+4+6+4=17, too much.
+
+Wait, 4, 4, 4. Number is 4444. 4+4+4+4=16, too much.
+
+Wait, 5, 3, 3. Number is 5334. 5+3+3+4=15, too much.
+
+Wait, 6, 2, 3. Number is 6234. 6+2+3+4=15, too much.
+
+Wait, 7, 1, 5. Number is 7154. 7+1+5+4=17, too much.
+
+Wait, 8, 0, 4. Number is 8044. 8+0+4+4=16, too much.
+
+Wait, 9, 0, 3. Number is 9034. 9+0+3+4=16, too much.
+
+Wait, 10, 0, 3. But 10 is not a digit.
+
+Hmm, maybe I missed some combinations. Let me try another approach.
+
+In Case 3, last digit 4, first three digits sum to 10. Let's list all possible triplets that sum to 10 with digits 0-9:
+
+0, 0, 10 (invalid)
+
+0, 1, 9
+
+0, 2, 8
+
+0, 3, 7
+
+0, 4, 6
+
+0, 5, 5
+
+1, 0, 9
+
+1, 1, 8
+
+1, 2, 7
+
+1, 3, 6
+
+1, 4, 5
+
+2, 0, 8
+
+2, 1, 7
+
+2, 2, 6
+
+2, 3, 5
+
+2, 4, 4
+
+3, 0, 7
+
+3, 1, 6
+
+3, 2, 5
+
+3, 3, 4
+
+4, 0, 6
+
+4, 1, 5
+
+4, 2, 4
+
+4, 3, 3
+
+5, 0, 5
+
+5, 1, 4
+
+5, 2, 3
+
+6, 0, 4
+
+6, 1, 3
+
+6, 2, 2
+
+7, 0, 3
+
+7, 1, 2
+
+8, 0, 2
+
+9, 0, 1
+
+Now, for each triplet, we can form numbers by permuting the digits, ensuring the last digit is 4, and the first three digits are in the triplet.
+
+But this is time-consuming, but let's see if any of these triplets form a number with digit sum 14 and last digit 4, and divisible by 14.
+
+For example, triplet 0, 2, 8. So numbers could be 0284, 0824, 2084, 2804, 8024, 8204.
+
+But 0284 is 284, which is a three-digit number. 284 ÷14=20.285..., not exact.
+
+0824 is 824, 824 ÷14=58.857..., not exact.
+
+2084 ÷14=149, which is exact. So 2084 is another number.
+
+Similarly, 2804 ÷14=200.285..., not exact.
+
+8024 ÷14=573.142..., not exact.
+
+8204 ÷14=586.714..., not exact.
+
+So 2084 is a solution.
+
+Similarly, let's check triplet 1, 2, 7. Numbers: 1274, 1724, 2174, 2714, 7124, 7214.
+
+We already have 1274 as a solution.
+
+1724 ÷14=123.142..., not exact.
+
+2174 ÷14=155.285..., not exact.
+
+2714 ÷14=193.857..., not exact.
+
+7124 ÷14=509.571..., not exact.
+
+7214 ÷14=515.285..., not exact.
+
+So no new solutions here.
+
+Another triplet: 2, 3, 5. Numbers: 2354, 2534, 3254, 3524, 5234, 5324.
+
+2354 ÷14=168.142..., not exact.
+
+2534 ÷14=181, which is exact. So 2534 is a solution.
+
+3254 ÷14=232.428..., not exact.
+
+3524 ÷14=251.714..., not exact.
+
+5234 ÷14=374, exact. So 5234 is a solution.
+
+5324 ÷14=380.285..., not exact.
+
+So from this triplet, 2534 and 5234 are solutions.
+
+Another triplet: 3, 3, 4. Numbers: 3344, 3434, 4334, 4343, 3443, 4433.
+
+3344 ÷14=238.857..., not exact.
+
+3434 ÷14=245.285..., not exact.
+
+4334 ÷14=310, exact. So 4334 is a solution.
+
+4343 ÷14=310.142..., not exact.
+
+4433 ÷14=316.642..., not exact.
+
+3443 ÷14=245.928..., not exact.
+
+4433 ÷14=316.642..., not exact.
+
+So 4334 is a solution.
+
+Another triplet: 4, 4, 2. Numbers: 4424, 4244, 4244, etc. Wait, no, the digits are 4,4,2, so permutations would give similar numbers.
+
+But 4424 ÷14=316, exact. So 4424 is a solution.
+
+Similarly, 4244 ÷14=303.142..., not exact.
+
+4244 ÷14=303.142..., not exact.
+
+So 4424 is a solution.
+
+Another triplet: 5, 2, 3. Numbers: 5234, 5324, 2534, 2354, 3254, 3524.
+
+We have 5234 and 2534 as solutions.
+
+Another triplet: 6, 0, 4. Numbers: 6044, 6404, 4604, 4064, 0644 (invalid), 0464 (invalid).
+
+6044 ÷14=431.714..., not exact.
+
+6404 ÷14=457.428..., not exact.
+
+4604 ÷14=328.857..., not exact.
+
+4064 ÷14=290.285..., not exact.
+
+0644 is invalid.
+
+So no new solutions here.
+
+Another triplet: 7, 0, 3. Numbers: 7034, 7304, 0734 (invalid), 0374 (invalid).
+
+7034 ÷14=502.428..., not exact.
+
+7304 ÷14=521.714..., not exact.
+
+So no new solutions.
+
+Another triplet: 8, 0, 2. Numbers: 8024, 8204, 0824 (invalid), 0284 (invalid).
+
+8024 ÷14=573.142..., not exact.
+
+8204 ÷14=586.714..., not exact.
+
+So no new solutions.
+
+Another triplet: 9, 0, 1. Numbers: 9014, 9104, 0914 (invalid), 0194 (invalid).
+
+9014 ÷14=643.857..., not exact.
+
+9104 ÷14=650.285..., not exact.
+
+So no new solutions.
+
+Now, let's check if there are any other triplets I might have missed. From the list earlier, I think I covered all possible triplets that sum to 10 with digits 0-9, and ensured the last digit is 4.
+
+So from this, the numbers I found are:
+
+1274, 2084, 2534, 4334, 4352, 5234.
+
+Wait, let me verify each:
+
+1274: 1+2+7+4=14, 1274 ÷14=91, exact.
+
+2084: 2+0+8+4=14, 2084 ÷14=149, exact.
+
+2534: 2+5+3+4=14, 2534 ÷14=181, exact.
+
+4334: 4+3+3+4=14, 4334 ÷14=310, exact.
+
+4352: 4+3+5+2=14, 4352 ÷14=311, exact.
+
+5234: 5+2+3+4=14, 5234 ÷14=374, exact.
+
+So that's six numbers: 1274, 2084, 2534, 4334, 4352, 5234.
+
+Wait, but earlier I thought 1274, 4334, 4352, and 5234 were solutions, but also found 2084 and 2534. So now I have six numbers.
+
+Wait, but let me check if I missed any other combinations. For example, in Case 3, last digit 4, first three digits are 0, 0, 10 (invalid), 0, 1, 9, etc. But I think I've covered all possible triplets.
+
+So the final answer is that there are multiple four-digit numbers with digit sum 14 divisible by 14, including 1274, 2084, 2534, 4334, 4352, and 5234.
+
+But wait, in the initial problem, it says "using the actions [action names]". So I need to outline the steps I took.
+
+I started by considering the constraints: four-digit number, digit sum 14, divisible by 2 and 7. Then I generated possible combinations for the last digit (even numbers) and the first three digits summing to 14 - last digit.
+
+I then listed possible triplets for the first three digits and checked which ones form valid numbers, ensuring divisibility by 7. This process allowed me to identify multiple valid numbers.
+
+So the detailed steps would involve:
+
+1. Identifying that the number must end with an even digit.
+2. For each possible even digit (0, 2, 4, 6, 8), calculate the remaining digit sum for the first three digits.
+3. Generate all possible combinations of three digits that add up to the remaining sum.
+4. For each combination, form the number by placing the digits in order, ensuring the last digit is even.
+5. Check if the number is divisible by 7.
+6. Collect all valid numbers that meet the criteria.
+
+By following these steps, I identified multiple valid numbers that satisfy all the given conditions.
+</think>
+
+To determine if a four-digit number with a digit sum of 14 exists that is divisible by 14, we can follow these steps:
+
+1. **Identify the last digit**: Since the number must be divisible by 2, the last digit must be even (0, 2, 4, 6, 8).
+
+2. **Calculate the remaining digit sum**: For each possible last digit, the sum of the first three digits is 14 minus the last digit.
+
+3. **Generate combinations for the first three digits**: For each possible sum of the first three digits, generate all possible triplets of digits (0-9) that add up to that sum.
+
+4. **Form numbers and check divisibility by 7**: For each triplet, form a number by placing the digits in order, ensuring the last digit is even. Check if the resulting number is divisible by 7.
+
+5. **Collect valid numbers**: If a number is divisible by both 2 and 7, it is divisible by 14. Collect all such numbers.
+
+Following this method, valid numbers found are:
+
+- 1274 (sum=14, divisible by 14)
+- 2084 (sum=14, divisible by 14)
+- 2534 (sum=14, divisible by 14)
+- 4334 (sum=14, divisible by 14)
+- 4352 (sum=14, divisible by 14)
+- 5234 (sum=14, divisible by 14)
+
+These numbers meet all the criteria of being four-digit numbers with a digit sum of 14 and being divisible by 14.<｜end▁of▁sentence｜>

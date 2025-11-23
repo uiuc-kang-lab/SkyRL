@@ -1,0 +1,58 @@
+1
+165
+Okay, so I have this problem where there's a region T in the plane with an area of 15. When we apply a matrix to T, we get T', and I need to find the area of T'. The matrix given is 
+
+\[
+\begin{pmatrix}
+3 & -1 \\
+5 & 2
+\end{pmatrix}
+\]
+
+Hmm, I remember that when you apply a linear transformation to a region, the area scaling factor is the absolute value of the determinant of the transformation matrix. So, basically, the area of T' is the area of T multiplied by |det(A)|, where A is the transformation matrix.
+
+First, let me recall how to compute the determinant of a 2x2 matrix. For a matrix 
+
+\[
+\begin{pmatrix}
+a & b \\
+c & d
+\end{pmatrix}
+\]
+
+the determinant is ad - bc. So applying this to the given matrix, a is 3, b is -1, c is 5, and d is 2. So the determinant would be (3)(2) - (-1)(5) = 6 + 5 = 11. 
+
+So the determinant is 11, which means the area scaling factor is 11. Therefore, the area of T' should be 15 * 11 = 165. 
+
+Wait, let me just想一下是不是真的那样。有时候可能涉及到更复杂的变换，但在这里是一个线性变换，所以确实只需要乘以绝对值of the determinant. 
+
+或者，我可以 Think about it another way: if the determinant is 11, then any area敏感到这个变换就会被放大11倍。 So yeah, 15 * 11 = 165. 
+
+是不是 there anything I miss here? maybe the orientation? But since we take the absolute value, the sign doesn't matter for the area. So yeah, the area of T' is 165.
+
+Just to确认，计算步骤是不是正确： determinant = 3*2 - (-1)*5 = 6 +5 =11确实是正确的。然后面积乘以11倍，15*11=165。没错。
+</think>
+
+The area of the region \( T' \) after applying the given matrix to \( T \) can be found by calculating the determinant of the matrix, which scales the area by its absolute value. 
+
+Given the matrix:
+\[
+A = \begin{pmatrix}
+3 & -1 \\
+5 & 2
+\end{pmatrix}
+\]
+
+The determinant of \( A \) is:
+\[
+\det(A) = (3)(2) - (-1)(5) = 6 + 5 = 11
+\]
+
+Thus, the area of \( T' \) is the area of \( T \) multiplied by the absolute value of the determinant:
+\[
+\text{Area of } T' = 15 \times |11| = 15 \times 11 = 165
+\]
+
+\[
+\boxed{165}
+\]<｜end▁of▁sentence｜>

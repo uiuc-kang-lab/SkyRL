@@ -1,0 +1,841 @@
+Okay, I need to solve this problem where Alice transforms an array into a permutation through a series of operations. The problem statement is a bit tricky, so I need to break it down.
+
+First, let's understand the problem. We have an array a of length n, where each element a_i is given by b*(i-1) + c. So, for example, if b=2 and c=1, the array starts at 1, then 3, then 5, and so on. 
+
+The operation Alice can perform is replacing the maximum element of a with the MEX of a. The MEX is the smallest non-negative integer not present in the array. If there are multiple maximum elements, she picks the leftmost one.
+
+We need to find out how many such operations are needed for a to become a permutation. A permutation here is an array that contains all integers from 0 to n-1 exactly once, but without the usual sorted order—so it's a permutation of [0, 1, ..., n-1].
+
+If it's impossible, we return -1.
+
+Hmm. So, the key steps are:
+
+1. Determine if the initial array a is a permutation.
+2. If not, perform the operations of replacing the maximum with MEX until it becomes a permutation.
+3. Count the number of operations needed.
+
+But wait, the initial array a might not be a permutation. So first, I need to check if a is a permutation. If it is, then the answer is 0.
+
+If not, then I need to perform operations until it becomes a permutation.
+
+But how?
+
+Let me think about the process.
+
+Each operation replaces the maximum element of a with MEX(a). So, the array is modified step by step.
+
+The MEX is computed after each operation, which affects the array.
+
+The MEX can be 0, 1, 2, etc. So, each operation could potentially change the array significantly.
+
+But since n can be up to 1e18, we need an efficient way to compute this without simulating each step, which is impossible for such large n.
+
+So, we need a mathematical approach.
+
+Let me think about the MEX and how it affects the array.
+
+First, let's consider when the array is a permutation. That is, a contains all elements from 0 to n-1 exactly once.
+
+So, for the array a, after some operations, it must have all elements from 0 to n-1, each exactly once.
+
+So, the process stops when the array meets this condition.
+
+So, the problem is to find the minimal number of operations to reach such a state.
+
+Let me think about what the MEX function does. The MEX is the smallest non-negative integer not present in the array.
+
+So, if the array contains 0, the MEX is at least 1. If it doesn't contain 0, the MEX is 0.
+
+So, when the array is being modified, the MEX can be 0, 1, 2, etc.
+
+Let's think about the initial array.
+
+The initial array is a_i = b*(i-1) + c for i from 1 to n.
+
+So, the array is arithmetic sequence starting from (b*0 + c) = c, then (b*1 + c), etc.
+
+Wait, no. Because for i=1, a_1 = b*(0) + c = c. For i=2, a_2 = b*(1) + c = b + c. So yes, it's an arithmetic sequence with step b, starting at c.
+
+So, the initial array is an arithmetic progression.
+
+Now, the MEX of the initial array can be computed.
+
+But perhaps it's more helpful to think about the MEX in terms of the initial array.
+
+But since the initial array is an arithmetic progression, the MEX can be determined based on whether 0 is present.
+
+Wait, if the initial array contains 0, then the MEX is at least 1. Otherwise, the MEX is 0.
+
+So, let's see: 0 is in the initial array if and only if c is 0, or if there exists some i such that b*(i-1) + c = 0.
+
+So, solving for i: i = (0 - c)/b + 1. But i must be a positive integer between 1 and n.
+
+So, if c is 0, then a_1 = 0, which is present. So, the initial MEX is 1.
+
+If c is non-zero, then 0 is not in the initial array unless b is 0 and c is 0. Wait, no: if b is 0, then all a_i are c. So, if b is 0, then a_i = c for all i. So, if c is 0, then a is all zeros, which is not a permutation. If c is non-zero, then a_i is c, so 0 is not present. So, the initial MEX is 0.
+
+So, let's consider the initial MEX.
+
+Case 1: b = 0.
+
+Then, a_i = c for all i. So, the array is [c, c, ..., c].
+
+So, in this case, the array contains c repeated n times.
+
+So, 0 is present only if c = 0. If c is not zero, then 0 is not present, so MEX is 0.
+
+Otherwise, if c is zero, then the array is [0, 0, ..., 0], which is not a permutation.
+
+So, the initial array is a permutation only if c = 0 and n=1, because otherwise, it's all zeros. So, for b=0, the initial array is a permutation only if n=1 and c=0.
+
+Else, it's not.
+
+So, in this case, if the initial array is a permutation, answer is 0. Else, we need to perform operations.
+
+Case 2: b > 0.
+
+Then, a_i is an arithmetic sequence with step b.
+
+Now, let's compute the MEX of the initial array.
+
+If 0 is in the array, then MEX is at least 1. Otherwise, MEX is 0.
+
+So, when is 0 present in the initial array?
+
+We have a_i = b*(i-1) + c = 0.
+
+So, b*(i-1) = -c.
+
+Since b is positive, and i-1 is a non-negative integer (since i >= 1), the right side is -c. So, c must be negative for this equation to have a solution. But in the problem statement, c is given as a non-negative integer (0 ≤ c ≤ 1e18). So, the only way 0 is present is if c is 0 and b is any positive integer.
+
+Wait, let's see: if c is zero, then a_i = b*(i-1). So, 0 is present when i=1. So, for c=0, 0 is present in the initial array.
+
+So, when c=0, the initial array is a_i = b*(i-1). So, the array is [0, b, 2b, ..., (n-1)*b].
+
+So, for this array to be a permutation, all elements must be distinct and cover 0,1,2,...,n-1.
+
+So, in this case, the array is a permutation if and only if b=1, because then a_i = i-1, which is 0,1,2,...,n-1. So, yes.
+
+Otherwise, if b>1, then the array has duplicates. For example, if b=2 and n=3: [0,2,4], which is not a permutation.
+
+So, in the case where c=0, the initial array is a permutation only if b=1.
+
+So, for c=0, to be a permutation, b must be 1.
+
+So, for the general case, when c=0, if b is 1, then it's a permutation. Otherwise, it's not.
+
+So, now, putting this together.
+
+Let me think about the process.
+
+Each operation replaces the maximum element with the MEX of the current array.
+
+We need to find how many such operations are needed until the array becomes a permutation.
+
+So, let's model the process step by step.
+
+Let me consider the initial array.
+
+Case 1: c=0.
+
+Subcase 1a: b=1. Then, the array is [0,1,2,...,n-1], which is a permutation. So, answer is 0.
+
+Subcase 1b: b>1. The initial array is [0, b, 2b, ..., (n-1)b]. So, to check if it's a permutation, all elements must be distinct and cover 0,1,2,...,n-1.
+
+But since b>1, the elements are 0, b, 2b, etc., which are multiples of b. So, unless b=1, the array is not a permutation.
+
+So, for c=0 and b>1, the initial array is not a permutation. So, we need to perform operations.
+
+Each operation will replace the maximum element with the MEX of the current array.
+
+So, let's think about the first operation.
+
+The initial array has maximum element (n-1)*b. So, in the first operation, we replace this with MEX.
+
+What is MEX of the initial array?
+
+The initial array is [0, b, 2b, ..., (n-1)*b].
+
+So, the elements present are multiples of b. So, the MEX is the smallest non-negative integer not in this set.
+
+Since b>1, the numbers 0,1,2,...,b-1 are not present in the initial array. So, the MEX is 0.
+
+Wait, no. Wait, the initial array is [0, b, 2b, ...]. So, for example, if b=2, the array is [0,2,4,6, ...]. So, the MEX is 1, because 1 is not present.
+
+Wait, that's right. So, the MEX is the smallest non-negative integer not present in the array.
+
+So, for the initial array when c=0 and b>1:
+
+The array contains 0, and all multiples of b. So, the MEX is 1, because 1 is the smallest non-negative integer not present.
+
+Wait, no. Wait, for example, if b=2, then the array is [0,2,4,6,...]. So, the MEX is 1, because 0 is present, but 1 is missing.
+
+So, in the first operation, the maximum element (which is (n-1)*b) is replaced with 1.
+
+So, the new array is [0, 2,4,6,..., (n-2)*b, 1].
+
+Wait, no. Wait, the maximum element is (n-1)*b, which is replaced with 1.
+
+So, the new array is [0, 2,4,..., (n-2)*b, 1].
+
+So, in the next operation, we find the maximum element. Let's see.
+
+The array is [0, 2,4,..., (n-2)*b, 1].
+
+What's the maximum? It's (n-2)*b, which is less than (n-1)*b.
+
+So, the maximum is (n-2)*b, which is replaced with MEX.
+
+What's the MEX of this array?
+
+The array now contains 0, 1, 2, 4, 6, etc., up to (n-2)*b.
+
+Wait, no. The array after first replacement is [0, 2,4,..., (n-2)*b, 1].
+
+So, the elements are 0, 1, 2,4,6,..., (n-2)*b.
+
+So, the MEX is 3, because 0,1,2 are present, but 3 is missing.
+
+So, in the second operation, we replace (n-2)*b with 3.
+
+Now, the array is [0, 2,4,..., (n-3)*b, 3, 1].
+
+What's the maximum now? It's (n-3)*b.
+
+We replace it with MEX.
+
+What's the MEX now?
+
+The array has 0,1,2,3,4,6,8,..., (n-3)*b.
+
+So, the MEX is 5, because 0,1,2,3,4 are present, but 5 is missing.
+
+So, each time, the MEX increases by 1?
+
+Wait, let's see:
+
+After first operation, MEX is 1.
+
+After second, MEX is 3.
+
+After third, MEX is 5.
+
+So, each operation adds 2 to the MEX.
+
+Wait, let's see:
+
+Wait, initial MEX is 1.
+
+After first replacement, MEX is 3.
+
+After second replacement, MEX is 5.
+
+So, the MEX increases by 2 each time.
+
+So, the MEX after k operations is 1 + 2*k.
+
+So, for each operation, the MEX increases by 2.
+
+So, the process is:
+
+After each operation, the array is modified by replacing the maximum (which is the largest multiple of b) with the current MEX, which is 1 + 2*k.
+
+So, the array becomes [0, 2,4,6,..., (n-2)*b, 1, 3,5,..., (1+2k)].
+
+Wait, not exactly. Because after each replacement, the array is modified, so the maximum element is the next lower multiple of b.
+
+Wait, perhaps I'm getting stuck. Let's think about the process.
+
+Each operation, the maximum element is replaced with MEX, which is 1 + 2*k, where k is the number of operations performed so far.
+
+So, the first operation: MEX is 1.
+
+Second: MEX is 3.
+
+Third: MEX is 5.
+
+And so on.
+
+So, each operation adds 2 to the MEX.
+
+So, the MEX after k operations is 1 + 2*k.
+
+So, in the initial array, MEX is 1.
+
+After first operation: array becomes [0, 2,4,..., (n-2)*b, 1].
+
+MEX is 3.
+
+After second operation: array becomes [0, 2,4,..., (n-3)*b, 3, 1].
+
+MEX is 5.
+
+So, yes.
+
+So, the MEX increases by 2 each time.
+
+So, for the initial array (c=0, b>1):
+
+The number of operations needed is such that after k operations, the array becomes a permutation.
+
+We need to find the minimal k where the array is a permutation.
+
+So, let's model the array after k operations.
+
+After k operations, the array contains:
+
+- All elements except the last k elements of the initial array, which are replaced with MEX 1 + 2*(k-1).
+
+Wait, perhaps not. Let's think.
+
+Each operation, the maximum element is replaced by the current MEX.
+
+So, the maximum elements are (n-1)*b, (n-2)*b, ..., (n-k)*b, etc.
+
+Wait, the first operation replaces (n-1)*b with 1.
+
+The second operation replaces (n-2)*b with 3.
+
+Third operation replaces (n-3)*b with 5.
+
+And so on.
+
+So, after k operations, the array has the following elements:
+
+- The first k elements are 0, 1, 3, 5, ..., (2k-1).
+
+Wait, no. Wait, the first element is 0, then the second is 1, then 3, then 5, etc.
+
+Wait, no. Let's think again.
+
+After first operation: array starts with 0, then the maximum is replaced by 1.
+
+So, the array is [0,1,2,4,6, ... (n-2)*b].
+
+Wait, no. Because the maximum was (n-1)*b, which is replaced by 1.
+
+So, the array is [0, 2,4,6, ..., (n-2)*b, 1].
+
+So, the elements are 0, 2,4,..., (n-2)*b, and 1.
+
+So, the elements are 0,1,2,4,..., (n-2)*b.
+
+Wait, no. The initial array after first operation is [0, 2,4,6, ..., (n-2)*b, 1].
+
+So, the elements are 0,1,2,4,6,..., (n-2)*b.
+
+So, the MEX is 3.
+
+So, in the second operation, the maximum element is (n-2)*b, which is replaced with 3.
+
+So, the array becomes [0, 2,4,6, ..., (n-3)*b, 3, 1].
+
+So, the elements are 0,1,2,3,4,6,8,..., (n-3)*b.
+
+So, the MEX is 5.
+
+So, each operation adds 2 to the MEX.
+
+So, after k operations, the MEX is 1 + 2*k.
+
+So, in the array after k operations, what's the structure?
+
+The array contains:
+
+- 0,1,2,3,..., (k-1)*2 -1, and then the rest are multiples of b.
+
+Wait, no.
+
+Wait, after k operations, the array has elements:
+
+0, 1, 3, 5, ..., (2k-1) [so numbers up to 2k-1], and then the multiples of b from (n - k) * b down to 0.
+
+Wait, perhaps not. Let me think.
+
+Each operation replaces the maximum element, which is the largest multiple of b, with the current MEX.
+
+So, after each operation, the array is:
+
+[0, 2,4,6,..., (n-2)*b, 1, 3,5,..., (2k-1)].
+
+Wait, no. Wait, after first operation, the array is [0, 2,4,..., (n-2)*b, 1].
+
+After second operation, it's [0,2,4,..., (n-3)*b,3,1].
+
+So, the elements are 0,1,2,3,4,..., (n-3)*b, then the rest.
+
+Wait, no, because (n-3)*b is the maximum after the second operation.
+
+So, after k operations, the array is [0,1,2,3,4,..., (n - k -1)*b, ... etc.].
+
+Wait, perhaps I'm overcomplicating.
+
+Let me think differently.
+
+Each operation replaces the current maximum with the MEX, which is 1 + 2*(k-1), where k is the current number of operations.
+
+So, after k operations, the MEX is 1 + 2*(k-1).
+
+So, the array after k operations has:
+
+- All elements from 0 up to (k-1)*2, but perhaps not exactly.
+
+Wait, no. Let's think about the array after each operation.
+
+After 0 operations: initial array, which is [0, b, 2b, ..., (n-1)*b].
+
+After 1 operation: replace (n-1)*b with 1. So, array is [0, b, 2b, ..., (n-2)*b, 1].
+
+After 2 operations: replace (n-2)*b with 3. So, array is [0, b, 2b, ..., (n-3)*b, 3, 1].
+
+After 3 operations: replace (n-3)*b with 5. So, array is [0, b, 2b, ..., (n-4)*b,5,3,1].
+
+And so on.
+
+So, after k operations, the array is [0, b, 2b, ..., (n - k -1)*b, 1, 3, 5, ..., (2k -1)].
+
+Wait, because each operation adds a new maximum element, which is the next lower multiple of b.
+
+So, the first k elements after k operations are 0, b, 2b, ..., (k-1)*b (but wait, for k=1, it's 0, and for k=2, it's 0, b, etc. Hmm, perhaps not.
+
+Wait, no. For k=1, the array is [0,1, 2b, 3b, ... (n-2)b].
+
+So, the first element is 0, then 1, then the rest are multiples of b.
+
+So, the elements are 0, 1, 2b, 3b, ..., (n-2)b.
+
+So, for k=1, the array has 0, 1, and then (n-2) multiples of b.
+
+For k=2, the array is [0, 1,3, 2b,4b, ... (n-3)b].
+
+So, the elements are 0,1,3,2b,4b, ..., (n-3)b.
+
+Wait, but 2b is a multiple of b, but it's not the next in line. So, after k operations, the array has:
+
+- 0, 1, 3, 5, ..., 2k-1, followed by the multiples of b from (n - k) * b down to 0.
+
+Wait, perhaps.
+
+So, after k operations, the array is:
+
+[0,1,3,5,...,2k-1] + [ (n -k) * b, (n -k -1) * b, ..., 0 ]
+
+Wait, no. Because for k=1:
+
+[0,1] + [ (n-1)*b ].
+
+Which is correct.
+
+For k=2:
+
+[0,1,3] + [ (n-2)*b, (n-3)*b, ... 0 ].
+
+Wait, no. Because (n-2)*b is the maximum after k=2.
+
+So, the array is [0,1,3, 2b,4b, ..., (n-3)*b ].
+
+Hmm, perhaps I'm getting stuck in the details.
+
+Let me try to model the array after k operations.
+
+The array will consist of:
+
+- The numbers 0,1,2,3,..., (2k-1) in the first part.
+
+Wait, no. Because for k=1, it's 0,1.
+
+For k=2, it's 0,1,3.
+
+For k=3, it's 0,1,3,5.
+
+So, the first part is 0,1,3,5,..., 2k-1.
+
+The second part is the multiples of b from (n -k)*b down to 0, but only those that are not in the first part.
+
+Wait, perhaps not.
+
+Alternatively, perhaps the array is:
+
+The first part is 0,1,2,3,4,5,... up to some point, and then the rest are the multiples of b.
+
+Wait, maybe not.
+
+Alternatively, perhaps the array is a combination of two sequences:
+
+1. The first part is the numbers 0,1,3,5,..., (2k-1).
+
+2. The second part is the multiples of b that are not in the first part.
+
+But I'm not sure.
+
+Alternatively, perhaps the array after k operations is:
+
+- All numbers from 0 up to (k-1)*2, but that's not correct.
+
+Hmm.
+
+Alternatively, perhaps it's better to think about the array after k operations as:
+
+- The first k elements are 0,1,2,...,k-1.
+
+- The next elements are the multiples of b starting from (n -k)*b down to 0.
+
+Wait, no. For k=1, the array is [0,1, 2b, 3b, ... (n-2)b].
+
+So, the first element is 0, the next is 1, then the rest are multiples of b.
+
+So, the first part is 0,1, and the rest are multiples of b.
+
+So, perhaps the array is:
+
+- The first part is 0,1,2,3,... up to (k-1)*2, but not sure.
+
+Alternatively, perhaps I should model the array after k operations as consisting of two parts:
+
+1. The first part is a set of numbers that are not multiples of b, sorted in increasing order.
+
+2. The second part is the multiples of b, sorted in increasing order.
+
+But I'm not sure.
+
+Alternatively, perhaps it's better to model the array after k operations as follows:
+
+The array after k operations is composed of:
+
+- The numbers 0,1,2,3,..., (k-1)*2, but that seems arbitrary.
+
+Wait, maybe I'm approaching this the wrong way.
+
+Perhaps I should model the array after k operations as containing:
+
+- All numbers from 0 up to (k-1)*2, but that's not right.
+
+Alternatively, perhaps the array after k operations is:
+
+- The first k elements are 0,1,3,5,..., 2k-1.
+
+- The remaining elements are the multiples of b, from (n -k)*b down to 0, but excluding the numbers already in the first part.
+
+Wait, I'm not sure.
+
+Alternatively, perhaps I should think about the array as a collection of numbers where:
+
+- All numbers not in the form of b*m are present.
+
+- The numbers in the form of b*m are present only after the maximum element has been replaced.
+
+Wait, perhaps not.
+
+This is getting complicated. Maybe I should think about the process in terms of the MEX and how the array changes.
+
+Each operation replaces the maximum element with the MEX of the current array.
+
+So, after each operation, the array's maximum element is replaced with a value that is the smallest missing non-negative integer.
+
+So, for the initial array, the maximum is (n-1)*b.
+
+The MEX is 1, so the array becomes [0, b, 2b, ..., (n-2)*b, 1].
+
+The new maximum is (n-2)*b.
+
+The MEX is 3, since 0,1,2 are present.
+
+So, the array becomes [0, b, 2b, ..., (n-3)*b, 3, 1].
+
+The new maximum is (n-3)*b.
+
+MEX is 5, so array becomes [0, b, 2b, ..., (n-4)*b,5,3,1].
+
+And so on.
+
+So, each operation increases the MEX by 2.
+
+So, the MEX after k operations is 1 + 2*k.
+
+So, after k operations, the array contains the numbers 0,1,3,5,..., (2k-1), and the remaining elements are the multiples of b from (n -k)*b down to 0, but excluding the numbers already present.
+
+Wait, but how?
+
+Let me think for k=1:
+
+MEX is 3.
+
+So, the array is [0, b, 2b, 3b, ..., (n-2)*b, 1].
+
+So, the elements are 0,1, 2b,3b, ..., (n-2)*b.
+
+Wait, no. Because after k=1, the array is [0,1, 2b, 3b, ..., (n-2)*b].
+
+So, the MEX is 3, which is 1+2*1.
+
+So, the array after k operations is [0,1,2b,3b, ..., (n -k -1)*b, ... ].
+
+Wait, perhaps the array after k operations is [0,1, 2b, 3b, ..., (n -k -1)*b, 1+2k].
+
+So, the elements are 0,1, 2b,3b,..., (n -k -1)*b, and then 1+2k.
+
+Wait, but that doesn't seem right.
+
+Alternatively, perhaps the array after k operations is:
+
+- 0, 1, 3,5, ..., up to (2k-1).
+
+- Then, the remaining elements are the multiples of b from (n -k)*b down to 0, but excluding the numbers in the first part.
+
+So, for example, after k=1:
+
+- 0,1.
+
+- Then, the multiples of b from (n-1)*b down to 0, but excluding 0,1 (if b=1, but n-1 is larger than 1).
+
+Wait, perhaps not.
+
+This is getting a bit too tangled.
+
+Let me try to find a pattern.
+
+We can see that after each operation, the MEX increases by 2.
+
+So, after k operations, the MEX is 1 + 2k.
+
+The array will have all numbers up to MEX-1, but only the numbers not divisible by b.
+
+Additionally, the array will have the MEX as the last element.
+
+So, the array is:
+
+- All numbers from 0 to (1 + 2k - 1) = 2k, but not divisible by b.
+
+Plus the MEX.
+
+So, for example, if b=2, after k=1, MEX is 3.
+
+So, the array is [0,1,3].
+
+After k=2, MEX is 5.
+
+Array is [0,1,3,5].
+
+So, this seems to fit.
+
+So, the array after k operations is:
+
+- The numbers 0,1,3,5,... up to (2k-1), plus the MEX.
+
+Wait, but in this case, the MEX is 1 + 2k.
+
+So, the array is 0, 1, 3,5,..., (2k-1), plus 1+2k.
+
+So, the array has 2k+1 elements.
+
+Wait, no. For k=1, 2k+1 is 3, which matches.
+
+For k=2, 5 elements: 0,1,3,5.
+
+Yes.
+
+So, the array after k operations is:
+
+[0,1,3,5,..., 2k-1, 1+2k].
+
+So, the elements are all the numbers from 0 to 2k-1, but only the odd numbers (since they are 1,3,5,...), plus 1+2k.
+
+So, it's a combination of two sequences: the odd numbers up to 2k-1, and the even MEX.
+
+So, the array consists of:
+
+- All numbers from 0 to 2k-1 that are not divisible by b.
+
+Plus the MEX, which is 1+2k.
+
+So, the array is:
+
+0,1,3,5,..., 2k-1, 1+2k.
+
+So, the array has 2k+1 elements.
+
+Now, for this array to be a permutation of 0 to n-1, the size of the array after k operations must be n.
+
+So, 2k+1 = n.
+
+So, k = (n-1)/2.
+
+But this is only possible if (n-1) is even, i.e., n is odd.
+
+Wait, let's see.
+
+n must be equal to 2k+1.
+
+So, n must be odd.
+
+So, for even n, this is impossible.
+
+Wait, so for n even, the array after k operations can't be a permutation.
+
+So, when n is even, the initial array can't be a permutation, so we need to perform operations until it's possible.
+
+Wait, but for n even, the initial array is [0,b,2b,... (n-1)b], which is not a permutation.
+
+So, the process is to perform operations until the array is a permutation.
+
+So, for n even, the process is to find the minimal k such that after k operations, the array is a permutation.
+
+But according to the previous model, after k operations, the array has 2k+1 elements, which equals n only when 2k+1 =n → k=(n-1)/2.
+
+So, for n even, this is not possible.
+
+So, for even n, the process can't be completed in finite steps, but the problem says to output -1 if it's impossible.
+
+Wait, but what about when n is even?
+
+Let me think about n=2.
+
+n=2, b=1.
+
+Initial array is [0,1], which is a permutation. So, no operations needed.
+
+n=2, b=2.
+
+Initial array is [0,2], which is not a permutation.
+
+So, perform operations.
+
+After 1 operation: replace 2 with MEX.
+
+What is MEX of [0,2]?
+
+The elements are 0 and 2.
+
+So, MEX is 1.
+
+So, new array is [0,1].
+
+Which is a permutation.
+
+So, after 1 operation, it's done.
+
+So, for n=2, b=2, the answer is 1.
+
+So, in this case, the model earlier, where 2k+1 =n, is not applicable.
+
+Hmm.
+
+So, perhaps the earlier model is only applicable for certain cases.
+
+So, perhaps I need to find a general approach.
+
+So, the process is:
+
+We need to find the minimal k such that after k operations, the array is a permutation.
+
+Each operation increases the MEX by 2.
+
+So, after k operations, the MEX is 1+2k.
+
+So, the array will have all the numbers from 0 to 1+2k-1, but only the odd numbers, plus the MEX.
+
+Wait, no. Because in the model, the array is 0,1,3,5,..., 2k-1, 1+2k.
+
+So, the array has 2k+1 elements.
+
+So, to make this an array of size n, 2k+1 must equal n.
+
+So, for even n, this is impossible.
+
+So, for even n, the process may require more steps.
+
+So, perhaps the minimal k is such that 2k+1 >=n.
+
+But that's not necessarily the case.
+
+Wait, let's see.
+
+For n=3, which is odd.
+
+So, k = (3-1)/2 =1.
+
+So, after 1 operation, the array is [0,1,3].
+
+Which is a permutation.
+
+Yes.
+
+So, the model holds.
+
+So, for even n, perhaps the process can be done.
+
+So, for even n, the initial array is not a permutation.
+
+So, each operation increases the size of the array by 1.
+
+Because each operation replaces the maximum with a new element.
+
+So, after k operations, the array has size n.
+
+So, the process is to find the minimal k such that the array becomes a permutation.
+
+So, the array after k operations is a permutation if and only if it contains all numbers from 0 to n-1.
+
+So, for this to happen, the array after k operations must include all numbers from 0 to n-1.
+
+So, in the model where the array is [0,1,3,5,...,2k-1, 1+2k], this array must include all numbers from 0 to n-1.
+
+So, what's the condition for this?
+
+The array must have all numbers from 0 to n-1.
+
+So, the array after k operations is [0,1,3,5,..., 2k-1, 1+2k].
+
+So, to include all numbers, 1+2k must be >=n-1.
+
+And also, all numbers in between must be present.
+
+So, let's see.
+
+For example, n=4.
+
+After k=1 operations:
+
+Array is [0,1,3, 3].
+
+Wait, no. Because the model after k=1 is [0,1,3,3], but that's not a permutation.
+
+Wait, perhaps I'm getting confused.
+
+Wait, when k=1, the array is [0,1,3, ... ?]
+
+Wait, no, for n=4, k=1 would make the array have 3 elements, which is less than 4. So, this can't be.
+
+Wait, perhaps I'm misunderstanding.
+
+Wait, the initial array is [0, b, 2b, 3b, ... (n-1)b], which is size n.
+
+Each operation reduces the size by 1, because the maximum is removed and replaced by a new element.
+
+So, after k operations, the array has size n -k.
+
+So, to have the array size be n, we need k=0.
+
+But for even n, this is not possible.
+
+So, perhaps for even n, we need to perform operations until the array size becomes n, which is impossible.
+
+So, perhaps the process is only possible when after k operations, the array has size n.
+
+Which is only possible if k=0, but that's only when n is 0, which is not possible.
+
+So, for even n, perhaps the process can't be completed.
+
+Wait, but in the case where n=2, b=2, after 1 operation, the array becomes [0,1], which is a permutation.
+
+So, n=2 is even, and it's possible.
+
+So, in that case, the process can be done.
+
+So, my earlier model is incomplete.
+
+So, perhaps the array after k operations is as follows:
+
+The array consists of all numbers from 0 to (2k-1), but excluding the numbers that are not in the form of b*m.
+
+Wait,

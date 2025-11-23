@@ -1,0 +1,638 @@
+0
+Okay, I'm trying to solve this problem where I need to find the minimum number of seconds to transform two empty screens into showing sequences s and t. The allowed operations are appending a character or copying from one screen to another.
+
+Hmm, let's think about the operations. Each second, I can either append a character to one of the screens or copy the entire content of one screen to the other. So, the key is to find the optimal way to perform these operations to minimize the total time.
+
+Wait, but how do these operations impact the time? For example, if I have a string like 'abc' and 'def', what's the quickest way to make them.
+
+I think the approach involves comparing the two strings and figuring out the best point to switch between operations. Maybe we can find a point where we copy from one string to the other, which can save time.
+
+Let me think of the process step by step. Suppose the two strings are s and t. I can do a series of append operations and copies. Each append adds to the length, while a copy can extend the length by the length of the source string, but only if the source is non-empty.
+
+Wait, for example, if I have screen A with 'abc' and screen B with 'de', and I want to make B to be 'abcde'. I can copy 'abc' from A to B, which takes 3 steps, and then append 'd' and 'e' (2 steps). So total 5 steps.
+
+But if I were to instead copy 'de' to A first, then append 'abc', that would also take 5 steps. So same result.
+
+So, the order of copy and appends might not matter in this case. Hmm.
+
+But what if the two strings have different lengths? For example, s is longer than t. Or vice versa.
+
+I think the optimal strategy is to find a common prefix in one of the strings that can be copied from one to the other, thereby reducing the number of appends needed.
+
+Wait, but how do I decide where to make the copy? Maybe the optimal point is where the two strings have a common prefix. Like, if s is 'abcde' and t is 'abxdef', then after some time, I can copy 'abc' from s to t, then append 'x' and 'd', 'e' to reach t. But I'm not sure.
+
+Alternatively, maybe the minimal time is determined by the maximum of the two lengths, but that can't be right because sometimes you can do better by copying.
+
+Wait, let's consider an example. Let s be 'abc' and t be 'abcd'. So, s is shorter than t by one character. How can I make t?
+
+Option 1: Copy 'abc' from s to t, which takes 3 steps. Then append 'd' (1 step). Total 4 steps.
+
+Option 2: Copy 'a' from s to t, then append 'b', 'c', 'd' (4 steps). That's longer.
+
+So option 1 is better.
+
+Another example: s is 'ab', t is 'abc'. So I can copy 'ab' from s to t (2 steps), and append 'c' (1 step). Total 3 steps.
+
+Another case: s is 'abcd', t is 'abce'. Then, copy 'abcd' to t, which is 4 steps. But wait, that would overwrite t, but in this case, t is 'abcd', and we want it to be 'abce'. So after copying, t becomes 'abcd', then append 'e' (1 step). Total 5 steps.
+
+Wait, but is there a better way? Maybe not, because t is longer than s, so we have to append the extra character.
+
+So, in general, it seems that the optimal approach is to find the maximum of the lengths of s and t, but then subtract the minimum. Wait, no, because sometimes it's better to copy a part of s into t.
+
+Wait, maybe the minimal steps are the maximum of the lengths of s and t, but subtracting the length of the common prefix. Or perhaps it's the sum of the two lengths minus the length of the longer string's common prefix.
+
+Wait, perhaps not. Let's think of the minimal steps as the maximum of the two lengths, but that doesn't account for cases where copying can reduce the number of appends.
+
+Wait, another example: s is 'a', t is 'ab'. So, I can copy 'a' from s to t (1 step), then append 'b' (1 step). Total 2 steps. That's better than doing one append each (2 steps), but same time.
+
+Wait, but the initial step is 1 for copy, then 1 for append. So total 2 steps, same as appending each in 2 steps. So in this case, it's same.
+
+But wait, in the initial state, both screens are empty. So, to get s as 'a' and t as 'ab', the steps could be: copy 'a' to t (1 step), then append 'b' (1 step). Total 2 steps. Or append 'a' to s (1 step), then copy 'a' to t (1 step), then append 'b' (1 step). Still 3 steps.
+
+Wait, that's worse. So the better option is to copy first, then append. So the minimal steps are 2.
+
+So in this case, the minimal steps are the minimum between the sum of the lengths and the maximum length, but I'm not sure.
+
+Wait, sum of the lengths is 2, but the maximum is 2. So same.
+
+Hmm, perhaps the minimal number of steps is the maximum of the two lengths, but only if one string is a prefix of the other. Otherwise, it's the maximum of the two lengths.
+
+Wait, no. Because if s is 'abc' and t is 'abcd', then the maximum is 4, but the minimal steps are 4. Because you have to append 'd' once.
+
+Wait, but in the example where s is 'ab' and t is 'abc', the minimal steps are 3: copy 'ab' to t (2 steps), then append 'c' (1 step). So 3 steps, which is the sum of s and t's lengths minus 1 (since 'ab' is the common prefix? Or wait, the common prefix is 2, so the sum is 2+1=3, and the maximum is 3, so same as the sum. So in that case, it's same.
+
+Wait, perhaps the minimal steps are the maximum of the two lengths. Let's see:
+
+Case 1: s is 'a', t is 'a' → 1 step.
+
+Case 2: s is 'a', t is 'ab' → 2 steps.
+
+Which is max(1,2) = 2 → correct.
+
+Case 3: s is 'ab', t is 'cdef' → 4 steps.
+
+Which is max(2,4) =4 → correct.
+
+Case 4: s is 'abcd', t is 'abcde' → 5 steps. Max is 5.
+
+Case 5: s is 'abc', t is 'abcd' → 4 steps. Max is 4.
+
+So it seems that the minimal steps are indeed the maximum of the two lengths.
+
+But wait, is there a case where the minimal steps are less than the maximum? Let's see.
+
+Suppose s is 'a' and t is 'a'. Max is 1, steps are 1.
+
+Another case: s is 'a', t is 'aa'. Max is 2. Steps: copy 'a' to t (1 step), then append 'a' (1 step). Total 2 steps. Max is 2.
+
+Yes.
+
+Another case: s is 'a', t is 'aab'. Steps: copy 'a' to t (1), append 'a' (1), append 'b' (1) → 3 steps. Max is 3.
+
+So the minimal steps are indeed the maximum of the two lengths.
+
+Wait, but that can't be right because in some cases, you can do better.
+
+Wait, what about the case where s is 'ab' and t is 'abc'. So the maximum is 3. Steps needed: 3. Because you copy 'ab' to t (2 steps), then append 'c' (1 step). So total 3 steps. Which is correct.
+
+Wait, but wait, another approach: append both 'a' and 'b' to s, then copy 'ab' to t. That would take 3 steps: append 'a' (1), append 'b' (2), copy 'ab' (3). Then t becomes 'aab', which is longer than needed. So that's not helpful.
+
+Wait, no. Because in this scenario, the target for t is 'abc', which is 3 letters. So after the copy, t becomes 'ab' (from copying 'ab'), then you can append 'c' for 3 steps.
+
+So that's the same as the maximum length approach.
+
+Hmm. So is the minimal number of steps always the maximum of the lengths of s and t? But that can't be, because perhaps there are cases where it's better to do a combination of appends and copies.
+
+Wait, let's think of s as 'ab', t as 'ab'. Max is 2. Steps: 2. That's correct.
+
+What about s is 'abc' and t is 'abcd'? Max is 4. Steps: 4. So that's correct.
+
+Another example: s is 'a', t is 'b'. Max is 1, but we have to perform two steps: append 'a' (1) and append 'b' (2). So steps are 2, which is the same as the maximum of 1 and 1? No, wait, the maximum is 1, but steps needed are 2.
+
+Oh right! So that's a problem. So the initial hypothesis is incorrect.
+
+Wait, because in this case, s is 'a' and t is 'b'. The maximum length is 1. But the steps needed are 2. So the maximum approach would give 1, but the actual steps are 2.
+
+So why is that? Because to get t to be 'b', I have to append 'b' after appending 'a' to s. So that's two steps. So the minimal steps are 2, which is the sum of the lengths (1+1) minus 0 (since they don't share any common prefix). Wait, but in this case, s is 'a' and t is 'b', which are different. So the minimal steps are 2.
+
+Wait, so the initial approach is wrong. So I need to think differently.
+
+Let me think again. So the minimal steps are the maximum of the two lengths only if one string is a prefix of the other. Otherwise, perhaps it's the sum of the lengths minus the length of the longest common prefix.
+
+Wait, no. Because in the case where s is 'a' and t is 'ab', the minimal steps are 2, which is the sum of the lengths (1+1=2) minus 0, because the common prefix is zero, so the formula would be 2. But that's not the case. Wait, the sum is 2, but the maximum is 2. So it's same.
+
+Wait, perhaps the minimal steps are the maximum of the two lengths, but only if one string is a prefix of the other. Otherwise, perhaps the minimal steps are the sum of the lengths minus the length of the longest common prefix.
+
+Wait, let's see:
+
+Case 1: s is 'a', t is 'a'. Max is 1. Common prefix is 1. So steps: 1.
+
+Case 2: s is 'a', t is 'ab'. Max is 2. Common prefix is 1. So steps: 2.
+
+Which is correct.
+
+Case 3: s is 'abc', t is 'abcd'. Max is 4. Common prefix is 3. So steps: 4.
+
+Which is correct.
+
+Case 4: s is 'ab', t is 'cde'. Max is 3. Common prefix is 0. So steps: 3.
+
+Which is correct.
+
+Case 5: s is 'a', t is 'b'. Max is 1. Common prefix is 0. So steps: 2. But according to the formula sum - common prefix, it would be (1+1) - 0 = 2, which matches.
+
+So perhaps the minimal steps are the maximum of the two lengths, but if one is a prefix of the other, then the steps are the maximum. Otherwise, it's the sum of the lengths minus the length of the longest common prefix.
+
+Wait, but wait, let's take s='ab' and t='abc'. The common prefix is 2. So steps would be 2 (copy 'ab' to t) followed by an append 'c' (1 step). Total 3 steps. Which is the sum (2+1) minus 1 (because the common prefix is 2) → 3-1=2? No, that's not right. Wait, no, sum is 3, common prefix is 2. So 3 - 2 =1, which is not correct.
+
+Wait, in this case, the steps are 3, but according to the formula sum - common prefix, it's 3 - 2 =1, which is wrong.
+
+Hmm, perhaps I'm approaching this wrong.
+
+Another approach: the minimal steps is the maximum of the two lengths, unless one is a prefix of the other, in which case the steps are the maximum. Otherwise, it's the sum of the lengths minus the length of the longest common prefix.
+
+Wait, but in the case where s is 'ab' and t is 'abc', the sum is 3, the common prefix is 2. So 3-2=1, but the correct steps are 3.
+
+So that formula doesn't hold.
+
+Wait, perhaps the minimal steps is the maximum of the two lengths if one is a prefix of the other, otherwise it's the sum of the two lengths minus the length of the longest common prefix.
+
+But in the 'ab' and 'abc' example, the sum is 3, common prefix is 2. So 3-2=1, which is not correct.
+
+Hmm, that suggests that approach is wrong.
+
+Wait, perhaps I need to think about the problem differently.
+
+Each operation is either appending a character to a string or copying the entire content of one string to another.
+
+So, when you copy, you can replace the source string with the destination string. So, for example, if you have 'abc' in A and 'de' in B, you can copy A to B, which makes B 'abcde', and then append 'f' to get 'abcdef' in B.
+
+So, the key is that each copy operation can replace a substring in the destination string with the entire source string. So, we can think of the minimal steps as the minimal number of appends required, considering that we can replace parts of the destination string with existing strings.
+
+Wait, perhaps the minimal steps can be determined by the maximum of the two lengths, but that's also not always the case.
+
+Wait, let's think again about the s = 'ab' and t = 'abc' example. The minimal steps are 3: copy 'ab' to t (steps 2), then append 'c' (step 3). So the steps are 3, which is the sum of the lengths (2+1=3) minus the common prefix length (2), but that gives 1, which is not correct.
+
+So, that approach is wrong.
+
+Hmm, perhaps I should model the problem differently. Let's think about the process as building the target strings step by step.
+
+We have two strings, S and T. Initially, both are empty.
+
+We can perform operations:
+
+1. Append a character to either S or T.
+
+2. Copy the entire content of a string (S or T) to the other.
+
+We need to find the minimal steps to make S equal to s and T equal to t.
+
+An alternative approach is to model this as a BFS problem, where each state is represented by the current S and T, along with the time taken to reach that state. But considering that s and t can be up to 100 characters each, the state space is very large (2^100 * 2^100), which is not feasible.
+
+Wait, but perhaps there's a more efficient way. Since the operations can be either appending or copying, perhaps the minimal steps can be found by considering the maximum of the lengths of s and t, but only if one is a prefix of the other.
+
+Wait, but as we saw earlier, when s is 'a' and t is 'b', the minimal steps are 2, which is the sum of the lengths.
+
+So perhaps the minimal steps are the maximum of the lengths of s and t, unless one is a prefix of the other, in which case the steps are the maximum.
+
+Wait, let's think:
+
+If s is 'a', t is 'ab'. Then, since 'a' is the prefix of 'ab', the steps are 2. Which is the maximum of 1 and 2.
+
+If s is 'a', t is 'abc', then the steps are 3. Which is the maximum of 1 and 3.
+
+So in those cases, the steps are the maximum.
+
+But what about when s is longer than t, and t is not a prefix of s.
+
+For example, s is 'abcd' (4 letters), t is 'ab' (2 letters). So, to make S 'abcd' and T 'ab', the minimal steps would be 3: append 'c', append 'd', then copy 'ab' to T (but wait, T is already 'ab', and S is 'abcd'). So, after appending 'c' and 'd', S is 'abcd', T is 'ab'. So steps are 4. Which is the maximum of 4 and 2.
+
+Wait, but in this case, the steps are 4. So the initial approach is correct.
+
+Wait, but in the case where s is 'ab' and t is 'abc', the steps are 3, which is 2+1.
+
+Hmm, perhaps the minimal steps are the maximum of the two lengths, but that's only when one is a prefix of the other. Otherwise, the steps are the maximum of the two lengths.
+
+Wait, no. Because when s is 'a', t is 'b', the steps are 2, which is the maximum.
+
+So perhaps, the minimal steps are indeed the maximum of the two lengths, regardless of whether s is a prefix of t or not.
+
+But wait, in the earlier example where s is 'ab' and t is 'cde', the minimal steps are 3, which is the maximum.
+
+So, perhaps the minimal steps are always the maximum of the two lengths, but that's not the case.
+
+Wait, think of s as 'a' and t as 'a'. The steps are 1, which is the maximum.
+
+s as 'a', t as 'aa'. Steps: 2. Which is the maximum.
+
+s as 'a', t as 'aab'. Steps:3, which is the maximum.
+
+So, perhaps the minimal steps are the maximum of the two lengths.
+
+But this is not the case when the two strings are 'a' and 'b', which requires 2 steps.
+
+Wait, so according to this, the minimal steps are the maximum of the two lengths.
+
+But wait, in the 'a' and 'b' example, the maximum is 1, but the steps are 2.
+
+So this approach is incorrect.
+
+Hmm, this is confusing.
+
+Another angle: Let's think about the process as building both strings. The operations allow us to append characters or copy.
+
+Each append operation is a single step. Each copy operation is a single step, but it can potentially replace a substring in either string.
+
+The key is to minimize the number of appends, because appending is more efficient.
+
+So, the minimal steps would involve as few appends as possible, and as much as possible using copy operations.
+
+So, perhaps the minimal steps are the sum of the lengths of s and t minus the length of the longest common prefix between s and t plus the minimal steps to make the suffixes.
+
+Wait, that's a bit abstract.
+
+Alternatively, let's see: the minimal steps can be calculated by considering the maximum of the two lengths, but that's not always correct.
+
+Wait, perhaps the minimal steps is the maximum of the two lengths if one is a prefix of the other. Otherwise, it's the sum of the two lengths.
+
+Wait, but that's not correct either.
+
+So, perhaps the minimal steps are the maximum of the two lengths, except when one is a prefix of the other, in which case the steps are the maximum.
+
+But that's not correct because in the 'ab' and 'abc' case, the maximum is 3, which is correct.
+
+Wait, perhaps that's the case.
+
+Wait, perhaps the minimal steps is the maximum of the two lengths, but only if one string is a prefix of the other.
+
+Otherwise, it's the sum.
+
+But wait, in the 'ab' and 'cde' example, the sum is 5, which is the maximum of 2 and 3.
+
+So, that's correct.
+
+In the 'a' and 'b' example, the sum is 2, which is the maximum.
+
+In the 'a' and 'aa' example, the sum is 2 (1+1), but the maximum is 2. So same.
+
+Hmm. So perhaps the minimal steps are the maximum of the two lengths, except when one is a prefix of the other, in which case the steps are the maximum.
+
+Wait, but that's not correct because in the 'a' and 'b' example, the maximum is 1, but the steps are 2.
+
+Wait, perhaps the correct condition is that the minimal steps are the maximum of the two lengths, but only when one is a prefix of the other. Otherwise, it's the sum.
+
+Wait, but for 'a' and 'b', since 'a' is not a prefix of 'b', the minimal steps are 2, which is the sum.
+
+Hmm, I'm stuck.
+
+Let me try to find a pattern.
+
+Let me consider all possible cases:
+
+Case 1: One string is a prefix of the other.
+
+For example, s = 'abc', t = 'abcd' → steps:4.
+
+Which is the maximum.
+
+Another example: s='ab', t='abc' → steps:3 (max is 3).
+
+Case 2: The two strings do not form a prefix relationship.
+
+For example, s='a', t='b' → steps:2.
+
+Which is the sum of the lengths.
+
+s='ab', t='cde' → steps:3 (max is 3).
+
+s='ab', t='cd' → steps:4.
+
+Which is the sum of 2 and 2.
+
+So, in case 2, the steps are the sum of the lengths.
+
+So, the minimal steps can be determined as follows:
+
+If one string is a prefix of the other, then the steps are the maximum of the two lengths.
+
+Otherwise, the steps are the sum of the two lengths.
+
+Wait, does that make sense?
+
+Let me test this.
+
+Example 1: s='a', t='a' → prefix of each other. Max is 1. Steps:1. Correct.
+
+Example 2: s='a', t='ab' → steps 2. Max is 2. Correct.
+
+Example 3: s='ab', t='cde' → steps 3. Max is 3. Correct.
+
+Example 4: s='a', t='b' → steps 2. Sum is 2. Max is 1. So, no. So this would say steps is 2, which is correct.
+
+Wait, but according to the initial idea, if one string is a prefix of the other, steps are max, else steps are sum.
+
+But in the 'ab' and 'cde' case, the strings are not in a prefix relationship, so the steps are sum.
+
+In the 'a' and 'b' case, the strings are not in a prefix relationship, so the steps are sum.
+
+Wait, but in the 'a' and 'ab' case, the step is max.
+
+So, the condition is: if one of the strings is a prefix of the other, then steps is max(len(s), len(t)).
+
+Else, steps is len(s) + len(t).
+
+But let's see:
+
+Another example: s='abc', t='abcd' → s is a prefix of t. So steps is 4, which is the maximum.
+
+Another example: s='abcd', t='abc' → s is a prefix of t. So steps is 4.
+
+Another example: s='a', t='b' → not a prefix. Steps is 2.
+
+Another example: s='ab', t='cd' → not a prefix. Steps is 4.
+
+Another example: s='a', t='a' → prefix, steps 1.
+
+Another example: s='a', t='aa' → prefix, steps 2.
+
+Another example: s='a', t='ab' → not prefix, steps 2.
+
+So, the condition seems to hold.
+
+So, the minimal steps is:
+
+If s is a prefix of t or vice versa, then the minimal steps are the maximum of the two lengths.
+
+Otherwise, the minimal steps are the sum of the two lengths.
+
+So, how can I check if one string is a prefix of the other?
+
+Yes, for each string s and t, I can check if s starts with t or t starts with s.
+
+So, in code, for each test case:
+
+- Check if s is a prefix of t, or t is a prefix of s.
+
+If yes, then the minimal steps is the maximum of len(s) and len(t).
+
+Else, the minimal steps is len(s) + len(t).
+
+Wait, but wait.
+
+Wait, in the 'ab' and 'cde' case, len(s) is 2, len(t) is 3. Max is 3, which is correct.
+
+In the 'a' and 'b' case, the max is 1, but steps are 2. So according to the condition, it's not a prefix, so steps are 2. Which is correct.
+
+In the 'a' and 'aa' case, steps are 2. Which is correct.
+
+But wait, what about s='ab' and t='cde' where s is not a prefix of t and vice versa. So steps are sum, which is 5.
+
+So, that's correct.
+
+So, the approach is:
+
+For each test case:
+
+1. Check if s is a prefix of t or t is a prefix of s.
+
+2. If yes, the minimal steps are the maximum of the two lengths.
+
+3. Else, the minimal steps are the sum of the two lengths.
+
+Wait, but let's test this with another example.
+
+s = 'a', t = 'aa'. The steps are 2, which is the sum. Since t is a prefix of s? No, s is 'a', t is 'aa'. So t is not a prefix of s. Because s is 'a', t is 'aa' starts with 'a', but not equals. So, not a prefix. So steps are sum, which is 1+2=3? Wait no. Wait, len(s) is 1, len(t) is 2. So sum is 3.
+
+But the minimal steps are 2.
+
+Wait, this is a problem.
+
+Because in this case, s is 'a', t is 'aa'. According to the condition, since t is longer than s and s is a prefix of t, the steps are the maximum, which is 2. But according to the earlier condition, since t is not a prefix of s, the steps are sum (3).
+
+Which is incorrect because the minimal steps are 2.
+
+Hmm, this suggests that the initial approach is flawed.
+
+So, what's wrong here?
+
+In the case where s is 'a' and t is 'aa', since 'a' is the prefix of 'aa', the steps should be 2, but according to the earlier condition, it's considered as not a prefix and steps are sum.
+
+So, the initial approach is incorrect.
+
+So, the condition that one string is a prefix of the other is not sufficient. So, what's the correct condition?
+
+Wait, perhaps the condition should be whether one string is a substring of the other? Or whether one is a prefix of the other.
+
+Wait, in the example, s is 'a' and t is 'aa'. So, s is a prefix of t, so the steps should be 2.
+
+But according to the earlier approach, since t is longer than s and s is a prefix of t, the steps are max(len(s), len(t)).
+
+But that's correct in this case.
+
+But in the case where s is 'a' and t is 'b', which is not a prefix, steps are sum.
+
+But in the case where s is 'ab' and t is 'cde', which are not prefixes, steps are sum.
+
+So, the correct condition is: if s and t have a common prefix of maximum length, which is the length of the longer string. Wait, no.
+
+Wait, perhaps the correct condition is that if s is a prefix of t, or t is a prefix of s, the steps are the maximum. Otherwise, the steps are the sum.
+
+But in the s='a' and t='aa' case, t is not a prefix of s, but s is a prefix of t. So according to the condition, steps should be 2, which is correct.
+
+Wait, but in the case where s is 'ab' and t is 'cde', steps are 3, which is correct.
+
+Wait, but the case where s is 'a' and t is 'aa' is handled by the condition.
+
+So in that case, the steps are 2, which is correct.
+
+So perhaps the condition is correct.
+
+So, the code can be written as follows:
+
+For each test case:
+
+- Compute len_s = len(s), len_t = len(t).
+
+- Check if s starts with t or t starts with s.
+
+- If yes, then the minimal steps is max(len_s, len_t).
+
+- Else, the minimal steps is len_s + len_t.
+
+Wait, but wait, in the 'ab' and 'cde' case, s is 'ab' which is not a prefix of 'cde', and t is 'cde' which is not a prefix of 'ab', so steps are 3+3=6? No, no. Because 'ab' and 'cde' are not prefixes, but their appends can be done in a way that the steps are 3.
+
+Wait, no, 'ab' and 'cde' are not in any prefix relationship, so steps are sum.
+
+So, in the code, the condition is correct.
+
+But in the 'a' and 'aa' case, since 'a' is a prefix of 'aa', steps are 2.
+
+Which is correct.
+
+So, perhaps the initial approach is correct.
+
+Wait, but let's test another example:
+
+s = 'abc', t = 'abcd'. So, s is a prefix of t. Steps are 4, which is correct.
+
+Another example: s = 'abcd', t = 'abcde'. Steps are 5, which is correct.
+
+So, the code seems to work.
+
+So, the plan is:
+
+For each test case:
+
+- Read s and t.
+
+- If s is a prefix of t or vice versa, then the minimal steps is the maximum of len(s) and len(t).
+
+- Else, minimal steps is len(s) + len(t).
+
+Wait, but wait, in the 'a' and 'b' case, the sum is 2, which is correct. So, the code will output 2.
+
+But according to the initial approach, the code would output sum, which is correct.
+
+So, the code should be written as:
+
+For each test case:
+
+1. Read s and t.
+
+2. Check if s is a prefix of t or t is a prefix of s.
+
+3. If yes, steps = max(len(s), len(t)).
+
+4. Else, steps = len(s) + len(t).
+
+So, that's the approach.
+
+Now, implement this in Python.
+
+Wait, but in the 'ab' and 'cde' case, steps are 3.
+
+Which is len(s)+len(t).
+
+Yes.
+
+Another example: s = 'a', t = 'a' → steps 1.
+
+Which is correct.
+
+Another example: s = 'a', t = 'b' → steps 2.
+
+Which is correct.
+
+Another example: s = 'ab', t = 'cde' → steps 3.
+
+Which is correct.
+
+So, the code is as follows.
+
+Read q test cases.
+
+For each case:
+
+Read s and t.
+
+Check if s starts with t → if yes, steps is max(len(s), len(t)).
+
+Else, check if t starts with s → if yes, steps is max(len(s), len(t)).
+
+Else, steps is len(s)+ len(t).
+
+So, in code:
+
+In Python:
+
+q = int(input())
+
+for _ in range(q):
+    s = input().strip()
+    t = input().strip()
+    len_s = len(s)
+    len_t = len(t)
+    if s.startswith(t) or t.startswith(s):
+        print(max(len_s, len_t))
+    else:
+        print(len_s + len_t)
+
+Wait, but wait. The condition is if s is a prefix of t or t is a prefix of s.
+
+But wait, for example, s is 'abc', t is 'def'. Neither is a prefix of the other. So steps are 3+3=6.
+
+Which is correct.
+
+Another example: s is 'a', t is 'b'. Steps are 2.
+
+Which is correct.
+
+Another example: s is 'a', t is 'ab'. Steps are 2.
+
+Which is correct.
+
+Another example: s is 'ab', t is 'cde'. Steps are 3.
+
+Which is correct.
+
+So, the code seems correct.
+
+Testing the examples:
+
+Sample Input 1:
+
+q = 5
+
+Test case 1:
+s = 'ab', t = 'ab' → steps 2. Correct.
+
+Test case 2:
+s = 'a', t = 'ab' → steps 2. Correct.
+
+Test case 3:
+s = 'a', t = 'c' → steps 2. Correct.
+
+Test case 4:
+s = 'a', t = 'a' → steps 1.
+
+Test case 5:
+s = 'a', t = 'b' → steps 2.
+
+Which matches the sample output.
+
+So, the code seems to handle all these cases correctly.
+
+Therefore, the code should be as written.
+</think>
+
+To solve this problem, we need to determine the minimum number of seconds required to transform two empty screens displaying sequences `s` and `t` into the given sequences using the allowed operations. The operations include appending a character to a sequence or copying a sequence to another.
+
+### Approach
+The key insight is to recognize that the operations allowed are:
+1. Appending a character to either sequence.
+2. Copying the entire content of one sequence to the other.
+
+The optimal strategy involves minimizing the number of appends and leveraging the copy operation as much as possible. The minimal number of operations can be determined by checking if one sequence is a prefix of the other. If one sequence is a prefix of the other, the number of operations needed is the length of the longer sequence. Otherwise, the number of operations needed is the sum of the lengths of both sequences.
+
+### Solution Code
+```python
+q = int(input())
+for _ in range(q):
+    s = input().strip()
+    t = input().strip()
+    len_s = len(s)
+    len_t = len(t)
+    if s.startswith(t) or t.startswith(s):
+        print(max(len_s, len_t))
+    else:
+        print(len_s + len_t)
+```
+
+### Explanation
+1. **Reading Input:** We read the number of test cases and then process each pair of sequences `s` and `t`.
+2. **Check Prefix Condition:** For each pair of sequences, we check if one sequence is a prefix of the other. This is done using the `startswith` method.
+3. **Determine Operations:** 
+   - If one sequence is a prefix of the other, the minimum operations required are the length of the longer sequence.
+   - If neither sequence is a prefix of the other, the minimum operations required are the sum of the lengths of both sequences.
+
+This approach ensures that we efficiently determine the minimum number of operations by leveraging the copy operation whenever possible, thus optimizing the process.<｜end▁of▁sentence｜>

@@ -1,0 +1,684 @@
+0
+Okay, I need to solve this problem where Alex can perform an operation to turn an entire row or column into all '#'s, and then find the maximum possible connected component size after at most one operation. Hmm.
+
+Let me think about the problem. So, the grid has '.' and '#' cells. Each connected component is a group of '#'s connected by their edges. The operation is to select a row or column and turn all its cells into '#'. Then, find the largest connected component in the resulting grid. We can do this operation at most once, or choose not to do anything.
+
+The goal is to find the maximum possible size after this operation.
+
+So, the approach is: for each possible row and column, compute the size of the connected component that would result, and then take the maximum among all these possibilities, including the original grid without any operation.
+
+But wait, the original grid is also a candidate. So, we need to compare all possibilities, including the case where we perform no operation.
+
+But wait, the initial grid's connected components are fixed. So the maximum could be the size of the largest connected component in the original grid, which is one of the possibilities. So, for each row and column, we can compute how much it increases the connectedness and find the maximum.
+
+So, the plan is:
+
+1. Precompute for each row and column, the number of '#'s in that row or column, and then for each row and column, compute the impact of turning it into all '#'s on the connected components.
+
+Wait, but computing the impact of turning a row into all '#'s is not straightforward. Because turning a row into all '#'s might connect parts of the grid that were previously disconnected.
+
+For example, consider a grid where a row has many '.'s. If I turn it into all '#', it will connect all the '#'s in that row to the columns intersecting with it. So, the impact is on the connectedness of those columns.
+
+Similarly, turning a column into all '#'s will connect all the '#'s in that column to the rows.
+
+So, for each row, the change in the connected component would be the number of new '#'s added (all in that row) and the connections to the columns.
+
+Hmm, perhaps we can model this as follows:
+
+For each row r, the initial number of '#'s is s_r. When we turn it into all '#', the new row contributes s_r new '#'s. But some of these may already be connected to other rows or columns.
+
+So, the total connected component size when we turn row r into all '#' is the size of the connected component that includes all the cells in this row and the columns connected to it.
+
+Wait, but how do we compute that? It's complicated because turning a row into all '#'s can connect multiple columns.
+
+So, perhaps for each row, we can find all the connected components that are connected through this row and columns.
+
+Wait, maybe a better approach is for each row r, we can:
+
+- Find all the connected components that are in the same column group as the cells in row r that are turned into '#'. For example, turning row r into all '#'s will connect all the cells in row r to those in the same column blocks.
+
+Wait, perhaps another way: when we turn row r into all '#', the number of new connected components is determined by how these cells connect to the rest of the grid.
+
+Alternatively, perhaps for each row, the maximum possible connected component after turning it into all '#'s is the size of the connected region that includes all the cells in row r and the connected regions in the columns that are connected via row r.
+
+But this seems vague. Maybe I should think of it this way:
+
+When I turn row r into all '#', any '#'s in that row are now connected to the rest of the grid in the columns where they were.
+
+So, the maximum connected component could be:
+
+- The size of the connected component that includes all the cells in row r and the columns connected via row r.
+
+But to calculate this, perhaps for each row r, we can find the maximum connected component that can be formed by merging row r with the connected regions in the columns adjacent to it.
+
+Wait, but that's not straightforward. Maybe a better approach is to model the impact of each row and column on the connected components.
+
+Another idea: the total connected component after turning row r into all '#' is equal to the size of the connected component that includes all the cells in row r and the columns that are connected to the cells in row r. So, for each row r, the new connected component is formed by all the cells in row r and the connected regions to the left, right, top, and bottom that are connected via row r.
+
+Wait, but the rows and columns are connected if their cells are adjacent. So, for example, when you turn row r into all '#', any cell in row r is connected to the cells in row r-1, r+1, etc., and to the cells in the same column in columns r-1, r+1, etc. So, the connected component could include a lot of columns.
+
+So, the plan is:
+
+For each row r:
+
+1. Compute the number of '#'s in row r. Let's call this s_r.
+
+2. For each column c, compute the number of '#'s in column c. Let's call this s_c.
+
+3. Now, when we turn row r into all '#', the connected component will consist of all the cells in row r (s_r) plus any cells in columns that are connected to row r via the '#'s in the same row.
+
+So, to find the size of this new connected component, we can model it as:
+
+- All '#'s in row r.
+
+- All '#'s in columns that are connected to row r via their cells in row r.
+
+But how do we find the connected regions in the columns connected to row r?
+
+Wait, maybe for each row r, the new connected component is the size of the union of row r and all the connected regions in columns that are connected to any cell in row r.
+
+But that might not capture all the connectedness. Hmm.
+
+Alternatively, perhaps for each row r, the new connected component is the size of the union of row r and all the connected regions in the columns that are connected via the row. So, to find this, for each row r, we can:
+
+- Find all the connected regions in the columns that are connected to any cell in row r.
+
+- Add the size of row r, plus the sizes of these connected regions.
+
+But how to compute this?
+
+Wait, perhaps for each row r, the new connected component can be found by:
+
+- The size of row r's connected component (which is s_r).
+
+- Plus the size of the connected component in the same column blocks, i.e., the connected component in the columns that are connected via row r.
+
+Wait, perhaps another approach: For each row r, the new connected component will be the union of row r and all the connected components in the same columns that are connected via row r.
+
+So, for each row r, we can:
+
+1. Compute the size of row r's connected component (s_r).
+
+2. For each column c, determine if any cell in row r is connected to it. If a cell in row r is turned into '#', then all the connected '#'s in column c that are reachable via row r's cells are connected.
+
+Wait, but this might not be accurate because the connectedness across columns is based on the entire grid. Turning row r into '#' could connect multiple columns into a single connected component.
+
+Hmm, perhaps the correct approach is to model the new connected component as the union of the row r and the connected regions in the columns that are connected via row r. So, for each row r, the new connected component is the sum of s_r and the connected regions in the columns that are connected to any cell in row r.
+
+But how do we compute this?
+
+Maybe for each row r, the new connected component can be found by:
+
+- The size of the connected component that includes all the cells in row r and the connected regions in the columns that are connected via row r.
+
+So, to compute this, for each row r:
+
+- Find all the connected regions in the columns that are connected to row r, i.e., the regions that can be reached by moving through '#'s in row r.
+
+Wait, but row r is a row, so for each cell in row r, if it's a '#', then it connects to all the '#'s in the same column that are connected via row r.
+
+So, perhaps for each row r, the new connected component is the size of the union of row r and the connected regions in the columns that are connected to any cell in row r.
+
+But how to compute this.
+
+Alternatively, perhaps the maximum possible connected component when turning row r into all '#' is the size of the connected component in the grid that includes all the cells in row r and all the cells in the columns that are connected to row r via row r.
+
+Wait, that's a bit vague.
+
+Wait, perhaps for each row r, the new connected component is the size of the union of row r and all the connected regions in the columns that are connected to row r. So, the size can be computed as s_r plus the sum of the sizes of the connected regions in columns connected via row r.
+
+But how do we find the connected regions in columns connected via row r?
+
+Hmm.
+
+Alternatively, perhaps for each row r, the new connected component is the size of the connected component that includes all the cells in row r, plus the cells in the same columns connected via row r.
+
+Wait, maybe the problem is similar to when you turn a row into all '#'s, you connect all the '#'s in that row to the columns. So, for each row r, the new connected component is the size of the connected component that includes all the '#'s in row r, and any '#'s in columns that are connected via row r.
+
+But how to model this.
+
+Wait, perhaps another approach: the connected component after turning row r into all '#'s is the size of the connected component that includes row r and any connected regions in the columns connected via row r.
+
+So, for each row r, the maximum connected component size is s_r plus the sum of the connected regions in the columns connected via row r.
+
+But how to compute this.
+
+Alternatively, perhaps for each row r, the maximum connected component is the size of the union of row r and all columns that are connected via row r.
+
+Wait, but that's not necessarily correct, because the columns could be connected via other rows.
+
+Hmm, this is getting complicated.
+
+Wait, maybe think of the problem as follows:
+
+After turning row r into all '#', the grid's connected components are the union of the cells in row r and any cells in the same column groups connected via row r.
+
+So, for each row r, the new connected component is the size of the connected component that includes all the cells in row r and any cells in the columns that are connected to the cells in row r via row r.
+
+So, for each row r, the new connected component size is the size of the connected component that includes all cells in row r and the connected regions in the columns connected via row r.
+
+But how to compute this.
+
+Wait, perhaps for each row r, the new connected component size is the size of the connected component in the grid that includes all cells in row r and any cells in the columns connected via row r.
+
+So, for each row r, the maximum size is:
+
+size = s_r + connected_components_in_columns.
+
+But how do we compute the connected_components_in_columns.
+
+Alternatively, perhaps for each row r, the connected component is the size of the connected component that includes all the cells in row r and all the columns connected to row r via row r.
+
+Wait, perhaps the way to compute this is to find all the columns that are connected to row r via row r, and then compute the connected component size in those columns.
+
+Wait, perhaps for each row r, the connected component after turning it into all '#' is the size of the connected component that includes all the cells in row r and all the cells in the columns that are connected to row r via row r.
+
+So, for each row r, the size is:
+
+s_r + (connected component size in the columns connected via row r).
+
+But how to compute the connected component size in the columns.
+
+Wait, maybe the columns that are connected via row r form a single block, and the size of that block is the size of the connected component in the columns.
+
+But how to find that.
+
+Alternatively, perhaps for each row r, the columns that are connected via row r are the columns that are in the same connected component as any cell in row r.
+
+So, for each row r, the connected component in the columns is the size of the connected component in the entire grid that includes row r.
+
+Wait, but that's not correct because turning row r into '#' will connect the columns to row r's cells.
+
+So, perhaps the connected component after turning row r into all '#' is the size of the connected component in the grid that includes row r and all the cells in the columns connected via row r.
+
+But again, how to compute this.
+
+Hmm, perhaps the way to approach this is:
+
+For each row r, the maximum possible connected component after turning it into all '#' is the size of the connected component that includes row r and any other cells in the same column groups connected via row r.
+
+So, for row r, the new connected component can be found by:
+
+1. Find all the cells in row r that are '#', adding s_r to the initial count.
+
+2. For each column c, if there's a cell in row r that is '#', then the column c is connected to row r. So, all the cells in column c that are connected via row r (i.e., reachable via row r's cells) are connected.
+
+3. So, for each row r, the new connected component size is the size of the connected component that includes all the cells in row r and all the cells in columns connected via row r.
+
+So, to compute this, perhaps for each row r, the new connected component size is s_r plus the size of the union of all the connected regions in the columns connected via row r.
+
+But how to compute this.
+
+Wait, perhaps the connected components in the columns connected via row r can be found by:
+
+- For each cell in row r that is '#', find all the connected regions in column c, but only those connected through row r.
+
+Wait, that's a bit messy.
+
+Alternatively, perhaps for each row r, the new connected component is the size of the connected component that includes all the cells in row r and any cells in the columns connected to row r via row r.
+
+So, to compute this, for each row r, the maximum connected component is the size of the connected component that includes all the cells in row r and any cells in the same connected components of columns connected via row r.
+
+So, how to find the connected regions in the columns connected via row r.
+
+Wait, perhaps for each row r, the connected component is the size of the union of the cells in row r and all the other cells in the same connected components of columns connected via row r.
+
+So, for each row r, the maximum connected component after turning it into all '#' is:
+
+size = s_r + (the size of the connected component in the grid including row r and the columns connected via row r).
+
+But how to compute this.
+
+Wait, perhaps the way to do it is for each row r, the maximum connected component is the size of the connected component that includes all the cells in row r and any cells in the columns connected via row r.
+
+So, for each row r, the new connected component is the size of the connected component of the row r and the connected regions in the columns connected via row r.
+
+So, perhaps for each row r, we can:
+
+- Find all the connected regions in the columns that are connected via row r.
+
+- The size of the connected component for row r is s_r plus the sum of the sizes of these connected regions.
+
+But how.
+
+Another Idea:
+
+For each row r:
+
+1. The row r contributes s_r to the connected component.
+
+2. For each column c, if any cell in row r is '#', then the column c is connected to row r. So, the columns connected via row r form a block. So, all the cells in these columns that are connected via row r form a single connected region.
+
+3. So, the connected region in the columns connected via row r is the size of the connected component that includes all the cells in row r and all the cells in the columns connected via row r.
+
+So, the size of the connected component after turning row r into all '#' is s_r plus the size of this connected region.
+
+But how to find this.
+
+Wait, perhaps for each row r, the connected component after turning it into all '#' is the size of the connected component that includes all the cells in row r and any cells in the columns connected via row r.
+
+So, for each row r, the new connected component is:
+
+size = s_r + (size of the connected component in the columns connected via row r).
+
+But how to compute this.
+
+Wait, perhaps for each row r, the columns connected via row r form a single block, and the size of this block is the size of the connected component in the entire grid that includes row r.
+
+So, for each row r, the maximum connected component after turning it into all '#' is:
+
+size = s_r + (size of the connected component in the grid that includes row r).
+
+But wait, that's not correct because the connected component in the grid that includes row r is the same as the connected component that includes all the cells in row r and the columns connected via row r.
+
+So, for each row r, the new connected component is s_r plus the size of the connected component in the grid that includes row r.
+
+Wait, no, because the connected component in the grid that includes row r is the union of row r and the connected regions in the columns connected via row r.
+
+So, for each row r, the new connected component is s_r plus the size of the connected component in the grid that includes row r.
+
+But how to compute the connected component in the grid that includes row r.
+
+Wait, perhaps for each row r, the connected component is the size of the connected component that includes row r and all the connected regions in the columns connected via row r.
+
+Which is the same as s_r plus the size of the connected component in the grid that includes row r.
+
+Wait, perhaps not. Because the connected component in the grid that includes row r is the union of row r and all the connected regions in the columns connected via row r.
+
+So, for each row r, the new connected component is s_r plus the size of the connected component in the grid that includes row r.
+
+Wait, that makes sense.
+
+For example, if row r is all '#'s, then s_r is n, and the connected component is n.
+
+But that can't be right because the connected component is the entire row and the other connected regions in the columns.
+
+Wait, no, because turning the entire row into '#' would connect all the cells in that row to the columns. So, the connected component would be the row plus all the columns that are connected via row r.
+
+Wait, no, because in the grid, columns are connected if their cells are adjacent. So, for each row r, the connected component is the union of row r and any columns that are connected via row r.
+
+So, the connected component size is s_r + the size of the connected component in the grid that includes row r.
+
+But how to find the size of the connected component in the grid that includes row r.
+
+Wait, perhaps for each row r, the connected component is the size of the connected component that includes row r, which is the entire connected component in the grid that includes row r.
+
+So, for each row r, the new connected component is s_r plus the size of the connected component in the grid that includes row r.
+
+Wait, that seems correct.
+
+So, for each row r, the maximum possible connected component after turning it into all '#' is s_r plus the size of the connected component that includes row r.
+
+Similarly, for each column c, the maximum possible connected component after turning it into all '#' is s_c plus the size of the connected component in the grid that includes column c.
+
+Wait, but what's the connected component in the grid that includes row r?
+
+It's the connected component that includes all the cells in row r. So, for each row r, we can find the size of the connected component that includes row r.
+
+But how to compute this.
+
+Wait, perhaps for each row r, the connected component is the size of the connected component in the entire grid that includes row r.
+
+So, for each row r, the connected component size is the size of the connected component in the grid that includes row r.
+
+So, the maximum connected component after turning row r into all '#'s is s_r + (size of connected component in the grid that includes row r).
+
+But how to compute this.
+
+Hmm.
+
+So, perhaps the approach is:
+
+1. For each test case, process the grid.
+
+2. For each row r, compute the size of the connected component that includes row r. Let this be comp_r.
+
+3. The maximum connected component after turning row r into all '#'s is s_r + comp_r.
+
+4. Similarly, compute for each column c, the size of the connected component that includes column c. Let this be comp_c.
+
+5. The maximum connected component after turning column c into all '#'s is s_c + comp_c.
+
+6. The overall maximum is the maximum of all these values, including the original grid's maximum connected component.
+
+Wait, but wait. For each row r, the connected component size after turning it into all '#'s is s_r plus the size of the connected component in the grid that includes row r.
+
+But how to find the size of the connected component in the grid that includes row r.
+
+Ah, because when you turn row r into all '#', the connected components in the grid that were previously disconnected from row r are now connected through row r.
+
+So, for row r, the connected component after turning it into all '#'s is the union of row r and all the connected regions in the columns that are connected via row r.
+
+Which is the same as the size of the connected component in the grid that includes row r.
+
+So, for each row r, the new connected component after turning it into all '#'s is s_r + (size of the connected component in the grid that includes row r).
+
+But how to compute this.
+
+Wait, perhaps for each row r, the connected component in the grid that includes row r is the size of the connected component that starts from row r and connects all the cells in row r and any connected regions in the columns.
+
+So, how to compute this.
+
+Wait, perhaps for each row r, the connected component is the size of the connected component that can be reached from row r by moving through '#'s.
+
+So, for each row r, the connected component can be found using BFS or DFS, starting from row r, and including all the connected regions.
+
+So, the plan is:
+
+For each row r:
+
+- Perform a BFS starting from all cells in row r that are '#', traversing through all connected cells in the grid.
+
+- The size of this connected component is the size of the connected component that includes row r.
+
+- Then, the new connected component size is s_r + this size.
+
+Similarly, for each column c:
+
+- Perform a BFS starting from all cells in column c that are '#', traversing through all connected cells in the grid.
+
+- The size of this connected component is the size of the connected component that includes column c.
+
+- The new connected component size is s_c + this size.
+
+Then, the maximum of all these possibilities is the answer.
+
+Wait, but what about the original grid? Because when you don't perform any operation, the connected component is the maximum of all these possibilities.
+
+So, the steps are:
+
+1. For each test case, read the grid.
+
+2. For each row r, compute the size of the connected component that includes row r. Let this be comp_r.
+
+3. The candidate for turning row r into all '#' is s_r + comp_r.
+
+4. For each column c, compute the size of the connected component that includes column c. Let this be comp_c.
+
+5. The candidate for turning column c into all '#' is s_c + comp_c.
+
+6. The maximum of all these candidates, including the original maximum connected component, is the answer.
+
+Wait, but step 2 and 4 are expensive. Because for each row and column, performing a BFS is O(n*m), which for 1e6 is manageable, but for t=1e4 and sum n*m=1e6, it's 1e6 * 2 * O(nm) which is 2e12 operations, which is way too slow.
+
+So, that approach is not feasible.
+
+Hmm, this is a problem. So, I need a more efficient approach.
+
+Alternative Idea:
+
+Wait, perhaps the connected component that includes row r is the same as the connected component that includes all the cells in row r and any connected regions in the columns connected via row r.
+
+So, for each row r, the size of the connected component is the size of the connected component that can be reached by starting at row r and moving through '#'s.
+
+So, for each row r, the connected component size is the size of the connected component that includes row r.
+
+But how to compute this for all rows and columns efficiently.
+
+Wait, perhaps if I can precompute for each cell whether it's in a connected component that can be connected via a row or a column.
+
+Alternatively, perhaps for each cell, determine if it's part of a connected component that is connected via a row. Then, for each row r, the connected component is the size of the union of row r and the connected regions in the columns connected via row r.
+
+But I'm not sure.
+
+Another Idea: For each row r, the connected component size after turning it into all '#'s is s_r plus the size of the connected component in the grid that includes row r.
+
+But how to compute the size of the connected component that includes row r.
+
+Wait, perhaps for each row r, the connected component is the size of the connected component that includes row r.
+
+So, perhaps the approach is:
+
+- For each row r, perform a BFS starting from the cells in row r, and compute the size of the connected component that includes row r. Let this be comp_r.
+
+- Similarly, for each column c, perform a BFS starting from the cells in column c, compute the size of the connected component that includes column c. Let this be comp_c.
+
+- Then, for each row r, the candidate is s_r + comp_r.
+
+- For each column c, the candidate is s_c + comp_c.
+
+- The maximum of all these is the answer.
+
+But this approach is O(2 * t * (n + m)) which is 2*1e6 * (1e6 + 1e6) = 2e12 operations, which is way too slow.
+
+So, this is not feasible.
+
+Hmm, alternative Idea:
+
+Wait, perhaps the connected component after turning a row into all '#'s is equal to the size of the connected component that includes row r and all the connected regions in the columns connected via row r.
+
+Which can be computed as the size of the connected component that includes row r, which is the same as the size of the connected component in the grid that includes row r.
+
+But how to compute this for all rows and columns efficiently.
+
+Wait, perhaps for each row r, the connected component size is the size of the connected component that is the union of row r and all the connected regions in the columns connected via row r.
+
+So, perhaps for each row r, the connected component is the size of the connected component in the grid that includes row r.
+
+But how to compute this.
+
+Wait, perhaps we can represent the grid as a graph where each cell is a node, and edges exist between adjacent cells that are both '#'. Then, for each row r, the connected component is the size of the connected component that includes row r.
+
+The same for each column c.
+
+But computing connected components for each row and column is expensive.
+
+Alternative Idea:
+
+Let me consider that when I turn a row into all '#', the connected component is the set of all cells in that row, plus any cells in the same column that are connected via other rows.
+
+So, for each row r, the connected component is the size of the connected component that includes row r, which is the same as the size of the connected component that includes all cells in row r and any cells in the same column group connected via row r.
+
+So, for each row r, the connected component is the size of the connected component in the grid that includes row r.
+
+So, the problem reduces to finding, for each row r, the size of the connected component that includes row r.
+
+Similarly for each column c.
+
+So, the next question is: how to compute, for each row r, the size of the connected component that includes row r.
+
+To compute this, perhaps we can precompute for each row r, the size of the connected component that is connected through row r.
+
+But how.
+
+Wait, perhaps for each row r:
+
+- The connected component includes all cells in row r, and any cells in columns that are connected via row r.
+
+So, the connected component can be found by:
+
+- Start from all cells in row r that are '#'.
+
+- Then, for each cell in row r, perform a BFS or DFS to find all connected cells, including those in columns connected via row r.
+
+So, for row r, the connected component size is the size of this connected region.
+
+But the problem is that for each row, this could take O(m) time, which is too slow.
+
+So, perhaps, we can find a way to compute this more efficiently.
+
+Alternative Idea:
+
+For each row r, the connected component size after turning all cells in row r into '#' is equal to the size of the connected component in the grid, considering that row r is fully connected.
+
+So, the connected component size is the size of the connected component that can be reached by moving through '#'s, starting from row r.
+
+So, for each row r, perhaps the connected component is the size of the connected component that can be reached from row r.
+
+So, for each row r, the connected component is the size of the connected component that includes row r.
+
+But how to compute this.
+
+Wait, perhaps for each row r, the connected component is the same as the connected component in the grid that is connected via row r.
+
+So, perhaps, the connected component size is the size of the connected component that includes row r, which can be found by:
+
+For each row, perform a BFS starting from all cells in that row, and compute the size of the connected component.
+
+But for 1e6 cells, this is O(n*m) per row, which is 1e12 operations, which is impossible.
+
+Hmm.
+
+Alternative Idea:
+
+Perhaps, for each row r, the connected component is the size of the grid's connected component that can be reached by moving through '#'s in the grid, starting from row r.
+
+So, perhaps the connected component size for row r is the size of the connected component that includes row r.
+
+So, to compute this, perhaps we can find the connected component that includes row r and all the connected regions in the columns connected via row r.
+
+But again, it's unclear.
+
+Wait, perhaps the way to find the connected component after turning row r into all '#'s is as follows:
+
+The connected component is the size of the connected component that includes row r and any connected regions in the columns connected via row r.
+
+So, the connected component is the union of row r and any cells in columns connected via row r.
+
+So, perhaps the connected component can be found by:
+
+- Starting from all cells in row r that are '#'.
+
+- Then, for each cell in row r, look in all four directions (up, down, left, right) to find connected cells.
+
+- For each connected cell, add it to the connected component.
+
+- Continue until all connected cells are added.
+
+So, for each row r, the connected component is the size of this connected region.
+
+But again, this is O(n*m) per row, which is too slow.
+
+Hmm.
+
+Alternative Idea:
+
+Wait, perhaps the connected component size after turning row r into all '#'s is equal to the size of the connected component that includes row r.
+
+So, for each row r, the connected component size is the size of the connected component in the grid that includes row r.
+
+So, the maximum possible connected component after turning the row is s_r plus the size of the connected component that includes row r.
+
+But how to compute this.
+
+Wait, perhaps the connected component that includes row r is the same as the connected component that includes all the cells in row r and any cells in the same column group connected via row r.
+
+So, perhaps, for each row r, the connected component size is the size of the connected component in the grid that includes row r.
+
+So, the problem is to compute, for each row r, the size of the connected component in the grid that includes row r.
+
+Similarly, for each column c, compute the size of the connected component that includes column c.
+
+But how.
+
+Wait, perhaps we can model the grid as a graph where each cell is a node, and edges exist between adjacent cells that are both '#'s.
+
+Then, for each row r, the connected component size is the size of the connected component that includes all the cells in row r.
+
+But wait, the connected component in the grid that includes row r is the same as the connected component that starts at row r.
+
+Hmm.
+
+So, perhaps, for each row r, the connected component size is the size of the connected component that includes row r.
+
+So, the way to compute this is for each row r, perform a BFS or DFS starting from all cells in row r, and compute the size of the connected component.
+
+But again, this is O(n * m) per row, which is too slow.
+
+Hmm.
+
+Another Idea: Since the connected components are based on adjacent '#'s, perhaps the connected component that includes row r is the same as the connected component that includes any cell in row r.
+
+So, for each row r, the connected component size is the size of the connected component that includes any cell in row r.
+
+Wait, that makes sense. Because turning row r into all '#'s connects all the cells in row r to the rest of the grid.
+
+So, perhaps the connected component size after turning row r into all '#'s is the size of the connected component in the grid that includes any cell in row r.
+
+So, the approach is:
+
+- For each test case, compute the size of the connected component in the grid, but only including the rows that have at least one cell.
+
+- Then, for each row r, the candidate is s_r + (size of the connected component in the grid that includes row r).
+
+- For each column c, the candidate is s_c + (size of the connected component in the grid that includes column c).
+
+- The maximum of all these candidates, including the original maximum connected component, is the answer.
+
+Wait, but how to compute the size of the connected component in the grid that includes row r.
+
+Wait, perhaps the connected component that includes row r is the same as the connected component that includes any cell in row r.
+
+So, for each row r, the connected component size is the size of the connected component in the grid that includes any cell in row r.
+
+But how to compute this.
+
+Wait, perhaps the connected component that includes any cell in row r is the same as the size of the connected component that is connected via row r.
+
+So, perhaps, the connected component that includes row r is the size of the connected component in the entire grid that is connected through row r.
+
+But I'm not sure.
+
+Alternatively, perhaps the connected component that includes row r is the size of the connected component in the grid that is connected via row r.
+
+So, to compute this, perhaps for each row r, the connected component size is the size of the connected component that is reachable from row r.
+
+So, for example, for row r, the connected component is the union of row r and any connected regions in the columns connected via row r.
+
+So, the connected component can be found by BFS starting from row r and all the cells in row r that are '#'.
+
+So, the plan is:
+
+For each test case:
+
+1. Read the grid.
+
+2. Precompute for each cell, whether it's part of a connected component that can be connected via a row.
+
+3. For each row r, compute the size of the connected component that includes row r.
+
+4. For each column c, compute the size of the connected component that includes column c.
+
+5. The maximum of all these is the answer.
+
+But how to compute this.
+
+Wait, perhaps the connected component that includes row r is the size of the connected component that can be reached by moving through '#'s from row r.
+
+So, for each row r, the connected component size is the size of the connected region starting from row r.
+
+So, for each row r, perform a BFS starting from all cells in row r that are '#', and compute the size of the connected component.
+
+But with t=1e4 and n=1e3, this is 1e3 * 1e3 = 1e6 operations, which is manageable.
+
+But for each row, this could be 1e3 steps, so 1e6 * 1e3 = 1e9 steps, which is way too slow.
+
+Hmm, that's a problem.
+
+So, perhaps, this approach is not feasible.
+
+Alternative Idea:
+
+Wait, but for each row r, the connected component size after turning it into all '#'s is s_r plus the size of the connected component in the grid that includes row r.
+
+But perhaps, for each row r, the connected component that includes row r is the same as the size of the connected component that includes any cell in row r.
+
+So, the maximum connected component after turning row r into all '#'s is s_r plus the size of the connected component in the grid that includes row r.
+
+So, the maximum connected component after turning row r is s_r plus the size of the connected component in the grid that includes row r.
+
+But how to compute the size of the connected component that includes row r.
+
+Wait, perhaps the connected component that includes row r is the same as the size of the connected component that includes any cell in row r.
+
+So, for row r, the connected component size is s_r plus the size of the connected component in the grid that includes any cell in row r.
+
+But again, how to compute this.
+
+Wait, perhaps the connected component that includes any cell in row r is the same as the connected component that includes row r.
+
+So, the connected component size for row r is s_r plus the size of the connected component that includes row r.
+
+But I'm stuck.
+
+Alternative Idea

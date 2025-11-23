@@ -1,0 +1,91 @@
+0
+\frac{3\pi}{4} \text{ and } \frac{\pi}{4}
+Okay, so I need to find the angles at which the parabola \( y = x^2 - x \) intersects the x-axis. Hmm, let me think about how to approach this step by step.
+
+First, I remember that to find where a parabola intersects the x-axis, I need to find the roots of the equation. The x-intercepts are the points where \( y = 0 \). So, I'll set \( y = 0 \) and solve for \( x \).
+
+Starting with the equation:
+\[ 0 = x^2 - x \]
+
+I can factor this equation. Let me see, both terms have an \( x \), so I'll factor that out:
+\[ 0 = x(x - 1) \]
+
+Now, according to the zero product property, if the product of two factors is zero, then at least one of the factors must be zero. So, I can set each factor equal to zero:
+1. \( x = 0 \)
+2. \( x - 1 = 0 \) which means \( x = 1 \)
+
+So, the parabola intersects the x-axis at \( x = 0 \) and \( x = 1 \). Therefore, the points of intersection are \( (0, 0) \) and \( (1, 0) \).
+
+Wait, but the question mentions "angles at which the parabola intersects the x-axis." I'm a bit confused here. Angles aren't something parabolas have, unless we are talking about the angles between the parabola and the x-axis at those points.
+
+Oh, I think that's right. So, I need to find the angles between the parabola and the x-axis at the points of intersection. That means I need to find the angle each tangent to the parabola makes with the x-axis at those points.
+
+Alright, to find the angle between two lines, we can use the formula involving their slopes. If we have two lines with slopes \( m_1 \) and \( m_2 \), the angle \( \theta \) between them is given by:
+\[ \tan \theta = \left| \frac{m_2 - m_1}{1 + m_1 m_2} \right| \]
+
+So, first, I need to find the slope of the tangent to the parabola at each point of intersection.
+
+The parabola is given by \( y = x^2 - x \). To find the slope of the tangent at any point \( x \), I'll take the derivative of \( y \) with respect to \( x \):
+\[ \frac{dy}{dx} = 2x - 1 \]
+
+So, the slope \( m \) at any point \( x \) is \( 2x - 1 \).
+
+Now, I need to evaluate this derivative at the points \( x = 0 \) and \( x = 1 \) to find the slopes of the tangents at those points.
+
+At \( x = 0 \):
+\[ m = 2(0) - 1 = -1 \]
+
+At \( x = 1 \):
+\[ m = 2(1) - 1 = 1 \]
+
+So, the slopes of the tangents at the points of intersection are \( -1 \) and \( 1 \) respectively.
+
+Now, I'll use the formula for the angle between two lines to find the angles \( \theta \) at each point.
+
+Starting with \( x = 0 \), where the slope is \( -1 \).
+
+Using the formula:
+\[ \tan \theta = \left| \frac{m_2 - m_1}{1 + m_1 m_2} \right| \]
+
+Here, \( m_1 = -1 \) and \( m_2 = 1 \) (since we're comparing the tangent at this point to the x-axis, which has an undefined slope, but we can consider the x-axis as having a slope of 0 in this context).
+
+Wait, actually, I think I need to be careful here. The x-axis itself has a slope of 0, but the tangent at \( x = 0 \) has a slope of \( -1 \). So, the angle between the tangent at \( x = 0 \) and the x-axis (slope 0) can be found using:
+\[ \tan \theta = | \frac{m_{\text{tangent}} - m_{\text{x-axis}}}{1 + m_{\text{tangent}} \cdot m_{\text{x-axis}}} | \]
+But since \( m_{\text{x-axis}} = 0 \), this simplifies to:
+\[ \tan \theta = | \frac{m_{\text{tangent}} - 0}{1 + 0} | = |m_{\text{tangent}}| \]
+
+So, for \( x = 0 \), \( m = -1 \), so:
+\[ \tan \theta = | -1 | = 1 \]
+Thus, \( \theta = \arctan(1) \). I know that \( \arctan(1) \) is \( 45^\circ \) or \( \frac{\pi}{4} \) radians.
+
+Now, moving to \( x = 1 \), where the slope is \( 1 \).
+
+Again, using the same formula, but this time, the tangent is making an angle with the x-axis. So, the slope is \( 1 \), and the x-axis has a slope of 0. Therefore:
+\[ \tan \theta = | \frac{1 - 0}{1 + 1 \cdot 0} | = | \frac{1}{1} | = 1 \]
+So, \( \theta = \arctan(1) = 45^\circ \) or \( \frac{\pi}{4} \) radians.
+
+Wait, hold on. At \( x = 0 \), the slope is negative, which means the tangent is going downwards from the point \( (0, 0) \) to the right. But the angle between the tangent and the x-axis would still be measured as the smallest angle, which is \( 45^\circ \) regardless of the direction. Similarly, at \( x = 1 \), the tangent is going upwards to the right, making a \( 45^\circ \) angle with the x-axis.
+
+So, both points of intersection have tangents making \( 45^\circ \) angles with the x-axis.
+
+Therefore, the angles at which the parabola intersects the x-axis are both \( 45^\circ \).
+
+I think that makes sense. Let me just recap the steps to make sure I didn't make any mistakes.
+
+1. Found the roots of \( y = x^2 - x \) by setting \( y = 0 \), leading to \( x = 0 \) and \( x = 1 \).
+2. Calculated the derivatives to find the slopes of the tangents at these points: \( m = 2x - 1 \), resulting in \( m = -1 \) at \( x = 0 \) and \( m = 1 \) at \( x = 1 \).
+3. Used the tangent formula between two lines (one with slope \( m \) and the other with slope 0) to find the angles each tangent makes with the x-axis.
+4. Both angles turned out to be \( 45^\circ \).
+
+I don't see any errors in this reasoning. So, the final answer should be that both angles are \( 45^\circ \).
+</think>
+
+The parabola \( y = x^2 - x \) intersects the x-axis at \( (0, 0) \) and \( (1, 0) \). To find the angles between the tangents at these points and the x-axis, we first compute the derivatives:
+
+- At \( x = 0 \), \( \frac{dy}{dx} = -1 \)
+- At \( x = 1 \), \( \frac{dy}{dx} = 1 \)
+
+Using the formula for the angle between two lines, we find that both tangents make \( 45^\circ \) with the x-axis.
+
+**Final Answer:**
+\boxed{45^\circ}<｜end▁of▁sentence｜>

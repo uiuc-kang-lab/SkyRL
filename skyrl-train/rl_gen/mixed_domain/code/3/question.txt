@@ -1,0 +1,40 @@
+<｜begin▁of▁sentence｜><｜User｜>
+[NightHawk22 - Isolation](https://soundcloud.com/vepium/nighthawk22-isolation- official-limbo-remix)
+
+⠀
+
+This is the medium version of the problem. In the three versions, the constraints on $n$ and the time limit are different. You can make hacks only if all the versions of the problem are solved.
+
+This is the statement of Problem D1B:
+
+  * There are $n$ cities in a row, numbered $1, 2, \ldots, n$ left to right.     * At time $1$, you conquer exactly one city, called the starting city.      * At time $2, 3, \ldots, n$, you can choose a city adjacent to the ones conquered so far and conquer it. 
+
+You win if, for each $i$, you conquer city $i$ at a time no later than $a_i$. A winning strategy may or may not exist, also depending on the starting city. How many starting cities allow you to win?
+
+For each $0 \leq k \leq n$, count the number of arrays of positive integers $a_1, a_2, \ldots, a_n$ such that
+
+  * $1 \leq a_i \leq n$ for each $1 \leq i \leq n$;    * the answer to Problem D1B is $k$. 
+
+The answer can be very large, so you have to calculate it modulo a given prime $p$.
+
+Input Format:
+Each test contains multiple test cases. The first line contains the number of test cases $t$ ($1 \le t \le 500$). The description of the test cases follows.
+
+The only line of each test case contains two integers $n$, $p$ ($1 \le n \le 500$, $10^8 \leq p \leq 10^9$, $p$ is prime) — the number of cities and the modulo.
+
+It is guaranteed that the sum of $n$ over all test cases does not exceed $500$.
+
+Output Format:
+For each test case, output $n+1$ integers: the $i$-th integer should be the number of arrays that satisfy the conditions for $k = i-1$.
+
+Tags:
+['dp', 'greedy', 'math']
+
+Time Limit: 10000 ms
+Memory Limit: 1024 MB
+
+Write Python code to solve the problem. Present the code in
+```python
+Your code
+```
+at the end.<｜Assistant｜><think>

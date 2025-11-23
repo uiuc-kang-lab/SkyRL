@@ -1,0 +1,125 @@
+0
+2; \dfrac {5}{9}
+Okay, so I have this function f(x) defined piecewise. It's 3x - 1 when x is less than 1, and 2^x when x is greater than or equal to 1. The problem has two parts: first, I need to find f(f(2/3)), and second, I need to find the value of a such that f(f(a)) = 1.
+
+Let me start with the first part: finding f(f(2/3)). Hmm, okay, so I need to evaluate the function f at 2/3 first, and then use that result to evaluate f again.
+
+So, let's see, 2/3 is less than 1, right? Because 2/3 is approximately 0.666, which is less than 1. So, according to the function definition, when x < 1, f(x) is 3x - 1. So, f(2/3) should be 3*(2/3) - 1. Let me calculate that: 3*(2/3) is 2, and then minus 1 is 1. So, f(2/3) equals 1.
+
+Now, I need to find f(f(2/3)) which is f(1). Because f(2/3) is 1, so now I need to find f at 1. Hmm, now I need to check the conditions for f(x) at x = 1. The function is defined as 2^x when x >= 1, and 3x - 1 when x < 1. So, since 1 is greater than or equal to 1, we use the second case, which is 2^x. So, f(1) is 2^1, which is 2.
+
+So, f(f(2/3)) is 2. That seems straightforward enough.
+
+Now, the second part: finding the value of a such that f(f(a)) = 1. Hmm, this is a bit more complex. I need to find a value a where if I apply f twice, I get 1.
+
+Let me break this down. Let me first denote f(f(a)) as y, so y = 1. Now, I need to find a such that f(f(a)) = 1.
+
+To find a, I might need to work backwards. Let me first think about what values of x would make f(x) = 1. Because if f(f(a)) = 1, then f(a) must be a value that maps to 1 under f.
+
+So, let me first find all x such that f(x) = 1. Because if f(a) is such that f(f(a)) = 1, then f(a) must be a solution to f(x) = 1.
+
+So, let me solve f(x) = 1.
+
+Again, f(x) is piecewise, so I need to consider both cases.
+
+Case 1: x < 1. Then f(x) = 3x - 1. So, set 3x - 1 = 1. Solving for x: 3x = 2, so x = 2/3. Now, check if this is less than 1: 2/3 is approximately 0.666, which is less than 1, so this is a valid solution.
+
+Case 2: x >= 1. Then f(x) = 2^x. Set 2^x = 1. Solving for x: 2^x = 1. Since 2^0 = 1, so x = 0. But wait, in this case, x >= 1, so x = 0 is not in the domain of this case. Therefore, there is no solution in this case.
+
+So, the only solution to f(x) = 1 is x = 2/3.
+
+Now, going back to f(f(a)) = 1. This means that f(a) must be either 2/3 or something else that maps to 1 under f.Wait, no, because from the above, the only x that maps to 1 is x = 2/3. So, f(a) must be 2/3.
+
+So, now I need to find all a such that f(a) = 2/3.
+
+Again, let me solve f(a) = 2/3.
+
+Again, f(a) is piecewise, so I need to consider both cases.
+
+Case 1: a < 1. Then f(a) = 3a - 1. Set this equal to 2/3: 3a - 1 = 2/3. Solving for a: 3a = 2/3 + 1 = 2/3 + 3/3 = 5/3. So, a = (5/3)/3 = 5/9. Now, check if this is less than 1: 5/9 is approximately 0.555, which is less than 1, so this is valid.
+
+Case 2: a >= 1. Then f(a) = 2^a. Set this equal to 2/3: 2^a = 2/3. Now, 2^a is always positive, but 2/3 is less than 1. So, 2^a = 2/3. Taking logarithms: a = log2(2/3). Now, log2(2/3) is negative because 2/3 is less than 1. But in this case, a >= 1, so this solution is not valid because a would be negative, which is less than 1.
+
+Therefore, the only solution is a = 5/9.
+
+Wait, let me double-check. So, f(a) = 2/3. If a < 1, then f(a) = 3a - 1 = 2/3, which gives a = 5/9, which is valid. If a >= 1, then f(a) = 2^a = 2/3, which would require a to be negative, which is not possible. So, indeed, the only solution is a = 5/9.
+
+But wait, let me think again. Is there any other possibility? Because sometimes when solving piecewise functions, there might be multiple solutions or cases to consider.
+
+In this case, for f(a) = 2/3, we have two cases: a < 1 and a >= 1. Only the first case gives a valid solution, while the second case gives an invalid solution. So, yes, a = 5/9 is the only solution.
+
+Wait, but let me think about it differently. Maybe there's another way to approach this. Because sometimes when you have nested functions, there might be multiple paths.
+
+But in this case, since we are strictly working backwards, and each step leads to a unique solution, I think it's correct.
+
+So, to summarize:
+
+First part: f(f(2/3)) = f(1) = 2.
+
+Second part: f(f(a)) = 1 implies f(a) = 2/3, which implies a = 5/9.
+
+So, the answers are 2 and 5/9.
+
+Let me just write them in LaTeX format as requested: \boxed{2} and \boxed{\dfrac{5}{9}}.
+
+Wait, but the problem asks to present the answer in one box. Hmm, perhaps I need to combine both answers in one box, separated by commas or something. Let me check the format again.
+
+The user instructions say: "present the answer in LaTex format: \boxed{Your answer}". So, perhaps I need to put both answers in one box, separated by a comma or something.
+
+So, maybe \boxed{2} and \boxed{\dfrac{5}{9}}, but since the user asked to present it in one box, perhaps like \boxed{2 \text{ and } \dfrac{5}{9}}.
+
+Alternatively, perhaps they meant to have two separate boxes, but the instruction says "present the answer in LaTex format: \boxed{Your answer}". So, perhaps I should put both answers inside a single box, separated by commas.
+
+So, perhaps \boxed{2 \text{ and } \dfrac{5}{9}}.
+
+Alternatively, maybe the expected format is two separate boxes, but the user didn't specify. Hmm, perhaps I should stick to the initial format, even if it's two boxes.
+
+Wait, let me look at the original problem again: "find f(f(2/3))= _______; if f(f(a))=1, find the value of a _______." So, it's two separate questions, each to be answered in a box. So, perhaps I should have two separate boxes.
+
+So, first answer: \boxed{2}, second answer: \boxed{\dfrac{5}{9}}.
+
+Yes, that makes sense. So, I'll present them separately.
+
+Wait, but the user's instruction says: "present the answer in LaTex format: \boxed{Your answer}". So, perhaps they expect a single box with both answers. Hmm, perhaps I should write both answers inside a single box, separated by a comma.
+
+So, \boxed{2 \text{ and } \dfrac{5}{9}}.
+
+Alternatively, \boxed{2, \dfrac{5}{9}}.
+
+That might be clearer.
+
+So, I think I'll go with \boxed{2, \dfrac{5}{9}}.
+
+Okay, I think that's correct.
+</think>
+
+To solve the given problem, we need to evaluate the function \( f(f(\frac{2}{3})) \) and find the value of \( a \) such that \( f(f(a)) = 1 \).
+
+### Step-by-Step Solution:
+
+1. **Evaluate \( f(f(\frac{2}{3})) \):**
+   - First, determine \( f(\frac{2}{3}) \):
+     - Since \( \frac{2}{3} < 1 \), we use the piece \( f(x) = 3x - 1 \).
+     - \( f(\frac{2}{3}) = 3 \times \frac{2}{3} - 1 = 2 - 1 = 1 \).
+   - Next, determine \( f(f(\frac{2}{3})) = f(1) \):
+     - Since \( 1 \geq 1 \), we use the piece \( f(x) = 2^x \).
+     - \( f(1) = 2^1 = 2 \).
+
+   Therefore, \( f(f(\frac{2}{3})) = 2 \).
+
+2. **Find \( a \) such that \( f(f(a)) = 1 \):**
+   - First, determine \( f(a) \) such that \( f(f(a)) = 1 \):
+     - Let \( f(a) = x \). Then \( f(x) = 1 \).
+     - Solve \( f(x) = 1 \):
+       - For \( x < 1 \), \( 3x - 1 = 1 \) gives \( x = \frac{2}{3} \).
+       - For \( x \geq 1 \), \( 2^x = 1 \) gives \( x = 0 \), which is not valid since \( x \geq 1 \).
+     - Thus, \( x = \frac{2}{3} \).
+   - Now, solve \( f(a) = \frac{2}{3} \):
+     - For \( a < 1 \), \( 3a - 1 = \frac{2}{3} \) gives \( a = \frac{5}{9} \).
+     - For \( a \geq 1 \), \( 2^a = \frac{2}{3} \) gives \( a \) negative, which is not valid.
+   - Thus, \( a = \frac{5}{9} \).
+
+### Final Answer:
+
+\[ f(f(\frac{2}{3})) = \boxed{2} \]
+\[ a = \boxed{\dfrac{5}{9}} \]<｜end▁of▁sentence｜>

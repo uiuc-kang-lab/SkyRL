@@ -1,0 +1,646 @@
+0
+Okay, I need to solve this problem where Alice and Bob are playing a game with some balls, and I have to find the expected scores for both of them modulo 1e9+7. Hmm, let's think through this step by step.
+
+So, the problem says there are n balls, k of which are special. Each turn, a player picks a ball at random, adds its value to their score, and removes it. Alice goes first. If the ball picked is special, the same player gets another turn if there are balls left. If it's not special, the other player gets a turn.
+
+I need to calculate the expected scores for both Alice and Bob. The answer has to be given modulo 1e9+7, as a fraction p/q, but we need to compute it as x where x * q^{-1} mod 1e9+7.
+
+Let me think about how to model this. The key is to find the expected value for each player's total score.
+
+First, I should consider the structure of the game. Each turn, the player has a certain probability of getting to pick a special ball, which affects their chances of getting more turns.
+
+Wait, but the selection is random. So each time a ball is picked, it's equally likely to be any remaining ball.
+
+Let me think about the process. The game continues until all balls are picked. The turns alternate between Alice and Bob, starting with Alice.
+
+But the key is that depending on whether a picked ball is special or not, the game continues or stops.
+
+Wait, no. The rules say that if the picked ball is special, the same player takes the next turn. Otherwise, the other player plays.
+
+So, for example, if Alice picks a special ball, she gets another turn. Then Bob picks a ball, and if it's special, he gets another, and so on.
+
+This seems like a turn-based game where each step depends on the current player's choice.
+
+But since all choices are equally likely, perhaps we can model the expected contribution of each ball to Alice and Bob's scores, considering the probability that the ball is picked by Alice or Bob during their turn.
+
+Hmm, that sounds promising. Because each ball contributes to either Alice or Bob's total based on when it's picked and whose turn it is.
+
+So, for each ball, let's calculate the probability that it is picked by Alice before Bob, or vice versa, or in a way that affects the turn order.
+
+Wait, but the turn order is determined by the players' choices, which are random. So, perhaps we can model the expected number of times a ball is picked by Alice and by Bob, and then sum the values accordingly.
+
+Wait, but since each turn is taken by a player, and the choice is random, the order in which the balls are picked is a random permutation. But in this case, the players pick in turns, so the order is determined by the players' choices, not necessarily a fixed order.
+
+This seems complicated. Maybe there's a smarter way.
+
+Let me think about each ball individually. For each ball, what is the probability that it is picked by Alice, and what is the probability that it's picked by Bob. Then, the expected contribution to Alice's total is the sum over all balls of v_i multiplied by the probability that Alice picks it, and similarly for Bob.
+
+Wait, but the selection is not just about which player picks, but also when. So, for a ball, the probability that it's picked in a turn is dependent on whether it's picked by Alice or Bob, and the turn order.
+
+Wait, but perhaps we can model the process as a series of rounds. Each round consists of Alice's turn and Bob's turn, but only if certain conditions are met.
+
+Alternatively, perhaps we can model the game as a sequence of possible turns, where each turn is either a player's turn (Alice or Bob) and the choice is made by the current player.
+
+But this seems a bit vague. Let me think differently.
+
+Let me consider the process as a series of steps. Each step is a turn taken by a player. The initial step is Alice's. She picks a ball. If it's special, she gets another turn. Otherwise, Bob picks.
+
+So, the game can be seen as a tree of possible choices, but that's probably too computationally heavy for n up to 4e5.
+
+So, I need a mathematical approach.
+
+Hmm. Let's think about the expected number of times each player picks a ball. Since each ball is equally likely to be picked at any turn, perhaps the probability that a particular ball is picked by Alice is 0.5, but that's not correct because the turn order depends on the players' choices.
+
+Wait, no. Because the turn order is determined by the players' choices, the probability that a ball is picked by Alice or Bob isn't necessarily 0.5. It depends on the sequence of choices.
+
+Wait, but perhaps we can model it as each ball being picked in a certain order, with each step being a player's turn, and the selection is random.
+
+Alternatively, perhaps we can model the game as a sequence of turns, where each turn is Alice or Bob, and the selection is done by the current player. So, the first turn is Alice, then Bob, then Alice, etc., until all balls are picked.
+
+Wait, no. Because the selection is random, the turn order can vary. For example, Alice might pick a non-special ball, then Bob picks a special one, and so on.
+
+This seems complicated. So perhaps we can model the expected contribution of each ball to Alice and Bob by considering the probability that the ball is picked by Alice, and then the probability that Alice gets to pick it again.
+
+Wait, let's think of the game as a sequence of turns. Each turn, the current player picks a ball. If it's special, the same player gets another turn. Otherwise, the other player picks next.
+
+So, the game proceeds in turns, each turn being a player's turn. The order of players is Alice, Bob, Alice, Bob, etc., but each turn could be a different player if the previous pick was non-special.
+
+This seems like a Markov process, but for large n, it's impractical to model all states.
+
+So, perhaps a better approach is to model the expected value for each ball as being contributed by the probability that it's picked by Alice and the probability that it's picked by Bob, given the turn order.
+
+Wait, but that's not straightforward because the turn order depends on the players' choices.
+
+Let me try to model the process as a series of turns, each turn being a player's turn. The initial state is Alice's turn. Each turn, a player picks a ball uniformly at random from the remaining balls. If the ball is special, the same player picks again; otherwise, the other player picks.
+
+So, the process is a sequence of turns, each turn being a player's turn, and the selection is random.
+
+The key is to compute the expected number of times each ball is picked by Alice and Bob.
+
+But this seems difficult because the turn order depends on the players' choices.
+
+Wait, perhaps the expected number of times a ball is picked by Alice is equal to the probability that Alice picks it on her turn, plus the probability that she picks it on her subsequent turns after being given another turn.
+
+But this seems recursive.
+
+Alternatively, perhaps we can model the expected value of each ball being picked by Alice as follows:
+
+Let’s denote for each ball, the probability that it is picked by Alice is p, and by Bob is (1-p). Then, the expected contribution is p * v_i for Alice and (1-p) * v_i for Bob.
+
+So, the problem reduces to finding p for each ball.
+
+But how?
+
+Let me think about the process. The first turn is Alice's. So, the probability that a ball is picked by Alice in her first turn is 1/n. If she picks a special ball, then in her second turn, the probability is 1/(n-1), and so on.
+
+Wait, but the selection is random each time, so the probability that a specific ball is picked by Alice is the sum over all possible turns where Alice picks it.
+
+Hmm, this seems tricky.
+
+Wait, let's think about all possible turns. Each turn is either Alice's or Bob's. We can model the process as a series of steps: Alice's turn, then Bob's, then Alice's, etc., but the steps can end early if all balls are picked.
+
+But this approach might not be feasible for large n.
+
+Another idea: since each ball is equally likely to be picked by any player, perhaps the probability that a particular ball is picked by Alice is equal to the sum of the probabilities that Alice is the one to pick it, considering all possible turn sequences.
+
+Wait, but the turn sequence is determined by the players' choices, which are random. So, the probability that Alice picks a particular ball is not just 0.5, but depends on the order of turns.
+
+This is getting complicated. Maybe I should look for patterns or think of the problem in terms of expected contributions.
+
+Let me consider the expected number of balls picked by Alice and Bob.
+
+Wait, each turn, a player picks a ball. So, the total number of turns is equal to the number of balls, n. Because each turn picks one ball, and all are picked.
+
+So, the game consists of n turns, each turn being a player's turn, and the first turn is Alice's.
+
+So, in total, Alice has (n+1)//2 turns, and Bob has n//2 turns. Because the first turn is Alice, then Bob, then Alice, etc.
+
+Wait, no. Because if n is even, Alice and Bob each have n/2 turns. If n is odd, Alice has (n+1)/2, Bob has (n-1)/2.
+
+So, the total number of turns is n, and the number of turns Alice has is ceil(n/2), Bob has floor(n/2).
+
+So, for each ball, the probability that it's picked by Alice is equal to the probability that it's picked on any of Alice's turns.
+
+But how to calculate that?
+
+Hmm, perhaps each ball has a 1/n chance of being picked on any turn. The probability that a particular ball is picked by Alice is the sum over all Alice's turns of the probability that it's picked on that turn.
+
+But the order of the turns depends on the players' choices, which makes it tricky.
+
+Wait, but perhaps the order of the turns is random, so each turn is equally likely to be any possible turn, but the players' choices are random.
+
+This is getting complicated. Maybe I should think about the problem differently.
+
+Let me think about the expected value of each ball. For each ball, the expected contribution to Alice is the probability that Alice picks it in her turn, multiplied by the value. Similarly for Bob.
+
+So, the problem is to find, for each ball, the probability that it is picked by Alice, and multiply that by its value.
+
+So, the total expected score for Alice is the sum of v_i * p_i, where p_i is the probability that Alice picks the i-th ball.
+
+Similarly for Bob.
+
+So, the question is, how to compute p_i for each ball.
+
+Let me think about the process. The first turn is Alice's. She picks a ball uniformly at random. If it's special, she gets another turn. Otherwise, Bob picks a ball, and so on.
+
+So, for each ball, the probability that it's picked by Alice is the sum over all possible steps where Alice picks it.
+
+But this seems challenging.
+
+Wait, perhaps the expected number of times a ball is picked by Alice can be modeled as the sum over all possible turns where Alice picks it.
+
+Each turn, the probability that Alice picks the ball is the product of:
+
+- The probability that it's not picked by Bob in the previous turns.
+
+Wait, perhaps we can model it as a product of probabilities.
+
+Let me try to model the expectation for a single ball.
+
+Let’s denote for a particular ball, the probability that Alice picks it is p. Then, the probability that Alice picks it on her first turn is 1/n. If she doesn't pick it on the first turn, then Bob may pick it on his first turn, and so on.
+
+So, p is the sum of the probabilities that Alice picks the ball in her first turn, plus the probability that Alice doesn't pick it in her first turn, Bob doesn't pick it in his first turn, and then Alice picks it in her second turn, and so on.
+
+So, p can be written as:
+
+p = (1/n) + ( (n-1)/(n) ) * ( (n-2)/(n-1) ) * (1/(n-2)) ) + ... 
+
+Wait, this seems like a recursive formula.
+
+Alternatively, perhaps p can be expressed as the sum from k=0 to infinity of (product of probabilities that the ball was not picked in the previous steps) multiplied by the probability that it's picked in the (k+1)-th turn by Alice.
+
+Hmm, that's a bit abstract. Let me try to formalize it.
+
+Each time a player picks a ball, the probability that the ball is picked by Alice is the product of the probabilities that the ball was not picked by Bob in all previous turns.
+
+Wait, maybe.
+
+The first step is Alice's turn. She picks a ball with probability 1/n. If it's special, she gets another turn. Otherwise, Bob's turn.
+
+So, the probability that a particular ball is picked by Alice is:
+
+P = (1/n) + ( (n-1)/n ) * ( (n-2)/(n-1) ) * (1/(n-2)) ) + ... 
+
+Wait, perhaps this can be simplified.
+
+Wait, let's think about the first term: Alice picks the ball on her first turn. Probability is 1/n.
+
+The second term is the probability that Alice doesn't pick the ball in her first turn, and then Bob doesn't pick it in his first turn, and then Alice picks it in her second turn.
+
+So, the probability for this is:
+
+( (n-1)/n ) * ( (n-2)/(n-1) ) * (1/(n-2)) ) 
+
+Simplify:
+
+(n-1)/n * (n-2)/(n-1) * 1/(n-2) = 1/n.
+
+So, the second term is 1/n.
+
+Similarly, the third term would be 1/n, and so on.
+
+So, the total p is 1/n + 1/n + 1/n + ... 
+
+Wait, but this would go on infinitely, which is not possible. So, perhaps this approach is incorrect.
+
+Hmm, perhaps I'm missing something. Let's think differently.
+
+Let me denote for each ball, the probability that it is picked by Alice as p. Then, the probability that it is picked by Bob is q = 1 - p.
+
+But how to model p.
+
+Wait, for a particular ball, the probability that Alice picks it is equal to the probability that it's picked on her first turn, plus the probability that it's not picked by Alice or Bob in their first turns, and then picked on Alice's second turn, and so on.
+
+So, p = (1/n) + ( (n-1)/n ) * ( (n-2)/(n-1) ) * (1/(n-2)) ) + ... 
+
+Wait, but each term in this series is 1/n. So, p = 1/n + 1/n + 1/n + ... but that can't be right because p can't be more than 1.
+
+So, this approach is incorrect. Hmm.
+
+Alternative approach: Let's model the expected number of times a ball is picked by Alice, which is p. Then, since each turn is a player's turn, and the order of turns is determined by the game's rules.
+
+Wait, perhaps the expected number of times a ball is picked by Alice is equal to the sum over all possible turns where Alice picks it.
+
+Each turn is a turn of a player, and the probability that the ball is picked on that turn is the probability that the ball is not picked in all previous turns, multiplied by the probability that it's picked on this turn.
+
+Let me try to model this.
+
+The first turn is Alice's. The probability that the ball is picked on the first turn is 1/n. If not, then Bob's turn comes.
+
+So, the probability that the ball is picked on the first turn is 1/n.
+
+If it's not picked, the probability that it's picked on the second turn is (n-1)/n * (1/(n-1)) = 1/n.
+
+Wait, because Alice didn't pick it, so the probability that Bob picks it is 1/(n-1) if it's left. Wait, no. Because the selection is random, so if Alice didn't pick it, the probability that Bob picks it is 1/(n-1).
+
+So, the probability that the ball is picked on the second turn is (n-1)/n * 1/(n-1) = 1/n.
+
+So, each turn, the probability that the ball is picked is 1/n, regardless of previous turns.
+
+Wait, that's a key insight! Because each turn, the probability that the ball is picked is 1/n.
+
+So, the expected number of times the ball is picked by Alice is the sum over all Alice's turns of 1/n.
+
+Similarly, for Bob.
+
+So, the expected value p for a particular ball is the probability that it's picked by Alice, which is equal to the sum over all possible Alice's turns of the probability that it's picked in that turn.
+
+Each turn is a step in the game, so the order of turns is Alice, Bob, Alice, Bob, etc.
+
+So, the expected number of picks by Alice is the sum of the probabilities that the ball is picked in each of her turns, which is 1/n multiplied by the number of her turns.
+
+Wait, but the number of her turns depends on the game's structure.
+
+So, for a particular ball, the expected number of times it's picked is p = (number of Alice's turns) * (1/n).
+
+Similarly, the expected number of times it's picked by Bob is q = (number of Bob's turns) * (1/n).
+
+But how to calculate the number of Alice's and Bob's turns?
+
+Well, the game consists of n turns, each a player's turn. So, Alice has ceil(n/2) turns, and Bob has floor(n/2) turns.
+
+So, the expected number of times the ball is picked by Alice is ceil(n/2) * (1/n) = 0.5 if n is even, or (n+1)/2 * 1/n if n is odd.
+
+Wait, let me think:
+
+For even n=2k:
+
+- Alice has k turns.
+- Bob has k turns.
+
+Each turn, the probability is 1/(2k).
+
+So, expected picks by Alice: k * (1/(2k)) ) = 1/2.
+
+For n=3:
+
+- Alice has 2 turns.
+- Bob has 1 turn.
+
+Each turn, probability is 1/3.
+
+So, Alice's expected picks: 2*(1/3) = 2/3.
+
+Similarly, Bob's expected picks: 1*(1/3) = 1/3.
+
+So, p is (ceil(n/2) * 1/n) when n is even, and (ceil(n/2) * 1/n) when n is odd? Wait, no. For n=2, Alice has 1 turn, so p=1*(1/2)=0.5.
+
+Yes, that aligns with the even case.
+
+So, generalizing, the expected number of times a ball is picked by Alice is (ceil(n/2)) * (1/n) = ( (n +1)//2 ) / n.
+
+Similarly, the expected number for Bob is (n//2) * (1/n) = n/(2n) = 0.5 if n is even, and (n-1)/(2n) if n is odd.
+
+So, for each ball, the probability that it's picked by Alice is p = ( (n +1)//2 ) / n.
+
+Wait, let's test this:
+
+n=2: (2+1)//2 = 1.5? Wait, no. Wait, (n+1)//2 is 1.5 when n is 2? Wait, no, integer division in Python. So, for n=2, (2+1)//2 is 1.5, but in integer division, it's 1.
+
+Wait, wait, let me compute (n + 1) // 2:
+
+For n=2: (2+1)//2 = 1.
+
+So, p = 1/2.
+
+Which is correct, as for n=2, Alice has 1 turn, and each turn has probability 1/2.
+
+So, the formula is p = ( (n + 1) // 2 ) / n.
+
+Similarly, q = 1 - p.
+
+So, for each ball, the expected value contributed to Alice is v_i * p, and to Bob is v_i * q.
+
+So, the total expected score for Alice is sum(v_i * p) for all balls, and for Bob, sum(v_i * q).
+
+Wait, but wait: the expectation is linear, so yes, the total for Alice is sum(v_i * p for all i), and for Bob, sum(v_i * q for all i).
+
+So, the problem reduces to computing p as ( (n + 1) // 2 ) / n, and q as 1 - p.
+
+Then, for each test case, we can compute the sum of all v_i multiplied by p for Alice, and by q for Bob.
+
+So, the steps for each test case are:
+
+1. Read n, k, and the list of v_i.
+
+2. Separate the v_i into special (k of them) and non-special.
+
+3. Compute p = ( (n + 1) // 2 ) / n.
+
+4. Compute q = 1 - p.
+
+5. Compute Alice's expected score as sum( v_i for special ) + sum( v_i * p for non-special ).
+
+6. Compute Bob's expected score as sum( v_i * q for special ) + sum( v_i * q for non-special ).
+
+Wait, no. Because the sum for Alice is sum( v_i * p ) for all balls, whether special or not. Because p is the probability that a ball is picked by Alice.
+
+Wait, no. Because p is the probability that a ball is picked by Alice, regardless of whether it's special or not. So, for each ball, if it's special, Alice picks it with probability p, else, Bob picks it with probability p.
+
+Wait, no. Because the selection is such that if a ball is picked by a player, it's removed from the game. So, the probabilities are dependent on the order of picks.
+
+But earlier, I derived that the expected number of times a ball is picked by Alice is ( (n + 1) // 2 ) * (1/n ), since each turn has a 1/n chance of picking the ball.
+
+So, perhaps this approach is correct.
+
+So, in the code, for each test case:
+
+- Compute p = ( (n + 1) // 2 ) / n.
+
+- For each ball, the expected contribution to Alice is v_i * p, and to Bob is v_i * (1 - p).
+
+So, the sum for Alice is sum( v_i * p ) for all i, and for Bob, sum( v_i * (1 - p) ) for all i.
+
+Wait, but wait: is this correct? Because the p is the expected number of times a ball is picked by Alice, not the expectation of the sum of the values.
+
+Yes, because expectation is linear, the expected sum is the sum of expectations.
+
+So, for each ball, the expected value contributed to Alice is v_i multiplied by the probability that the ball is picked by Alice.
+
+So, the code can be written as:
+
+- For each test case, read n, k, and the list v.
+
+- Compute p = ((n + 1) // 2) / n.
+
+- Compute Alice's total as sum( v_i * p for all v_i in v ).
+
+- Compute Bob's total as sum( v_i * (1 - p) for all v_i in v ).
+
+Wait, but wait: the sum is over all balls, including special and non-special.
+
+Yes, because each ball is considered individually.
+
+So, this seems manageable.
+
+Let me test this with some examples.
+
+Test case 1:
+
+n=2, k=1, v = [1, 2]
+
+p = (2+1)//2 / 2 = 1.5//2 = 0.75? Wait, wait no. Wait, (2+1)//2 is 1.5//2 in integer division is 0. So that's wrong.
+
+Wait, wait, wait. Wait, n is 2. (n+1)//2 is (3)//2 = 1.
+
+So, p is 1/2.
+
+So, Alice's expected score is (1 * 0.5) + (2 * 0.5) = 1.5.
+
+Bob's expected score is 0.5.
+
+So, the output would be 1.5 and 0.5.
+
+Which makes sense because:
+
+- Alice picks first. She has a 50% chance to pick the first ball (1), and if not, picks the second (2).
+
+So, her expected score is 0.5*1 + 0.5*2 = 1.5.
+
+Bob's score is 0.5.
+
+So, that's correct.
+
+Another test case:
+
+n=3, k=2, v = [3,4,5].
+
+p = (3+1)//2 /3 = 2/3.
+
+So, Alice's expected score is (3*(2/3)) + (4*(2/3)) + 5*(1/3) = 2 + 8/3 + 5/3 = 2 + 13/3 = 19/3 ≈ 6.333.
+
+Bob's expected score is 3*(1/3) +4*(1/3) +5*(2/3) = 1 + 4/3 +10/3 = 1 + 14/3 = 17/3 ≈5.666.
+
+Which is correct.
+
+So, the approach seems correct.
+
+Now, the code needs to process this for multiple test cases.
+
+The constraints are t up to 2e5, and n up to 4e5 per test case, with sum n across test cases up to 5e5.
+
+So, the code needs to be efficient.
+
+So, the steps are:
+
+For each test case:
+
+- Read n, k.
+
+- Read the list of v_i.
+
+- Compute p = ( (n + 1) // 2 ) / n.
+
+- Compute Alice's total as sum( v_i * p for v_i in v ).
+
+- Compute Bob's total as sum( v_i * (1 - p) for v_i in v ).
+
+Then, output Alice's total and Bob's total modulo 1e9+7, as per the problem statement.
+
+Wait, but the output requires the expected score modulo 1e9+7, which is a prime. So, we need to compute the fractions and represent them as fractions modulo 1e9+7.
+
+So, the problem is to compute the expected value, which is a fraction, then represent it as a number modulo 1e9+7.
+
+So, how to compute this efficiently.
+
+In Python, we can represent the expected values as fractions, then compute their modular inverses.
+
+So, the approach is:
+
+For each test case, compute p = ( (n +1) // 2 ) / n.
+
+Then, Alice's expected score is p * sum_v, where sum_v is the sum of all v_i.
+
+Similarly, Bob's is (1 - p) * sum_v.
+
+So, we can compute sum_v as the sum of all v_i.
+
+Then, compute Alice's total as ( (n+1)//2 ) / n * sum_v.
+
+Similarly for Bob.
+
+So, in code:
+
+For each test case:
+
+sum_v = sum(v_list)
+
+p = ( (n + 1) // 2 ) / n
+
+alice = p * sum_v
+
+bob = (1 - p) * sum_v
+
+Then, output alice and bob modulo 1e9+7.
+
+But since these are fractions, we need to compute them modulo 1e9+7, which requires using modular inverses.
+
+So, the plan is:
+
+Compute sum_v.
+
+Compute p as ( (n + 1) // 2 ) / n.
+
+Which is equal to ( (n + 1) // 2 ) * inv(n) mod MOD, where MOD is 1e9+7.
+
+Similarly, 1 - p is (n - (n + 1)//2 ) / n.
+
+So, 1 - p is ( (n - (n+1)//2 ) ) * inv(n) mod MOD.
+
+So, the steps are:
+
+1. Compute sum_v.
+
+2. Compute inv_n = modular inverse of n mod MOD.
+
+3. Compute p = ( (n + 1) // 2 ) * inv_n % MOD.
+
+4. Compute alice = sum_v * p % MOD.
+
+5. Compute q = (n - (n + 1) // 2 ) * inv_n % MOD.
+
+6. Compute bob = sum_v * q % MOD.
+
+So, this is the way to compute it in O(1) per test case.
+
+Yes, that's efficient.
+
+So, the code will read t test cases, for each, read n, k, and the list of v_i.
+
+Compute sum_v.
+
+Compute inv_n.
+
+Compute p and q as described.
+
+Compute alice and bob as sum_v * p and sum_v * q.
+
+Then, output alice and bob modulo 1e9+7.
+
+Wait, but wait: sum_v is the sum of all v_i, which can be up to 4e5 * 1e7 = 4e12 per test case. So, we need to compute sum_v modulo MOD * inv_n, but no, because sum_v can be up to 4e5 * 1e7 = 4e12, which is larger than MOD (1e9+7). So, we need to compute sum_v modulo MOD * inv_n, but that's not straightforward.
+
+Wait, no. Because in Python, integers can be as big as needed, so we can compute sum_v as the sum of the list, then compute sum_v modulo MOD, but that's not correct because p is a fraction.
+
+Wait, no. Because p is a fraction, and sum_v is an integer. So, sum_v * p is a rational number, and we need to compute it modulo MOD.
+
+So, the approach is to represent the sum_v * p as (sum_v mod MOD) * (p mod MOD) mod MOD.
+
+But p is ( (n+1)//2 ) / n. So, in modular arithmetic, this is ( (n+1)//2 ) * inv(n) mod MOD.
+
+So, yes, we can compute p as ( (n+1)//2 ) * inv_n % MOD.
+
+Similarly, q is (n - (n+1)//2 ) * inv_n % MOD.
+
+So, the code can be written as:
+
+Compute sum_v.
+
+Compute inv_n = pow(n, MOD-2, MOD).
+
+Compute p = ( (n+1)//2 ) * inv_n % MOD.
+
+Compute q = ( (n - (n+1)//2 ) % MOD ) * inv_n % MOD.
+
+Compute alice = (sum_v % MOD) * p % MOD.
+
+Compute bob = (sum_v % MOD) * q % MOD.
+
+Wait, but sum_v can be up to 4e5 * 1e7 = 4e12, which is larger than MOD. So, sum_v mod MOD is correct.
+
+Yes, because sum_v is an integer, and when multiplied by p (a fraction mod MOD), it's the same as (sum_v mod MOD) * p mod MOD.
+
+So, the code can proceed as:
+
+sum_v = sum(v_list)
+
+p = ((n + 1) // 2) * pow(n, MOD-2, MOD) % MOD
+
+q = (n - (n + 1)//2) * pow(n, MOD-2, MOD) % MOD
+
+alice = (sum_v % MOD) * p % MOD
+
+bob = (sum_v % MOD) * q % MOD
+
+Wait, but wait: sum_v can be up to 4e5 * 1e7 = 4e12, which is less than MOD (1e9+7). So, sum_v % MOD is just sum_v.
+
+So, sum_v can be up to 4e12, but in Python, it's manageable.
+
+So, the code is as follows.
+
+Now, let's test this with the sample input.
+
+Sample Input 1:
+
+5
+
+3 2
+
+3 1 2
+
+n=3, k=2.
+
+v = [3,1,2]
+
+sum_v = 6.
+
+p = (3+1)//2 = 2. So, p = 2 * inv(3) mod MOD.
+
+inv(3) is 333333336.
+
+So, p = 2 * 333333336 mod MOD = 666666672.
+
+q = 3 - 2 = 1. So, q = 1 * inv(3) mod MOD = 333333336.
+
+Alice's total is 6 * (666666672) mod MOD.
+
+6 * 666666672 = 4000000032. mod MOD (1e9+7) is 4000000032 - 4 * 1e9+7 = 4000000032 - 4000000028 = 4.
+
+Wait, 6 * 666666672 = 4000000032.
+
+Divide by 1e9+7:
+
+1e9+7 is 1000000007.
+
+4000000032 / 1000000007 is 3 * 1e9+7 is 3000000021, which is larger than 4000000032. So, 3 times is 3000000021, subtract from 4000000032, get 999999991.
+
+Wait, but 4000000032 - 3 * 1000000007 = 4000000032 - 3000000021 = 999999991.
+
+Wait, but this is not correct. Wait, perhaps I should compute 6 * 666666672 mod 1e9+7.
+
+6 * 666666672 = 4,000,000,032.
+
+1e9+7 is 1,000,000,007.
+
+Compute how many times 1e9+7 fits into 4e9.
+
+4e9 divided by 1e9+7 is 3 times, since 3 * 1e9+7 = 3,000,000,021.
+
+4e9 - 3e9 = 1e9.
+
+So, 4e9 mod 1e9+7 is 1e9 - (1e9+7) + 3e9+21? Wait, no.
+
+Wait, 4e9 = 3 * (1e9+7) + (4e9 - 3*(1e9+7)).
+
+Compute 3*(1e9+7) = 3e9 + 21.
+
+4e9 - (3e9 +21) = e9 -21 = 999,999,979.
+
+So, 4e9 mod 1e9+7 is 999,999,979.
+
+Wait, but 6 * 666666672 is 4e9 + 32? Wait, 666,666,672 * 6 = 4,000,000,032.
+
+Yes.
+
+So, 4,000,000,032 mod 1e9+7 is 4,000,000,032 - 3 * (1e9+7) = 4,000,000,032 -3,000,000,021 = 999,999, 991.
+
+Wait, 4e9 is 4,000,000,000.
+
+4,000,000,032 is 4,000,000,000 +32.
+
+So, 4,000,000,000 mod 1e9+7 is 4,000,000,000 - 3*(1e9+7) = 4,000,000,000 -3,000,000,021 = 999,999,979.
+
+Then add 32: 999,999,979 +32 = 1,000,000,011.
+
+Now mod 1e9+7:
+
+1e9+

@@ -1,0 +1,272 @@
+Okay, let's try to figure out this problem. So, the problem is about a game between Sakurako and Kosuke where they take turns moving a dot on a coordinate line. The dot starts at x=0. Sakurako moves it in the negative direction by an odd number each time, and Kosuke moves it in the positive direction by the next odd number.
+
+The key point is to determine who makes the last move such that the absolute value of x doesn't exceed n. So, the game continues as long as the absolute value of x is within -n to n, inclusive.
+
+Hmm, let's break down the moves. The i-th move (starting from i=1) is as follows: Sakurako moves by - (2i-1), then Kosuke moves by (2i+1) for the next i. Or wait, wait, let's think again. Wait, the first move is i=1: Sakurako moves by -1 (2*1 -1 is 1, so -1). Then i=2: Kosuke moves by 3 (2*2 -1 is 3), so x becomes -1 +3=2. Then i=3: Sakurako moves by -5, so x is 2-5= -3. Then i=4: Kosuke moves by 7, x becomes -3 +7=4. And so on.
+
+Wait, but the way the game is described, each move is the next i. So the sequence of moves is:
+
+- Move 1: Sakurako moves by -1. x becomes -1.
+- Move 2: Kosuke moves by +3. x becomes 2.
+- Move 3: Sakurako moves by -5. x becomes -3.
+- Move 4: Kosuke moves by +7. x becomes 4.
+- Move 5: Sakurako moves by -9. x becomes -5.
+- Move 6: Kosuke moves by +11. x becomes 6.
+- And so on.
+
+Wait, but for each move, the direction alternates between negative and positive, but the step sizes are 1,3,5,7,... So, the first move is 1, second is 3, etc. So for move k, the step is 2k-1 if k is odd, and 2k-1 if even? Wait, no. Wait, for the i-th move, the step is 2i-1. So for i=1, step is 1, i=2 step is 3, i=3 step is 5, etc. So each move is alternately negative and positive, starting with negative.
+
+So the total movement after m moves is the sum of these steps, alternating signs. So the sum S = sum_{k=1 to m} (-1)^(k+1) * (2k-1).
+
+Wait, but the order in which they take the moves is important. Wait, no—because each move is a single step, the order is that the first move is Sakurako's, then Kosuke's, etc. So for the first move, the player is Sakurako, then Kosuke, then Sakurako, etc. So the moves are taken in order, with each step being the next odd number.
+
+So the sum after m moves is the sum of the first m steps, with Sakurako moving on the odd-numbered steps (1st, 3rd, 5th, etc.) and Kosuke on the even-numbered steps.
+
+So, the sum after m moves is S = sum_{k=1 to m} step_k, where step_k is (-1)^(k+1) * (2k-1). Wait, wait, no. Wait, the first move is step 1: -1. Second move is step 2: +3. Third move: step3 is -5. So, for the i-th move, step is 2i-1, and it's added as (-1)^i * (2i-1). Because the first move is i=1: (-1)^1 *1 = -1. Second move i=2: (-1)^2 *3= +3. Third move i=3: (-1)^3 *5= -5. Yes, that's correct.
+
+So the total after m moves is the sum from i=1 to m of (-1)^i * (2i-1).
+
+Hmm, what's the pattern of this sum?
+
+Let's compute the sum for m=1: -1. For m=2: -1+3=2. m=3: 2-5=-3. m=4: -3+7=4. m=5:4-9=-5. m=6: -5+11=6. Wait, so the sum after m moves is (-1) if m is odd, and m if m is even.
+
+Wait, let's see:
+
+m=1: sum is -1 → which is -1*1.
+
+m=2: 2 → which is 2.
+
+m=3: -3 → which is -3.
+
+m=4:4 → which is 4.
+
+m=5:-5 → which is -5.
+
+m=6:6 → which is 6.
+
+So the sum after m moves is (-1)^m * m.
+
+Wait, that's a big insight. Because for m moves, the sum is (-1)^m * m.
+
+So, after each move, the sum is equal to (-1)^m * m.
+
+So, the position x after m moves is x = (-1)^m * m.
+
+Wait, but wait. Because each move alternates the sign, so after each move, the sum is the previous sum plus the current step.
+
+But the sum after m moves is equal to (-1)^m * m. Because:
+
+For m=1: -1 = (-1)^1 *1 → yes.
+
+m=2: 2 = (-1)^2 *2 → yes.
+
+m=3: -3 = (-1)^3 *3 → yes.
+
+m=4:4 = (-1)^4 *4 → yes.
+
+So, the position after m moves is x = (-1)^m * m.
+
+Wait, that's a key observation. So, after each move, x is equal to (-1)^m * m.
+
+Wait, but let's see what the game's condition is. The game continues as long as the absolute value of x is <=n.
+
+So, the game ends when |x| >n. So, the game ends when x is m*(-1)^m, and |m*(-1)^m| >n → m>n.
+
+Because |x| = m if m is even, and m if m is odd.
+
+Wait, no. Wait, x is (-1)^m *m. So |x| is m, regardless of the sign. So the game ends when m exceeds n.
+
+So, the game will end when m exceeds n, because then x's absolute value is m which is >n.
+
+So, the maximum number of moves is m_max = floor(n) because when m exceeds n, the game ends.
+
+Wait no, because for example, if n=3, the maximum m is 3. Because after m=3, x is -3, which is within the limit. After m=4, x is 4, which is beyond 3. So the game ends at m=3.
+
+So, the maximum number of moves is the maximum m where m <=n. Because m_max is n.
+
+Wait, no. Let's see: The game ends when |x| >n. So, the condition is |x| >n → after m moves, x is (-1)^m *m. So |x|=m. So when m >n, the game ends. So the last move is when m is the maximum possible such that m <=n.
+
+So, the game will end when m is n. Because when m is n, |x|=n, which is allowed. The next move (m =n+1) would make x= -(n+1) → |x|=n+1> n, so the game ends.
+
+So, the number of moves in the game is m =n.
+
+Wait, no. Let's see:
+
+In the first move, m=1. Second move m=2, etc. So, for n=1, the maximum m is 1. Because after m=1, x is -1, which is within 1. After m=2, x is 2, which is beyond 1. So, the game ends at m=1.
+
+Wait, but according to the problem statement, the game continues while |x| <=n. So, for n=1, the game starts, the first move is m=1, x=-1. Then, the next move is m=2, x=2. But |x|=2>1, so the game ends. So, the last move is m=1.
+
+So, the maximum number of moves is m =n.
+
+So, the total number of moves is m =n, which is the maximum allowed.
+
+Wait, but wait, no. Because for n=2, the maximum m is 2. Because after m=2, x= 2, which is allowed. The next move (m=3) x would be -3, which is beyond 2, so the game ends. So, the number of moves is 2.
+
+So, the total number of moves is m =n. Because when m is n, the game ends.
+
+So, the total number of moves is m =n.
+
+Wait, no. Because when n is 3, the game ends when m=3.
+
+So, the number of moves is m =n, because each move adds 1 to m.
+
+So, the total number of moves is m=n.
+
+So, the problem reduces to: after m=n moves, who made the last move?
+
+Wait, but each move is alternately made by Sakurako and Kosuke. The first move is made by Sakurako, the second by Kosuke, the third by Sakurako, and so on.
+
+So, for each move number m, if m is odd, it's Sakurako's turn. If even, Kosuke's.
+
+So, the question is: after m moves, who made the last move.
+
+So, if m is even: the last move is made by Kosuke.
+
+If m is odd: last move is made by Sakurako.
+
+So, for the given n, the number of moves is m =n.
+
+So, if n is even, then m is even, so Kosuke made the last move. If n is odd, m is odd, so Sakurako made the last move.
+
+Wait, but wait, let's test this with examples.
+
+Example 1: n=1.
+
+m=1 → odd → Sakurako makes the last move.
+
+Which is correct because after move 1, x is -1, which is within 1. The next move is m=2, which would be x=2, which is beyond 1, so the game ends. So, Sakurako made the last move.
+
+Example 2: n=2.
+
+m=2 → even → Kosuke made the last move.
+
+Because after m=2, x is 2, which is allowed. The next move is m=3, x=-3, which is beyond 2. So game ends. So Kosuke made the second move, which is the last.
+
+Yes.
+
+Example 3: n=3.
+
+m=3 → odd → Sakurako made the last move.
+
+After 3 moves, x=-3. Next move is m=4, which would take x=4, beyond 3. So game ends.
+
+Yes.
+
+So, the rule is: if n is even, last move is Kosuke. If n is odd, last move is Sakurako.
+
+Wait, but wait another thing. Let me test for n=4.
+
+m=4, even → Kosuke makes the last move.
+
+Yes, because after m=4, x=4. Next move m=5 would take x=-5, which is beyond 4, so game ends.
+
+Yes.
+
+So, the solution is to determine whether n is even or odd.
+
+If n is even, output "Kosuke". If n is odd, output "Sakurako".
+
+Wait, but what about n=0? Well, according to the problem statement, n starts at 1, so we don't need to consider that.
+
+So, the code is straightforward.
+
+For each test case, read n. If n is even, then Kosuke made the last move. Else, Sakurako.
+
+So, the code will read t test cases, then for each n, check if it's even or odd.
+
+So, the code can be written as:
+
+t = int(input())
+for _ in range(t):
+    n = int(input())
+    if n % 2 == 0:
+        print("Kosuke")
+    else:
+        print("Sakurako")
+
+But wait, wait. Let me think again.
+
+Wait, wait, the sum after m moves is (-1)^m * m.
+
+Which is correct. So, the position is x = (-1)^m * m.
+
+So, the condition for the game to end is when |x| >n, which is when m >n.
+
+So, the maximum number of moves is m =n.
+
+So, the last move is m =n.
+
+So, the last player is determined by whether n is even or odd.
+
+Yes, that's correct.
+
+So, for example, n=5: m=5, which is odd → Sakurako.
+
+n=6: m=6, even → Kosuke.
+
+Yes.
+
+So, the code is as I wrote.
+
+Wait, but wait. Let me check the sample input.
+
+Wait, the sample input isn't given, but let's test some small cases.
+
+Sample Input 1:
+
+1
+
+1
+
+Output should be "Sakurako" because n=1 is odd.
+
+Yes.
+
+Sample Input 2:
+
+1
+
+2
+
+Output should be "Kosuke" because n=2 is even.
+
+Yes.
+
+Another test case: n=3, output "Sakurako".
+
+n=4, output "Kosuke".
+
+n=5, output "Sakurako".
+
+n=6, output "Kosuke".
+
+Yes.
+
+So, the code seems correct.
+</think>
+
+To solve this problem, we need to determine the winner of a game played by Sakurako and Kosuke, who take turns moving a dot on a coordinate line. The dot starts at position 0, and the game continues while the absolute value of the dot's position does not exceed a given number \( n \). Sakurako moves the dot in the negative direction, while Kosuke moves it in the positive direction. The game ends when the absolute value of the dot's position exceeds \( n \).
+
+### Approach
+1. **Understanding the Moves**: Sakurako and Kosuke take turns moving the dot. Sakurako moves the dot by an odd number in the negative direction, while Kosuke moves it by the same odd number in the positive direction. The sequence of moves alternates between them.
+2. **Sum of Moves**: The position of the dot after \( m \) moves can be determined by the sum of the moves. The sum of the moves alternates between negative and positive and follows a specific pattern. After \( m \) moves, the position of the dot is given by \( (-1)^m \times m \).
+3. **Game Termination Condition**: The game ends when the absolute value of the dot's position exceeds \( n \). This happens when \( m \) exceeds \( n \), as the position after \( m \) moves is \( m \) if \( m \) is odd and \( -m \) if \( m \) is even, both of which have an absolute value of \( m \).
+4. **Determining the Winner**: The last move is made by the player who starts the game if \( m \) is odd (Sakurako) or Kosuke if \( m \) is even.
+
+### Solution Code
+```python
+t = int(input())
+for _ in range(t):
+    n = int(input())
+    if n % 2 == 0:
+        print("Kosuke")
+    else:
+        print("Sakurako")
+```
+
+### Explanation
+- **Input Reading**: The code reads the number of test cases \( t \) and then processes each test case by reading \( n \).
+- **Determine Winner**: For each \( n \), the code checks if \( n \) is even or odd. If \( n \) is even, Kosuke makes the last move; if odd, Sakurako does.
+- **Output**: The result for each test case is printed based on whether \( n \) is even or odd.
+
+This approach efficiently determines the winner by leveraging the properties of the game and the sum of moves, ensuring optimal performance even for the upper constraint limits.<｜end▁of▁sentence｜>

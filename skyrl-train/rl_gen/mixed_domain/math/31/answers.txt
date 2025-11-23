@@ -1,0 +1,692 @@
+(-\infty, \frac{1}{2}]
+Okay, so I have this function \( f(x) = \mathrm{e}^x - 1 - x - a x^2 \) and it's given that it's monotonically increasing for \( x \geq 0 \). I need to find the range of values for \( a \).
+
+First, since the function is monotonically increasing for \( x \geq 0 \), its derivative should be non-negative in that domain. So, let me compute the derivative of \( f(x) \):
+
+\[ f'(x) = \frac{d}{dx}(\mathrm{e}^x) - \frac{d}{dx}(1) - \frac{d}{dx}(x) - \frac{d}{dx}(a x^2) \]
+\[ f'(x) = \mathrm{e}^x - 0 - 1 - a \cdot 2x \]
+\[ f'(x) = \mathrm e^x -1 -2 a x \]
+
+So, \( f'(x) \geq 0 \) for all \( x \geq 0 \). That means:
+
+\[ \mathrm e^x -1 -2 a x \geq 0 \quad \forall x \geq 0 \]
+
+I need to find the values of \( a \) such that this inequality holds for all \( x \geq 0 \.
+
+Let me consider \( x = 0 \ first:
+
+\[ \mathrm e^0 -1 -2 a \cdot 0 \geq 0 \]
+\[ 1 -1 -0 \geq 0 \]
+\[ 0 \geq 0 \]
+
+So, it holds at \( x = 0 \. Now, I need to ensure that for all \( x >0 \, \mathrm e^x -1 -2 a x \geq 0 \.
+
+Let me rearrange the inequality:
+
+\[ \mathrm e^x -1 \geq 2 a x \]
+
+If \( x =0 \, it's 0=0, as we saw. For \( x >0 \, let's see.
+
+If \( a \) is positive, then the right-hand side is positive, so I need \( \mathrm e^x -1 \) to be greater than a positive number. That should hold for small \( x \) maybe, but for larger \( x \), \( \mathrm e^x \) grows exponentially, so it's likely positive. But I need to be cautious.
+
+If \( a \) is negative, then the right-hand side is negative (since \( a x^2 \) would be negative if \( a \) is negative and \( x^2 \) positive), so \( - a x^2 \) would be positive. Wait, actually, in the original function, it's \( -a x^2 \). So, if \( a \) is negative, then \( -a \) is positive, so the term is positive. So, let me think.
+
+Wait, the function is \( -a x^2 \. So, if \( a \) is negative, then \( -a \) is positive, so the term is positive. So, the function \( f(x) \) would have a positive quadratic term if \( a \) is negative. Hmm, but maybe I should consider both cases: \( a \) positive and negative.
+
+But first, let me consider the case when \( a \) is positive vs when \( a \) is negative.
+
+Wait, the question is asking for the range of \( a \) such that \( f(x) \) is monotonically increasing for \( x \geq0 \. So, maybe \( a \) can be positive or negative, but we need to find all \( a \) such that \( f'(x) \ge0 \forall x \ge0.
+
+Let me rearrange the inequality:
+
+\[ \mathrm e^x -1 \ge 2 a x \]
+
+So, for each \( x >0 \, 2 a x \le \mathrm e^x -1 \.
+
+So, if \( x \ne0, \mathrm e^x -1 >0 \.
+
+So, for \( x >0 \, \mathrm e^x -1 >0 \, so for the inequality \( 2 a x \le \mathrm e^x -1 \ to hold, depending on the sign of \( a \).
+
+Case 1: \( a \ge0 \.
+
+Then, \( 2 a x \ge0 \. So, the inequality \( 2 a x \le \mathrm e^x -1 \) must hold for all \( x \ge0 \.
+
+At \( x=0 \, it's 0<=0, which holds.
+
+For \( x >0 \, since \( a \ge0 \,左边是非负的, while \( \mathrm e^x -1 >0 \ for x>0.
+
+So, we need \( \mathrm e^x -1 \ge0 \implwhich it is, but more strictly, we need \( \mathrm e^x -1 \ge2 a x \for all x>=0.
+
+So, the most restrictive condition will be the smallest x where the ratio \( \mathrm e^x -1 / x \) is largest, for \( x >0 \.
+
+Because for each \( x, a \le ( \mathrm e^x -1 ) / (2 x ) .
+
+So, the most restrictive a is when a is less than or equal to the minimum of ( e^x -1 )/(2 x ) for x >0.
+
+So, the maximum value of a that satisfies the inequality is half of the minimum of ( e^x -1 ) / x for x >=0.
+
+Wait, let me be precise.
+
+For a >=0, the condition is:
+
+a <= ( e^x -1 ) / (2 x ) for all x >=0.
+
+So, the most restrictive a is the infimum of ( e^x -1 ) / (2 x ) for x >=0.
+
+Wait, as x approaches0, let's compute the limit of ( e^x -1 ) / x =1, using L'Hospital(*)(since both numerator and denominator approach0).
+
+So, limit as x->0 of ( e^x -1 )/x =1.
+
+So, ( e^x -1 )/x approaches1 as x->0.
+
+So, ( e^x -1 )/(2 x ) approaches0.5 as x->0.
+
+So, at x=0, both sides are0, but for small x>0, ( e^x -1 )/(2 x ) approx0.5 + x/2 -1/2 x^2 +... using the Taylor series.
+
+So, e^x =1 +x +x^2/2 +x^3/6 +...
+
+so e^x -1 =x +x^2/2 +x^3/6 +...
+
+so e^x -1 -0 =x +x^2/2 +...
+
+so e^x -1 /x =1 +x/2 + higher terms.
+
+so /2 x would be0.5 +x/2 +...
+
+Wait, no, ( e^x -1 ) /x =1 +x/2 +x^2/6 +... so ( e^x -1 ) / (2 x ) =0.5 +x/2 +x^2/6 +...
+
+So, for small x, ( e^x -1 )/(2 x ) approx0.5 +x/2.
+
+So, as x increases, the expression increases beyond0.5.
+
+So, the minimum value of ( e^x -1 )/(2 x ) for x >=0 is0.5, achieved as x->0.
+
+Because as x->0, it approaches0.5, and for x>0, it's larger than0.5.
+
+So, the minimum value of ( e^x -1 )/(2 x ) for x >=0 is0.5, achieved as x->0.
+
+Therefore, for a >=0, a must be <=0.5, because if a>0.5, then for x->0, a >0.5 > ( e^x -1 )/(2 x ) approx0.5 +x/2, which would be greater than0.5 +0=0.5, so for x->0,-eyedelingeling.
+
+Wait, let me be precise.
+
+If a >0.5, then for x->0, let's see:
+
+'e^x -1 -x -a x^2 = e^x -1 -x -a x^2.
+
+The derivative is e^x -1 -0 -0= e^0 -1=0, so the first derivative at0 is0, which means the function has a tangent line at0 given by the second derivative.
+
+The second derivative of f(x) is e^x -0 -0 -2a= e^x -2a.
+
+At x=0, second derivative is1 -2a.
+
+So, if1 -2a >0, then the function is convex at0, which means/Formally, the function being convex at0implies that for small x, f(x) �approx0 +0*x +0.5*0.25 x^2, Wait, no.
+
+Wait, the Taylor series of f(x) around0:
+
+f(x)= f(0) + f'(0) x + ( f''(0) /2 ) x^2 + ( f'''(0) /6 ) x^3 +...
+
+f(0)= e^0 -1 -0 -0=0.
+
+f'(0)=0.
+
+f''(x)= e^x -0 -0 -2a= e^x -2a.
+
+so f''(0)=1 -2a.
+
+if1 -2a >0, then f''(0)>0, so the function is convex at0, which means that for small x>0, f(x)>=0 +0 +0.5*(f''(0)) x^2.
+
+So, f(x)>=0 +0 +0.5*(1 -2a) x^2.
+
+So, if1 -2a >0, then0.5*(1 -2a) x^2 >0.
+
+So, for small x>0, f(x)>=0 +0 +0.5*(1 -2a) x^2.
+
+Therefore, if0.5*(1 -2a) >0,即1 -2a >0=>a <0.5.
+
+If a=0.5, then f''(0)=0, so the second derivative is0, so we need to look at the third derivative.
+
+Third derivative f'''(x)= e^x -0 -0 -0= e^x.
+
+So, f'''(0)=1.
+
+So, the Taylor series would be f(x)=0 +0 +0 +0 + (f'''(0)/6) x^3 + higher terms=> (1/6) x^3 +...:
+
+f(x)= (1/6) x^3 + higher terms.
+
+So, for a=0.5, f(x)= e^x -1 -0.5 x^2.
+
+The second derivative at0 is0, so趋向0ABCDEFG.
+
+Wait, perhaps I should not use this approach.
+
+Let me go back.
+
+If a>0.5, then at x->0, the second derivative of f(x) is1 -2a<0.
+
+So, f''(0)=1 -2a <0.
+
+So, the function is concave at0 when a>0.5.
+
+So, for small x>0, if the function is concave at0, then the tangent line is below the function.
+
+Wait, the tangent line at0 is y=0 +0 x +0=0, since f(0)=0, f'(0)=0.
+
+So, the tangent line is y=0.
+
+Since the function is concave at0 (second derivative negative), then for small x>0, f(x)<=0 +0 x +0.5 *0 *x^2=0,Wait no, if second derivative is negative, the function is concave, so lies below the tangent line, which is0.
+
+So, f(x)<=0 +0*x +0.5*0*x^2=0,Wait no, the Taylor series is f(x)=0 +0 x +0.5 *0 *x^2 + (f'''(0)/6) x^3 +...
+
+Wait, f''(x)=e^x -2a.
+
+So, f''(0)=1 -2a.
+
+if a>0.5, f''(0)<0.
+
+So, the function is concave at0.
+
+Now, the tangent line at0 is0 +0 x +0=0.
+
+Since the function is concave, it lies below the tangent line附近吗？
+
+Wait, if a function is concave at a point, then around that point, the function lies below the tangent line.
+
+Wait, the tangent line is y=0 +0 x +0=0.
+
+So, the function f(x) near0 is less than or equal to0 +0 x +0.5 *0 *x^2 +0 x +f(x)/6 x^3,...
+
+Wait, this is getting confusing.
+
+ perhaps better to compute the Taylor series.
+
+f(x)= e^x -1 -0 x^2 +0 x^3 +...Wait original function is f(x)= e^x -1 -x -a x^2.
+
+So, f(x)= e^x -1 -x -a x^2.
+
+So, f(0)=0.
+
+f'(x)= e^x -1 -0 -a*2x= e^x -1 -2a x.
+
+f'(0)=0.
+
+f''(x)= e^x -0 -0 -2a= e^x -2a.
+
+f''(0)=1 -2a.
+
+if a>0.5, f''(0)<0.
+
+f'''(x)= e^x -0 -0 -0= e^x.
+
+f'''(0)=1.
+
+So, the Taylor series of f(x) around0 is:
+
+f(x)= f(0) + f'(0) x + f''(0) x^2 /2 + f'''(0) x^3 /6 + higher terms.
+
+So,
+
+f(x)=0 +0 x + (1 -2a)/2 x^2 +1/6 x^3 + higher terms.
+
+So, f(x)= \frac{(1 -2a)}{2} x^2 + \frac{1}{6} x^3 + higher terms.
+
+if a>0.5, then (1 -2a) negative, so -2a +1 <0=>2a>1=>a>0.5.
+
+ so, -2a +1 <0=>1 -2a <0.
+
+so, (1 -2a)/2 <0.
+
+so, the second term is negative.
+
+So, f(x)= negative term x^2 + positive term x^3 + higher terms.
+
+for small x>0, the dominant term is the positive term x^3 + negative term x^2.
+
+But both are small.
+
+but wait, let's compute the leading term after0.
+
+So, f(x)= (1 -2a)/2 x^2 +1/6 x^3 + higher terms.
+
+for a>0.5, (1 -2a)/2 negative.
+
+so, f(x)= negative x^2 + positive x^3 + higher terms.
+
+for small x, let's factor x^2:
+
+f(x)= x^2 ( (1 -2a)/2 + x/3 + higher terms )
+
+so, for small x>0, f(x)≈ x^2 ( - (2a -1)/2 + x/3 +... )
+
+since (1 -2a)/2 = - (2a -1)/2.
+
+so, f(x)≈ - (2a -1)/2 x^2 + x/3 + higher terms.
+
+so, for small x>0, f(x)≈ - (2a -1)/2 x^2 + x/3.
+
+since a>0.5, 2a -1>0, so - (2a -1)/2 <0.
+
+so, f(x)≈ - positive x^2 + positive x /3.
+
+so, for small x, the dominant term is x/3, since for small x, x healthier than x^2.
+
+because as x approaches0, x healthier than x^2.
+
+so, f(x)≈ (1/3) x + smaller terms.
+
+so, for small x>0, f(x)≈ (1/3) x + higher terms.
+
+so, approximately, for small x, f(x)≈ (1/3) x.
+
+so, positive x.
+
+so, for small x>0, f(x)≈0 +0 x +0.5*0 x^2 +0 x +0 x^2 +0.5/(2!) x^2 +0 x^3 +...'Wait, no, the correctaylor series is f(x)=0 +0 x + (f''(0)/2) x^2 + (f'''(0)/6) x^3 + (f''''(0)/24) x^4 +...
+
+so, f''(0)=1 -2a.
+
+so, f''(0)/2= (1 -2a)/2.
+
+f'''(0)=1.
+
+so, f'''(0)/6=1/6.
+
+f''''(x)= e^x.
+
+so, f''''(0)=1.
+
+so, f''''(0)/24=1/24.
+
+so, the series is:
+
+f(x)=0 +0 x + (1 -2a)/2 x^2 +0 x^3 +0 x^4 +0 x^5 + (1/24) x^6 +...
+
+so, for small x, f(x)= (1 -2a)/2 x^2 +1/24 x^6 +...
+
+so, for a>0.5, (1 -2a)/2 negative, so -|a| x^2 + small positive x^6.
+
+so, for small x, f(x)≈ -|a| x^2 + x^6 /24 +....
+
+so, for very small x, the dominant term is -|a| x^2 + x^6 /24.
+
+so, if a>0, then -a x^2 + x^6 /24.
+
+so, for small x, f(x)= -a x^2 + x^6 /24 +....
+
+So, for small x>0, f(x)≈ -a x^2 + x^6 /24.
+
+since x^6 /24 is smaller than x^2 for small x, but negative a x^2.
+
+so, if a>0, f(x)≈ -positive x^2 + small positive x^6.
+
+so, near0, f(x)≈ -a x^2 + small positive x^6.
+
+so, if a>0, f(x) near0 is approximately -a x^2 + small positive x^6.
+
+so, for small x, optionally factoring x^2:
+
+f(x)= x^2 ( -a + x^4 /engeboardingengersomething ) .
+
+but for small x, f(x)= -a x^2 + x^6 /24 +...
+
+ so, for small x>0, f(x)= -a x^2 + small positive x^6.
+
+since x^6 >0, but small, and a>0.
+
+so, f(x)= -a x^2 + small positive x^6.
+
+so, for small x, the term -a x^2 dominates if a≠0, but actually, both terms are small.
+
+but wait, for small x, the dominant term is the smallest power dominatesundersmall x.
+
+but both x^2 and x^6 are small, but x^2 is smaller than x^6 for small x.
+
+So, for small x, the dominant term is -a x^2 + small positive x^6.
+
+so, if a>0, f(x)= -a x^2 + small positive x^6.
+
+so, for small x, f(x)≈ -a x^2 + small positive x^6.
+
+ so, if a>0, f(x)≈ -a x^2 + small positive x^6.
+
+ so, for small x, the term -a x^2 + small positive x^6.
+
+ so, if a>0, Airbus)));
+
+Wait, this is getting complicated. perhaps a better approach is to compute the derivative again.
+
+或其他 approach.
+
+也许 better to consider that if a>0, then the condition f'(x)= e^x -1 -2 a x >=0 for all x>=0.
+
+so, in particular, for x=0,0>=0, okay.
+
+for x->0, using Taylor series:
+
+e^x=1 +x +x^2/2 +x^3/6 +x^4/24 +...
+
+so, e^x -1= x +x^2/2 +x^3/6 +x^4/24 +...
+
+so, e^x -1 -2 a x= x +x^2/2 +x^3/6 +... -2 a x= (1 -2 a) x +x^2/2 +x^3/6 +...
+
+so, for small x, f'(x)= (1 -2 a) x + x^2/2 +..."
+
+so, if a<0.5, then1 -2 a>0, so for small x, f'(x≈0 +0 +0 +... + (1 -2 a)x +...'Wait, no.
+
+Wait, x is small, so terms order-wise:
+
+f'(x)=0 +0 x +0 x^2 + (1 -2 a)/1 x +0 x^2 +0 x^3 +0 x^4 +... + mex项...
+
+Wait, no, let me recom Compute f'(x):
+
+f'(x)= e^x -1 -2 a x.
+
+so, e^x=1 +x +x^2/2 +x^3/6 +x^4/24 +...
+
+so, e^x -1= x +x^2/2 +x^3/6 +x^4/24 +...
+
+so, f'(x)= e^x -1 -2 a x= x +x^2/2 +x^3/6 +x^4/24 +... -2 a x= (1 -2 a) x +x^2/2 +x^3/6 +x^4/24 +...
+
+so, for small x, f'(x)= (1 -2 a) x + higher terms.
+
+so, if a<0.5, then1 -2 a>0, so f'(x≈0 +0 +0 + (1 -2 a)x +0 +...].
+
+so, for small x>0, f'(x≈ (1 -2 a) x + higher terms.
+
+so, if a<0.5,1 -2 a>0, so f'(x≈0 +0 +0 + conversely, no.
+
+Wait, x is small positive, a finite positive constant.
+
+so, f'(0)=0.
+
+the first derivative at0 is0.
+
+the second derivative f''(0)=1 -2 a.
+
+if a<0.5, f''(0)>0, so convex at0.
+
+so, for small x>0, the function is increasing陡峭edly.
+
+but anyway, the point is, for a<0.5,:
+
+f'(x)= (1 -2 a) x + x^2/2 +...", so for small x, dominant term is (1 -2 a) x +0 +...
+
+so, if a<0.5,adersomething.
+
+Wait, this is getting confusing. perhaps a better approach:
+
+-present the problem correctly.
+
+Given f(x)= e^x -1 -x -a x^2.
+
+we are given that f(x) is monotonically increasing for x>=0, which means f'(x)>=0 for x>=0.
+
+so, f'(x)= e^x -1 -x -2 a x>=0 for x>=0.
+
+so, we need to find all a such that e^x -1 -x -2 a x >=0 for all x>=0.
+
+so, rearrange:
+
+e^x -1 -x >=2 a x for x>=0.
+
+so, if x=0,左边=0-0+0=0, so0>=0, which holds.
+
+for x>0, we can divide both sides by x (since x>0):
+
+(e^x -1 -x)/x >=2 a.
+
+so, (e^x -1 -x)/x >=2 a for x>0.
+
+so, the left-hand side (LHS) is a function of x, let's call it g(x)= (e^x -1 -x)/x for x>0.
+
+we need g(x)>=2 a for all x>0.
+
+so, the infimum of g(x) for x>0 must be >=2 a.
+
+so, 2 a <= inf_{x>0} g(x).
+
+so, a <= (1/2) inf_{x>0} g(x).
+
+so, we need to find the infimum of g(x)= (e^x -1 -x)/x for x>0.
+
+so, let's compute g(x)= (e^x -1 -x)/x.
+
+implify:
+
+e^x -1 -x= x + x^2/2 +x^3/6 +... -x= x^2/2 +x^3/6 +...
+
+so, e^x -1 -x= x^2/2 +x^3/6 + higher terms.
+
+so, g(x)= (x^2/2 +x^3/6 +...)/x= x/2 +x^2/6 +...
+
+so, g(x)= x/2 +x^2/6 + higher terms.
+
+so, as x→0, g(x)= x/2 +..., so g(x→0)=0 +0 +...=0.
+
+Wait, let me compute limit as x→0 of g(x):
+
+g(x)= (e^x -1 -x)/x.
+
+Use L'H[code]/lHospital(*)(pairing numerator and denominator both approach0 as x→0.
+
+so, limit as x→0 of (e^x -1 -x)/x = limit of (e^x -1)/1 =0 Driver/vendors>.
+
+Wait, numerator derivative: e^x -1.
+
+denominator derivative:1.
+
+so, limit= (e^0 -1)/1=0/0, ind Undefined.
+
+So, apply LHospital again.
+
+ differentiate numerator: e^x.
+
+denominator:1.
+
+so, limit= e^0 /1=1/1=1.
+
+so, g(x)→1 as x→0.
+
+Wait, let me recomcompute:
+
+g(x)= (e^x -1 -x)/x.
+
+ugging x=0:0-0-0/0=0/0.
+
+so, apply LHospital: derivative numerator= e^x -1, derivative denominator=1.
+
+so, limit as x→0 of (e^x -1)/1=0.
+
+Wait, e^0 -1=0-0=0? Wait, e^0=1, so e^0 -0=1-0=1.
+
+Wait, no, x->0, so e^x -0 -x= e^x -x.
+
+so, g(x)= (e^x -x -0)/x= (e^x -x)/x.
+
+Wait, no, original function is e^x -1 -x.
+
+so, e^x -1 -x= e^x -x -1.
+
+so, g(x)= (e^x -x -1)/x.
+
+ah yes, that's correct.
+
+so, g(x)= (e^x -x -1)/x.
+
+now,ugging x=0:0-0-0/0=0/0.
+
+so, apply LHospital:
+
+derivative numerator: e^x -1.
+
+derivative denominator:1.
+
+so, limit as x→0 of (e^x -1)/1=0.
+
+so, g(x)->0/0 again? Wait, numerator ethemporal derivative: e^x -0 -0= e^x.
+
+Wait, original g(x)= (e^x -x -1)/x.
+
+so, numerator derivative: e^x -1 -0= e^x -1.
+
+denominator derivative:1.
+
+so, limit as x→0 of (e^x -1)/1=0.
+
+so, g(x)->0/0 again.
+
+Wait, this is getting complicated. let me compute g(x)= (e^x -x -1)/x.
+
+compute limit as x→0:
+
+Use Taylor series of e^x:1 +x +x^2/2 +x^3/6 +...
+
+so, e^x -x -1= (1 +x +x^2/2 +x^3/6 +... ) -x -1= x^2/2 +x^3/6 +...
+
+so, e^x -x -1= x^2/2 +x^3/6 +...
+
+so, g(x)= (x^2/2 +x^3/6 +...)/x= x/2 +x^2/6 +...->0 as x→0.
+
+so, g(x)->0 as x->0.
+
+now, compute g(x) for x>0.
+
+g(x)= (e^x -x -1)/x.
+
+we need to find the infimum of g(x) for x>0.
+
+so, find min of g(x)= (e^x -x -1)/x for x>0.
+
+let me compute g(x) for x>0.
+
+compute g(0)=0, but x>0.
+
+compute derivative of g(x) to find min.
+
+g(x)= (e^x -x -1)/x.
+
+compute g'(x):
+
+using quotient rule:
+
+g'(x)= [ (e^x -1 -0 )*x - (e^x -x -1)*1 ] / x^2
+
+implify numerator:
+
+(x(e^x -1) - (e^x -x -1))= x e^x -x - e^x +x +1= x e^x - e^x +0 +1= e^x (x -1) +1.
+
+so, g'(x)= [e^x (x -1) +1 ] / x^2.
+
+we need to find where g'(x)=0.
+
+so, numerator=0:
+
+e^x (x -1) +1=0.
+
+so, e^x (x -1)= -1.
+
+so, e^x (x -1)= -1.
+
+let me define h(x)= e^x (x -1)+1.
+
+we need to find x>0 where h(x)=0.
+
+so, h(x)= e^x (x -1) +1=0.
+
+so, e^x (x -1)= -1.
+
+let me solve for x.
+
+this is transcendental, so likely only solution is x=0, but at x=0, h(0)=0 -0 +1=1≠0.
+
+or x=1: h(1)= e^1(0)+1=0+1=1≠0.
+
+x= -1: not x>0.
+
+so, let me look for x>0.
+
+compute h(x)= e^x (x -1) +1.
+
+for x>0.
+
+compute h(0)=0 +0 +1=1>0.
+
+h(1)= e(0)+1=1>0.
+
+h(0.5)= sqrt(e)*(0.5 -1) +1= sqrt(e)*(-0.5)+1≈1.414*(-0.5)+1≈-0.207 +1=0.703>0.
+
+h(0.2)= e^0.2*(0.2 -1)+1≈1.221*( -0.8)+1≈-1.777 +1≈-0.777<0.
+
+so, h(0.2)<0, h(0)=1>0.
+
+so, by intermediate value theorem, there exists x∈(0,0.2) where h(x)=0.
+
+let me approximate.
+
+h(0)=1>0.
+
+h(0.1)= e^0.1*(0.1 -1)+1≈1.105*( -0.9)+1≈-0.9045 +1≈0.0955>0.
+
+h(0.05)= e^0.05*(0.05 -1)+1≈1.0502*( -0.95)+1≈-0.9751 +1≈0.0249>0.
+
+h(0.02)= e^0.02*(0.02 -1)+1≈1.0202*(-0.98)+1≈-0.9794 +1≈0.0206>0.
+
+h(0.01)= e^0.01*(0.01 -1)+1≈1.01005*(-0.99)+1≈-0.990045 +1≈0.009955>0.
+
+h(0.005)= e^0.005*(0.005 -1)+1≈1.005002*(-0.995)+1≈-0.497225 +1≈0.402775>0.
+
+Wait, this seems incorrect. let me reccompute h(x)= e^x (x -1) +1.
+
+At x=0:0 +0 +1=1.
+
+x=0.00=>0 +0 +1=1.
+
+x=0.01: e^0.01≈0.01005, so 0.01005*(0.01 -1)=0.01005*(-0.99)= -0.09945 +1=0.00050≈0.
+
+Wait, this is confusing. let me compute accurately.
+
+h(x)= e^x (x -1) +1.
+
+At x=0: e^0*(0 -1) +1=0 -1 +1=0.
+
+Wait, wait, hold off.
+
+Wait, x=0: h(0)= e^0*(0 -1) +1=1*(-1)+1=0.
+
+So, h(0)=0.
+
+Wait, earlier calculations were wrong.
+
+So, let me reccompute h(x)= e^x (x -1) +1.
+
+at x=0:0 -0 +1=1? Wait, no.
+
+Wait, x=0: e^0=1, (0 -1)= -1, so e^0*(0 -1)= -1, then +1: -1 +1=0.
+
+So, h(0)=0.
+
+Wait, wait, no:
+
+h(x)= e^x (x -1) +1.
+
+At x=0: e^0*(0 -1) +1=1*(-1)+1=0.
+
+So, h(0)=0.
+
+Then, h(x)= e^x (x -1) +1.
+
+Compute h(0)=0.
+
+compute h(1)= e(0)+1=0+1=1.
+
+compute h(-1)= e^(-1)*(-1 -1)+1= ( -2/e ) +1≈-0.735 +1≈0.265>0.
+
+Wait, wait, x>=0, so x=-1 not in domain.
+
+So, for x>=0,
+
+h(0)=0.
+
+h(x)= e^x (x -1) +1.
+
+compute h(0.5)= e^0.5*(0.5 -1)+1≈1.6487*(-0.5)+1≈-0.3243 +1≈0.6757>0.
+
+h(0.2)= e^0.2*(0.2 -1)+1≈1.2214*(-00 SGivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetagivetag

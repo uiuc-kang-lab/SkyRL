@@ -1,0 +1,845 @@
+Okay, so I have this problem where I need to determine the minimum number of moves it takes for the teachers to catch David. Let's try to understand the problem step by step.
+
+So, the classroom is a one-dimensional line of cells from 1 to n. All the teachers and David start in distinct cells. Each move consists of David moving first, then all the teachers move simultaneously. The goal is to find out how many moves it takes until David is caught.
+
+Hmm. The catch is that both David and the teachers act optimally. David tries to avoid getting caught for as long as possible, while the teachers try to catch him as quickly as possible. So for each query (David's position), I need to compute the minimal number of moves needed.
+
+Let me think about the approach. I remember that in similar problems, sometimes the key is to look at the distances between David and the teachers. Since both move optimally, the worst-case scenario is when David is as far as possible from all teachers, and the teachers are positioned in a way that they have to cover the maximum possible distance.
+
+Wait, in each move, David moves first. So he can choose to move towards or away from the teachers, but since he wants to avoid being caught, he probably moves in a direction that maximizes the distance to the closest teacher. Then the teachers, in their turn, move towards David to minimize the distance.
+
+So for each query a (David's position), I need to find the minimal number of steps such that, after that, David is in a position where all teachers are within a certain distance.
+
+Wait, maybe I should model the problem by considering the maximum distance between David and the nearest teacher. Because, in each step, David can move one step towards or away, but the teachers can also move towards or away. So the key is to find the minimal number of steps so that, after that, all teachers are within a certain distance.
+
+Let me think differently. For each query a, I need to find the minimal k such that there exists a teacher b_i where |a - b_i| <= k, and also, the maximum distance between a and any teacher is such that in k steps, the teachers can cover it.
+
+Wait, perhaps the minimal k is the maximum of the following:
+
+1. The minimal steps needed for David to reach the nearest teacher. Because he would move towards that teacher as much as possible.
+
+2. The maximum distance between David's position and the nearest teacher, divided by 2. Because the teachers can cover that distance in k steps, moving towards David each time.
+
+Wait, let's think about it. Suppose the nearest teacher is at distance d from David. Then, in the worst case, David moves away each time, but the teachers can approach. So the number of steps needed is such that the teachers can cover the distance d in k steps.
+
+Wait, no. Let me think: David moves first. So in each step, David moves one step, then the teachers move one step towards or away. So the net change in distance between David and the closest teacher is (David's move) - (teachers' move).
+
+Wait, no. Let's model it.
+
+Let's say the closest teacher is at position b, and David is at position a.
+
+In each step:
+
+- David moves to a+1 or a-1.
+
+- Then, all teachers move to b+1, b-1, or stay.
+
+So the new distance between David and the teacher is |(a ± x) - (b ± y)|, where x is the number of steps David moved (1 or 0), and y is the number of steps the teacher took towards or away (1 or 0).
+
+Wait, but in each move, David chooses the direction to move, then the teachers choose the direction to move. So David's choice is to maximize the time until capture, and the teachers choose to minimize the time.
+
+So for each step, David will choose the direction that maximizes the minimal steps required, while the teachers will choose directions to minimize the steps.
+
+So the problem is to find the minimal k such that, after k steps, all teachers are within k steps of David.
+
+Wait, perhaps it's better to model the problem as follows: For each query a, find the minimal k such that the maximum distance from a to any teacher is <= k, and the minimal k is determined by the worst-case scenario where David moves away as much as possible while the teachers move towards him.
+
+Wait, perhaps the key is to find the minimal k such that the maximum of (d_i / 2) for all i, where d_i is the distance from a to each teacher, is less than or equal to k. Because in each step, the teachers can reduce the distance by at most 1 (since each step, the teacher can move towards David, reducing the distance by 1, and David moves away, increasing the distance by 1). So the net change per step is -1 (if the teacher moves towards David and David moves away) or +1 (if the teacher moves away and David moves away). So in either case, the distance can increase or decrease by 2 per step. Wait, that might not be right.
+
+Wait, no. Let's think: Let's say the distance between David and a teacher is d. David moves first, then the teacher moves.
+
+If David moves away, the distance becomes d+1. Then the teacher can move towards, reducing it to d+1 - 1 = d. So overall, the distance remains the same.
+
+Wait, no. Wait, initial distance is d. David moves away by 1, so the distance is now d+1. Then the teacher moves towards, reducing it by 1. So the distance becomes d+1 -1 = d. So after each full step, the distance remains the same.
+
+Hmm, that's interesting. So in each step, the distance can't change because David moves away and the teacher moves towards. So the distance remains the same.
+
+Wait, that can't be right. Let me re-calculate.
+
+Initial distance: d = |a - b_i|.
+
+David moves to a+1 (away) or a-1 (towards). Let's say he moves away, so distance becomes d+1.
+
+Then the teacher moves towards, so the new distance is (a+1) - b_i = d+1 - 1 = d.
+
+So the distance remains the same. So after each step, the distance doesn't change.
+
+Wait, that's a crucial point. So the distance between David and the teacher remains the same after each step because David moves away, then the teacher moves towards, and the distance is adjusted accordingly.
+
+So, that means that if the initial distance is d, then after each step, the distance remains d. So in that case, the distance doesn't change.
+
+Wait, but that can't be correct. Because in the first step, David moves, then the teacher moves. So the distance changes.
+
+Wait, let's take an example. Suppose a is 5, and b_i is 3. So d = 2.
+
+David moves to 4. Then the teacher can move to 4, so the distance becomes 0. So in one step, the distance is reduced to 0.
+
+Another example: a=5, b_i=4. d=1.
+
+David moves to 6. Then the teacher can move to 5, so distance is 0. So again, in one step.
+
+Wait, so in that case, the distance can be reduced to 0 in one step.
+
+Wait, but what about a=5, b_i=6. d=1.
+
+David moves to 4. Then the teacher can move to 5. So distance is 1.
+
+Then, in the next step, David moves to 5, and the teacher moves to 5. So distance is 0.
+
+So in two steps.
+
+Wait, so the number of steps depends on the initial distance.
+
+So, for a given a and b_i, the initial distance is d = |a - b_i|.
+
+In each step, David moves away, then the teacher moves towards, which can reduce the distance by 2 per step? Or wait, not necessarily.
+
+Wait, let's model it for different d.
+
+Case 1: d = 0. But the problem states that David and teachers are all distinct, so this can't happen.
+
+Case 2: d=1.
+
+Step 1: David moves away (to a+1 or a-1), then teacher moves towards, reducing d by 2. So d becomes -1, but that's not possible. Wait, no, because after David moves, the distance is d+1, then the teacher moves towards, reducing it by 1. So overall, d becomes (d+1) - 1 = d.
+
+Wait, that's the same as before. So for d=1, after each step, the distance remains 1.
+
+Wait, that's confusing. Let me re-calculate.
+
+Wait, for d=1: a is at position x, teacher is at x+1.
+
+David's move: he can move to x+1 or x-1.
+
+If he moves to x+1, then the teacher, after his move, can move to x+2, but that's not possible because the teacher can only move to adjacent cells or stay. Wait, no, the teacher is at x+1, so he can move to x, x+1, or x+2? No, because in one move, he can only move to adjacent cell or stay. So from x+1, he can move to x, x+1, or x+2? Wait, no. Wait, each move is to an adjacent cell or stay. So from x+1, the teacher can move to x, x+1, or x+2. Wait, no: from x+1, the adjacent cells are x and x+2. So the teacher can move to x, x+1, or x+2.
+
+Wait, that's a misunderstanding. So for a cell b_i = x+1, the teacher can move to x, x+1, or x+2 in one step.
+
+So, when David is at x, a is at x+1.
+
+David's move: he can go to x-1 or x+1.
+
+Let's say he goes to x+1 (so moving away, since a is at x+1). Then, the teacher can move to x+2, x+1, or x. So if the teacher is at x+1, and David is at x+1, then after the teacher's move, he can move to x+2, which is farther away.
+
+Wait, this is getting complicated. Maybe I should model this as a graph of possible positions and see how the distance changes.
+
+Alternatively, perhaps the minimal number of steps is determined by the maximum distance from a to any teacher, divided by 2, rounded up.
+
+Wait, let's think again. For each query a, I need to find the minimal k such that, for all teachers, the distance between a and each teacher is <= k, and also, the maximum distance among all teachers is such that k >= (max_d + 1) // 2.
+
+Wait, perhaps that's the case. Because in each step, the teachers can reduce the distance by 1, but David can move away, increasing the distance.
+
+Wait, no. Because David moves first. So in each step:
+
+- David moves one step (could be towards or away).
+- Then, all teachers move one step towards or away.
+
+So the net change in distance is (David's move) - (teachers' move).
+
+Suppose the initial distance is d. David can choose to move in a way that maximizes the time, so he will move in the direction that increases d as much as possible.
+
+Then, the teachers will move in a way that minimizes the distance.
+
+So, let's model the worst-case scenario:
+
+David wants to maximize the time, so he moves away from the closest teacher. Then, the teachers will move towards David, reducing the distance.
+
+So, for each step, David increases the distance by 1, and the teacher decreases it by 1. So the net effect is that the distance remains the same.
+
+Wait, that's a problem. Because if the distance remains the same, then the teachers can never catch David.
+
+Wait, no. Because in each step, David moves, then the teacher moves. So the distance changes as follows:
+
+Initial distance is d.
+
+After David moves away, distance becomes d+1.
+
+Then, the teacher moves towards, distance becomes d.
+
+So, the distance remains the same.
+
+Wait, this can't be right. So if David moves away, then the teacher moves towards, the distance becomes d. So the distance remains the same.
+
+So in that case, the distance doesn't change.
+
+Hmm, that's a problem. So, in this case, the distance remains the same after each step.
+
+Wait, but that would mean that if David is at a distance d from a teacher, then after each step, the distance remains d. So, in that case, the teachers can never catch him, which isn't possible because the problem states that David is eventually caught.
+
+So, perhaps my initial analysis is incorrect.
+
+Let me try to model it for a specific example.
+
+Example 1:
+
+n = 5.
+
+Test case has m=2, q=1.
+
+b = [2,4]
+
+a = 3.
+
+So, David is at 3, teachers at 2 and 4.
+
+Steps:
+
+Step 1:
+
+David moves from 3 to 2 (away from teacher at 2, towards teacher at 4).
+
+Then, the teacher at 2 can move to 1, 2, or 3.
+
+If the teacher chooses to move to 3, then David is at 2, teacher is at 3. They are in the same cell. So, the answer is 1.
+
+So, in this case, the distance was 1 (3 to 2) and 1 (3 to 4). So the maximum distance is 1.
+
+So, the minimal k is 1.
+
+Another example:
+
+n=5, m=2, q=1.
+
+b = [2,4]
+
+a=3.
+
+Step 1:
+
+David moves to 2.
+
+Then, the teacher at 2 can move to 1, 2, or 3.
+
+If the teacher moves to 3, then they are caught.
+
+So, in one step, the distance is reduced to 0.
+
+So, the answer is 1.
+
+Another example:
+
+n=5, m=2, q=1.
+
+b = [3,4]
+
+a=2.
+
+Step 1:
+
+David moves to 1.
+
+Then, the teacher at 3 can move to 2, and the teacher at 4 can move to 3.
+
+So, both are at 2 and 3.
+
+So, in the next step:
+
+David moves to 2.
+
+Then, the teacher at 2 can move to 1, 2, or 3.
+
+So, the teacher at 3 can move to 2, catching David.
+
+So, two steps.
+
+So, the maximum distance from a is 1 (from 2 to 3 is 1, 2 to 4 is 2). Wait, no, a is 2, b_i is 3: distance is 1, b_i is 4: distance is 2.
+
+So, the maximum distance is 2.
+
+So, k is 2.
+
+So, the minimal steps is 2.
+
+So, in this case, the maximum distance is 2, and k is 2.
+
+So, that suggests that the minimal k is the maximum of (d_i + 1) // 2, where d_i is the distance from a to each teacher.
+
+Wait, in the first example, the maximum d_i is 1. So (1+1)/2=1, which matches the answer.
+
+In the second example, maximum d_i is 2. (2+1)/2=1.5, which rounds up to 2.
+
+In the third example, maximum d_i is 2, so k=2.
+
+So, perhaps the formula is k = max(ceil(d_i / 2) for all i), but wait, not exactly. Because the maximum d_i is 2, and k is 2.
+
+Wait, perhaps the minimal k is the maximum of (d_i + 1) // 2.
+
+Yes, because:
+
+d_i = 1 → (1+1)/2=1 → k=1.
+
+d_i=2 → (2+1)/2=1.5 → ceil is 2 → k=2.
+
+So, the formula seems to hold for these examples.
+
+So, the approach is:
+
+For each query a, compute for each teacher b_i the distance d_i = |a - b_i|.
+
+The minimal k is the maximum of (d_i + 1) // 2 for all i.
+
+Wait, no. Because in the first example, the maximum (d_i +1) // 2 is 1, which is correct.
+
+In the second example, the maximum is 2, which is correct.
+
+In the third example, the maximum is 2, correct.
+
+So, perhaps the minimal k is the maximum of (d_i + 1) // 2 for all i.
+
+So, the steps are:
+
+1. For each test case, read n, m, q.
+
+2. Read the m teachers' positions as a list, b.
+
+3. Read the q queries as a list, a.
+
+4. For each a in the queries:
+
+   a. Compute for each b_i in b, the distance d_i = |a - b_i|.
+
+   b. For each d_i, compute (d_i + 1) // 2.
+
+   c. The minimal k is the maximum of these values.
+
+Wait, that's the formula. So, for each a, the minimal steps is the maximum of ceil(d_i / 2) for all i.
+
+Yes, because:
+
+ceil(d_i / 2) = (d_i + 1) // 2.
+
+So, for d_i=1: (1+1)//2=1.
+
+d_i=2: (2+1)//2=1.5 → 1 in integer division? Wait, no, in Python, (2+1)//2 is 1.
+
+Wait, wait, no.
+
+Wait, (d_i + 1) // 2:
+
+d_i=1 → 2//2=1.
+
+d_i=2 → 3//2=1.
+
+Wait, that's a problem. Because in the first example, d_i=2 should give k=1, but (2+1)//2 is 1.
+
+Wait, but in the example where a=2, b=3 and 4:
+
+d_i=1 and 2.
+
+So, for d_i=1: (1+1)//2=1.
+
+d_i=2: (2+1)//2=1 (since 3//2 is 1).
+
+So, the maximum is 1, which is incorrect. Because in that case, the answer should be 2 steps.
+
+Wait, so this suggests that the initial approach is wrong.
+
+Wait, in that example, a is 2, b_i are 3 and 4.
+
+So, the distances are 1 and 2.
+
+So, (1+1)//2=1, (2+1)//2=1.5 → 1.
+
+So, maximum is 1. So, the minimal k is 1.
+
+But in the previous example, where a=2, and b_i are 3 and 4, David is at 2, teachers at 3 and 4.
+
+Step 1:
+
+David moves to 1.
+
+Then, the teacher at 3 can move to 2, and the teacher at 4 can move to 3.
+
+So, David is at 1, teacher at 2: distance 1.
+
+Then, in step 2:
+
+David moves to 2.
+
+Then, the teacher at 2 can move to 1 or 3.
+
+So, in step 2, they are caught.
+
+So, the minimal k is 2.
+
+So, the formula (d_i +1) // 2 gives 1 for both, but the correct k is 2.
+
+So, the formula is incorrect.
+
+Hmm, that's a problem. So, my initial approach is wrong.
+
+So, I need to think differently.
+
+Let me re-examine the problem.
+
+Each step:
+
+1. David moves first.
+
+2. Then, each teacher moves.
+
+So, the net change is:
+
+- David moves to a + x or a - x.
+
+- Then, each teacher moves to b_i + y or b_i - y.
+
+So, the new distance between David and teacher i is |(a + x) - (b_i + y)|.
+
+But x can be +1 or -1, and y can be +1 or -1 or 0.
+
+So, the net change is (x - y) in the distance.
+
+Wait, no. Let me think:
+
+Initial distance: d_i = |a - b_i|.
+
+After David's move, the distance becomes |a + x - b_i|, where x is ±1.
+
+Then, the teacher's move changes the distance by y, where y is ±1 or 0.
+
+So, the new distance is |(a + x) - (b_i + y)|.
+
+Which is |(a - b_i) + x - y)|.
+
+Which is |d_i + x - y|.
+
+So, the change in distance is x - y.
+
+So, the new distance is d_i + (x - y).
+
+So, for each step, the distance can increase by x - y.
+
+So, x can be +1 or -1.
+
+y can be +1, 0, or -1.
+
+So, x - y can be:
+
+- 1 - 1 = 0.
+
+- 1 - 0 = 1.
+
+- 1 - (-1) = 2.
+
+- -1 - 1 = -2.
+
+- -1 -0 = -1.
+
+- -1 - (-1) = 0.
+
+So, possible changes are -2, -1, 0, 1, 2.
+
+So, the distance can increase or decrease by 1 or 2.
+
+So, the maximum possible increase per step is 2.
+
+So, the distance can increase by up to 2 per step, but it's not clear.
+
+This complicates the analysis.
+
+So, the problem is more complex than I thought.
+
+So, the distance can change in various ways, depending on David's and teachers' movements.
+
+This makes it difficult to model.
+
+So, perhaps the key is to find the minimal k such that, after k steps, the maximum distance (d_i) is <= k.
+
+Wait, but in the earlier example, when a=2, b_i=3 and 4:
+
+d_i are 1 and 2.
+
+So, the maximum is 2.
+
+So, k must be >= 2.
+
+Because in k=1:
+
+After step 1, the distance is d_i + (x - y).
+
+So, for d_i=1:
+
+x can be -1 (David moves away) or +1.
+
+y can be +1 or -1.
+
+So, x - y can be -2, 0, or 2.
+
+So, the new distance is 1 + (x - y).
+
+If x - y is 2: distance becomes 3.
+
+If x - y is 0: distance remains 1.
+
+If x - y is -2: distance becomes -1, which is not possible. So, distance is 0.
+
+Wait, that's confusing.
+
+Alternatively, perhaps the distance can't be negative, so after each step, the new distance is the absolute value.
+
+So, the new distance is |d_i + (x - y)|.
+
+So, in the example where d_i=1, x=-1, y=1.
+
+So, x - y = -2.
+
+So, new distance is |1 - 2| = 1.
+
+So, no change.
+
+Wait, but that's not helpful.
+
+Hmm, perhaps I'm approaching this the wrong way.
+
+Let me think differently.
+
+The minimal k is the minimal number of steps such that, for all teachers, the distance between a and b_i is <= k, and also, the maximum distance from a to any teacher is such that (max_d + 1) // 2 <= k.
+
+Wait, but in the earlier example, the max_d is 2, so (2+1)//2=1, which was insufficient.
+
+So, that approach also doesn't work.
+
+Another angle: For each query a, find the minimal k such that there exists a teacher b_i where |a - b_i| <= k, and the maximum (|a - b_i|) / 2 <= k.
+
+Wait, that's similar to the earlier approach, but perhaps different.
+
+Wait, in the first example, a=3, b=2 and 4.
+
+The max_d is 1. So (1)/2=0.5, rounded up is 1.
+
+Which is correct.
+
+In the second example, a=2, b=3 and 4.
+
+max_d is 2.
+
+2/2=1. So k=1.
+
+But in reality, the answer is 2 steps.
+
+So, that approach is wrong.
+
+Hmm.
+
+So, perhaps the correct approach is to find the minimal k such that, for all teachers, the distance from a to b_i is <= k, and the maximum (d_i) is such that d_i <= 2*k.
+
+Wait, no, because in the first example, d_i is 1, 2*k is 2, so 1<=2, which is true.
+
+In the second example, d_i is 1 and 2. So 2<=2*2=4, which is true.
+
+So, k=1 satisfies, but in reality, the answer is 2.
+
+So, that approach is also incorrect.
+
+Hmm.
+
+This is getting complicated. Let me think of another approach.
+
+Alternative approach:
+
+For each query a, the minimal k is the minimal number such that there exists a teacher b_i where |a - b_i| <= k, and the maximum |a - b_i| is <= 2*k.
+
+Wait, that can't be right.
+
+Wait, no, because in the first example, |a - b_i| is 1, so 1<=k and 1<=2k. So, k=1 is acceptable.
+
+In the second example, |a - b_i| is 1 and 2: 2 <=k and 2<=2k. So, k=2 is acceptable.
+
+Which matches the correct answer.
+
+In the earlier example where a=2, b_i=3 and 4: |a - b_i| is 1 and 2. So, 2 <=k and 2<=2k. So, k=2 is acceptable.
+
+Which is correct.
+
+So, the formula for k is the maximum between the minimal k that satisfies |a - b_i| <=k, and the minimal k that satisfies |a - b_i| <= 2k.
+
+Wait, no, because 2k is not the same as |a - b_i| <= 2k.
+
+Wait, perhaps the correct formula is k is the maximum between the minimal k that satisfies |a - b_i| <=k, and the minimal k that satisfies |a - b_i| <= 2k.
+
+Wait, no, because |a - b_i| <= 2k is automatically true if |a - b_i| <=k, since 2k >=k.
+
+So, the minimal k is the maximum between the minimal k that satisfies |a - b_i| <=k, and |a - b_i| <= 2k.
+
+Wait, but |a - b_i| <=k implies |a - b_i| <=2k, since 2k >=k.
+
+So, the minimal k is the maximum between the minimal k that makes |a - b_i| <=k, which is k >= |a -b_i|.
+
+So, for each a, the minimal k is the maximum of (d_i) for all i, where d_i = |a - b_i|.
+
+Wait, that's not correct either.
+
+In the first example, the maximum d_i is 1, so k=1.
+
+In the second example, maximum d_i is 2, so k=2.
+
+In the earlier example, a=2, b_i=3 and 4: maximum d_i is 2, so k=2.
+
+Which is correct.
+
+Another example: a=5, b_i=3,4,6.
+
+d_i are 2,1,1.
+
+So, maximum d_i is 2. So, k=2.
+
+So, in step 2:
+
+David moves towards the teachers.
+
+Let's see:
+
+Initial positions: a=5, b_i=3,4,6.
+
+Step 1:
+
+David can move to 4,5, or 6.
+
+Then the teachers move.
+
+If David moves to 4:
+
+Then, the teachers at 3,4,6 can move to 3,4,6.
+
+So, the distance between David and 3 is 1.
+
+But the teachers at 4 and 6 can move to 3 and 5.
+
+So, David is at 4, teachers at 3 and 5.
+
+So, distance is 1 and 1.
+
+So, not caught.
+
+Step 2:
+
+David moves to 5.
+
+Then, the teachers at 3,4,6 can move to 2,3,5.
+
+So, the teacher at 3 can move to 2, and the teacher at 5 can move to 4.
+
+So, teachers are at 2 and 4.
+
+David is at 5.
+
+So, distance from 5 to 2 is 3, to 4 is 1.
+
+So, not caught.
+
+Wait, this is getting complicated.
+
+Hmm, perhaps the correct approach is to find the maximum d_i, and the minimal k is the maximum d_i.
+
+Because, in each step, the distance can be reduced by 1, so after d_i steps, the distance is 0.
+
+Wait, but in the earlier example, a=2, b_i=3 and 4.
+
+d_i are 1 and 2.
+
+So, the maximum d_i is 2, so after 2 steps, the distance is 0.
+
+Which is correct.
+
+Another example: a=5, b_i=3,4,6.
+
+d_i are 2,1,1.
+
+So, maximum is 2. So, after 2 steps, the distance is 0.
+
+So, the minimal k is 2.
+
+Which is correct.
+
+So, perhaps the formula is k = max(d_i) for all i.
+
+Yes, that seems to fit the examples.
+
+So, for each query a, compute the maximum distance to any teacher, and that's the minimal k.
+
+So, the steps are:
+
+For each test case:
+
+   Read the m teachers' positions.
+
+   Read the q queries.
+
+   For each query a:
+
+      Compute the maximum distance between a and each teacher.
+
+      Output that maximum.
+
+So, the code is straightforward.
+
+Wait, let's test with the earlier example where a=2, b_i=3 and 4:
+
+max distance is 2, so k=2.
+
+Which is correct.
+
+Another example:
+
+n=5, m=2, q=1.
+
+b = [2,4]
+
+a=3.
+
+max distance is 1 and 1. So, k=1.
+
+Which is correct.
+
+So, this seems to be the correct approach.
+
+So, the code is: for each query a, find the maximum of |a - b_i|, then output that.
+
+So, the code is simple.
+
+Now, let's think about the implementation.
+
+We can read the test cases, for each test case, read n, m, q.
+
+Read the m b_i's, store them in a list.
+
+Then, read the q a's, and for each a, compute the maximum |a - b_i|, then output it.
+
+So, the code would be something like:
+
+import sys
+
+t = int(sys.stdin.readline())
+
+for _ in range(t):
+    n, m, q = map(int, sys.stdin.readline().split())
+    b = list(map(int, sys.stdin.readline().split()))
+    a_list = list(map(int, sys.stdin.readline().split()))
+    res = []
+    for a in a_list:
+        max_d = 0
+        for bi in b:
+            d = abs(a - bi)
+            if d > max_d:
+                max_d = d
+        res.append(max_d)
+    print('\n'.join(map(str, res)))
+
+Wait, but in the sample input:
+
+In the first test case:
+
+3 lines after t:
+
+After the first line, the next three lines are:
+
+3 3 3
+
+1 2 3
+
+3 4 5
+
+Wait, no, in the first test case, the input is:
+
+3 3 3
+
+1 2 3
+
+3 4 5
+
+Wait, wait, no, wait:
+
+Wait, the input is:
+
+First line: 3.
+
+Then, three test cases? No, the first line is t=3.
+
+Then, for each test case, three lines:
+
+First line: n, m, q.
+
+Second line: m b_i's.
+
+Third line: q a's.
+
+So, for the first test case:
+
+n=3, m=3, q=3.
+
+b = [1,2,3]
+
+a_list = [3,4,5]
+
+So, for a=3: max_d is 0,1,0 → 1.
+
+Wait, no. Wait, a is 3, b_i are 1,2,3.
+
+d_i are 2,1,0. So max is 2.
+
+Wait, but according to the sample output, the first output is 2.
+
+Yes.
+
+Wait, in the sample input, the first test case's output is 2.
+
+So, the code would compute for a=3: the maximum is 2.
+
+So, the code seems correct.
+
+So, the code is as written.
+</think>
+
+To solve this problem, we need to determine the minimum number of moves required for the teachers to catch David in a one-dimensional classroom. The classroom is represented as a line of cells, and both David and the teachers can move optimally to minimize the number of moves.
+
+### Approach
+1. **Problem Analysis**: David and the teachers start in distinct cells. Each move consists of David moving first, followed by all the teachers moving. The goal is to find the minimum number of moves required for the teachers to catch David, who is moving towards the teachers to avoid getting caught.
+
+2. **Key Insight**: The critical factor in determining the minimum number of moves is the maximum distance between David's starting position and the positions of the teachers. This is because the teachers can move optimally to minimize the distance, and the worst-case scenario is when the teachers are initially farthest from David.
+
+3. **Algorithm**: For each query, compute the maximum distance between David's starting position and each teacher's position. The minimum number of moves required for the teachers to catch David is this maximum distance.
+
+### Solution Code
+```python
+import sys
+
+def main():
+    input = sys.stdin.read
+    data = input().split()
+    idx = 0
+    t = int(data[idx])
+    idx += 1
+    results = []
+    for _ in range(t):
+        n = int(data[idx])
+        m = int(data[idx + 1])
+        q = int(data[idx + 2])
+        idx += 3
+        b = list(map(int, data[idx:idx + m]))
+        idx += m
+        a_list = list(map(int, data[idx:idx + q]))
+        idx += q
+        max_dist = 0
+        for a in a_list:
+            current_max = 0
+            for bi in b:
+                d = abs(a - bi)
+                if d > current_max:
+                    current_max = d
+            if current_max > max_dist:
+                max_dist = current_max
+        results.append(max_dist)
+    
+    sys.stdout.write('\n'.join(map(str, results)) + '\n')
+
+if __name__ == "__main__":
+    main()
+```
+
+### Explanation
+- **Reading Input**: The input is read in one go for efficiency, especially given the constraints.
+- **Processing Each Test Case**: For each test case, read the number of cells, number of teachers, and number of queries. Then read the positions of the teachers and the queries.
+- **Computing Maximum Distance**: For each query, compute the maximum distance between David's starting position and each teacher's position. This maximum distance is the minimum number of moves required for the teachers to catch David.
+- **Output Results**: Collect the results for all queries and output them at once to minimize I/O operations.
+
+This approach ensures that we efficiently determine the minimum number of moves required for the teachers to catch David by focusing on the maximum distance between David's starting position and the teachers' positions.<｜end▁of▁sentence｜>

@@ -1,0 +1,935 @@
+Okay, I need to solve this problem where I have to calculate the sum of scores of all non-empty subsequences of a given array. The score of a subsequence is defined as the maximum MEX over all possible partitions into any number of non-empty multisets. Hmm, this sounds a bit complex, so I should break it down.
+
+First, let me understand what MEX is. MEX of a set is the smallest non-negative integer not present in the set. So for example, MEX of [0] is 1, MEX of [1] is 0, MEX of [0,1] is 2, MEX of [1,2] is 0, etc.
+
+The score of a subsequence b is the maximum MEX achieved by any partition of b into any number of non-empty multisets. So for each subsequence, I need to consider all possible ways to split it into k parts (k can be 1, 2, etc.), and for each way, compute the sum of MEX of each part. Then, take the maximum over all possible partitions for that subsequence. That maximum is the score of the subsequence.
+
+But since we have to consider all non-empty subsequences, and for each, compute this score, and sum them all up, the problem is to find an efficient way to calculate this without enumerating all possible subsequences, which is impossible for n up to 2e5.
+
+So, I need to find a mathematical approach or a way to compute this sum efficiently.
+
+Let me think about the MEX for a given subsequence. Let's denote the subsequence as S. The maximum possible MEX of any partition is determined by the presence of certain numbers in S.
+
+I recall that for a set S, the MEX of the entire set is the maximum possible MEX for any partition. Because if you partition S into a single set, the MEX is the MEX of S. So the score of S is at least the MEX of S.
+
+Wait, but wait: if the MEX of S is x, then just partition S into one set, the MEX is x. So the score is x. So what's the maximum MEX for any partition? It can't be higher than the MEX of the entire set.
+
+Wait, no. Because if the MEX of the entire set is x, then it's possible to have a partition where the MEX is x. But can it be higher? No, because x is the smallest non-negative integer not present. So the MEX of the entire set is the maximum possible for any partition. So for any partition of S, the sum of MEXes of the parts is at most x plus the MEX of the other parts. Wait, no, that's not correct.
+
+Wait, for example, suppose S is [0,1,2]. The MEX is 3. If I partition into [0,1,2], the sum is 3. If I partition into [0], [1,2], the sum is 1 + 0 = 1. So the maximum is 3. So the score is 3, which is the MEX of the entire set.
+
+Another example: S is [0, 0]. The MEX is 1. If I partition into [0], [0], the sum is 1 + 1 = 2, which is higher than the MEX of the entire set. So in this case, the score is 2, which is higher than the MEX of the entire set.
+
+Wait, that's a problem with my previous reasoning. So the MEX of the entire set is not necessarily the maximum possible score. So my initial approach was incorrect.
+
+Hmm, so the score depends on the way we partition the set. So it's possible that for a set S, the maximum MEX sum can be higher than the MEX of S.
+
+So that complicates things. So I need to find, for each S, the maximum possible sum of MEXes across all possible partitions of S.
+
+I need to find a way to compute this efficiently.
+
+Let me think about what the maximum sum can be. Let's consider the MEX of S as x. Then, the maximum sum would be the sum of MEX of each part in some partition.
+
+But how to maximize that sum.
+
+Let me think: the MEX is the smallest non-negative integer not present. So for a partition to have a very high sum of MEXes, perhaps we should try to have as many parts as possible with MEX as large as possible, but without overlapping.
+
+Wait, but the parts in the partition are multisets, so each part is a multiset. So for example, if a part contains 0, then its MEX is at least 1. So to maximize the sum, perhaps we can have as many parts as possible that contribute a high MEX.
+
+So, perhaps the optimal strategy is to partition the set into parts that are {0}, {1}, {2}, etc., but that depends on the elements present.
+
+Wait, but some elements may not be present in certain parts. For example, if S contains 0, 1, 2, then the MEX is 3. So the partition into {0,1,2} gives a sum of 3. But if I partition into {0}, {1,2}, the sum is 1 + 0 = 1, which is worse.
+
+So, in that case, the maximum is achieved by a single part.
+
+Another example: S = {0,0,1}. The MEX is 2. The possible partitions are:
+
+- {0,0,1}: MEX is 2. Sum is 2.
+- {0}, {0,1}: MEX is 1 + 0 = 1.
+- {0,1}, {0}: same as above.
+- {0}, {0}, {1}: MEX is 1 + 1 + 0 = 2.
+
+So the maximum is 2, which is the MEX of the entire set.
+
+Another example: S = {0, 1, 1, 1}. The MEX is 2. Let's see:
+
+Partition into {0}, {1,1,1}: sum is 1 + 0 = 1.
+Partition into {0,1}, {1,1}: MEX is 0 + 0 = 0.
+Partition into {0}, {1}, {1,1}: sum is 1 + 1 + 0 = 2.
+So the maximum is 2, which is the MEX of the entire set.
+
+But wait, what if S has more elements? Let's think of S = {0,0,0,1,2}. The MEX is 3.
+
+So, the partition can be {0,0,0,1,2}, sum is 3.
+
+Another partition: {0}, {0,0,0,1,2}: MEX is 1 + 3 = 4, which is higher.
+
+Wait, yes! So in this case, the maximum sum is 4.
+
+So that's a case where the maximum sum is higher than the MEX of the entire set.
+
+So, the problem is, for a given S, find the maximum sum of MEXes across any partition into any number of parts.
+
+So, how to compute this.
+
+I think the key is to find the minimal number of parts that can achieve a high sum.
+
+Wait, perhaps the maximum sum is equal to the sum of the MEX of each element in S?
+
+No, that doesn't make sense. For example, S = {0,0,1}. The MEX is 2.
+
+The sum of MEXes for each element is 1 + 1 + 0 = 2, which is the same as the MEX. So in this case, it's the same.
+
+Another example: S = {0,1,1,1}.
+
+Sum of MEX for each element is 1 + 0 + 0 + 0 = 1, which is less than the MEX of the entire set, which is 2.
+
+Wait, no. Wait, the sum of MEX of each element is 1 + 0 + 0 + 0 = 1. But in the optimal partition, the sum is 1 + 0 = 1. So same.
+
+Another example: S = {0,0,1,1,2}.
+
+The MEX is 3.
+
+Sum of MEX for each element is 1 + 1 + 0 + 0 + 0 = 2, which is less than 3.
+
+So the maximum sum is 3.
+
+So, in this case, the maximum sum is equal to the MEX of the entire set.
+
+So, perhaps the maximum sum is equal to the MEX of the entire set. But wait, in the earlier example where S = {0,0,1,1,2}, the maximum sum is 3, which is the MEX of the entire set.
+
+Another example: S = {0,0,0,0}.
+
+The MEX is 1.
+
+Maximum sum is 1, as any partition will have MEX sum 1.
+
+So, perhaps the maximum sum is the MEX of the entire set.
+
+Wait, but in the earlier example where S = {0,0,1,1,2}, the sum is 3, which is the MEX.
+
+So, perhaps the maximum sum is the MEX of the entire set.
+
+So, is the score of S equal to the MEX of S.
+
+But wait, let me think again.
+
+Another example: S = {0,0,1,2}.
+
+The MEX is 3.
+
+The maximum sum can be 3, achieved by the partition {0,0,1,2}.
+
+But what if we partition into {0}, {0,1,2}: the MEX is 1 + 0 = 1, which is worse.
+
+So, the maximum is 3.
+
+So, the maximum sum is the MEX of S.
+
+Another example: S = {0,1,2,3}.
+
+The MEX is 4.
+
+The maximum sum is 4, by putting all elements into a single part.
+
+Another example: S = {0,0,1,1,2,2}.
+
+MEX is 3.
+
+The maximum sum is 3, by putting all into a single part.
+
+So, in all these examples, the maximum sum is the MEX of S.
+
+So, perhaps the score of S is equal to the MEX of S.
+
+Wait, but earlier I thought that in S = {0,0,1,1,2}, the maximum sum is 3, which is the MEX.
+
+So, perhaps the score of S is equal to the MEX of S.
+
+So, if that's the case, then the problem reduces to, for each non-empty subsequence S, compute its MEX, and sum all those MEX values across all non-empty subsequences.
+
+Because the score of S is equal to its MEX.
+
+So, now the problem is to compute the sum of MEX of all non-empty subsequences of the array a.
+
+This is a well-known problem in combinatorics and dynamic programming.
+
+So, the approach is to compute for each possible x, the number of non-empty subsequences of a that have MEX equal to x, and multiply x by that count, then sum all such products.
+
+So, the sum is the sum over x of (number of subsequences with MEX x) multiplied by x.
+
+So, the plan is:
+
+1. For each test case, process array a.
+
+2. For all possible x (from 0 to n-1, since a_i < n), compute the number of non-empty subsequences S where MEX(S) = x.
+
+3. Multiply each x by its count and sum all to get the total.
+
+So, the problem now is to compute, for each x, the number of non-empty subsequences of a where the MEX is exactly x.
+
+Now, how to compute this.
+
+I recall that the MEX of a set is the smallest non-negative integer not present. So, for a subsequence S, MEX(S) = x if and only if all integers from 0 to x-1 are present in S, and x is not present.
+
+Wait, no. Wait, MEX is the smallest non-negative integer not present. So, for MEX to be x, x must be the smallest missing. So, that means:
+
+- All integers from 0 to x-1 must be present in S.
+
+- The integer x must not be present in S.
+
+So, for a subsequence S, MEX(S) = x iff:
+
+- S contains all of 0, 1, ..., x-1.
+
+- S does not contain x.
+
+So, for each x, the number of such subsequences is equal to:
+
+the number of ways to choose a non-empty subsequence that includes at least one of each 0, 1, ..., x-1, and does not include x.
+
+So, for each x, compute the product of (count of each number in 0..x-1) multiplied by (count of numbers >=x) excluding x.
+
+Wait, perhaps it's better to precompute for each x, the number of elements less than x, and the number of elements >=x.
+
+Alternatively, for a given x, the number of subsequences where:
+
+- The subsequence contains at least one of each 0, 1, ..., x-1.
+
+- The subsequence does not contain x.
+
+And the subsequence is non-empty.
+
+So, the steps to compute for each x:
+
+Let’s denote:
+
+- L = the number of elements in a that are less than x.
+
+- M = the number of elements in a that are equal to x.
+
+- G = the number of elements in a that are greater than x.
+
+Wait, no. Because for a given x, the elements can be:
+
+- 0 to x-1: must have at least one of each.
+
+- x: must not have any.
+
+- x+1 and above: can have any.
+
+So, for a given x, the number of subsequences S with MEX x is:
+
+(number of ways to choose a subsequence that includes at least one of each 0 to x-1, and does not include x) multiplied by (number of ways to choose any subset of elements from x+1 and above).
+
+So, the formula is:
+
+count[x] = (product for each y in 0..x-1 of (count[y] + 1 - 1)) ) - 1 ) * (2^G)
+
+Wait, no. Let me think.
+
+The number of ways to choose a subset that includes at least one of each 0..x-1 is equal to (product for y in 0..x-1 of (c[y] + 1)) ) - 1, where c[y] is the count of elements equal to y.
+
+Wait, no. Because for each y in 0..x-1, the number of ways to choose at least one y is (2^{c[y]} - 1). So, the product of these is the total number of ways to have at least one of each 0..x-1. Then, subtract 1 to exclude the empty set.
+
+So, for each x, the number of subsequences that have all 0..x-1 and do not have x is:
+
+( (product_{y=0}^{x-1} (2^{c[y]} - 1)) ) * (2^{d}) ), where d is the number of elements greater than x.
+
+Because, for each y in 0..x-1, you have (2^{c[y]} -1) ways to choose at least one of them. For elements greater than x, you can choose any subset, including none.
+
+So, the total is:
+
+( product_{y=0}^{x-1} (2^{c[y]} - 1) ) * (2^d) ) * (1) [since the subsequence must be non-empty, but the product already subtracts the empty case for 0..x-1 and 0..d is 0 for x>0, so overall the product is non-empty]
+
+Wait, the product for 0..x-1 is (2^{c[0]} - 1) * (2^{c[1]} - 1) * ... * (2^{c[x-1]} - 1). This is the number of ways to have at least one of each 0..x-1. Then, for the elements greater than x, each can be chosen or not, which is 2^d.
+
+So, for each x, the count is (product_{y=0}^{x-1} (2^{c[y]} - 1)) ) * (2^d), where d is the count of elements in a that are >x.
+
+Then, the total for x is count[x] = (product_{y=0}^{x-1} (2^{c[y]} - 1)) ) * (2^d), and the sum is the sum over x of x * count[x].
+
+But wait, what about x=0? Because for x=0, MEX(S) is 0 only if S is empty. But since we are considering non-empty subsequences, x=0 contributes 0 to the sum.
+
+So, for x >=1.
+
+So, the steps are:
+
+For each test case:
+
+- Compute for each x from 0 to n-1:
+
+   a. Compute the product of (2^c[y] -1) for y from 0 to x-1. Let's call this P.
+
+   b. d is the count of elements in a that are > x.
+
+   c. The count for x is P * (2^d).
+
+   d. Add x * count to the total sum.
+
+So, for each x, compute this and sum.
+
+Now, the challenge is to compute this efficiently for all x from 0 to n-1.
+
+Given that n can be up to 2e5, and t up to 1e4, we need an O(n^2) approach, but that's not feasible. So, we need a way to compute this in O(n) time.
+
+Let's see.
+
+First, precompute the counts for each x.
+
+We can create a frequency array cnt, where cnt[x] is the number of elements equal to x in a.
+
+Then, for each x, the product P is the product of (2^cnt[y] -1) for y from 0 to x-1.
+
+We can compute P incrementally. For example:
+
+Initialize P as 1.
+
+For each x from 0 to n-1:
+
+   if x == 0: P is 1 (since product over 0..-1 is empty, so 1).
+
+   else: P *= (2^cnt[x-1] - 1)
+
+But wait, for x=0, the product is 1. For x=1, product is (2^cnt[0]-1). For x=2, product is (2^cnt[0]-1)*(2^cnt[1]-1), etc.
+
+Yes.
+
+But 2^cnt[x] can be very large. So, we need to compute this modulo 998244353.
+
+Also, for each x, d is the number of elements in a that are >x.
+
+So, for each x, d = total_count - sum_{y=0 to x} cnt[y]
+
+So, d can be computed as the sum of cnt[x+1 ... n-1].
+
+Wait, because for x, the elements >x are those with a_i >x. So, the count is the sum from y =x+1 to y=n-1 of cnt[y].
+
+So, for each x, d is sum_{y=x+1}^{n-1} cnt[y].
+
+So, for each x, we need to compute the sum of cnt from x+1 to n-1.
+
+We can precompute a suffix sum array.
+
+So, let's precompute:
+
+suffix[x] = sum_{y=x}^{n-1} cnt[y]
+
+Then, d for x is suffix[x+1].
+
+Because:
+
+d = sum_{y=x+1}^{n-1} cnt[y] = suffix[x+1]
+
+So, with suffix precomputed, we can get d quickly.
+
+So, the steps are:
+
+1. For each test case:
+
+   a. Read n and a.
+
+   b. Compute cnt[x] for x from 0 to n-1.
+
+   c. Compute suffix[x] for x from 0 to n.
+
+      - suffix[0] = sum of all cnt[y] for y=0 to n-1.
+
+      - suffix[x] = suffix[x-1] + cnt[x], for x >=1.
+
+   d. For each x from 0 to n-1:
+
+      i. Compute P: product of (2^{cnt[y]} -1) for y from 0 to x-1.
+
+         - Initialize P as 1.
+
+         - For y from 0 to x-1:
+
+             term = (pow(2, cnt[y], MOD) - 1) % MOD
+
+             P = (P * term) % MOD
+
+      ii. Compute d = suffix[x+1]
+
+      iii. Compute the contribution to the sum: x * (P * (pow(2, d, MOD))) % MOD
+
+      iv. Add this contribution to the total.
+
+   e. After processing all x, output the total modulo MOD.
+
+Now, the problem is to compute P for each x efficiently.
+
+But for x from 0 to n-1, the product is P = product_{y=0}^{x-1} (2^{cnt[y]} -1).
+
+So, for x=0, P is 1 (since product over 0..-1 is empty).
+
+For x=1, P is (2^{cnt[0]} -1).
+
+For x=2, P is (2^{cnt[0]}-1) * (2^{cnt[1]}-1).
+
+So, the product can be computed incrementally.
+
+We can precompute the product as we go.
+
+Let me see:
+
+Initialize P = 1.
+
+For x from 0 to n-1:
+
+   if x == 0:
+
+      P remains 1.
+
+   else:
+
+      P *= (2^cnt[x-1] - 1) mod MOD
+
+   So, for x=1: P is (2^cnt[0]-1)
+
+   for x=2: P is (2^cnt[0]-1) * (2^cnt[1]-1)
+
+   etc.
+
+Yes, this is correct.
+
+So, for each test case, we can compute this.
+
+Now, let's test this approach with some examples.
+
+Example 1:
+
+Input: n=1, a=[0]
+
+So, cnt[0]=1, cnt[1]=0, etc.
+
+For x=0:
+
+P is 1.
+
+d = suffix[1] = 0.
+
+contribution is 0 * (1 * 2^0) ) = 0.
+
+x=1:
+
+P is product for y=0 to 0: (2^1 -1) = 1.
+
+d = suffix[2] = 0.
+
+contribution is 1 * (1 * 1) =1.
+
+So, total is 0 +1=1.
+
+Which is correct, since the only subsequence is [0], MEX is 1.
+
+Another example:
+
+n=2, a = [0,1].
+
+cnt[0] =1, cnt[1]=1.
+
+For x=0:
+
+P=1.
+
+d = suffix[1] = cnt[1] =1.
+
+contribution: 0 * (1 * 2^1) =0.
+
+x=1:
+
+product for y=0: (2^1 -1) =1.
+
+d = suffix[2] =0.
+
+contribution:1 * (1 * 1) =1.
+
+x=2: but a has no elements >=2, so cnt[2] is 0.
+
+So, for x=2, product is product for y=0 to 1: (2^1-1)*(2^1-1) =1*1=1.
+
+d=0.
+
+contribution: 2 * (1 *1) =2.
+
+So, total is 0 +1 +2 =3.
+
+Which is the sum of MEX for all non-empty subsequences.
+
+Subsequences:
+
+[0]: MEX 1.
+
+[1]: MEX 0.
+
+[0,1]: MEX 2.
+
+[0,1] is one subsequence, but wait, for x=2, the subsequence is [0,1], which has MEX 2.
+
+So, the sum is 1 +0 +2=3.
+
+Which matches the calculation.
+
+Yes.
+
+Another example:
+
+n=2, a = [0,0].
+
+cnt[0]=2, cnt[1]=0, etc.
+
+For x=0:
+
+P=1.
+
+d = suffix[1] =0.
+
+contribution:0.
+
+x=1:
+
+product for y=0: (2^2 -1) =3.
+
+d= suffix[2] =0.
+
+contribution:1 *3 *1=3.
+
+x=2:
+
+product for y=0 and 1: (2^2 -1) * (2^0 -1) =3 *0=0.
+
+d=0.
+
+contribution:2 *0*1=0.
+
+So, total is 0+3+0=3.
+
+Which is correct because:
+
+Subsequences:
+
+[0] (count 2, MEX 1 each).
+
+[0,0] (MEX 1).
+
+So, sum is 1*2 +1*1=3.
+
+Yes.
+
+So, the approach seems correct.
+
+Now, the plan is to precompute the suffix sums, compute the product P for each x, compute the contribution, and sum all contributions.
+
+Now, let's think about the code.
+
+We can do the following steps for each test case:
+
+1. Read n and a.
+
+2. Compute the frequency array cnt, where cnt[x] is the count of x in a.
+
+   For x from 0 to n-1.
+
+   Since a_i is < n, so x can be up to n-1.
+
+3. Compute the suffix sum array:
+
+   suffix[x] = sum of cnt[y] for y >=x.
+
+   We can compute this as a suffix array, starting from n-1 down to 0.
+
+4. For each x from 0 to n-1:
+
+   a. Compute P:
+
+      P starts as 1.
+
+      For y from 0 to x-1:
+
+          term = (pow(2, cnt[y], MOD) - 1) % MOD
+
+          P = (P * term) % MOD
+
+   b. d = suffix[x+1]
+
+   c. contribution = x * (P * pow(2, d, MOD)) % MOD
+
+   d. add contribution to the total.
+
+5. Output the total mod MOD.
+
+Now, the code.
+
+But for n up to 2e5, and t up to 1e4, but with the sum of n across test cases up to 2e5, it's manageable.
+
+Now, let's code this.
+
+But wait, in Python, pow(2, k, MOD) can be computed efficiently with the built-in pow function.
+
+So, the code structure is:
+
+MOD = 998244353
+
+for each test case:
+
+    n = int(input())
+
+    a = list(map(int, input().split()))
+
+    cnt = [0] * n
+
+    for num in a:
+
+        cnt[num] +=1
+
+    # compute suffix sum
+
+    suffix = [0]*(n+1)
+
+    for x in range(n-1, -1, -1):
+
+        suffix[x] = (suffix[x+1] + cnt[x]) % MOD
+
+    # compute total
+
+    total = 0
+
+    P = 1
+
+    for x in range(n):
+
+        # compute P for x
+
+        if x ==0:
+
+            pass  # P is 1
+
+        else:
+
+            # multiply by (2^cnt[x-1] -1)
+
+            term = (pow(2, cnt[x-1], MOD) -1) % MOD
+
+            P = (P * term) % MOD
+
+        # compute d = suffix[x+1]
+
+        d = suffix[x+1]
+
+        contribution = x * (P * pow(2, d, MOD)) % MOD
+
+        total = (total + contribution) % MOD
+
+    print(total % MOD)
+
+Wait, but wait for x=0:
+
+- For x=0, the product P is 1 (since product over y=0 to -1 is 1).
+
+So, in the code, for x=0, we don't multiply anything.
+
+So, in the code, for x in 0..n-1:
+
+if x ==0:
+
+   pass
+
+else:
+
+   term = (2^cnt[x-1] -1) mod MOD
+
+   P = P*term mod MOD.
+
+Yes.
+
+So, the code should handle this correctly.
+
+Now, let's test this with the example where a = [0,0,1,1,2,2].
+
+Wait, no, let's take a small example.
+
+Another test case:
+
+n=3, a = [0,0,0].
+
+So, cnt[0] =3, cnt[1]=0, cnt[2]=0.
+
+Compute for x=0:
+
+P=1.
+
+d= suffix[1] =0.
+
+contribution 0.
+
+x=1:
+
+P = (2^3 -1) =7.
+
+d= suffix[2] =0.
+
+contribution 1 *7 *1=7.
+
+x=2:
+
+P = (2^3 -1) * (2^0 -1) =7 *0=0.
+
+d= suffix[3] =0.
+
+contribution 2 *0 *1=0.
+
+Total is 0 +7 +0=7.
+
+Now, what is the sum of MEX for all non-empty subsequences.
+
+Subsequences:
+
+Each 0 appears 3 times.
+
+All non-empty subsets:
+
+Number of non-empty subsets: 7.
+
+Each subsequence's MEX is:
+
+For a subset with all 0s, MEX is 1.
+
+For a subset with 0 and 0, MEX is 1.
+
+For a subset with 0 and 0 and 0, MEX is 1.
+
+So, the MEX for all subsets that are non-empty and consist of 0s:
+
+Each such subset has MEX 1.
+
+How many such subsets are there? 7, which is the total number of non-empty subsets.
+
+So, sum is 7 *1=7.
+
+Which matches the code's result.
+
+Another test case: n=3, a=[0,1,2].
+
+Compute for x=0: contribution 0.
+
+x=1: P is (2^0 -1)=0. So, contribution is 1 *0 * ... =0.
+
+x=2: P is (2^0 -1) * (2^1 -1) =0 *1=0. So, contribution is 2 *0 =0.
+
+So, total is 0.
+
+Which makes sense, because the MEX for each non-empty subset is:
+
+Each subset is {0}, {1}, {2}, {0,1}, {0,2}, {1,2}, {0,1,2}.
+
+MEX for {0} is 1.
+
+{1} is 0.
+
+{2} is 0.
+
+{0,1} is 2.
+
+{0,2} is 1.
+
+{1,2} is 0.
+
+{0,1,2} is 3.
+
+So, sum is 1+0+0+2+1+0+3=7.
+
+Wait, but according to the code, the sum is 0.
+
+Wait, that's a problem.
+
+Wait, what's wrong here.
+
+Wait, the code computes for x=0: contribution is 0.
+
+x=1: contribution is 1 * (P= (2^0 -1)=0) * (2^1) = 0 * 2=0.
+
+x=2: P is (2^0 -1)=0. So, contribution is 2 * 0 * (2^0) = 0.
+
+So, total is 0.
+
+But the actual sum is 7.
+
+So, the code is wrong.
+
+Hmm, what's wrong.
+
+Wait, the code computes the sum of MEX of all non-empty subsequences, which is equal to the sum for x of (number of subsequences with MEX x) multiplied by x.
+
+But in the above example, the sum is:
+
+Subsequences:
+
+1 (for {0}) MEX 1.
+
+0 (for {1}, {2}) MEX 0.
+
+2 (for {0,1}), 1 (for {0,2}), 0 (for {1,2}), 3 (for {0,1,2}).
+
+So, sum is 1 +0 +0 +2 +1 +0 +3=7.
+
+But according to the code, the sum is 0.
+
+So, the code is incorrect.
+
+Hmm, what's wrong.
+
+Let me think about the code's approach.
+
+In the code, for each x, the code computes the number of non-empty subsequences S where MEX(S) is x.
+
+And then adds x multiplied by that count.
+
+But in the example above, the sum is 7, but according to the code, the sum is 0.
+
+So, the code is incorrect.
+
+So, I must reevaluate the approach.
+
+Where's the mistake.
+
+Let me re-calculate the code for the example.
+
+n=3, a=[0,1,2].
+
+cnt[0]=1, cnt[1]=1, cnt[2]=1.
+
+suffix[x] is:
+
+x=0: sum of 1,1,1 →3.
+
+x=1: 1,1 →2.
+
+x=2: 1 →1.
+
+x=3: 0.
+
+So, for x=0:
+
+P=1.
+
+d= suffix[1] =2.
+
+contribution:0 * 1 * 2^2=0.
+
+x=1:
+
+P is product for y=0 to 0: (2^1 -1) =1.
+
+d= suffix[2] =1.
+
+contribution:1 * 1 * 2^1=2.
+
+x=2:
+
+P is product for y=0 to 1: (2^1-1) * (2^1-1) =1*1=1.
+
+d= suffix[3] =0.
+
+contribution:2*1*1=2.
+
+So, sum is 0 +2 +2=4.
+
+Which is less than the actual sum of 7.
+
+So, the code is incorrect.
+
+Hmm, so what's wrong with the approach.
+
+The approach is that the code computes for each x, the number of subsequences with MEX x, which is equal to the product of (2^{c[y]} -1) for y <x, multiplied by 2^{d}, where d is the number of elements >x.
+
+Wait, but in the example, for x=1, the product is 1 (from y=0), multiplied by 2^1 (d=1, since elements >1 are 2, which is 1 element).
+
+So, 1*2=2.
+
+Which is the number of subsequences where S includes at least one of 0, and does not include 1.
+
+So, the number of such subsequences is 2.
+
+Which is correct.
+
+Similarly, for x=2, the product is 1 (from y=0 and y=1), and d=0.
+
+So, contribution is 2*1=2.
+
+So, the code's total is 0 +2 +2=4.
+
+But the actual sum is 7.
+
+So, the approach is incorrect.
+
+So, where did I go wrong.
+
+Let me re-examine the initial reasoning.
+
+The initial reasoning said that the maximum MEX is the MEX of the entire set.
+
+But in this case, the entire set's MEX is 3.
+
+So, the score of the entire set is 3.
+
+But the total of all the scores is 7.
+
+So, the code's approach is not correct.
+
+So, the initial assumption that the score of S is equal to the MEX of S is wrong.
+
+So, the initial approach is invalid.
+
+So, I need to find a new approach.
+
+So, this is a problem.
+
+So, I need to reevaluate the problem.
+
+So, the problem is more complex than I thought.
+
+Thus, the initial approach is incorrect.
+
+So, I need to find another way.
+
+Alternative approach:
+
+The score of a subsequence is the maximum MEX of any partition.
+
+So, for a particular subsequence S, what is the maximum MEX of any partition it can be divided into.
+
+This could be higher than the MEX of S.
+
+So, the initial approach was incorrect.
+
+So, I need to find a different way to compute the score.
+
+Hmm.
+
+Another idea: the score of S is the maximum possible MEX over any partition.
+
+What is the maximum possible MEX of any partition of S.
+
+What is the maximum possible MEX?
+
+For example, if S has elements {0, 0, 1, 1}, then the maximum MEX is 2, because you can partition it into {0}, {0, 1, 1}, which has MEX 2.
+
+Alternatively, you can partition it into {0,1}, {0,1}, which gives MEX 2.
+
+So, the maximum MEX is 2.
+
+In this case, the score is 2.
+
+So, the initial approach was wrong because it assumed that the score is the MEX of the entire set.
+
+So, the approach needs to be revised.
+
+So, what's the correct way to compute the score of S.
+
+Another idea: the score of S is the maximum MEX over all possible partitions of S.
+
+Which is equivalent to the maximum MEX of any subset of S, but considering that the partition can be any way.
+
+Wait, no.
+
+Wait, for S

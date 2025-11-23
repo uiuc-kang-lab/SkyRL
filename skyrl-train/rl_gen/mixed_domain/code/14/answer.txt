@@ -1,0 +1,1083 @@
+Okay, I need to solve this problem where, given an integer r, I have to find the number of lattice points (points with integer coordinates) such that their Euclidean distance from (0,0) is between r (inclusive) and r+1 (exclusive). So, the distance d must satisfy r ≤ d < r+1.
+
+Let me think about how to approach this. 
+
+First, the distance from the origin to a point (x,y) is sqrt(x² + y²). So, for each lattice point, I need to check if this sqrt is >= r and < r+1. 
+
+But checking each possible (x,y) directly isn't feasible because r can be up to 1e5, and the number of points could be huge. So, I need a smarter way.
+
+Hmm, the key here is to find all integer points (x,y) such that r² ≤ x² + y² < (r+1)². Because squaring is a monotonic function for non-negative numbers, this should help avoid dealing with square roots.
+
+Wait, but wait. r is an integer, so r+1 is also an integer. So, r² is the square of the lower bound, and (r+1)² is the upper bound. But since x and y are integers, x² + y² will be an integer as well. So, for each point, the sum x² + y² must be >= r² and < (r+1)^2.
+
+So, the problem reduces to counting all integer points (x,y) where x² + y² is between r² (inclusive) and (r+1)^2 (exclusive).
+
+So, the task is to count all (x,y) such that r² ≤ x² + y² < (r+1)^2.
+
+Now, how to compute this efficiently?
+
+I think the approach is to iterate over all possible x and y values that could satisfy this condition. But since x² + y² can be up to (r+1)^2 - 1, which is r² + 2r. So, x and y can't be larger than sqrt(r² + 2r), which is approximately r+1. So, x and y can range from -r-1 to r+1, perhaps. But wait, for example, if x is r+1, then y has to be 0, because (r+1)^2 is the upper limit. So, perhaps the maximum x or y can be up to r+1.
+
+So, maybe I can loop x from 0 to r+1, and for each x, find the possible y's. Then, considering the symmetry, account for all four quadrants.
+
+Wait, but since x and y can be positive or negative, each point (x,y) can be in any of the four quadrants. So, for each x and y, the points (x,y), (-x,y), (x,-y), (-x,-y) are all valid, provided that x and y are not zero, or that their signs are considered.
+
+But wait, zero points: (0,0) is a single point, but in this problem, when r is zero, but in our problem r is at least 1. So, (0,0) is not included because r is at least 1, so d is at least 1, so (0,0) is not part of the count.
+
+So, the plan is:
+
+1. For each test case, r is given.
+
+2. Compute the lower bound L = r² and upper bound U = (r+1)² -1.
+
+3. For each x in the range from 0 to sqrt(U), but since U is (r+1)^2 -1, which is r² + 2r, so the maximum x can be up to r+1, because (r+1)^2 is U+1. So, x can run from 0 to r+1.
+
+Wait, for x in 0 to r+1, inclusive. But x can be negative as well. So, perhaps for each x in the range - (r+1) to r+1, but that's a lot. So, perhaps it's better to consider x >=0 and then multiply by 4, except when x is 0 or y is 0.
+
+Wait, maybe a better approach is to iterate x from 0 to r+1, and for each x, find the possible y's that satisfy L ≤ x² + y² < U.
+
+Then, for each such (x,y), count all four symmetric points, but handle the cases where x or y is zero, to avoid double-counting.
+
+Wait, perhaps the better way is to iterate x from 0 to r+1, and for each x, find the possible y's, then for each (x,y), add the number of points that correspond to this (x,y) considering all four quadrants.
+
+But this might get complicated. Alternatively, for each x, find the minimum and maximum y such that x² + y² is >= L and < U. Then, for each x, count the number of y's that satisfy this condition, and then multiply by 4, but adjust for cases where x or y is 0.
+
+Wait, let's think about this. For each x, y can be positive or negative, but we have to account for all four quadrants, except when x or y is zero.
+
+For example, if x is positive and non-zero, then for each y that satisfies the condition, there are four points: (x,y), (-x,y), (x,-y), (-x,-y). So, for each valid (x,y) where x>0 and y>0, we have four points.
+
+If x is zero, then y can be positive or negative, but each (0,y) has only two points: (0,y) and (0,-y).
+
+Similarly, if y is zero, then for x>0, each (x,0) has two points: (x,0) and (-x,0).
+
+So, perhaps the approach is:
+
+- For each x from 0 to r+1:
+
+   - For x=0: y can be from -k to k, where k is the maximum y such that 0 + y² < U. So, y ranges from -k to k, but y² < U. Then, the count for x=0 is 2k +1, but only if k² < U.
+
+Wait, maybe it's easier to separate x=0 and x>0 cases.
+
+Let me outline the steps:
+
+1. For a given r, compute L = r², U = (r+1)^2 -1.
+
+2. Initialize a count variable to 0.
+
+3. For each x in 0 to r+1:
+
+   a. For x=0: find y such that 0 + y² >= L and < U. So, y² must be >= L and < U. So, y can be in the range [sqrt(L), sqrt(U-1)]. Since y is integer, the minimum y is ceil(sqrt(L)), maximum y is floor(sqrt(U-1)).
+
+   b. For x>0: For each x, find the range of y such that x² + y² >= L and x² + y² < U.
+
+   c. For each (x,y) found, add the corresponding number of points to the count.
+
+But wait, how do we handle the symmetry?
+
+Let me think about the case when x is 0.
+
+When x is 0, the condition becomes y² >= L and y² < U. So, y can be in the range [a, b], where a is the smallest integer whose square is >= L, and b is the largest integer whose square is < U.
+
+So, the count for x=0 is 2*b if a<=b, else 0.
+
+Similarly, for x>0, for each x, we find the range of y such that y² >= L - x² and y² < U - x².
+
+Wait, because x² + y² >= L => y² >= L -x².
+
+But since y² must be >=0, the lower bound is max(0, L - x²).
+
+The upper bound is U - x² - 1 (since x² + y² < U => y² < U -x² => y² <= U - x² -1, since y² is integer).
+
+So, for each x>0, y must satisfy:
+
+max(0, L - x²) <= y² < U -x².
+
+Hmm, but this seems a bit complex. Maybe it's easier to compute for each x, the minimum and maximum y that satisfy the condition.
+
+Alternatively, for each x, compute the lower and upper bounds on y², then find the number of integers y that satisfy.
+
+Let me formalize this.
+
+For x = 0:
+
+y² >= L --> y >= ceil(sqrt(L))
+y² < U --> y <= floor(sqrt(U-1))
+So, the count is max(0, b - a + 1), where a is ceil(sqrt(L)), b is floor(sqrt(U-1)).
+
+But wait, if a > b, then there are no such y for x=0.
+
+For x > 0:
+
+Compute the lower and upper bounds on y².
+
+lower = max(0, L - x²)
+upper = U - x² -1
+
+We need to find the number of integers y where y² >= lower and y² <= upper.
+
+So, the number of such y is equal to the number of integers y where y² is in [lower, upper].
+
+So, for y to be integer, y can be positive or negative, but for y=0, it's a special case.
+
+Wait, but for y=0, y² is 0. So, if lower is 0, then y=0 is included.
+
+So, for each x>0:
+
+Compute lower = max(0, L - x²)
+Compute upper = U - x² - 1
+
+If lower > upper, then no y satisfies, so count is 0.
+
+Else, find the minimum y such that y² >= lower, and maximum y such that y² <= upper.
+
+Let me denote:
+
+min_y = ceil(sqrt(lower))
+max_y = floor(sqrt(upper))
+
+If min_y > max_y, then no y satisfies.
+
+Else, the number of y's is 2*(max_y - min_y +1) if min_y is positive and not zero. Wait, no. Because for each y in min_y to max_y, both positive and negative can be considered, except when y is zero.
+
+Wait, no. For each y in [min_y, max_y], the corresponding points are (x,y), (-x,y), (x,-y), (-x,-y), except when y is zero, which is only (x,0) and (-x,0).
+
+Wait, no. For y=0, the points are (x,0) and (-x,0). So, for y=0, the count is 2.
+
+Similarly, for y>0, each y contributes 4 points: (x,y), (-x,y), (x,-y), (-x,-y).
+
+So, perhaps the approach is:
+
+For each x>0:
+
+   if x is zero: handled in x=0 case.
+
+   else:
+
+      compute lower = max(0, L - x²)
+      compute upper = U - x² - 1
+
+      if lower > upper:
+          count +=0
+      else:
+          min_y = ceil(sqrt(lower))
+          max_y = floor(sqrt(upper))
+          if min_y > max_y:
+              count +=0
+          else:
+              if min_y ==0:
+                  # y can be 0, and also ±min_y, etc.
+                  # For y=0, the count is 2.
+                  # For min_y >=1, the count is 4*(max_y - min_y +1)
+                  # because each y from min_y to max_y, positive and negative.
+                  # But wait, for y=0, it's a single point, but in the x>0 case, y can be zero?
+
+Wait, perhaps I'm complicating. Let's think again.
+
+For x>0:
+
+The condition is x² + y² >= L and x² + y² < U.
+
+So, y² >= L -x²
+y² < U -x²
+
+So, y² must be in [A, B), where A = max(0, L -x²), B = U -x².
+
+We can find the number of integer y's such that y² is in [A, B).
+
+So, the minimum y is the smallest integer where y² >= A. That's ceil(sqrt(A)).
+
+The maximum y is the largest integer y where y² < B. That's floor(sqrt(B - 1)).
+
+So, min_y = ceil(sqrt(A))
+max_y = floor(sqrt(B - 1))
+
+If min_y > max_y, then no y's. Else, the count is 2*(max_y - min_y +1) if min_y >0, because y can be positive or negative, except when y=0.
+
+Wait, no. Because y can be both positive and negative, but zero is a separate case.
+
+Wait, when y is zero, y² is zero, which is >=A and < B, so it's included.
+
+So, for y=0, it's one point.
+
+So, let's re-express:
+
+If A <=0: then A is zero. So, y can be zero.
+
+Wait, no. If A is zero, then y² >=0 is always true, but then B is U -x². So, y² < B.
+
+So, in that case, y can be zero, or any y with y² < B.
+
+So, perhaps it's better to compute for each x>0:
+
+Compute A = max(0, L - x²)
+Compute B = U - x²
+
+We need y² >= A and y² < B.
+
+So, y² can be in [A, B).
+
+So, the minimum y is the smallest integer y where y² >= A. That is, y >= sqrt(A). But since y is integer, it's ceil(sqrt(A)).
+
+The maximum y is the largest integer y where y² < B. That is, y <= floor(sqrt(B -1)).
+
+So, min_y = ceil(sqrt(A))
+max_y = floor(sqrt(B-1))
+
+If min_y > max_y: no points.
+
+Else:
+
+The number of y's is (max_y - min_y +1) * 2 if min_y !=0.
+
+Wait, no. Because for each y in [min_y, max_y], both positive and negative, but zero is a separate case.
+
+Wait, let's think differently.
+
+For y=0: it's a single point.
+
+For y>0: for each y from min_y to max_y, there are two points: (x,y) and (-x,y).
+
+Similarly for y<0.
+
+Wait, no. Because y can be positive or negative, but for each y in [min_y, max_y], there are two points: (x,y) and (x,-y). Wait, no. Because if y is positive, then (x,y) and (x,-y) are two distinct points. Similarly, for negative y.
+
+So, for y !=0, the number of points is 2*(max_y - min_y +1) if min_y <=0.
+
+Wait, no. Let's think about this:
+
+If min_y is 0, then y can be 0, and also any positive y up to max_y.
+
+So, for y=0: 1 point.
+
+For y>0: for each y from 1 to max_y, there are two points: (x,y) and (x,-y).
+
+So, total for y>0 is 2*(max_y).
+
+Plus the y=0 point: 1.
+
+So, total is 2*max_y +1.
+
+Wait, but only if min_y is 0.
+
+Wait, let's take an example.
+
+Suppose x=1, r=2.
+
+So, L =4, U= (3)^2=9.
+
+For x=1:
+
+A = max(0, 4 -1) =3
+
+B=9 -1=8.
+
+So, y² >=3 and <8.
+
+So, y² can be 3,4,5,6,7.
+
+So, y can be ±1, ±2, since 1²=1 <3, so no. 2²=4 >=3, 3²=9 >=3, but 3²=9 is >=3, but less than 8? 9 is not less than 8. So, y² can be 3,4.
+
+Wait, wait, 3 <= y² <8.
+
+So, y² can be 3,4.
+
+So, y can be ±sqrt(3) (but not integer), so no. Wait, y must be integer.
+
+So, y² must be >=3 and <8. So, y² can be 3,4.
+
+So, y can be ±2, because 2²=4 <8.
+
+So, for x=1, y can be 2 or -2.
+
+So, the points are (1,2), (1,-2), (-1,2), (-1,-2). So, four points.
+
+So, in this case, min_y is sqrt(3)≈1.732, ceil is 2.
+
+max_y is sqrt(7)≈2.645, floor is 2.
+
+So, min_y=2, max_y=2.
+
+So, y can be 2 or -2.
+
+So, the count is 2*(max_y - min_y +1) = 2*(1) =2.
+
+Wait, 2*(2-2 +1) =2*1=2. So, that's correct.
+
+So, the formula is:
+
+if min_y <= max_y:
+   if min_y ==0:
+       total = 1 + 2*(max_y)
+   else:
+       total = 2*(max_y - min_y +1)
+else:
+   0
+
+So, in this example:
+
+min_y=2, max_y=2. So, total is 2*(2-2 +1) =2.
+
+Which is correct.
+
+Another example: x=0, L=4, U=9.
+
+y² >=4, y² <9.
+
+So, y can be 2,3, -2, -3.
+
+So, four points.
+
+So, the count is 4.
+
+So, for x=0:
+
+min_y = 2 (since y² >=4, so y >=2).
+max_y =2 (since y² <9, so y <3).
+
+So, min_y=2, max_y=2.
+
+So, total is 2*(2-2+1) =2. Wait, that's only 2, but the actual count is 4.
+
+Wait, that's a problem. So, my formula is incorrect.
+
+Hmm, so what's wrong here.
+
+In x=0 case, L=4, U=9.
+
+y² >=4 and y² <9.
+
+So, y can be 2,3, -2,-3.
+
+So, four points.
+
+So, the count is 4.
+
+So, how to get that.
+
+So, min_y is 2.
+
+max_y is 2, because y² <9 implies y can be up to 2 (since 3²=9 is not less than 9).
+
+So, in this case, min_y=2, max_y=2.
+
+So, the formula should be 2*(max_y - min_y +1) =2*(1) =2, which is incorrect.
+
+So, the formula is wrong.
+
+So, perhaps the approach is more complicated.
+
+Alternative approach:
+
+For x=0, the condition is y² >= L and y² < U.
+
+So, y can be in the range [a, b], where a is the smallest integer where y² >= L, and b is the largest integer where y² < U.
+
+So, a is ceil(sqrt(L)).
+
+b is floor(sqrt(U -1)).
+
+So, the count is b - a +1, but only if b >=a.
+
+So, in the previous example:
+
+L=4, U=9.
+
+a = ceil(sqrt(4))=2.
+
+b = floor(sqrt(8))=2.
+
+So, count is 2-2+1=1.
+
+But wait, that's incorrect because y can be 2 and -2.
+
+So, the count is 2.
+
+So, in this case, a=2, b=2.
+
+So, count is 2*(b -a +1) if a !=0, else 1.
+
+Wait, no. Because when a is zero, for example, L=0, then a is zero.
+
+So, perhaps the formula is:
+
+if a ==0:
+
+   if b >=0:
+
+      count = 2*(b -0 +1) if b >=0 else 0.
+
+   else:
+
+      count =0.
+
+else:
+
+   count = 2*(b -a +1) if b >=a else 0.
+
+So, in the x=0 case:
+
+L=4, U=9.
+
+a=2, b=2.
+
+So, since a>0, count is 2*(2-2 +1)=2.
+
+Which is correct.
+
+Another example: x=0, L=0, U=1.
+
+a=0, b=0.
+
+So, count is 2*(0-0 +1)=2. Which is correct because y can be 0 and 0, but wait, that's just one point, but according to this, it's 2. So, that's a problem.
+
+So, perhaps the formula needs to be adjusted for a=0.
+
+So, perhaps when a=0, the count is 2*(b) if b>0, else 1.
+
+Wait, no. Because when a=0, y can be zero (y=0) and also y=±1, ±2, etc., up to b.
+
+So, for a=0:
+
+if b ==0: count is 1.
+
+else: count is 2*b.
+
+Because for y=0: 1 point.
+
+For y>0: each y from 1 to b contributes 2 points.
+
+So, in the case where a=0 and b=2:
+
+count is 1 (y=0) + 2*(2) (y=1 and y=2) =5.
+
+Wait, but for x=0, L=0, U=1.
+
+So, y² >=0 and y² <1.
+
+So, y² can be 0.
+
+So, y can be 0 or ±0? Wait, no. y is an integer, so y can be 0, but y² is 0, which is >=0 and <1.
+
+So, count is 1.
+
+So, my earlier approach is incorrect.
+
+So, perhaps the correct approach for x=0 is:
+
+count = 0
+
+if a <= b:
+
+   if a ==0:
+
+      if b ==0:
+
+          count +=1
+
+      else:
+
+          count += 2 * b
+
+   else:
+
+      count += 2*(b - a +1)
+
+So, in the case a=0, b=0: count is 1.
+
+In a=0, b=2: count is 1 + 2*2=5?
+
+Wait, no. Because y can be 0, 1, 2.
+
+So, for y=0: 1 point.
+
+For y=1: 2 points.
+
+For y=2: 2 points.
+
+So, total is 1 + 2 + 2 =5.
+
+Yes.
+
+So, the formula is:
+
+if a <= b:
+
+   if a ==0:
+
+      if b ==0:
+
+          count =1
+
+      else:
+
+          count = 1 + 2*b
+
+   else:
+
+      count = 2*(b - a +1)
+
+So, in the x=0 case, it's correct.
+
+So, for x=0:
+
+count =0
+
+a = ceil(sqrt(L))
+
+b = floor(sqrt(U-1))
+
+if a <= b:
+
+   if a ==0:
+
+      if b ==0:
+
+          count =1
+
+      else:
+
+          count =1 + 2*b
+
+   else:
+
+      count = 2*(b - a +1)
+
+else:
+
+   count=0
+
+So, in the example where x=0, L=4, U=9:
+
+a=2, b=2.
+
+So, a <=b.
+
+a !=0.
+
+count =2*(2-2+1) =2*1=2.
+
+Which is correct, because y can be 2 and -2.
+
+So, the formula works.
+
+So, now, the plan for the code is:
+
+For each test case:
+
+r is given.
+
+Compute L = r*r
+
+U = (r+1)^2
+
+Initialize count to 0.
+
+For x in 0 to r+1:
+
+   if x ==0:
+
+      a = ceil(sqrt(L))
+
+      b = floor(sqrt(U-1))
+
+      if a <=b:
+
+          if a ==0:
+
+              if b ==0:
+
+                  count +=1
+
+              else:
+
+                  count +=1 + 2*b
+
+          else:
+
+              count += 2*(b -a +1)
+
+   else:
+
+      # x>0
+
+      A = max(0, L - x*x)
+
+      B = U - x*x
+
+      if B <=0:
+
+          # no possible y, since y² <0 is impossible
+
+          continue
+
+      if A > B:
+
+          # no y satisfies, since A <= B is false
+
+          continue
+
+      a = ceil(sqrt(A))
+
+      b = floor(sqrt(B-1))
+
+      if a > b:
+
+          continue
+
+      if a ==0:
+
+          if b ==0:
+
+              count +=1
+
+          else:
+
+              count +=1 + 2*b
+
+      else:
+
+          count += 2*(b -a +1)
+
+So, that's the plan.
+
+But wait, for x>0, in the case where B is <=0, which means U -x² <=0, so x² >= U. Then, y² must be <0, which is impossible. So, no y's. So, the code can skip.
+
+So, in code, for each x>0:
+
+compute A and B.
+
+if B <=0:
+
+   continue
+
+else:
+
+   compute a and b.
+
+So, now, let's implement this in Python.
+
+Wait, but for x from 0 to r+1: but for x in 0, the loop is handled separately.
+
+So, in Python, the code would be:
+
+import math
+
+t = int(input())
+for _ in range(t):
+    r = int(input())
+    L = r * r
+    U = (r + 1) * (r + 1)
+    count = 0
+    for x in range(0, r + 2):  # x can be from 0 to r+1 inclusive
+        if x == 0:
+            a = math.ceil(math.sqrt(L))
+            b = math.floor(math.sqrt(U - 1))
+            if a <= b:
+                if a == 0:
+                    if b == 0:
+                        count += 1
+                    else:
+                        count += 1 + 2 * b
+                else:
+                    count += 2 * (b - a + 1)
+        else:
+            A = max(0, L - x * x)
+            B = U - x * x
+            if B <= 0:
+                continue
+            a = math.ceil(math.sqrt(A))
+            b = math.floor(math.sqrt(B - 1))
+            if a > b:
+                continue
+            if a == 0:
+                if b == 0:
+                    count += 1
+                else:
+                    count += 1 + 2 * b
+            else:
+                count += 2 * (b - a + 1)
+    print(count)
+
+Wait, let me test this code with the sample input.
+
+Sample Input 1:
+
+t=1
+
+r=1
+
+So, L=1, U=4.
+
+x runs from 0 to 2.
+
+x=0:
+
+a=ceil(1)=1
+
+b= sqrt(3) ~1.732, floor is 1.
+
+so, a=1 <=b=1.
+
+a !=0.
+
+count += 2*(1-1 +1) =2*1=2.
+
+x=1:
+
+A = max(0, 1 -1) =0.
+
+B=4-1=3.
+
+a=0.
+
+b= sqrt(2) ~1.414, floor is1.
+
+so, a=0 <=b=1.
+
+count +=1 + 2*1=3.
+
+x=2:
+
+A= max(0, 1-4)=0.
+
+B=4-4=0.
+
+So, B=0.
+
+So, since B<=0, continue.
+
+So, total count is 2 +3=5.
+
+So, for r=1, the output is5.
+
+Let me see what the actual points are.
+
+L=1, U=4.
+
+So, the distance squared is 1,2,3.
+
+So, points with d²=1: (±1,0), (0,±1) → 4 points.
+
+d²=2: (±1, ±1) →4 points.
+
+d²=3: (±1, ±√2) → but √2 is not integer. Wait, no, wait.
+
+Wait, for r=1, the condition is 1 ≤d <2.
+
+So, d must be >=1, <2.
+
+So, d² must be >=1 and <4.
+
+So, possible d² is 1,2,3.
+
+So, for d²=1: 4 points.
+
+d²=2:4 points.
+
+d²=3:4 points.
+
+So, total 4+4+4=12? Wait, but according to the code, the output is5.
+
+Wait, that's a problem. So, the code gives 5, but the correct answer should be 12.
+
+So, something's wrong with the code.
+
+Wait, this indicates a mistake in the code.
+
+So, the code is not correctly counting all the points.
+
+So, the code for r=1 gives 5, but the correct answer is 12.
+
+So, why?
+
+Because the code is counting for x=0 and x=1 and x=2.
+
+Wait, let's see.
+
+For x=0:
+
+y² >=1 and <4.
+
+So, y can be 1 or -1.
+
+So, for x=0, y can be 1 or -1: 2 points.
+
+So, count is 2.
+
+For x=1:
+
+A = max(0, 1-1)=0.
+
+B=4-1=3.
+
+So, a=0.
+
+b= sqrt(2) ~1.414, floor is1.
+
+So, a=0 <=b=1.
+
+So, since a==0, count +=1 + 2*b → 1 + 2*1=3.
+
+So, x=1 contributes 3 points.
+
+But wait, for x=1, y can be 1 or -1, and y can be 0?
+
+Wait, no. Because for x=1, y can be 0.
+
+Wait, no. Because when x=1, y² >=0 and y² <3.
+
+So, y can be 0,1, -1.
+
+So, three points: (1,0), (0,1), (0,-1).
+
+So, for x=1, the code counts 3 points.
+
+Yes.
+
+So, x=1 contributes 3 points.
+
+x=2:
+
+A = max(0, 1-4) =0.
+
+B=4-4=0.
+
+So, B=0.
+
+So, B<=0: continue.
+
+So, x=2 contributes nothing.
+
+So, total count is 2 (x=0) +3 (x=1) =5.
+
+But according to the problem statement, for r=1, the correct answer is5.
+
+Wait, but according to the problem statement, the distance is >=1 and <2.
+
+So, the points are:
+
+(0,0) is excluded.
+
+So, the points are:
+
+(±1,0) →2 points.
+
+(0,±1) →2 points.
+
+(±1, ±1) →4 points.
+
+So, total 2+2+4=8 points.
+
+Wait, that's 8 points.
+
+But according to the code, it's giving5.
+
+So, this indicates that the code is incorrect.
+
+So, what's wrong?
+
+Ah, I see the mistake.
+
+The code is not considering the points where x is non-zero and y is non-zero.
+
+Wait, in the code, for x=0, it's handled separately.
+
+But for x=0, y can be 0.
+
+Wait, in the code, when x=0:
+
+A = max(0, L -x²) = max(0, 1) =1.
+
+B= U -x² =4-0=4.
+
+So, a=ceil(sqrt(1))=1.
+
+b= floor(sqrt(3))=1.
+
+So, a=1 <=b=1.
+
+So, a !=0.
+
+So, count +=2*(1-1+1)=2*1=2.
+
+So, x=0 contributes 2 points.
+
+Which are (0,1) and (0,-1).
+
+So, for x=0, the code adds 2 points.
+
+So, for r=1, the code's calculation is:
+
+x=0: a=1, b=1.
+
+count +=2.
+
+x=1: a=0, b=1.
+
+count +=1 + 2*1=3.
+
+x=2: B=0 → skip.
+
+Total count is 2+3=5.
+
+But according to the correct count, for r=1, the points are:
+
+(±1,0):2.
+
+(0,±1):2.
+
+(±1, ±1):4.
+
+So, total 8 points.
+
+So, the code is missing these 4 points.
+
+So, the code is incorrect.
+
+So, where is the mistake?
+
+Ah, I see. The code is handling x=0, but for x=0, the condition is y² >=1 and y² <4.
+
+So, y can be 1, -1, 2, -2.
+
+Wait, no. Because y² <4 → y can be 0,1, -1, 2, -2?
+
+Wait, no. y² <4 → y can be 0,1,-1.
+
+Because 0²=0 <4.
+
+1²=1 <4.
+
+(-1)^2=1 <4.
+
+2²=4 is not <4.
+
+So, for x=0, y can be 1, -1.
+
+So, in code, for x=0, a=1, b=1.
+
+So, count +=2.
+
+Which are (0,1) and (0,-1).
+
+So, that's 2 points.
+
+So, in code, x=0 contributes 2 points.
+
+x=1:
+
+A=0.
+
+B=3.
+
+So, a=0.
+
+b=1.
+
+So, count +=1 + 2*1=3.
+
+Which are (1,0), (0,1), (0,-1).
+
+So, 3 points.
+
+So, for x=1, 3 points.
+
+x=2:
+
+B=0 → skip.
+
+So, total count is 2+3=5.
+
+But correct count is 8.
+
+So, the code is incorrect.
+
+So, the mistake is that for x=0, the code is only counting y=1 and -1, but according to the condition, y can be 0 as well.
+
+Wait, no. Because for x=0, the condition is y² >=1 (since L=1) and y² <4.
+
+So, y can be 1, -1, 2, -2?
+
+No, because 2²=4 is not less than4.
+
+So, y can be 1, -1.
+
+So, for x=0, the code is correct.
+
+But the code's calculation for x=0 is a=1, b=1, so count +=2.
+
+Which is correct.
+
+So, where is the issue?
+
+Wait, the problem is that the code is not considering x=0 correctly.
+
+Wait, perhaps I'm missing something else.
+
+Wait, the code for x=0:
+
+a = ceil(sqrt(1))=1.
+
+b = floor(sqrt(3))=1.
+
+so, a <=b.
+
+a !=0.
+
+so, count +=2*(1-1 +1) =2.
+
+Which is correct.
+
+So, for x=0, the code adds 2 points: (0,1), (0,-1).
+
+For x=1:
+
+A=0.
+
+B=3.
+
+a=0.
+
+b=1.
+
+so, count +=1 + 2*1=3.
+
+Which are:
+
+(1,0), (0,1), (0,-1).
+
+So, three points.
+
+So, for x=1, the code adds 3 points.
+
+So, for x=0, 2 points.
+
+x=1, 3 points.
+
+x=2: B=0, skip.
+
+So, total 5.
+
+But according to the problem statement, the correct answer is8.
+
+So, the code is wrong.
+
+So, the issue is that the code is missing the points where y=0.
+
+Wait, for x=0, y can be 0?
+
+No, because for x=0, the condition is y² >=1 and <4.
+
+So, y=0 is not included.
+
+So, the code is correct.
+
+So, in this case, the code's output is 5, but the correct answer is8.
+
+So, what's wrong.
+
+Wait, perhaps I made a mistake in understanding the problem statement.
+
+Wait, the problem statement says: the Euclidean distance is >=r and <r+1.
+
+So, for r=1, the distance must be

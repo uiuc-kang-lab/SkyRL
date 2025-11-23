@@ -1,0 +1,82 @@
+0
+\theta=\frac{\pi}{6}
+Okay, so I have this problem where I'm given two vectors, a and b. The magnitude of a is 4, the magnitude of b is 2, and the angle between them is 120 degrees. I need to find two things: the magnitude of a + b, and the angle between a and a + b. 
+
+Let me start with the first part: finding |a + b|. I remember that when adding vectors, you can use the law of cosines because the angle between them is known. So, the formula should be something like |a + b|² = |a|² + |b|² + 2|a||b|cos(theta). Wait, actually, since we're adding vectors, it's more like |a + b|² = |a|² + |b|² + 2|a||b|cos(theta). But wait, is it plus or minus? Hmm, no, when you add vectors, the cosine of the angle between them is added because both vectors are contributing to the resultant vector. So, it should be plus.
+
+Let me plug in the values: |a| is 4, so |a|² is 16. |b| is 2, so |b|² is 4. The angle is 120 degrees, and cos(120) is cos(180 - 60) which is -cos(60) = -0.5. So, putting it all together: |a + b|² = 16 + 4 + 2*4*2*(-0.5). Let me calculate that step by step.
+
+First, 16 + 4 is 20. Then, 2*4*2 is 16, and 16*(-0.5) is -8. So, |a + b|² = 20 - 8 = 12. Therefore, |a + b| is the square root of 12, which simplifies to 2*sqrt(3). Okay, that seems straightforward.
+
+Now, the second part: finding the angle between a and a + b. Hmm, so I need to find the angle between vector a and the resultant vector a + b. I can use the dot product formula for this. The dot product of a and a + b is equal to |a| |a + b| cos(theta), where theta is the angle between them. 
+
+So, first, let me compute the dot product of a and a + b. That's a · (a + b) = a · a + a · b. I know that a · a is |a|², which is 16. And a · b is |a||b|cos(theta), which is 4*2*(-0.5) = -4. So, a · (a + b) = 16 - 4 = 12.
+
+Now, I have a · (a + b) = 12, and I know |a| is 4, and |a + b| is 2*sqrt(3). So, plugging into the dot product formula: 12 = 4 * 2*sqrt(3) * cos(theta). Let me compute 4 * 2*sqrt(3): that's 8*sqrt(3). So, 12 = 8*sqrt(3) * cos(theta). Therefore, cos(theta) = 12 / (8*sqrt(3)) = (3)/(2*sqrt(3)) = sqrt(3)/2 after rationalizing.
+
+So, cos(theta) = sqrt(3)/2, which means theta is 30 degrees. Wait, let me double-check that. cos(30) is sqrt(3)/2, yes, so the angle is 30 degrees. 
+
+Wait, but let me think about the direction of the vectors. Since the angle between a and b is 120 degrees, which is obtuse, the resultant vector a + b will probably be closer to a, but let me confirm. 
+
+Given that both a and b are vectors, and a is longer than b, the resultant vector a + b will indeed be closer to a, so the angle between a and a + b should be smaller than 120 degrees, which 30 degrees is, so that makes sense.
+
+Wait, but let me just recap the steps to ensure I didn't make any mistakes. For the first part, using the law of cosines was correct, and I got |a + b| as 2*sqrt(3). For the second part, using the dot product was the right approach, and I calculated the dot product as 12, then solved for cos(theta) and found it to be sqrt(3)/2, which corresponds to 30 degrees. 
+
+Wait, but let me just think about the geometry. If the angle between a and b is 120 degrees, which is pretty big, the resultant vector a + b should actually be pointing in a different direction altogether. Let me try to visualize this. Vector a is pointing in some direction, say along the x-axis, and vector b is pointing 120 degrees from a, which would be in the second quadrant. When I add them together, the resultant vector a + b should indeed be closer to a, but let me confirm the angle.
+
+Wait, if the angle between a and b is 120 degrees, then the angle between a and a + b should be smaller than 120 degrees, which 30 degrees is, so that seems correct. 
+
+Wait, but let me just think about the cosine value. cos(30) is sqrt(3)/2, which is approximately 0.866, which is correct for 30 degrees. So, all the steps seem consistent.
+
+So, putting it all together, the answers are:
+
+(1) |a + b| = 2*sqrt(3)
+
+(2) The angle between a and a + b is 30 degrees.
+
+Let me just write that in LaTeX format as per the instructions.
+</think>
+
+To solve the given problem, we follow these steps:
+
+1. **Find the magnitude of \( \overrightarrow{a} + \overrightarrow{b} \):**
+
+   Using the law of cosines for vectors:
+   \[
+   |\overrightarrow{a} + \overrightarrow{b}|^2 = |\overrightarrow{a}|^2 + |\overrightarrow{b}|^2 + 2|\overrightarrow{a}||\overrightarrow{b}|\cos(120^\circ)
+   \]
+   Plugging in the values:
+   \[
+   |\overrightarrow{a} + \overrightarrow{b}|^2 = 4^2 + 2^2 + 2 \cdot 4 \cdot 2 \cdot (-0.5) = 16 + 4 - 8 = 12
+   \]
+   Therefore:
+   \[
+   |\overrightarrow{a} + \overrightarrow{b}| = \sqrt{12} = 2\sqrt{3}
+   \]
+
+2. **Find the angle between \( \overrightarrow{a} \) and \( \overrightarrow{a} + \overrightarrow{b} \):**
+
+   Using the dot product formula:
+   \[
+   \overrightarrow{a} \cdot (\overrightarrow{a} + \overrightarrow{b}) = |\overrightarrow{a}| |\overrightarrow{a} + \overrightarrow{b}| \cos(\theta)
+   \]
+   Calculate the dot product:
+   \[
+   \overrightarrow{a} \cdot (\overrightarrow{a} + \overrightarrow{b}) = \overrightarrow{a} \cdot \overrightarrow{a} + \overrightarrow{a} \cdot \overrightarrow{b} = 4^2 + 4 \cdot 2 \cdot (-0.5) = 16 - 4 = 12
+   \]
+   Substitute the known values:
+   \[
+   12 = 4 \cdot 2\sqrt{3} \cdot \cos(\theta) \implies 12 = 8\sqrt{3} \cos(\theta) \implies \cos(\theta) = \frac{12}{8\sqrt{3}} = \frac{\sqrt{3}}{2}
+   \]
+   Therefore:
+   \[
+   \theta = 30^\circ
+   \]
+
+**Final Answers:**
+\[
+\boxed{2\sqrt{3}}
+\]
+\[
+\boxed{30^\circ}
+\]<｜end▁of▁sentence｜>

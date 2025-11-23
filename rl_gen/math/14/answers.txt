@@ -1,0 +1,532 @@
+0
+8 \text{ and } 9
+Okay, so I have this card game problem where three people, A, B, and C, each draw four cards from a deck numbered 1 to 12. A has cards 10 and 12, B has 6 and 11, and C has the remaining cards. The key information is that the sum of the numbers on each person's cards is the same for everyone. I need to find the two numbers that C must have.
+
+First, let me summarize the given information:
+
+- Total cards: 1 to 12, so there are 12 cards in total.
+- Each person draws 4 cards, so collectively they draw 12 cards, which makes sense.
+
+Given cards:
+
+- A has 10 and 12.
+- B has 6 and 11.
+- C has the remaining cards.
+
+Let me list all the cards first:
+
+1,2,3,4,5,6,7,8,9,10,11,12
+
+Now, A has 10 and 12, so the remaining cards for A are two cards worth x and y.
+
+Similarly, B has 6 and 11, so the remaining cards for B are two cards worth m and n.
+
+C has the remaining four cards, which are the unknowns I need to find.
+
+The key information is that the sum of each person's cards is the same. Let me denote the sum as S.
+
+So, for A, B, and C, their sums are equal to S.
+
+Therefore:
+
+Sum of A's cards = 10 + 12 + x + y = 22 + x + y = S
+
+Sum of B's cards = 6 + 11 + m + n = 17 + m + n = S
+
+Sum of C's cards = m + n + x + y = S
+
+So, now I have three equations:
+
+1. 22 + x + y = S
+2. 17 + m + n = S
+3. m + n + x + y = S
+
+My goal is to find the cards that C has, which are m, n, x, y.
+
+First, let me notice that from equations 1 and 2, both equal to S, so I can set them equal to each other:
+
+22 + x + y = 17 + m + n
+
+Simplifying:
+
+22 - 17 + x + y - m - n = 0
+
+5 + x + y - m - n = 0
+
+So, x + y = m + n - 5
+
+Let me note this as equation 4.
+
+Now, from equation 3: m + n + x + y = S
+
+But from equation 1: S = 22 + x + y
+
+So, substituting into equation 3:
+
+m + n + x + y = 22 + x + y
+
+Simplifying:
+
+m + n = 22
+
+So, m + n = 22
+
+From equation 2: S = 17 + m + n = 17 + 22 = 39
+
+So, S = 39
+
+Now, from equation 1: 22 + x + y = 39 => x + y = 17
+
+From equation 4: x + y = m + n - 5 => 17 = 22 - 5 => 17 = 17 ✔️成立
+
+So, now we know that x + y = 17 and m + n = 22
+
+Additionally, the total sum of all cards from 1 to 12 is:
+
+Sum = (12*13)/2 = 78
+
+So, the total sum is 78, which is equal to the sum of A's cards + B's cards + C's cards = S + S + S = 3S = 78
+
+Wait, no, each person's sum is S, so total sum is 3S = 78 => S = 26
+
+Wait, this contradicts earlier conclusion where S=39. Hmm, I need to resolve this.
+
+Wait, let me recalculate the total sum. From 1 to 12, sum is indeed 78.
+
+Now, if each person's sum is S, then 3S = 78 => S = 26.
+
+But earlier, from A's cards: 10 + 12 + x + y = 22 + x + y = S => x + y = 14
+
+From B's cards: 6 + 11 + m + n = 17 + m + n = S => m + n = 14
+
+Then, from C's cards: m + n + x + y = 14 + 14 = 28 = S
+
+But this contradicts the total sum approach where S=26.
+
+Hmm, so there must be a mistake in my earlier steps.
+
+Let me recast the problem.
+
+Total sum of all cards: 78
+
+Each person has four cards, so total cards distributed: 12, which is correct.
+
+Let me denote:
+
+Sum A = 10 + 12 + a + b = 22 + a + b
+
+Sum B = 6 + 11 + c + d = 17 + c + d
+
+Sum C = e + f + g + h = e + f + g + h
+
+Where {a,b} are A's remaining cards, {c,d} are B's remaining cards, and {e,f,g,h} are C's cards.
+
+Given that Sum A = Sum B = Sum C = S
+
+So, 22 + a + b = 17 + c + d = e + f + g + h = S
+
+Also, the total sum: 22 + a + b + 17 + c + d + e + f + g + h = 78
+
+But since a + b + c + d + e + f + g + h = 78 - 22 -17 = 78 -39 = 39
+
+So, a + b + c + d + e + f + g + h = 39
+
+But we also have:
+
+22 + a + b = S
+
+17 + c + d = S
+
+So, a + b = S -22
+
+c + d = S -17
+
+Then, a + b + c + d = (S -22) + (S -17) = 2S -39
+
+Now, the remaining cards are e + f + g + h = 39 - (a + b + c + d) = 39 - (2S -39) = 78 -2S
+
+But also, e + f + g + h = S
+
+So, S = 78 -2S
+
+=> 3S =78 => S=26
+
+So, now we know S=26
+
+Then, a + b = 26 -22 =4
+
+c + d =26 -17=9
+
+So, A's remaining cards sum to 4, and B's remaining cards sum to9.
+
+Now, Alice has two cards that sum to4. Possible pairs: 1+3, 2+2 (but duplicate not allowed), so only 1+3.
+
+So, A has 10,12,1,3aming up to 22 +1+3=26.
+
+Wait, but wait, if A has 10,12, and then 1 and3, that's four cards:1,3,10,12.
+
+Similarly, B has 6,11, and then two cards that sum to9. Possible pairs:2+7,3+6 (but 6 is already owned by B?), Wait no, B draws four cards, so B has6,11, and then two more cards summing to9. So, possible pairs:2+7,4+5,1+8 (but 1 is already in A's cards if A has1, else not. Wait, if A has1, then B can't have1. Let me clarify.
+
+Wait, if A has1, then B cannot have1, so B's remaining cards must sum to9 without including1 or3 (since A has those anyway). So, B must have two cards that sum to9, using numbers from2,4,5,6,7,8,9,11,12, but not1 or3.
+
+So, possible pairs for B:2+7,4+5, possibly 9+0 (invalid), so only2+7 and4+5.
+
+So, B can have2 and7, or4 and5.
+
+Similarly, C's cards would be the remaining cards.
+
+Let me summarize:
+
+Total cards:1,2,3,4,5,6,7,8,9,10,11,12
+
+A has1,3,10,12
+
+B has2,7,6,11 (summing to2+7+6+11=26) or B has4,5,6,11 (but wait, B must not have1 or3, so if B has4,5,6,11, that sums to26, but let me check:
+
+4+5+6+11=26 yes.
+
+Alternatively, B could have2,7,6,11=26, as well.
+
+So, two possibilities for B:
+
+Either B has2,7,6,11 or B has4,5,6,11.
+
+Let me check both cases.
+
+Case1: B has2,7,6,11
+
+Then, A has1,3,10,12
+
+B has2,7,6,11
+
+So, remaining cards for C:4,5,8,9
+
+Sum of C's cards:4+5+8+9=26 ✔️
+
+Case2: B has4,5,6,11
+
+Then, A has1,3,10,12
+
+B has4,5,6,11
+
+Remaining cards for C:2,7,8,9
+
+Sum of C's cards:2+7+8+9=26 ✔️
+
+So, both cases are possible.
+
+Now, the question is to determine the two numbers that C must have. Wait, wait, C has four cards, so how can C have two numbers? Wait, the question is phrased as "determine the two numbers that C must have."可能意思是C必须拥有两个特定的数，可能是指必须包含的两个数，或者可能翻译的问题。但根据情况，C要么 has4,5,8,9要么 has2,7,8,9．所以可能两种情况都成立？
+
+Wait,让我重新看看目标。可能我误解了题目。可能题目的意思是确定C必须有的数组合，使得在整个情况下，C的数组合是唯一的，或者必须包含的数组合。
+
+但从上面看到，两种情况都可能，取决于B的选择。所以可能有两种答案？
+
+但让我再检查一下。
+
+在Case1：B has2,7,6,11→ C has4,5,8,9
+
+In Case2：B has4,5,6,11→ C has2,7,8,9
+
+所以 both are valid取决于B的选择：
+
+If B chooses2,7,6,11→C has4,5,8,9
+
+If B chooses4,5,6,11→C has2,7,8,9
+
+So both are possible依赖于B's choice, but B must choose in a way that their cards sum to26 and do not overlap with A's cards.
+
+A has1,3,10,12→ So B cannot have1,3,10,12.
+
+So B must choose from2,4,5,6,7,8,9,11,12, but must not have1,3,10,12.
+
+So B's options for sum26:
+
+Possible combinations:
+
+2+7+11+10=20→too low
+
+2+8+9+11=20→too low
+
+4+5+11+10=20→too low
+
+Wait, need sum26.
+
+Let me find all combinations of four distinct cards from2,4,5,6,7,8,9,11,12 that sum to26.
+
+This might take some time.
+
+Let me see:
+
+Start with the largest card11.
+
+So11+x+y+z=26→x+y+z=15
+
+Find three distinct cards from2,4,5,6,7,8,9,12 that sum to15.
+
+Possible combinations:
+
+2+4+9=15→ yes
+
+2+5+8=15→ yes
+
+2+6+7=15→ yes
+
+4+5+6=15→ yes
+
+So possible sets including11:
+
+{11,2,4,9}, {11,2,5,8}, {11,2,6,7}, {11,4,5,6}
+
+Now, check if these are valid, i.e., no overlaps with A's cards.
+
+A has1,3,10,12→ so:
+
+{11,2,4,9}→ all valid
+
+{11,2,5,8}→ all valid
+
+{11,2,6,7}→ all valid
+
+{11,4,5,6}→ all valid
+
+Now, let me check if these are valid choices for B.
+
+Also, B must not have1,3,10,12.
+
+So all these combinations are valid for B.
+
+Now, let me see the sums:
+
+Each of these valid sets for B sum to26, so they are valid.
+
+Now, let me see the corresponding C's cards.
+
+Total cards:1-12
+
+A has1,3,10,12
+
+B has one of the above sets
+
+So C has the remaining cards.
+
+Let me take each case:
+
+Case1: B has2,4,9,11→ Wait no, from above, one of the sets is{11,2,4,9}→ so B has2,4,9,11
+
+Then, C has the remaining cards:1,3,5,6,7,8,10,12→ Wait no, wait total cards are1-12.
+
+Wait A has1,3,10,12→ So A:1,3,10,12
+
+B has2,4,9,11→ So B:2,4,9,11
+
+Then, C has the remaining:1,3,5,6,7,8,10,12→ Wait no, wait total cards minus A and B's cards.
+
+A has4 cards:1,3,10,12
+
+B has4 cards:2,4,9,11
+
+So total taken:8 cards→ remaining4 cards:5,6,7,8,1→ no, wait1 is in A, so C's cards must be5,6,7,8
+
+Wait wait, let me list all cards:
+
+1,2,3,4,5,6,7,8,9,10,11,12
+
+A has1,3,10,12→ removes these
+
+B has2,4,9,11→ removes these
+
+So remaining:5,6,7,8→ so C has5,6,7,8→ sum is26→ correct
+
+WaitWaitWait错了 earlier 示例中C的 cards是5,6,7,8→ sum is26→正确。
+
+另一个示例：
+
+Case2: B has2,5,8,11→ Wait no, correct example is B has2,5,8,11→ let me check:
+
+Wait from above, one of the sets is{11,2,5,8}→ so B has2,5,8,11
+
+Then, C's cards:1,3,4,6,7,9,10,12→ Wait no, let me see:
+
+A has1,3,10,12
+
+B has2,5,8,11
+
+So remaining:4,6,7,9→ sum is4+6+7+9=26→ correct
+
+Another option:
+
+Case3: B has2,6,7,11→ yes, another valid set{11,2,6,7}
+
+Then, C's cards:1,3,4,5,8,9,10,12→ Wait no, let me see:
+
+A has1,3,10,12
+
+B has2,6,7,11
+
+Remaining:4,5,8,9→ sum is4+5+8+9=26→ correct
+
+Another option:
+
+Case4: B has4,5,6,11→ yes, another valid set{11,4,5,6}
+
+Then, C's cards:1,3,2,7,8,9,10,12→ Wait no, let me see:
+
+A has1,3,10,12
+
+B has4,5,6,11
+
+Remaining:2,7,8,9→ sum is2+7+8+9=26→ correct
+
+So in all cases, C's cards are either5,6,7,8或者4,5,8,9或者4,5,6,9或者2,7,8,9取决于B's choice.
+
+但题目是确定C必须 Have的数，可能意味着 Regardless of B's choice, C must have certain numbers.但从 above看到，并不是所有情况都包括同样的数。
+
+比如， 示例中：
+
+Case1: C has5,6,7,8
+
+Case2: C has4,5,8,9
+
+Case3: C has4,5,6,9
+
+Case4: C has2,7,8,9
+
+所以不同的情况下，C有不同的数组合。但可能题目是为了找出一种可能的组合，或者可能我 misunderstanding=?, 
+
+可能正确的解决方案是找出 C 必须 Have 的数，可能是指 C 一定有的是4,5,8,9或者 similar，但看起来并非一定。
+
+可能我需要重新 Approach一下。
+
+另一个方法：既然总 Sum=26，且 A and B each have two pairs that sum to4 and9 respectively，可能 C must have certain numbers.
+
+或者，更准确地说，通过代数方法找出 C 的数。
+
+设 C 的数为 a, b, c, d，sum =26
+
+同时，A has1,3,10,12→ sum=26
+
+B has two numbers summing to9，and the other two summing to7（因为6+11=17，所以另一个 pair must be9，因为17+9=26→ so B has two numbers summing to9，and the other two summing to17（6+11=17 and 1+12=13→ wait no, B has4 numbers summing to26，so if B has6,11，then the other two must sum to10（26-17=10）→ so B has6,11, and two numbers summing to10→ possible pairs:1+9,2+8,3+7,4+6（但6 already in B）→ so possible pairs:1+9,2+8,3+7
+
+所以 B 的可能组合：
+
+-6,11,1,9→cesam
+-6,110,2,8→ Wait no, numbers only up to12
+-6,11,2,8
+-6,11,3,7
+
+So, possible B's cards:
+
+6,11,2,8 或6,11,3,7
+
+所以我可以考虑这两种情况：
+
+Case1: B has6,11,2,8→ sum=26
+
+Then, C has剩下的 cards:1,3,4,5,7,9,10,12→ Wait no, total cards minus A(1,3,10,12) and B(2,6,8,11)= 所以 C has1,3,4,5,7,9,10→ 错，正确的是：
+
+Total cards:1,2,3,4,5,6,7,8,9,10,11,12
+
+A has1,3,10,12
+
+B has2,6,8,11
+
+So C has4,5,7,9→ sum=4+5+7+9=26
+
+Case2: B has6,11,3,7→ sum=26
+
+Then, C hasremaining cards:1,2,4,5,8,9,10,12→ Wait no, let me see:
+
+A has1,3,10,12
+
+B has3,6,7,11→WaitWait,B cannot have3 because A has3→ so correct B's cards are6,11,2,8或6,11,3,7→但后者冲突，所以正确的是6,111,2,8
+
+所以 Ctrl(correct me)
+
+B must not have cards already owned by A, so B cannot have1,3,10,12.
+
+So B's cards must be from2,4,5,6,7,8,9,11,12
+
+So correct B's cards are6,11,2,8或6,11,4,5→ because4+5=9→ yes
+
+So two possibilities:
+
+Case1: B has6,11,2,8→ C has4,5,7,9
+
+Case2: B has6,11,4,5→cesam→ C has2,8,9,11→ Wait no, let me correct:
+
+If B has6,11,4,5→ sum=6+11+4+5=26
+
+Then, C has remaining cards:1,2,3,7,8,9,10,12→ Wait no, total cards minus A and B:
+
+A has1,3,10,12
+
+B has4,5,6,111→ Wait no, B has4,5,6,11→ so C has1,2,3,7,8,9,10,12→ Wait no, let me list correctly:
+
+Total cards:1,2,3,4,5,6,7,8,9,10,11,12
+
+A has1,3,10,12→ removes these
+
+B has4,5,6,11→ removes these
+
+So C has2,7,8,9→ sum=2+7+8+9=26
+
+WaitWait,让我重新排列：
+
+Case2: B has4,5,6,11→arestly valid？
+
+Wait B must have four cards summing to26，so4+5+6+11=26+11=27→错了，正确的是4+5+6+11=26→ yes, 4+5=9, 6+11=17→ total26
+
+So B has4,5,6,111→ yes
+
+Then, C hasremaining cards:1,2,3,7,8,9,10,12→ Wait no, total cards minus A and B:
+
+A has1,3,10,12→ removes these
+
+B has4,5,6,11→ removes these
+
+So C has2,7,8,9→ sum=2+7+8+9=26
+
+So in this case, C has2,7,8,9
+
+所以现在， Depending on B's choice, C can have either4,5,7,9或2,7,8,9
+
+所以两种可能？
+
+但题目是要确定目标，可能我 misunderstanding了原文。可能原文是为了找出 C � must have 的数，可能是指 C � must have 的数都是7和9，因为这两种情况都包括7和9。
+
+让我看看：
+
+In Case1: C has4,5,7,9→ includes7,9
+
+In Case2: C has2,7,8,9→ includes7,9
+
+所以 in both cases, C has7 and9
+
+而其他数字 vary取决于 B's choice.
+
+所以可能答案是 C � must have 7 and9
+
+因为 in both scenarios, C 测试了7和9，而其他数 vary。
+
+所以答案是 C � must have 7 and9
+
+所以 boxed answer: \boxed{7,9}
+
+但让我确认一下：
+
+In Case1: C has4,5,7,9→ yes
+
+In Case2: C has2,7,8,9→ yes
+
+所以确实，C � must have 7和9
+
+所以答案是7和9
+</think>
+
+[ANSWER]7,9[/ANSWER]
+
+让我解释一下：
+
+通过分析，确定了三个 person A, B, C 比rawing card game，总 card 数为1到12，各取4张。A 有10和12，B 有6和111，C 有剩余 card。通过计算，发现 C 的 card 数必须包括7和9，因为两种可能的 B 的选择导致 C 的 card 数都包含7和9。因此，C � must have 7 and 9.
+
+\boxed{7,9}<｜end▁of▁sentence｜>

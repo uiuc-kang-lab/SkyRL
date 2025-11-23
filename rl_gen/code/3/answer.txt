@@ -1,0 +1,512 @@
+0
+Okay, I've got this problem to solve. Let me try to understand it step by step.
+
+So, the problem is about permutations and colors. We have a permutation p of length n, and each element is either black or white. The function F(i) is the number of black integers reachable from i by following the permutation. Reachable means applying the permutation some number of times, right? So, if i is 1, and p_1 is 3, then p_3 is 6, and so on until we reach a black or white number.
+
+Hmm. My task is to compute F(i) for each i from 1 to n.
+
+Let me think about how to model this. For each position, I need to find all the positions that can be reached by following p. Since p is a permutation, each element is part of a cycle. So, each position is part of exactly one cycle in the permutation. That's a crucial observation.
+
+So, for each position i, the reachable set is the entire cycle that i belongs to. Because in a permutation, each element is part of a cycle. So, once you start moving from i, you traverse the cycle until you come back to i, forming a cycle.
+
+Wait, no. Wait, the permutation is a function where p is a permutation, so each element has exactly one predecessor and one successor. So, for any i, the sequence i, p_i, p_p_i, etc., will eventually cycle.
+
+So, for each i, the set of reachable j's is exactly the cycle that i belongs to. So, F(i) is the count of black nodes in that cycle.
+
+Ah, right! So the problem reduces to, for each position, find the size of the connected component (in terms of the permutation) that it belongs to, but considering the colors. So, the connected component is the entire cycle, but the color (black or white) of each node in the cycle contributes to F(i).
+
+So, the steps I need to take are:
+
+1. For each test case, process the permutation p.
+2. Find all the cycles in the permutation.
+3. For each cycle, determine the number of black nodes in it.
+4. For each i, F(i) is the number of black nodes in the cycle that i is in.
+
+So, the main challenge is to efficiently find all the cycles and compute the sum of black nodes in each.
+
+Let me think about how to implement this.
+
+First, I need to find all the cycles in the permutation. I can do this by using a visited array to keep track of which nodes have been processed. For each unvisited node, I'll traverse the cycle starting from it, marking each node as visited once I'm done with it.
+
+Once I have all the cycles, I can compute the sum of black nodes for each cycle. Then, for each i, I just look up which cycle it belongs to and return the sum.
+
+Okay, that makes sense.
+
+Now, let's think about the data structures. For each test case, I'll have a permutation p, which is a list. Then, a colors array, which is a string. But since the colors are given as a string, perhaps it's better to convert it into a list for easier access.
+
+So, steps for each test case:
+
+- Read n.
+- Read the permutation p as a list. Since in Python, it's zero-based, but the problem statement uses 1-based, I need to adjust. So, I can store p as 1-based, perhaps by adding 1 to each element, but wait, no, because in the problem statement, p_i can be up to n, which is 1-based. Wait, no. Wait, p is given as a permutation of 1..n, so p_i is between 1 and n. So, for each p_i, it's in 1..n, and each is unique.
+
+So, the permutation is 1-based. So, for the code, perhaps it's easier to store p as a list with 1-based indices, but in Python, lists are 0-based, so I can shift by 1. So, p = [p1, p2, ..., pn] where p[0] is p1, which is the permutation for 1, p[1] is permutation for 2, etc. Wait, no, because the input is given as p_1, p_2, ..., p_n, which are 1-based indices. So, for example, in the sample input, p is [3,5,6,1,2,4], which for i=1, p1=3. So, for the code, perhaps I'll store p as a list where the index is 1-based, but in Python, it's easier to make it 0-based. So, I'll adjust p by adding 1 to each element. So, p will be 1-based.
+
+Wait, perhaps it's better to process p as a list where p[0] is the value for position 1, p[1] for position 2, etc. So, in code, I can read the permutation as a list, and then for each index i (starting from 0), p[i] is the value for position i+1. So, in code, p[i] is the value of position i+1.
+
+So, for each i from 1 to n, p[i] is the next position.
+
+So, the code will:
+
+Read t test cases.
+
+For each test case:
+
+Read n.
+
+Read p as a list of integers, 1-based, so p = list of length n, p[0] is p_1, p[1] is p_2, etc. So, in code, p will be 0-based, but the actual position is i+1.
+
+Read the colors string s.
+
+Then, for each position i (1-based), s[i-1] is '0' or '1'.
+
+So, now, the plan is:
+
+1. For each test case, process the permutation.
+
+2. Find all the cycles.
+
+3. For each cycle, compute the sum of '1's in the colors array for the nodes in that cycle.
+
+4. For each position i, output the sum of the colors in the cycle that i is in.
+
+Now, how to implement this.
+
+First, for a given permutation, finding the cycles.
+
+I can create a visited array of size n+1 (since positions are 1-based), initialized to False.
+
+Then, for each i from 1 to n:
+
+if not visited[i], then start traversing the cycle starting at i, mark all nodes in this cycle as visited, and compute the sum of '1's in the cycle.
+
+So, for example, in the sample input:
+
+p = [3,5,6,1,2,4]
+
+So, for i=1, p[1] is 3. Then p[3] is 6. p[6] is 4. p[4] is 1. So, the cycle is 1 →3→6→4→1, which is a cycle of length 4.
+
+In this cycle, the colors are s[0] is '0', s[2] is '0', s[5] is '1', s[3] is '1'. So, sum is 2.
+
+So, for each node in this cycle, F(i) is 2.
+
+So, for example, in the sample, F(1) is 2, F(3) is 2, etc.
+
+So, the code needs to correctly compute this.
+
+So, in code:
+
+For each test case:
+
+Read n.
+
+Read p as a list of integers, 1-based.
+
+Read s as a string.
+
+Create a colors array as a list of integers, where colors[i] is 1 if s[i] is '1', else 0.
+
+Create a visited array of size n+1, initialized to False.
+
+Create a list to store the sum of each cycle.
+
+For i in 1 to n:
+
+    if not visited[i]:
+
+        current = i
+
+        cycle = []
+
+        while True:
+
+            if visited[current]:
+
+                break
+
+            visited[current] = True
+
+            cycle.append(current)
+
+            current = p[current-1]  # since p is 1-based, current is 1-based, p[current-1] is the next position.
+
+        # Now, compute the sum of '1's in colors for the cycle
+
+        sum_black = sum( colors[j-1] for j in cycle )
+
+        # Assign sum_black to each node in the cycle.
+
+        for node in cycle:
+
+            F[node] = sum_black
+
+So, wait, but in this approach, for each cycle, we compute the sum and then assign it to all nodes in the cycle.
+
+This is efficient because for each node in the cycle, we store the sum once, and then all nodes in the cycle have the same sum.
+
+Yes, that's a good approach.
+
+So, in code, for each test case, after processing all cycles, we can create an array F of size n+1, where F[i] is the sum computed for that cycle.
+
+So, in code, after processing all cycles, for each i in 1..n, F[i] is the sum.
+
+So, that's the plan.
+
+Now, let's think about the code.
+
+In Python, for each test case:
+
+n = int(input())
+
+p = list(map(int, input().split()))
+
+s = input().strip()
+
+colors = [0] * (n+1)
+
+for i in range(1, n+1):
+
+    if s[i-1] == '1':
+
+        colors[i] = 1
+
+    else:
+
+        colors[i] = 0
+
+visited = [False] * (n+1)
+
+F = [0] * (n+1)
+
+for i in range(1, n+1):
+
+    if not visited[i]:
+
+        cycle = []
+
+        current = i
+
+        while True:
+
+            if visited[current]:
+
+                break
+
+            visited[current] = True
+
+            cycle.append(current)
+
+            current = p[current-1]  # because p is 1-based, and p[current-1] is the next position.
+
+        # compute the sum
+
+        sum_black = sum( colors[j] for j in cycle )
+
+        # assign to all nodes in the cycle
+
+        for node in cycle:
+
+            F[node] = sum_black
+
+So, after this loop, F will have the correct values for each node.
+
+Wait, but for the sample input:
+
+Sample input:
+
+p = [3,5,6,1,2,4]
+
+colors are '0', '0', '0', '1', '1', '1'?
+
+Wait, no, the colors string is '0110'. Let's see:
+
+s is "0110", which is '0' for position 1, '1' for position 2, '1' for position3, '0' for position4.
+
+So, the colors array is:
+
+position1: 0
+
+position2: 1
+
+position3: 1
+
+position4: 0
+
+position5: 1
+
+position6: 0
+
+So, for the cycle 1→3→6→4→1:
+
+sum_black is 0 (for 1) +1 (3) +0 (6) +0 (4) → sum is 1.
+
+Wait, wait, no. Because in the sample, F(4) is 1, but according to the code, sum_black is 0+1+0+0=1.
+
+Yes, that's correct.
+
+Wait, but in the sample, the cycle is 1,3,6,4.
+
+So, the sum is 0 (1) +1 (3) +0 (6) +0 (4) → sum is 1.
+
+So, F(1) is 1, F(3) is 1, F(6) is 1, F(4) is 1.
+
+Wait, but in the sample explanation, it's said that 4 is reachable from 1, which would imply that F(1) is the sum of the cycle 1,3,6,4, which is 1.
+
+But according to the code, for that cycle, the sum is 1.
+
+So, the code seems correct.
+
+Another example: what about a cycle of length 2.
+
+Say, p = [2,1], colors are 1,0.
+
+So, cycle is 1→2→1.
+
+sum_black is 1 (for 1) +0 (for 2) → sum is 1.
+
+So, F(1) is 1, F(2) is 1.
+
+So, that seems correct.
+
+Now, let's think about the time complexity.
+
+For each test case, the code processes each node exactly once. For each node, it's part of exactly one cycle. So, the total time per test case is O(n), which is acceptable given the constraints (sum of n across test cases is 2e5).
+
+So, the code should be efficient.
+
+Now, let's think about possible issues.
+
+What if p is such that a node is part of a cycle of length 1? For example, p[i] = i for all i.
+
+In that case, the cycle is just i itself.
+
+So, the sum_black is the color of i.
+
+So, F(i) is 1 if the color is black, else 0.
+
+Which is correct.
+
+Another test case: n=1.
+
+p = [1]
+
+s is '1'
+
+So, cycle is [1], sum is 1. So, F(1)=1.
+
+Yes.
+
+Another test case: n=3.
+
+p = [2,3,1]
+
+colors = '110'
+
+So, the cycle is 1→2→3→1.
+
+sum_black is 1+1+0=2.
+
+So, F(1)=2, F(2)=2, F(3)=2.
+
+Yes.
+
+So, the code should handle all these cases correctly.
+
+Now, let's test the sample input.
+
+Sample input:
+
+t=1
+
+n=6
+
+p = [3,5,6,1,2,4]
+
+s = '0110' → colors are [0,1,1,0,1,0]
+
+So, for each i:
+
+i=1: not visited.
+
+cycle is 1,3,6,4.
+
+sum is 0 (1) +1 (3) +0 (6) +0 (4) → sum is 1.
+
+So, F[1]=1.
+
+i=2: not visited.
+
+cycle is 2,5.
+
+sum is 1 (2) +1 (5) → 2.
+
+So, F[2]=2.
+
+i=3: already visited.
+
+i=4: already visited.
+
+i=5: already visited.
+
+i=6: already visited.
+
+So, F is:
+
+F[1] =1
+
+F[2]=2
+
+F[3]=1
+
+F[4]=1
+
+F[5]=2
+
+F[6]=0?
+
+Wait, wait, no. Wait, in the sample, the colors are '0', '1', '1', '0', '1', '0' for positions 1,2,3,4,5,6.
+
+So, for i=6: p[5] is 4, then p[3] is 6. So, the cycle is 6→4→1→3→6.
+
+Wait, no. Let me re-examine the permutation:
+
+p is [3,5,6,1,2,4]
+
+So, for position 6, p[6] is 4.
+
+So, the cycle for 6 is 6→4→1→3→6.
+
+So, the cycle is [6,4,1,3].
+
+sum_black is 0 (6) +0 (4) +0 (1) +1 (3) → sum is 1.
+
+So, F[6] is 1.
+
+Wait, but according to the sample explanation, F(4) is 1, which is correct.
+
+So, the code will correctly compute the F array.
+
+So, in the sample, F(1) is 1, F(2) is 2, F(3) is 1, F(4) is 1, F(5) is 2, F(6) is 1.
+
+Which matches the sample output.
+
+So, the code is correct.
+
+Now, let's write the code accordingly.
+
+I think that's all. Now, let's code it.
+
+Wait, but in the code, the for loop in the test case is:
+
+for i in range(1, n+1):
+
+    if not visited[i]:
+
+        ... process cycle ...
+
+So, yes.
+
+Now, let's code this.
+
+So, in Python:
+
+Read t.
+
+For each test case:
+
+Read n.
+
+Read p as a list of integers, 1-based.
+
+Read s.
+
+Compute colors array.
+
+Initialize visited and F arrays.
+
+Loop over i from 1 to n.
+
+If not visited, process the cycle.
+
+Compute sum_black.
+
+Assign F for each node in cycle.
+
+Finally, print F[1], F[2], ..., F[n].
+
+Yes.
+
+So, the code should be as follows.
+</think>
+
+To solve this problem, we need to determine the function \( F(i) \) for each \( i \) from 1 to \( n \), where \( F(i) \) is the number of black integers reachable from \( i \) by following the permutation \( p \). The permutation \( p \) is given, and each integer is either black or white, represented by a binary string.
+
+### Approach
+
+1. **Permutation Cycles**: Each permutation can be decomposed into cycles. For example, if \( p = [3, 5, 6, 1, 2, 4] \), the permutation can be visualized as a graph where each node points to the next node in the permutation. This permutation will form cycles, and each cycle is a set of nodes that can be reached from each other by following the permutation.
+
+2. **Cycle Detection**: Using a visited array, we can detect all cycles in the permutation. For each unvisited node, we traverse the cycle starting from that node, marking all nodes in the cycle as visited.
+
+3. **Color Sum Calculation**: For each detected cycle, we calculate the sum of the black nodes (represented by '1' in the binary string). This sum is the value of \( F(i) \) for all nodes \( i \) in the cycle.
+
+4. **Efficient Assignment**: Once all cycles and their corresponding black node sums are computed, we assign these sums to all nodes in the respective cycles.
+
+### Solution Code
+
+```python
+import sys
+
+def main():
+    input = sys.stdin.read
+    data = input().split()
+    idx = 0
+    t = int(data[idx])
+    idx += 1
+    for _ in range(t):
+        n = int(data[idx])
+        idx += 1
+        p = list(map(int, data[idx:idx+n]))
+        idx += n
+        s = data[idx]
+        idx += 1
+        
+        colors = [0] * (n + 1)
+        for i in range(1, n+1):
+            if s[i-1] == '1':
+                colors[i] = 1
+            else:
+                colors[i] = 0
+        
+        visited = [False] * (n + 1)
+        F = [0] * (n + 1)
+        
+        for i in range(1, n+1):
+            if not visited[i]:
+                cycle = []
+                current = i
+                while True:
+                    if visited[current]:
+                        break
+                    visited[current] = True
+                    cycle.append(current)
+                    current = p[current - 1]  # p is 1-based, current is 1-based, p[current-1] is the next position
+                sum_black = sum(colors[j] for j in cycle)
+                for node in cycle:
+                    F[node] = sum_black
+        
+        print(' '.join(map(str, F[1:n+1])))
+        
+if __name__ == "__main__":
+    main()
+```
+
+### Explanation
+
+1. **Reading Input**: The input is read in one go for efficiency, especially given the constraints. The input is split into a list for easier processing.
+
+2. **Color Array**: We create an array `colors` where each element is 1 if the corresponding position in the permutation is colored black, and 0 otherwise.
+
+3. **Cycle Detection and Sum Calculation**: For each node, if it hasn't been visited, we traverse the cycle starting from that node. During this traversal, we compute the sum of black nodes in the cycle and store this sum for all nodes in the cycle.
+
+4. **Output**: After processing all cycles, we print the results for each test case.
+
+This approach ensures that we efficiently compute the required values by leveraging the properties of permutation cycles, making the solution both optimal and easy to understand.<｜end▁of▁sentence｜>

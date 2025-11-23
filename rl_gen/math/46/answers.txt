@@ -1,0 +1,255 @@
+0
+C) \( \frac{100}{201} \)
+Okay, so I have this problem where I need to evaluate the sum of the series from n=1 to n=100 of 1/[(2n-1)(2n+1)]. The options are given as A) 128/257, B) 100/199, C) 100/201, and D) 100/203. Hmm, let me think about how to approach this.
+
+First, I remember that when dealing with sums involving fractions like this, partial fraction decomposition might be useful. Partial fractions can break down complicated fractions into simpler ones that are easier to sum up. So, I should try to express 1/[(2n-1)(2n+1)] as a sum of two simpler fractions.
+
+Let me set up the partial fractions. Suppose:
+
+1/[(2n-1)(2n+1)] = A/(2n-1) + B/(2n+1)
+
+Where A and B are constants I need to find. To find A and B, I can multiply both sides by (2n-1)(2n+1):
+
+1 = A(2n+1) + B(2n-1)
+
+Now, let's expand the right side:
+
+1 = 2An + A + 2Bn - B
+
+Combine like terms:
+
+1 = (2A + 2B)n + (A - B)
+
+Since this equation must hold for all n, the coefficients of like terms on both sides must be equal. On the left side, the coefficient of n is 0, and the constant term is 1. Therefore, we can set up the following system of equations:
+
+1. Coefficient of n: 2A + 2B = 0
+2. Constant term: A - B = 1
+
+Let me solve this system. From the first equation:
+
+2A + 2B = 0
+Divide both sides by 2:
+A + B = 0
+Thus, A = -B
+
+Plugging this into the second equation:
+A - B = 1
+Substitute A = -B:
+(-B) - B = 1
+-2B = 1
+So, B = -1/2
+
+Then, since A = -B, A = 1/2
+
+Therefore, the partial fractions are:
+
+1/[(2n-1)(2n+1)] = (1/2)/(2n-1) + (-1/2)/(2n+1)
+
+Simplify that:
+
+= 1/(2(2n - 1)) - 1/(2(2n + 1))
+
+So, now the original sum becomes:
+
+Sum from n=1 to 100 of [1/(2(2n - 1)) - 1/(2(2n + 1))]
+
+I can factor out the 1/2:
+
+= (1/2) * Sum from n=1 to 100 of [1/(2n - 1) - 1/(2n + 1)]
+
+Now, this looks like a telescoping series. When we write out the terms, many will cancel out. Let me write out the first few terms and the last few terms to see the pattern.
+
+For n=1:
+
+1/(2*1 -1) - 1/(2*1 +1) = 1/1 - 1/3
+
+For n=2:
+
+1/(2*2 -1) - 1/(2*2 +1) = 1/3 - 1/5
+
+For n=3:
+
+1/(2*3 -1) - 1/(2*3 +1) = 1/5 - 1/7
+
+...
+
+For n=100:
+
+1/(2*100 -1) - 1/(2*100 +1) = 1/199 - 1/201
+
+So, when we add all these terms together, the intermediate terms cancel out. The 1/3 cancels with -1/3, the 1/5 cancels with -1/5, and so on, up to 1/199 cancels with -1/199. So, the only terms left are the first term of the first expression and the last term of the last expression.
+
+So, the sum inside is:
+
+(1/1 - 1/201) = 1 - 1/201 = (201 - 1)/201 = 200/201
+
+Wait, hold on. Let me double-check that. The first term is 1, which is 1/1, and the last term is -1/201, so the sum is 1 - 1/201 = (201 - 1)/201 = 200/201. Hmm, that seems correct.
+
+But wait, let me make sure. The first term is 1/(2*1 -1) = 1/1 =1, and the last term is -1/(2*100 +1) = -1/201. So, the sum of the series inside the brackets is 1 - 1/201 = 200/201. Then, we multiply by 1/2, so the total sum is (1/2)*(200/201) = 100/201.
+
+Wait, but hold on. Looking at the answer choices, C is 100/201, and D is 100/203. So, that suggests that C is the answer. But wait, let me make sure I didn't make a miscalculation.
+
+Wait, no, in the partial fractions, I had:
+
+1/[(2n-1)(2n+1)] = (1/2)/(2n -1) - (1/2)/(2n +1)
+
+So, when I factor out 1/2, it's (1/2)[1/(2n -1) - 1/(2n +1)]
+
+So, the sum is (1/2) * Sum from n=1 to 100 of [1/(2n -1) - 1/(2n +1)]
+
+As I expanded before, this telescopes to (1/2)[1 - 1/201] = (1/2)(200/201) = 100/201, which is option C.
+
+Wait, but hold on, let me make sure that I didn't make a mistake in the number of terms. The original sum is from n=1 to n=100, so the number of terms is 100. The telescoping series will have 100 terms: the first term is 1/1 and the last term is -1/(2*100 +1) = -1/201.
+
+So, the sum inside is 1 - 1/201 = 200/201. Then, times 1/2 is 100/201, so that's correct.
+
+Wait, but let me make sure. Alternatively, maybe I should think of the sum as 1 - 1/201, which is 200/201, so 1/2 of that is 100/201. So, seems correct.
+
+Wait, but why is option D 100/203? Maybe I made a mistake in the partial fractions? Let me check.
+
+We have:
+
+1/[(2n -1)(2n +1)] = A/(2n -1) + B/(2n +1)
+
+Multiplying both sides by (2n -1)(2n +1):
+
+1 = A(2n +1) + B(2n -1)
+
+Expanding:
+
+1 = (2A + 2B)n + (A - B)
+
+So, 2A + 2B = 0 and A - B =1
+
+So, A = -B, and 2A + 2B = 0, which is satisfied because 2A + 2B = 2A - 2A =0.
+
+Then, A - B =1, so A - (-A) =1, which is 2A =1, so A=1/2, B=-1/2. So, partial fractions are 1/(2(2n -1)) -1/(2(2n +1)), which is correct.
+
+So, when we sum from n=1 to 100, it's telescoping.
+
+So, the sum is (1/2)[1 - 1/201] = (1/2)(200/201) = 100/201, which is option C.
+
+Wait, but the options are:
+
+A) 128/257
+
+B) 100/199
+
+C) 100/201
+
+D) 100/203
+
+So, 100/201 is option C, so that must be the answer.
+
+But just to be thorough, let me consider another approach.
+
+Alternatively, we can write the term as:
+
+1/(2n -1)(2n +1) = [1/(2(2n -1))] - [1/(2(2n +1))]
+
+So, the sum is:
+
+Sum from n=1 to 100 of [1/(2(2n -1)) - 1/(2(2n +1))]
+
+Which is (1/2) Sum [1/(2n -1) - 1/(2n +1)]
+
+This is a telescoping series, as before.
+
+So, writing out the terms:
+
+For n=1: [1/1 - 1/3]
+
+n=2: [1/3 - 1/5]
+
+n=3: [1/5 - 1/7]
+
+...
+
+n=100: [1/199 - 1/201]
+
+So, when we add all these up, the -1/3 cancels with +1/3, -1/5 cancels with +1/5, and so on, up to -1/199 cancels with +1/199, leaving only the first term 1 and the last term -1/201.
+
+So, the total sum inside is 1 - 1/201 = 200/201.
+
+Multiply by 1/2: (1/2)(200/201) = 100/201.
+
+So, that's consistent.
+
+Alternatively, maybe I can think of the series as:
+
+Sum_{n=1}^{100} [1/(2n -1)(2n +1)] = Sum_{n=1}^{100} [ (1/4) [1/(2n -1) - 1/(2n +1)] ]
+
+But that's the same as what I did before.
+
+So, yeah, I think 100/201 is the right answer, which is option C.
+
+Wait, but just to make sure, let me check the calculations again.
+
+When n=1: 1/(1*3) = 1/3
+
+n=2: 1/(3*5) = 1/15
+
+n=3: 1/(5*7) =1/35
+
+...
+
+n=100: 1/(199*201) =1/(39999)
+
+So, each term is 1/( (2n -1)(2n +1) )
+
+So, partial fractions give 1/(2(2n -1)) -1/(2(2n +1))
+
+So, when n=1: 1/2*(1/1 -1/3) =1/2*(2/3)=1/3
+
+n=2:1/2*(1/3 -1/5)=1/2*(2/15)=1/15
+
+Which is correct.
+
+So, the series is 1/3 +1/15 +1/35 + ... +1/(199*201)
+
+Which, when written in terms of partial fractions, telescopes to 1/2*(1 -1/201)=1/2*(200/201)=100/201.
+
+So, yeah, I think that's correct.
+
+Alternatively, maybe someone could think of another approach, but I think the telescoping method is straightforward here.
+
+So, the answer is 100/201, which is option C.
+
+**Final Answer**
+\boxed{C}
+</think>
+
+To evaluate the sum of the series from \( n=1 \) to \( n=100 \):
+\[ \sum_{n=1}^{100} \frac{1}{(2n-1)(2n+1)} \]
+
+First, we use partial fraction decomposition to break down the fraction:
+\[ \frac{1}{(2n-1)(2n+1)} = \frac{A}{2n-1} + \frac{B}{2n+1} \]
+
+Solving for \( A \) and \( B \):
+\[ 1 = A(2n+1) + B(2n-1) \]
+\[ 1 = (2A + 2B)n + (A - B) \]
+
+Equating coefficients, we get:
+\[ 2A + 2B = 0 \]
+\[ A - B = 1 \]
+
+Solving these, we find:
+\[ A = \frac{1}{2}, \quad B = -\frac{1}{2} \]
+
+Thus, the partial fractions are:
+\[ \frac{1}{(2n-1)(2n+1)} = \frac{1}{2(2n-1)} - \frac{1}{2(2n+1)} \]
+
+The sum becomes:
+\[ \sum_{n=1}^{100} \left( \frac{1}{2(2n-1)} - \frac{1}{2(2n+1)} \right) \]
+\[ = \frac{1}{2} \sum_{n=1}^{100} \left( \frac{1}{2n-1} - \frac{1}{2n+1} \right) \]
+
+This is a telescoping series, where most terms cancel out. Writing out the first few and last few terms:
+\[ \frac{1}{2} \left( \left( \frac{1}{1} - \frac{1}{3} \right) + \left( \frac{1}{3} - \frac{1}{5} \right) + \cdots + \left( \frac{1}{199} - \frac{1}{201} \right) \right) \]
+
+All intermediate terms cancel, leaving:
+\[ \frac{1}{2} \left( 1 - \frac{1}{201} \right) \]
+\[ = \frac{1}{2} \left( \frac{200}{201} \right) \]
+\[ = \frac{100}{201} \]
+
+Thus, the answer is:
+\[ \boxed{C} \]<｜end▁of▁sentence｜>

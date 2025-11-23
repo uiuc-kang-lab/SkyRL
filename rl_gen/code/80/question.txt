@@ -1,0 +1,32 @@
+<｜begin▁of▁sentence｜><｜User｜>
+Even in university, students need to relax. That is why Sakurakos teacher decided to go on a field trip. It is known that all of the students will be walking in one line. The student with index $i$ has some topic of interest which is described as $a_i$. As a teacher, you want to minimise the disturbance of the line of students.
+
+The disturbance of the line is defined as the number of neighbouring people with the same topic of interest. In other words, disturbance is the number of indices $j$ ($1 \le j < n$) such that $a_j = a_{j + 1}$.
+
+In order to do this, you can choose index $i$ ($1\le i\le n$) and swap students at positions $i$ and $n-i+1$. You can perform any number of swaps.
+
+Your task is to determine the minimal amount of disturbance that you can achieve by doing the operation described above any number of times.
+
+Input Format:
+The first line contains one integer $t$ ($1\le t\le 10^4$) — the number of test cases.
+
+Each test case is described by two lines.
+
+  * The first line contains one integer $n$ ($2 \le n \le 10^5$) — the length of the line of students.    * The second line contains $n$ integers $a_i$ ($1\le a_i\le n$) — the topics of interest of students in line. 
+
+It is guaranteed that the sum of $n$ across all test cases does not exceed $2\cdot 10^5$.
+
+Output Format:
+For each test case, output the minimal possible disturbance of the line that you can achieve.
+
+Tags:
+['dp', 'greedy', 'two pointers']
+
+Time Limit: 2000 ms
+Memory Limit: 256 MB
+
+Write Python code to solve the problem. Present the code in
+```python
+Your code
+```
+at the end.<｜Assistant｜><think>

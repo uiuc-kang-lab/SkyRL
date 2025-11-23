@@ -1,0 +1,913 @@
+22
+Okay, so I need to figure out how many positive three-digit integers have a 7 in the units place and are divisible by 21. Hmm, let's break this down step by step. 
+
+First, let's understand the problem. We're looking for three-digit numbers, which means the number should be between 100 and 999. The number must have a 7 in the units place, so the last digit is 7. Also, the number must be divisible by 21. 
+
+I remember that a number divisible by 21 must also be divisible by both 3 and 7. So, maybe I can use the divisibility rules for 3 and 7 to narrow down the candidates.
+
+Starting with the three-digit numbers ending with 7. The general form of such numbers is 100a + 10b + 7, where a and b are digits. Since it's a three-digit number, a can be from 1 to 9, and b can be from 0 to 9. So, the number is 100a + 10b + 7. 
+
+Now, the number must be divisible by 21. Let's think about how to approach this. Since 21 is 3 times 7, the number must satisfy both divisibility rules for 3 and 7.
+
+First, let's tackle divisibility by 3. The rule for 3 is that the sum of the digits must be divisible by 3. So, for our number, the sum of the digits is a + b + 7. Therefore, a + b + 7 must be a multiple of 3.
+
+Next, let's look at divisibility by 7. For a number to be divisible by 7, there's a specific rule, but it's a bit more involved. I think the way to check is to double the last digit and subtract it from the rest of the number. If the result is divisible by 7, then the original number is too. 
+
+Alternatively, for a three-digit number, another method is to consider the number modulo 7. So, (100a + 10b + 7) mod 7 should be 0. Let's compute that:
+
+100 mod 7: 100 divided by 7 is 14 with a remainder of 2, so 100 ≡ 2 mod 7.
+
+10 mod 7: 10 divided by 7 is 1 with a remainder of 3, so 10 ≡ 3 mod 7.
+
+7 mod 7: 7 is divisible by 7, so 7 ≡ 0 mod 7.
+
+Therefore, (100a + 10b + 7) mod 7 = (2a + 3b + 0) mod 7 = (2a + 3b) mod 7. So, 2a + 3b must be congruent to 0 mod 7.
+
+So, we have two conditions:
+
+1. a + b + 7 ≡ 0 mod 3.
+
+2. 2a + 3b ≡ 0 mod 7.
+
+We need to find all pairs (a, b) where a is from 1 to 9, b is from 0 to 9, satisfying both conditions.
+
+Let me write these conditions more formally:
+
+1. a + b ≡ -7 mod 3. But since -7 mod 3 is equivalent to 2 mod 3 (because -7 + 9 = 2), this simplifies to a + b ≡ 2 mod 3.
+
+2. 2a + 3b ≡ 0 mod 7.
+
+So, our problem reduces to finding all (a, b) such that:
+
+- a ∈ {1, 2, ..., 9}
+- b ∈ {0, 1, ..., 9}
+- a + b ≡ 2 mod 3
+- 2a + 3b ≡ 0 mod 7
+
+Perhaps I can approach this by fixing a and then solving for b, or vice versa. Since a and b are digits, with a from 1-9 and b from 0-9, maybe trying to express b in terms of a or vice versa.
+
+Alternatively, since both conditions are modular, maybe I can find a relation between a and b.
+
+Let me try to express b from the first condition and substitute into the second.
+
+From condition 1: a + b ≡ 2 mod 3 => b ≡ 2 - a mod 3.
+
+So, b = 2 - a + 3k, where k is an integer. But since b must be a digit (0-9), k can be chosen such that b remains within 0-9.
+
+But perhaps it's easier to iterate through possible a values and find corresponding b's.
+
+Alternatively, let's consider the two conditions as equations:
+
+1. a + b = 3m + 2, where m is an integer.
+
+2. 2a + 3b = 7n, where n is an integer.
+
+So, now we have a system of linear equations:
+
+From condition 1: b = 3m + 2 - a.
+
+Substitute this into condition 2:
+
+2a + 3*(3m + 2 - a) = 7n
+
+Compute:
+
+2a + 9m + 6 - 3a = 7n
+
+Simplify:
+
+- a + 9m + 6 = 7n
+
+So, a = 9m + 6 - 7n
+
+Now, since a is a digit from 1 to 9, and b is a digit from 0 to 9, let's find integer values of m and n such that a is between 1 and 9, and b is between 0 and 9.
+
+Let me write that down:
+
+a = 9m + 6 - 7n
+
+We need a ∈ {1, 2, ..., 9}
+
+Similarly, since b = 3m + 2 - a, and b ∈ {0, 1, ..., 9}, we can write:
+
+0 ≤ 3m + 2 - a ≤ 9
+
+But since a = 9m + 6 - 7n, substitute into the inequality:
+
+0 ≤ 3m + 2 - (9m + 6 - 7n) ≤ 9
+
+Simplify:
+
+0 ≤ 3m + 2 -9m -6 +7n ≤ 9
+
+0 ≤ (-6m) -4 +7n ≤ 9
+
+So,
+
+-6m -4 +7n ≥ 0 => 7n ≥ 6m +4
+
+and
+
+-6m -4 +7n ≤9 =>7n ≤6m +13
+
+So, combining:
+
+6m +4 ≤7n ≤6m +13
+
+Also, a must be between 1 and 9, so:
+
+1 ≤9m +6 -7n ≤9
+
+Which can be rewritten as:
+
+1 ≤9m +6 -7n ≤9
+
+Let me solve for n in terms of m.
+
+From 9m +6 -7n ≥1:
+
+9m +6 -7n ≥1 => 7n ≤9m +5 =>n ≤ (9m +5)/7
+
+From 9m +6 -7n ≤9:
+
+9m +6 -7n ≤9 => -7n ≤3 -9m =>7n ≥9m -3 =>n ≥(9m -3)/7
+
+So, n must satisfy:
+
+(9m -3)/7 ≤n ≤(9m +5)/7
+
+Since n is an integer, for each m, we can find possible n.
+
+But m can be such that a is between 1 and 9.
+
+Let me find possible m values.
+
+Given that a =9m +6 -7n, with a ∈ {1,...,9}, let's find m such that 9m +6 -7n is within 1 to 9.
+
+But n can also be negative? Hmm, since n must be such that 7n is in the range from (9m -3)/7 to (9m +5)/7. So, n can be 0,1,2,... or negative? Let's see.
+
+But let's try small m's.
+
+Let me try m=0:
+
+Then,
+
+a=0 +6 -7n=6 -7n
+
+We need a≥1 =>6 -7n ≥1 => -7n ≥-5 =>n ≤5/7≈0.714. So, n=0.
+
+Then, b=3*0 +2 -a=2 - (6 -7n)=2 -6 +7n= -4 +7n
+
+But n=0, so b=-4 +0=-4, which is invalid because b must be ≥0.
+
+So, m=0 gives invalid b.
+
+Next, m=1:
+
+a=9*1 +6 -7n=15 -7n
+
+a must be ≤9, so 15 -7n ≤9 => -7n ≤-6 =>n≥6/7≈0.857. So, n=1.
+
+So, n=1.
+
+Then, b=3*1 +2 -a=3 +2 - (15 -7*1)=5 -15 +7= -3, which is invalid.
+
+So, n=1, a=15 -7=8, but b=-3 invalid.
+
+Wait, maybe I made a mistake.
+
+Wait, b=3m +2 -a=3*1 +2 -a=5 -a.
+
+But a=15 -7n, so b=5 - (15 -7n)=5 -15 +7n= -10 +7n.
+
+With n=1, b=-10 +7= -3, invalid.
+
+So, m=1 doesn't work.
+
+Next, m=2:
+
+a=9*2 +6 -7n=24 -7n
+
+a must be ≤9, so 24 -7n ≤9 => -7n ≤-15 =>n≥15/7≈2.142. So, n=3.
+
+So, n=3.
+
+Then, b=3*2 +2 -a=6 +2 -24 +7n=8 -24 +21=5.
+
+So, a=24 -21=3? Wait, 24 -7*3=24 -21=3.
+
+Yes, a=3, b=5.
+
+So, check if a + b ≡2 mod3: 3 +5=8≡2 mod3, which is correct.
+
+And 2a +3b=6 +15=21≡0 mod7, which is correct.
+
+So, (a,b)=(3,5) is a solution.
+
+Also, check n=2:
+
+n=2: a=24 -14=10, which is invalid because a must be ≤9.
+
+So, only n=3 is valid for m=2.
+
+So, one solution: a=3, b=5.
+
+Proceeding to m=3:
+
+a=9*3 +6 -7n=33 -7n
+
+a must be ≤9, so 33 -7n ≤9 => -7n ≤-24 =>n≥24/7≈3.428. So, n=4.
+
+n=4:
+
+b=3*3 +2 -a=9 +2 -33 +7n=11 -33 +28=6.
+
+So, a=33 -28=5.
+
+Check a + b=5 +6=11≡2 mod3, since 11 mod3=2. Correct.
+
+2a +3b=10 +18=28≡0 mod7, since 28 is divisible by7. Correct.
+
+So, (a,b)=(5,6) is another solution.
+
+Check n=5:
+
+a=33 -35=-2, invalid.
+
+So, m=3 gives one solution: a=5, b=6.
+
+Next, m=4:
+
+a=9*4 +6 -7n=42 -7n
+
+a ≤9 =>42 -7n ≤9 =>-7n ≤-33 =>n≥33/7≈4.714. So, n=5.
+
+n=5:
+
+b=3*4 +2 -a=12 +2 -42 +35=15 -42 +35=8.
+
+a=42 -35=7.
+
+Check a + b=7 +8=15≡2 mod3 (15 mod3=0≡2? Wait, 15 mod3=0, which is not 2. So, something is wrong.
+
+Wait, 15 mod3=0≠2. So, this is invalid.
+
+Wait, but from condition 1: a + b +7≡0 mod3.
+
+a=7, b=8, so 7 +8 +7=22≡1 mod3≠0. So, invalid.
+
+Wait, maybe I made a mistake in substitution.
+
+Wait, a=42 -35=7, b=3*4 +2 -7=12 +2 -7=7.
+
+Wait, I think I messed up the substitution for b.
+
+Wait, b=3m +2 -a=3*4 +2 -7=12 +2 -7=7.
+
+So, a=7, b=7.
+
+Then, a + b=14≡2 mod3, which is correct.
+
+2a +3b=14 +21=35≡0 mod7, correct.
+
+But a + b +7=14 +7=21≡0 mod3, correct.
+
+Wait, but why when I computed b, I got 8? Maybe I made a computational error.
+
+Wait, b=3m +2 -a=12 +2 -7=14 -7=7.
+
+So, b=7, not 8.
+
+Oops, I must have miscalculated earlier.
+
+So, a=7, b=7.
+
+Check:
+
+a + b=14≡2 mod3, correct.
+
+2a +3b=14 +21=35≡0 mod7, correct.
+
+a + b +7=21≡0 mod3, correct.
+
+So, this is a valid solution. So, (7,7) is another solution.
+
+Wait, earlier, when I thought b=8, that was incorrect.
+
+So, correction: b=7.
+
+So, (7,7) is valid.
+
+Proceeding, n=6:
+
+a=42 -42=0, invalid, since a must be ≥1.
+
+So, m=4 gives one solution: (7,7).
+
+Moving to m=5:
+
+a=9*5 +6 -7n=51 -7n
+
+a ≤9 =>51 -7n ≤9 =>-7n ≤-42 =>n≥6.
+
+n=6:
+
+b=3*5 +2 -a=15 +2 -51 +42=17 -51 +42=8.
+
+a=51 -42=9.
+
+Check a + b=9 +8=17≡2 mod3 (17 mod3=2). Correct.
+
+2a +3b=18 +24=42≡0 mod7, correct.
+
+So, a=9, b=8.
+
+Check a + b +7=24≡0 mod3, since 24 is divisible by3. Correct.
+
+So, (9,8) is another solution.
+
+n=7:
+
+a=51 -49=2.
+
+b=3*5 +2 -2=15 +2 -2=15.
+
+a=2, b=15.
+
+But b=15 is invalid because b is a digit (0-9).
+
+So, n=7 invalid.
+
+So, m=5 gives one solution: (9,8).
+
+Next, m=6:
+
+a=9*6 +6 -7n=60 -7n
+
+a ≤9 =>60 -7n ≤9 =>-7n ≤-51 =>n≥51/7≈7.285. So, n=8.
+
+n=8:
+
+b=3*6 +2 -a=18 +2 -60 +56=20 -60 +56=16.
+
+b=16 invalid.
+
+n=9:
+
+a=60 -63=-3 invalid.
+
+So, m=6 doesn't give a valid solution.
+
+m=7:
+
+a=9*7 +6 -7n=69 -7n
+
+a ≤9 =>69 -7n ≤9 =>-7n ≤-60 =>n≥60/7≈8.571. So, n=9.
+
+n=9:
+
+b=3*7 +2 -a=21 +2 -69 +63=23 -69 +63=7.
+
+a=69 -63=6.
+
+Check a + b=6 +7=13≡1 mod3≠2. So, invalid.
+
+Wait, but from condition 1: a + b=6 +7=13≡1 mod3, which is not 2. So, invalid.
+
+n=10:
+
+a=69 -70=-1 invalid.
+
+So, m=7 doesn't give valid solution.
+
+m=8:
+
+a=9*8 +6 -7n=78 -7n
+
+a ≤9 =>78 -7n ≤9 =>-7n ≤-69 =>n≥69/7≈9.857. So, n=10.
+
+n=10:
+
+b=3*8 +2 -a=24 +2 -78 +70=26 -78 +70=8.
+
+a=78 -70=8.
+
+Check a + b=8 +8=16≡1 mod3≠2. So, invalid.
+
+n=11:
+
+a=78 -77=1.
+
+b=3*8 +2 -1=24 +2 -1=25 invalid.
+
+n=12:
+
+a=78 -84=-6 invalid.
+
+So, m=8 doesn't give a valid solution.
+
+m=9:
+
+a=9*9 +6 -7n=87 -7n
+
+a ≤9 =>87 -7n ≤9 =>-7n ≤-78 =>n≥78/7≈11.142. So, n=12.
+
+n=12:
+
+b=3*9 +2 -a=27 +2 -87 +84=29 -87 +84=6.
+
+a=87 -84=3.
+
+Check a + b=3 +6=9≡0 mod3≠2. So, invalid.
+
+n=13:
+
+a=87 -91=-4 invalid.
+
+So, m=9 doesn't give a valid solution.
+
+m=10:
+
+a=9*10 +6 -7n=96 -7n
+
+a ≤9 =>96 -7n ≤9 =>-7n ≤-87 =>n≥87/7≈12.428. So, n=13.
+
+n=13:
+
+b=3*10 +2 -a=30 +2 -96 +91=32 -96 +91=7.
+
+a=96 -91=5.
+
+Check a + b=5 +7=12≡0 mod3≠2. Invalid.
+
+n=14:
+
+a=96 -98=-2 invalid.
+
+So, m=10 doesn't give a solution.
+
+m=11:
+
+a=9*11 +6 -7n=105 -7n
+
+a ≤9 =>105 -7n ≤9 =>-7n ≤-96 =>n≥96/7≈13.714. So, n=14.
+
+n=14:
+
+b=3*11 +2 -a=33 +2 -105 +98=35 -105 +98=8.
+
+a=105 -98=7.
+
+Check a + b=7 +8=15≡0 mod3≠2. Invalid.
+
+n=15:
+
+a=105 -105=0 invalid.
+
+m=11 no solution.
+
+m=12:
+
+a=9*12 +6 -7n=114 -7n
+
+a ≤9 =>114 -7n ≤9 =>-7n ≤-105 =>n≥15.
+
+n=15:
+
+b=3*12 +2 -a=36 +2 -114 +105=38 -114 +105=7.
+
+a=114 -105=9.
+
+Check a + b=9 +7=16≡1 mod3≠2. Invalid.
+
+n=16:
+
+a=114 -112=2.
+
+b=3*12 +2 -2=36 +2 -2=36. Invalid.
+
+n=17:
+
+a=114 -119=-5 invalid.
+
+m=12 no solution.
+
+m=13:
+
+a=9*13 +6 -7n=123 -7n
+
+a ≤9 =>123 -7n ≤9 =>-7n ≤-114 =>n≥114/7≈16.285. So, n=17.
+
+n=17:
+
+b=3*13 +2 -a=39 +2 -123 +119=41 -123 +119=7.
+
+a=123 -119=4.
+
+Check a + b=4 +7=11≡2 mod3. Correct.
+
+2a +3b=8 +21=29≡1 mod7. Wait, 29 mod7=1, since 28 is divisible by7, so 29-28=1. So, 29≡1 mod7≠0. So, invalid.
+
+Wait, but from condition 2: 2a +3b=2*4 +3*7=8 +21=29≡1 mod7≠0. So, invalid.
+
+n=18:
+
+a=123 -126=-3 invalid.
+
+So, m=13 doesn't give a solution.
+
+m=14:
+
+a=9*14 +6 -7n=132 -7n
+
+a ≤9 =>132 -7n ≤9 =>-7n ≤-123 =>n≥123/7≈17.571. So, n=18.
+
+n=18:
+
+b=3*14 +2 -a=42 +2 -132 +126=44 -132 +126=4.
+
+a=132 -126=6.
+
+Check a + b=6 +4=10≡1 mod3≠2. Invalid.
+
+n=19:
+
+a=132 -133=-1 invalid.
+
+So, m=14 no solution.
+
+m=15:
+
+a=9*15 +6 -7n=141 -7n
+
+a ≤9 =>141 -7n ≤9 =>-7n ≤-132 =>n≥132/7≈18.857. So, n=19.
+
+n=19:
+
+b=3*15 +2 -a=45 +2 -141 +133=47 -141 +133=9.
+
+a=141 -133=8.
+
+Check a + b=8 +9=17≡2 mod3. Correct.
+
+2a +3b=16 +27=43≡1 mod7. 43 mod7=1, since 42 is divisible by7. So, 43≡1 mod7≠0. Invalid.
+
+n=20:
+
+a=141 -140=1.
+
+b=3*15 +2 -1=45 +2 -1=46 invalid.
+
+n=21:
+
+a=141 -147=-6 invalid.
+
+So, m=15 no solution.
+
+m=16:
+
+a=9*16 +6 -7n=150 -7n
+
+a ≤9 =>150 -7n ≤9 =>-7n ≤-141 =>n≥141/7≈20.142. So, n=21.
+
+n=21:
+
+b=3*16 +2 -a=48 +2 -150 +147=50 -150 +147=7.
+
+a=150 -147=3.
+
+Check a + b=3 +7=10≡1 mod3≠2. Invalid.
+
+n=22:
+
+a=150 -154=-4 invalid.
+
+So, m=16 no solution.
+
+m=17:
+
+a=9*17 +6 -7n=162 -7n
+
+a ≤9 =>162 -7n ≤9 =>-7n ≤-153 =>n≥153/7≈21.857. So, n=22.
+
+n=22:
+
+b=3*17 +2 -a=51 +2 -162 +154=53 -162 +154=8.
+
+a=162 -154=8.
+
+Check a + b=8 +8=16≡1 mod3≠2. Invalid.
+
+n=23:
+
+a=162 -161=1.
+
+b=3*17 +2 -1=51 +2 -1=52 invalid.
+
+n=24:
+
+a=162 -168=-6 invalid.
+
+So, m=17 no solution.
+
+m=18:
+
+a=9*18 +6 -7n=174 -7n
+
+a ≤9 =>174 -7n ≤9 =>-7n ≤-165 =>n≥165/7≈23.571. So, n=24.
+
+n=24:
+
+b=3*18 +2 -a=54 +2 -174 +168=56 -174 +168=10.
+
+a=174 -168=6.
+
+Check a + b=6 +10=16≡1 mod3≠2. Invalid.
+
+n=25:
+
+a=174 -175=-1 invalid.
+
+So, m=18 no solution.
+
+m=19:
+
+a=9*19 +6 -7n=183 -7n
+
+a ≤9 =>183 -7n ≤9 =>-7n ≤-174 =>n≥174/7≈24.857. So, n=25.
+
+n=25:
+
+b=3*19 +2 -a=57 +2 -183 +175=59 -183 +175=11 invalid.
+
+n=26:
+
+a=183 -182=1.
+
+b=3*19 +2 -1=57 +2 -1=58 invalid.
+
+n=27:
+
+a=183 -189=-6 invalid.
+
+So, m=19 no solution.
+
+m=20:
+
+a=9*20 +6 -7n=198 -7n
+
+a ≤9 =>198 -7n ≤9 =>-7n ≤-189 =>n≥27.
+
+n=27:
+
+b=3*20 +2 -a=60 +2 -198 +189=62 -198 +189=5.
+
+a=198 -189=9.
+
+Check a + b=9 +5=14≡2 mod3. Correct.
+
+2a +3b=18 +15=33≡0 mod7. Correct.
+
+So, (a,b)=(9,5) is another solution.
+
+n=28:
+
+a=198 -196=2.
+
+b=3*20 +2 -2=60 +2 -2=60 invalid.
+
+n=29:
+
+a=198 -197=1.
+
+b=3*20 +2 -1=60 +2 -1=61 invalid.
+
+n=30:
+
+a=198 -210=-12 invalid.
+
+So, m=20 gives one solution: (9,5).
+
+m=21:
+
+a=9*21 +6 -7n=201 -7n
+
+a ≤9 =>201 -7n ≤9 =>-7n ≤-192 =>n≥192/7≈27.428. So, n=28.
+
+n=28:
+
+b=3*21 +2 -a=63 +2 -201 +217=65 -201 +217=81 invalid.
+
+n=29:
+
+a=201 -203=-2 invalid.
+
+So, m=21 no solution.
+
+m=22:
+
+a=9*22 +6 -7n=204 -7n
+
+a ≤9 =>204 -7n ≤9 =>-7n ≤-195 =>n≥195/7≈27.857. So, n=28.
+
+n=28:
+
+b=3*22 +2 -a=66 +2 -204 +217=68 -204 +217=81 invalid.
+
+n=29:
+
+a=204 -203=1.
+
+b=3*22 +2 -1=66 +2 -1=67 invalid.
+
+n=30:
+
+a=204 -210=-6 invalid.
+
+So, m=22 no solution.
+
+m=23:
+
+a=9*23 +6 -7n=213 -7n
+
+a ≤9 =>213 -7n ≤9 =>-7n ≤-204 =>n≥204/7≈29.142. So, n=30.
+
+n=30:
+
+b=3*23 +2 -a=69 +2 -213 +217=71 -213 +217=75 invalid.
+
+n=31:
+
+a=213 -217=-4 invalid.
+
+So, m=23 no solution.
+
+m=24:
+
+a=9*24 +6 -7n=222 -7n
+
+a ≤9 =>222 -7n ≤9 =>-7n ≤-213 =>n≥213/7≈30.428. So, n=31.
+
+n=31:
+
+b=3*24 +2 -a=72 +2 -222 +227=74 -222 +227=81 invalid.
+
+n=32:
+
+a=222 -224=-2 invalid.
+
+So, m=24 no solution.
+
+m=25:
+
+a=9*25 +6 -7n=231 -7n
+
+a ≤9 =>231 -7n ≤9 =>-7n ≤-222 =>n≥222/7≈31.714. So, n=32.
+
+n=32:
+
+b=3*25 +2 -a=75 +2 -231 +237=77 -231 +237=83 invalid.
+
+n=33:
+
+a=231 -231=0 invalid.
+
+So, m=25 no solution.
+
+m=26:
+
+a=9*26 +6 -7n=240 -7n
+
+a ≤9 =>240 -7n ≤9 =>-7n ≤-231 =>n≥231/7=33.
+
+n=33:
+
+b=3*26 +2 -a=78 +2 -240 +247=80 -240 +247=87 invalid.
+
+n=34:
+
+a=240 -238=2.
+
+b=3*26 +2 -2=78 +2 -2=78 invalid.
+
+n=35:
+
+a=240 -245=-5 invalid.
+
+So, m=26 no solution.
+
+m=27:
+
+a=9*27 +6 -7n=252 -7n
+
+a ≤9 =>252 -7n ≤9 =>-7n ≤-243 =>n≥243/7≈34.714. So, n=35.
+
+n=35:
+
+b=3*27 +2 -a=81 +2 -252 +257=83 -252 +257=88 invalid.
+
+n=36:
+
+a=252 -252=0 invalid.
+
+So, m=27 no solution.
+
+m=28:
+
+a=9*28 +6 -7n=264 -7n
+
+a ≤9 =>264 -7n ≤9 =>-7n ≤-255 =>n≥255/7≈36.428. So, n=37.
+
+n=37:
+
+b=3*28 +2 -a=84 +2 -264 +271=86 -264 +271=93 invalid.
+
+n=38:
+
+a=264 -266=-2 invalid.
+
+So, m=28 no solution.
+
+m=29:
+
+a=9*29 +6 -7n=282 -7n
+
+a ≤9 =>282 -7n ≤9 =>-7n ≤-273 =>n≥273/7=39.
+
+n=39:
+
+b=3*29 +2 -a=87 +2 -282 +287=89 -282 +287=94 invalid.
+
+n=40:
+
+a=282 -280=2.
+
+b=3*29 +2 -2=87 +2 -2=87 invalid.
+
+n=41:
+
+a=282 -287=-5 invalid.
+
+So, m=29 no solution.
+
+m=30:
+
+a=9*30 +6 -7n=288 -7n
+
+a ≤9 =>288 -7n ≤9 =>-7n ≤-279 =>n≥279/7≈39.857. So, n=40.
+
+n=40:
+
+b=3*30 +2 -a=90 +2 -288 +287=92 -288 +287=91 invalid.
+
+n=41:
+
+a=288 -287=1.
+
+b=3*30 +2 -1=90 +2 -1=91 invalid.
+
+n=42:
+
+a=288 -294=-6 invalid.
+
+So, m=30 no solution.
+
+m=31:
+
+a=9*31 +6 -7n=303 -7n
+
+a ≤9 =>303 -7n ≤9 =>-7n ≤-294 =>n≥294/7=42.
+
+n=42:
+
+b=3*31 +2 -a=93 +2 -303 +307=95 -303 +307=99 invalid.
+
+n=43:
+
+a=303 -301=2.
+
+b=3*31 +2 -2=93 +2 -2=93 invalid.
+
+n=44:
+
+a=303 -308=-5 invalid.
+
+So, m=31 no solution.
+
+m=32:
+
+a=9*32 +6 -7n=318 -7n
+
+a ≤9 =>318 -7n ≤9 =>-7n ≤-309 =>n≥309/7≈44.142. So, n=45.
+
+n=45:
+
+b=3*32 +2 -a=96 +2 -318 +317=98 -318 +317=97 invalid.
+
+n=46:
+
+a=318 -322=-4 invalid.
+
+So, m=32 no solution.
+
+m

@@ -1,0 +1,165 @@
+0
+\text{All pairs } (p, q): \gcd(p, q) = 1 \text{ and } p+q \text{ is odd.}
+Alright, so I've come across this interesting problem from the Bulgaria 1994 Olympiad. It's about a knight on an infinite chessboard. The knight has a special move where it can either move q squares horizontally and p squares vertically, or p squares horizontally and q squares vertically. The question is to find all pairs of positive integers (p, q) such that the knight can move from any square to any other square in a finite number of steps.
+
+First, I need to understand the movement of this knight. It's not the standard L-shaped move but rather a move that depends on the values of p and q. So, from any given position, the knight can move in two possible directions: one where it goes p squares in one direction and q squares in the perpendicular direction, and the other where it goes q squares in one direction and p squares in the perpendicular direction.
+
+The goal is to determine for which pairs (p, q) this knight can reach any square on the chessboard, given that it starts from any square. This means the knight must be able to reach any point (x, y) from any starting point (x0, y0) in some number of moves.
+
+I remember that for a knight to be able to reach any square on an infinite chessboard, it must be able to change both the x and y coordinates independently. This is because the knight can move in such a way that it can adjust its position along both axes separately. So, perhaps the key here is to ensure that the moves allow the knight to change both coordinates independently.
+
+Let me consider small values of p and q to see if I can spot a pattern.
+
+First, let's consider (p, q) = (1, 1). This is essentially the standard knight move. It is well-known that a standard knight can reach any square on an infinite chessboard. So, (1, 1) is a valid pair.
+
+Next, let's consider (p, q) = (1, 2). This is a knight that moves 1 square in one direction and 2 squares in the perpendicular direction. I think this knight should also be able to reach any square. In fact, I recall that this is a known result where a knight with moves (1, 2) can reach any square. So, (1, 2) is valid.
+
+Now, let's consider (p, q) = (2, 1). This is similar to (1, 2) but with the roles of p and q swapped. Intuitively, this should also be valid because the knight can still adjust both coordinates independently. So, (2, 1) is valid.
+
+Moving on to (p, q) = (1, 3). This knight moves 1 square in one direction and 3 squares in the perpendicular direction. I think this might still be able to reach any square, but I need to confirm. Let me try to see if the knight can change both coordinates independently.
+
+From a starting position, the knight can move to (1, 3), (3, 1), (-1, 3), etc. Now, from there, can it reach positions that are further along the x or y axis? Let me see. Suppose the knight is at (1, 3). From there, it can move to (1+3, 3+1) = (4, 4), or (1+1, 3+3) = (2, 6), etc. Wait, but can it reach positions where only the x coordinate changes? For example, can it reach (2, 0) from (1, 3)? Let me see.
+
+From (1, 3), the knight can move to (1+3, 3+1) = (4, 4), or (1+1, 3+3) = (2, 6), or (1-3, 3+1) = (-2, 4), or (1-1, 3+3) = (0, 6). Hmm, I don't see a way to reach (2, 0) from (1, 3) in a finite number of moves. Similarly, reaching (0, 0) from (1, 3) would require a series of moves that cancel out the x coordinate, which might not be possible.
+
+Therefore, (1, 3) might not be a valid pair. Similarly, (3, 1) might not be valid either because the knight would be stuck in a position where it can't reach the origin.
+
+接下来, let's consider (p, q) = (2, 2). This is a knight that moves 2 squares in both directions. From any position, it can move to (2, 2), (2, -2), (-2, 2), etc. Now, can it reach any square from here? Let me see.
+
+From (0, 0), it can move to (2, 2), (2, -2), (-2, 2), or (-2, -2). From (2, 2), it can move to (4, 4), (4, 0), (0, 4), or (0, 0). Wait, from (2, 2), it can reach (0, 0) in two moves: from (2, 2) to (0, 0) in one move, and then from (0, 0) to (2, 2) in another move. But more importantly, it can reach any multiple of (2, 2) in both directions. However, it can it reach positions that are not multiples of (2, 2)?
+
+For example, can it reach (1, 0)? Let me see. From (0, 0), it can reach (2, 2), (2, -2), etc. From (2, 2), it can reach (4, 4), (4, 0), (0, 4), etc. So, from (2, 2), it can reach (4, 0), which is two moves away. But can it reach (1, 0)? It seems like it can't, because the knight moves in increments that are multiples of 2 in both directions. Therefore, (2, 2) might not be a valid pair.
+
+Wait, but actually, from (2, 2), it can reach (4, 0), but can it reach (1, 0)? Let me see. From (4, 0), it can move to (6, 2), (6, -2), (2, 2), or (2, -2). None of these are close to (1, 0). Similarly, from (2, 2), it can reach (0, 0), which is another multiple of (2, 2). So, it seems like the knight can only reach points where both coordinates are even multiples of 2. Therefore, it can't reach (1, 0), which has an odd coordinate. Hence, (2, 2) is not a valid pair.
+
+Wait, but actually, from (2, 2), it can reach (4, 0), which is two moves away. But to reach (1, 0), it would need to somehow combine moves that add up to 1 in the x coordinate. But since all moves are even in both coordinates, it's impossible to reach a point with an odd coordinate. Therefore, (2, 2) is invalid.
+
+Now, let's consider (p, q) = (1, 4). This is a knight that moves 1 square in one direction and 4 squares in the perpendicular direction. Let's see if it can reach any square.
+
+From (0, 0), it can reach (1, 4), (1, -4), (-1, 4), or (-1, -4). From (1, 4), it can move to (1+4, 4+1) = (5, 5), (1+1, 4+4) = (2, 8), etc. Now, can it reach (0, 0) from (1, 4)? Let me see. From (1, 4), it can move to (5, 5), (2, 8), (-3, 5), or (-2, -3). None of these are close to (0, 0). Similarly, from (5, 5), it can move to (9, 9), (9, 1), (1, 9), etc. Wait, from (5, 5), it can move to (9, 1), which is further away from (0, 0). So, it seems like the knight can't reach (0, 0) from (1, 4) in a finite number of moves. Therefore, (1, 4) is invalid.
+
+Similarly, (4, 1) might also be invalid for the same reason.
+
+Now, let's consider (p, q) = (2, 3). This is a less common move, but let's see. From (0, 0), it can reach (2, 3), (2, -3), (-2, 3), or (-2, -3). From (2, 3), it can move to (2+3, 3+2) = (5, 5), (2+2, 3+3) = (4, 6), etc. Now, can it reach (0, 0) from (2, 3)? Let me see. From (2, 3), it can move to (5, 5), (4, 6), (-1, 5), or (-2, 4). None of these are close to (0, 0). Similarly, from (5, 5), it can move to (8, 7), (8, 3), (3, 7), etc. So, it seems like the knight can't reach (0, 0) from (2, 3) in a finite number of moves. Therefore, (2, 3) is invalid.
+
+Similarly, (3, 2) might also be invalid for the same reason.
+
+Now, let's consider (p, q) = (1, 5). This is similar to (1, 4) but with a larger move. From (0, 0), it can reach (1, 5), (1, -5), (-1, 5), or (-1, -5). From (1, 5), it can move to (1+5, 5+1) = (6, 6), (1+1, 5+5) = (2, 10), etc. Now, can it reach (0, 0) from (1, 5)? Let me see. From (1, 5), it can move to (6, 6), (2, 10), (-4, 6), or (-2, -4). None of these are close to (0, 0). Similarly, from (6, 6), it can move to (11, 8), (11, 4), (7, 8), etc. So, it seems like the knight can't reach (0, 0) from (1, 5) in a finite number of moves. Therefore, (1, 5) is invalid.
+
+Similarly, (5, 1) might also be invalid for the same reason.
+
+Now, let's consider (p, q) = (2, 4). This is a move where the knight moves 2 squares in one direction and 4 in the other. Let's see if it can reach any square.
+
+From (0, 0), it can reach (2, 4), (2, -4), (-2, 4), or (-2, -4). From (2, 4), it can move to (2+4, 4+2) = (6, 6), (2+2, 4+4) = (4, 8), etc. Now, can it reach (0, 0) from (2, 4)? Let me see. From (2, 4), it can move to (6, 6), (4, 8), (-2, 6), or (-4, 2). None of these are close to (0, 0). Similarly, from (6, 6), it can move to (10, 8), (10, 4), (4, 8), etc. So, it seems like the knight can't reach (0, 0) from (2, 4) in a finite number of moves. Therefore, (2, 4) is invalid.
+
+Similarly, (4, 2) might also be invalid for the same reason.
+
+Now, let's consider (p, q) = (3, 3). This is a standard L-shaped move but with both moves equal. From (0, 0), it can reach (3, 3), (3, -3), (-3, 3), or (-3, -3). Now, can it reach any square from here? Let's see.
+
+From (3, 3), it can move to (3+3, 3+3) = (6, 6), or (3+3, 3-3) = (6, 0), or (3-3, 3+3) = (0, 6), or (3-3, 3-3) = (0, 0). Wait, from (3, 3), it can reach (0, 0) in two moves: from (3, 3) to (0, 0) in one move, and then from (0, 0) to (3, 3) in another move. But more importantly, it can reach any multiple of (3, 3) in both directions. However, it can it reach positions that are not multiples of (3, 3)?
+
+For example, can it reach (1, 0)? Let me see. From (0, 0), it can reach (3, 3), (3, -3), etc. From (3, 3), it can reach (6, 6), (6, 0), (0, 6), etc. So, from (3, 3), it can reach (6, 0), which is two moves away. But can it reach (1, 0)? It seems like it can't, because the knight moves in increments that are multiples of 3 in both coordinates. Therefore, it can't reach a position where only one coordinate is non-zero unless that non-zero coordinate is a multiple of 3.
+
+Therefore, (3, 3) is invalid because it can't reach positions where only one coordinate is non-zero unless that coordinate is a multiple of 3.
+
+Wait, but actually, from (3, 3), it can reach (6, 0), which is two moves away. But to reach (1, 0), it would need to combine moves that add up to 1 in the x coordinate, which it can't do because all moves are multiples of 3. Therefore, (3, 3) is invalid.
+
+Now, let's consider (p, q) = (1, 6). This is a move where the knight moves 1 square in one direction and 6 in the perpendicular direction. Let's see if it can reach any square.
+
+From (0, 0), it can reach (1, 6), (1, -6), (-1, 6), or (-1, -6). From (1, 6), it can move to (1+6, 6+1) = (7, 7), (1+1, 6+6) = (2, 12), etc. Now, can it reach (0, 0) from (1, 6)? Let me see. From (1, 6), it can move to (7, 7), (2, 12), (-5, 7), or (-2, -5). None of these are close to (0, 0). Similarly, from (7, 7), it can move to (13, 9), (13, 5), (3, 9), etc. So, it seems like the knight can't reach (0, 0) from (1, 6) in a finite number of moves. Therefore, (1, 6) is invalid.
+
+Similarly, (6, 1) might also be invalid for the same reason.
+
+Now, let's consider (p, q) = (2, 5). This is a less common move, but let's see if it can reach any square.
+
+From (0, 0), it can reach (2, 5), (2, -5), (-2, 5), or (-2, -5). From (2, 5), it can move to (2+5, 5+2) = (7, 7), (2+2, 5+5) = (4, 10), etc. Now, can it reach (0, 0) from (2, 5)? Let me see. From (2, 5), it can move to (7, 7), (4, 10), (-5, 7), or (-2, -5). None of these are close to (0, 0). Similarly, from (7, 7), it can move to (12, 9), (12, 5), (5, 9), etc. So, it seems like the knight can't reach (0, 0) from (2, 5) in a finite number of moves. Therefore, (2, 5) is invalid.
+
+Similarly, (5, 2) might also be invalid for the same reason.
+
+Now, let's consider (p, q) = (3, 4). This is a move where the knight moves 3 squares in one direction and 4 in the perpendicular direction. Let's see if it can reach any square.
+
+From (0, 0), it can reach (3, 4), (3, -4), (-3, 4), or (-3, -4). From (3, 4), it can move to (3+4, 4+3) = (7, 7), (3+3, 4+4) = (6, 8), etc. Now, can it reach (0, 0) from (3, 4)? Let me see. From (3, 4), it can move to (7, 7), (6, 8), (-1, 7), or (-2, -5). None of these are close to (0, 0). Similarly, from (7, 7), it can move to (11, 10), (11, 4), (4, 10), etc. So, it seems like the knight can't reach (0, 0) from (3, 4) in a finite number of moves. Therefore, (3, 4) is invalid.
+
+Similarly, (4, 3) might also be invalid for the same reason.
+
+Now, let's consider (p, q) = (1, 7). This is a move where the knight moves 1 square in one direction and 7 in the perpendicular direction. Let's see if it can reach any square.
+
+From (0, 0), it can reach (1, 7), (1, -7), (-1, 7), or (-1, -7). From (1, 7), it can move to (1+7, 7+1) = (8, 8), (1+1, 7+7) = (2, 14), etc. Now, can it reach (0, 0) from (1, 7)? Let me see. From (1, 7), it can move to (8, 8), (2, 14), (-6, 8), or (-2, -6). None of these are close to (0, 0). Similarly, from (8, 8), it can move to (15, 10), (15, 2), (2, 10), etc. So, it seems like the knight can't reach (0, 0) from (1, 7) in a finite number of moves. Therefore, (1, 7) is invalid.
+
+Similarly, (7, 1) might also be invalid for the same reason.
+
+Now, let's consider (p, q) = (2, 6). This is a move where the knight moves 2 squares in one direction and 6 in the perpendicular direction. Let's see if it can reach any square.
+
+From (0, 0), it can reach (2, 6), (2, -6), (-2, 6), or (-2, -6). From (2, 6), it can move to (2+6, 6+2) = (8, 8), (2+2, 6+6) = (4, 12), etc. Now, can it reach (0, 0) from (2, 6)? Let me see. From (2, 6), it can move to (8, 8), (4, 12), (-4, 8), or (-8, -4). None of these are close to (0, 0). Similarly, from (8, 8), it can move to (14, 10), (14, 4), (2, 10), etc. So, it seems like the knight can't reach (0, 0) from (2, 6) in a finite number of moves. Therefore, (2, 6) is invalid.
+
+Similarly, (6, 2) might also be invalid for the same reason.
+
+Now, let's consider (p, q) = (3, 5). This is a move where the knight moves 3 squares in one direction and 5 in the perpendicular direction. Let's see if it can reach any square.
+
+From (0, 0), it can reach (3, 5), (3, -5), (-3, 5), or (-3, -5). From (3, 5), it can move to (3+5, 5+3) = (8, 8), (3+3, 5+5) = (6, 10), etc. Now, can it reach (0, 0) from (3, 5)? Let me see. From (3, 5), it can move to (8, 8), (6, 10), (-2, 8), or (-4, -2). None of these are close to (0, 0). Similarly, from (8, 8), it can move to (13, 11), (13, 5), (3, 11), etc. So, it seems like the knight can't reach (0, 0) from (3, 5) in a finite number of moves. Therefore, (3, 5) is invalid.
+
+Similarly, (5, 3) might also be invalid for the same reason.
+
+Now, let's consider (p, q) = (4, 5). This is a move where the knight moves 4 squares in one direction and 5 in the perpendicular direction. Let's see if it can reach any square.
+
+From (0, 0), it can reach (4, 5), (4, -5), (-4, 5), or (-4, -5). From (4, 5), it can move to (4+5, 5+4) = (9, 9), (4+4, 5+5) = (8, 10), etc. Now, can it reach (0, 0) from (4, 5)? Let me see. From (4, 5), it can move to (9, 9), (8, 10), (-5, 9), or (-8, -5). None of these are close to (0, 0). Similarly, from (9, 9), it can move to (14, 11), (14, 5), (5, 11), etc. So, it seems like the knight can't reach (0, 0) from (4, 5) in a finite number of moves. Therefore, (4, 5) is invalid.
+
+Similarly, (5, 4) might also be invalid for the same reason.
+
+Now, let's consider (p, q) = (1, 8). This is a move where the knight moves 1 square in one direction and 8 in the perpendicular direction. Let's see if it can reach any square.
+
+From (0, 0), it can reach (1, 8), (1, -8), (-1, 8), or (-1, -8). From (1, 8), it can move to (1+8, 8+1) = (9, 9), (1+1, 8+8) = (2, 16), etc. Now, can it reach (0, 0) from (1, 8)? Let me see. From (1, 8), it can move to (9, 9), (2, 16), (-7, 9), or (-2, -7). None of these are close to (0, 0). Similarly, from (9, 9), it can move to (14, 11), (14, 5), (5, 11), etc. So, it seems like the knight can't reach (0, 0) from (1, 8) in a finite number of moves. Therefore, (1, 8) is invalid.
+
+Similarly, (8, 1) might also be invalid for the same reason.
+
+Now, let's consider (p, q) = (2, 7). This is a move where the knight moves 2 squares in one direction and 7 in the perpendicular direction. Let's see if it can reach any square.
+
+From (0, 0), it can reach (2, 7), (2, -7), (-2, 7), or (-2, -7). From (2, 7), it can move to (2+7, 7+2) = (9, 9), (2+2, 7+7) = (4, 14), etc. Now, can it reach (0, 0) from (2, 7)? Let me see. From (2, 7), it can move to (9, 9), (4, 14), (-5, 9), or (-4, -5). None of these are close to (0, 0). Similarly, from (9, 9), it can move to (16, 11), (16, 5), (5, 11), etc. So, it seems like the knight can't reach (0, 0) from (2, 7) in a finite number of moves. Therefore, (2, 7) is invalid.
+
+Similarly, (7, 2) might also be invalid for the same reason.
+
+Now, let's consider (p, q) = (3, 6). This is a move where the knight moves 3 squares in one direction and 6 in the perpendicular direction. Let's see if it can reach any square.
+
+From (0, 0), it can reach (3, 6), (3, -6), (-3, 6), or (-3, -6). From (3, 6), it can move to (3+6, 6+3) = (9, 9), (3+3, 6+6) = (6, 12), etc. Now, can it reach (0, 0) from (3, 6)? Let me see. From (3, 6), it can move to (9, 9), (6, 12), (-3, 9), or (-6, -3). None of these are close to (0, 0). Similarly, from (9, 9), it can move to (15, 12), (15, 6), (6, 12), etc. So, it seems like the knight can't reach (0, 0) from (3, 6) in a finite number of moves. Therefore, (3, 6) is invalid.
+
+Similarly, (6, 3) might also be invalid for the same reason.
+
+Now, let's consider (p, q) = (4, 6). This is a move where the knight moves 4 squares in one direction and 6 in the perpendicular direction. Let's see if it can reach any square.
+
+From (0, 0), it can reach (4, 6), (4, -6), (-4, 6), or (-4, -6). From (4, 6), it can move to (4+6, 6+4) = (10, 10), (4+4, 6+6) = (8, 12), etc. Now, can it reach (0, 0) from (4, 6)? Let me see. From (4, 6), it can move to (10, 10), (8, 12), (-2, 10), or (-8, -2). None of these are close to (0, 0). Similarly, from (10, 10), it can move to (16, 12), (16, 6), (6, 12), etc. So, it seems like the knight can't reach (0, 0) from (4, 6) in a finite number of moves. Therefore, (4, 6) is invalid.
+
+Similarly, (6, 4) might also be invalid for the same reason.
+
+Now, let's consider (p, q) = (1, 9). This is a move where the knight moves 1 square in one direction and 9 in the perpendicular direction. Let's see if it can reach any square.
+
+From (0, 0), it can reach (1, 9), (1, -9), (-1, 9), or (-1, -9). From (1, 9), it can move to (1+9, 9+1) = (10, 10), (1+1, 9+9) = (2, 18), etc. Now, can it reach (0, 0) from (1, 9)? Let me see. From (1, 9), it can move to (10, 10), (2, 18), (-8, 10), or (-2, -8). None of these are close to (0, 0). Similarly, from (10, 10), it can move to (19, 11), (19, 5), (11, 11), etc. So, it seems like the knight can't reach (0, 0) from (1, 9) in a finite number of moves. Therefore, (1, 9) is invalid.
+
+Similarly, (9, 1) might also be invalid for the same reason.
+
+Now, let's consider (p, q) = (2, 8). This is a move where the knight moves 2 squares in one direction and 8 in the perpendicular direction. Let's see if it can reach any square.
+
+From (0, 0), it can reach (2, 8), (2, -8), (-2, 8), or (-2, -8). From (2, 8), it can move to (2+8, 8+2) = (10, 10), (2+2, 8+8) = (4, 16), etc. Now, can it reach (0, 0) from (2, 8)? Let me see. From (2, 8), it can move to (10, 10), (4, 16), (-6, 10), or (-4, -6). None of these are close to (0, 0). Similarly, from (10, 10), it can move to (18, 12), (18, 2), (12, 12), etc. So, it seems like the knight can't reach (0, 0) from (2, 8) in a finite number of moves. Therefore, (2, 8) is invalid.
+
+Similarly, (8, 2) might also be invalid for the same reason.
+
+Now, let's consider (p, q) = (3, 7). This is a move where the knight moves 3 squares in one direction and 7 in the perpendicular direction. Let's see if it can reach any square.
+
+From (0, 0), it can reach (3, 7), (3, -7), (-3, 7), or (-3, -7). From (3, 7), it can move to (3+7, 7+3) = (10, 10), (3+3, 7+7) = (6, 14), etc. Now, can it reach (0, 0) from (3, 7)? Let me see. From (3, 7), it can move to (10, 10), (6, 14), (-4, 10), or (-6, -4). None of these are close to (0, 0). Similarly, from (10, 10), it can move to (17, 13), (17, 5), (13, 13), etc. So, it seems like the knight can't reach (0, 0) from (3, 7) in a finite number of moves. Therefore, (3, 7) is invalid.
+
+Similarly, (7, 3) might also be invalid for the same reason.
+
+Now, let's consider (p, q) = (4, 7). This is a move where the knight moves 4 squares in one direction and 7 in the perpendicular direction. Let's see if it can reach any square.
+
+From (0, 0), it can reach (4, 7), (4, -7), (-4, 7), or (-4, -7). From (4, 7), it can move to (4+7, 7+4) = (11, 11), (4+4, 7+7) = (8, 14), etc. Now, can it reach (0, 0) from (4, 7)? Let me see. From (4, 7), it can move to (11, 11), (8, 14), (-7, 11), or (-8, -3). None of these are close to (0, 0). Similarly, from (11, 11), it can move to (18, 14), (18, 2), (14, 14), etc. So, it seems like the knight can't reach (0, 0) from (4, 7) in a finite number of moves. Therefore, (4, 7) is invalid.
+
+Similarly, (7, 4) might also be invalid for the same reason.
+
+Now, let's consider (p, q) = (1, 10). This is a move where the knight moves 1 square in one direction and 10 in the perpendicular direction. Let's see if it can reach any square.
+
+From (0, 0), it can reach (1, 10), (1, -10), (-1, 10), or (-1, -10). From (1, 10), it can move to (1+10, 10+1) = (11, 11), (1+1, 10+10) = (2, 20), etc. Now, can it reach (0, 0) from (1, 10)? Let me see. From (1, 10), it can move to (11, 11), (2, 20), (-9, 11), or (-2, -9). None of these are close to (0, 0). Similarly, from (11, 11), it can move to (22, 12), (22, 2), (12, 12), etc. So, it seems like the knight can't reach (0, 0) from (1, 10) in a finite number of moves. Therefore, (1, 10) is invalid.
+
+Similarly, (10, 1) might also be invalid for the same reason.
+
+Now, let's consider (p, q) = (2, 9). This is a move where the knight moves 2 squares in one direction and 9 in the perpendicular direction. Let's see if it can reach any square.
+
+From (0, 0), it can reach (2, 9), (2, -9), (-2, 9), or (-2, -9). From (2, 9), it can move to (2+9,

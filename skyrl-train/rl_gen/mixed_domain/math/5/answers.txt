@@ -1,0 +1,342 @@
+10
+Okay, so I need to figure out how many distinct triangles can be made by connecting three different vertices of a square pyramid. Hmm, let's start by visualizing the shape. A square pyramid has a square base and a peak (which is the apex) connecting to each of the four corners of the square. So, in total, there are 5 vertices: 4 at the base and 1 at the top.
+
+First, I should determine how many triangles can be formed in general from 5 vertices. I remember that the number of ways to choose 3 vertices out of 5 is given by the combination formula C(n, k) = n! / (k!(n - k)!). So, plugging in n = 5 and k = 3, we get C(5, 3) = 10. So, there are 10 possible triangles in total.
+
+But wait, not all of these triangles might be distinct. Some of them might be degenerate, meaning they lie on a straight line and don't form a proper triangle. So, I need to check which of these 10 triangles are actually valid triangles.
+
+To do that, I should consider the positions of the vertices. The square base has four vertices, let's label them A, B, C, D in clockwise order, and the apex is E. So, the vertices are A, B, C, D, E.
+
+Now, let's list all possible sets of three vertices:
+
+1. A, B, C
+2. A, B, D
+3. A, B, E
+4. A, C, D
+5. A, C, E
+6. A, D, E
+7. B, C, D
+8. B, C, E
+9. B, D, E
+10. C, D, E
+
+Now, I need to analyze each of these to see if they form a valid triangle.
+
+1. A, B, C: These three points form the base of the square, so they lie on a straight line. Therefore, they don't form a triangle. This is a degenerate triangle.
+2. A, B, D: Points A, B, and D are not colinear. Let me visualize this: A and B are adjacent on the base, and D is opposite to A. So, connecting A, B, D should form a triangle. I believe this is a valid triangle.
+3. A, B, E: A, B, and E. E is the apex, so connecting E to A and B should form two edges of the pyramid. Since A, B, and E are not colinear, this is a valid triangle.
+4. A, C, D: Similarly, A, C, D are three vertices not on a straight line. So, this is a valid triangle.
+5. A, C, E: A, C, E. A is on the base, C is opposite to A, and E is the apex. These points are not colinear, so this is a valid triangle.
+6. A, D, E: A, D, E. A is on the base, D is opposite to A, and E is the apex. These points are not colinear, so this is a valid triangle.
+7. B, C, D: These three points are on the base, forming another straight line. Therefore, they don't form a triangle. This is a degenerate triangle.
+8. B, C, E: B, C, E. B and C are on the base, and E is the apex. These points are not colinear, so this is a valid triangle.
+9. B, D, E: B, D, E. B is on the base, D is opposite to B, and E is the apex. These points are not colinear, so this is a valid triangle.
+10. C, D, E: C, D, E. C and D are on the base, and E is the apex. These points are not colinear, so this is a valid triangle.
+
+Now, let's count how many of these are valid triangles:
+
+1. A, B, C: Degenerate
+2. A, B, D: Valid
+3. A, B, E: Valid
+4. A, C, D: Valid
+5. A, C, E: Valid
+6. A, D, E: Valid
+7. B, C, D: Degenerate
+8. B, C, E: Valid
+9. B, D, E: Valid
+10. C, D, E: Valid
+
+So, out of 10, two are degenerate, and the rest 8 are valid. But wait, the question is about distinct triangles. I need to make sure that none of these triangles are congruent or similar, but since all triangles are formed by different combinations of the square and the apex, they are all distinct in terms of their side lengths and angles.
+
+Wait, but hold on. Are all these triangles distinct? Let me think. For example, triangle A, B, D is different from triangle A, C, D because they have different side lengths. Similarly, triangle A, B, E is different from triangle A, B, D because E is a different point.
+
+But actually, wait. Triangles can sometimes be congruent even if their vertices are different. But in this case, since the square is regular and the apex is equidistant from all base vertices, all these triangles should be congruent to each other except for the ones that are degenerate. So, perhaps there are only two distinct non-degenerate triangles: one with base edges and the apex, and one with two base edges and one diagonal.
+
+Wait, but in our count, we have 8 valid triangles. That seems too high. Maybe I made a mistake in my analysis.
+
+Let me go back and check each triangle:
+
+1. A, B, C: Degenerate
+2. A, B, D: Valid
+3. A, B, E: Valid
+4. A, C, D: Valid
+5. A, C, E: Valid
+6. A, D, E: Valid
+7. B, C, D: Degenerate
+8. B, C, E: Valid
+9. B, D, E: Valid
+10. C, D, E: Valid
+
+Wait, so actually, triangles 2,3,4,5,6,8,9,10 are valid, which is 8. But in reality, some of these triangles are congruent. For example, triangle A, B, D is congruent to triangle A, C, E because they both have two base edges and one diagonal. Similarly, triangle B, C, E is congruent to triangle B, D, E. And triangle A, C, D is congruent to triangle A, B, E.
+
+Wait, no. Let me think again. Actually, triangles A, B, D and A, C, E are not congruent because the lengths are different. For example, in triangle A, B, D, the sides are AB, BD, and AD. AB is the base edge, BD is a diagonal, and AD is another base edge. In triangle A, C, E, the sides are AC, CE, and AE. AC is a base diagonal, CE is a lateral edge, and AE is a lateral edge. So, they are not congruent.
+
+Similarly, triangle B, C, E has sides BC, CE, BE. BC is a base edge, CE is a lateral edge, and BE is a lateral edge. Triangle B, D, E has sides BD, DE, BE. BD is a diagonal, DE is a lateral edge, and BE is a lateral edge. So, these are also not congruent.
+
+Wait, so perhaps all these 8 triangles are actually distinct. Therefore, the answer should be 8 distinct triangles.
+
+Wait, but earlier I thought that triangles 2,3,4,5,6,8,9,10 are valid, which is 8. So, the answer is 8.
+
+But I need to make sure that none of these triangles are congruent. For example, triangle A, B, D and triangle A, C, E: Are they congruent?
+
+Let me calculate the lengths.
+
+Assuming the square has side length 'a', and the apex is at height 'h' above the base.
+
+Then, AB = a, AC = √(a² + a²) = a√2, AD = a, BC = a, BD = √(a² + a²) = a√2, CD = a, CE = √(a² + h²), similarly for BE, DE.
+
+So, triangle A, B, D has sides a, a, a√2.
+
+Triangle A, C, E has sides a√2, √(a² + h²), √(a² + h²).
+
+So, these are not congruent because the sides are different.
+
+Similarly, triangle B, C, E has sides a, √(a² + h²), √(a² + h²).
+
+Triangle B, D, E has sides a√2, √(a² + h²), √(a² + h²).
+
+These are also not congruent.
+
+Wait, but actually, triangle A, B, D and triangle B, D, E: Let's see.
+
+Triangle A, B, D: sides a, a, a√2.
+
+Triangle B, D, E: sides a√2, √(a² + h²), √(a² + h²).
+
+These are not congruent because one has sides a, a, a√2 and the other has sides a√2, √(a² + h²), √(a² + h²).
+
+Similarly, triangle A, C, E: sides a√2, √(a² + h²), √(a² + h²).
+
+Triangle B, C, E: sides a, √(a² + h²), √(a² + h²).
+
+These are not congruent.
+
+So, each of these 8 triangles is unique in terms of their side lengths and angles, so they are all distinct.
+
+Therefore, the number of distinct triangles is 8.
+
+Wait, but let me check if any of these triangles are actually the same. For example, triangle A, B, D and triangle A, C, E: Do they have the same shape?
+
+In triangle A, B, D, the sides are AB = a, BD = a√2, AD = a.
+
+In triangle A, C, E, the sides are AC = a√2, CE = √(a² + h²), AE = √(a² + h²).
+
+So, they have different side lengths, so they are not congruent.
+
+Similarly, triangle B, C, E has sides BC = a, CE = √(a² + h²), BE = √(a² + h²).
+
+Triangle B, D, E has sides BD = a√2, DE = √(a² + h²), BE = √(a² + h²).
+
+So, again, different side lengths.
+
+Therefore, all 8 triangles are distinct.
+
+Wait, but hold on, is there any possibility that some triangles are overlapping or overlapping in shape but different in position?
+
+No, because all the triangles are formed by different sets of three vertices. So, their positions and shapes are different.
+
+Therefore, the answer should be 8.
+
+But wait, I'm a bit confused because I initially thought that two of the triangles are degenerate, but in the count, two are degenerate, and the rest 8 are valid. So, the total number of distinct triangles is 8.
+
+But let me double-check. The number of triangles is 10, two are degenerate, so 8 are valid. So, the answer is 8.
+
+Wait, but I think I made a mistake in the combination count. Wait, no, the combination count is correct: C(5,3) = 10.
+
+But perhaps I miscounted the valid ones. Let me list them again:
+
+1. A, B, C: Degenerate
+2. A, B, D: Valid
+3. A, B, E: Valid
+4. A, C, D: Valid
+5. A, C, E: Valid
+6. A, D, E: Valid
+7. B, C, D: Degenerate
+8. B, C, E: Valid
+9. B, D, E: Valid
+10. C, D, E: Valid
+
+So, 8 valid triangles. So, the answer is 8.
+
+Wait, but I recall that in some cases, when you have a square pyramid, the triangles can sometimes be congruent in different orientations. For example, triangles A, B, D and A, C, E might be congruent through reflection or rotation, but in terms of their side lengths, they are different. So, they are distinct.
+
+Therefore, the final answer is 8.
+
+But wait, let me check another approach. Maybe using symmetry.
+
+In a square pyramid, there are several planes of symmetry. For example, the plane that bisects the pyramid through the apex and the center of the square base. If we consider triangles that lie on these planes, they might be congruent.
+
+Wait, actually, no. Because triangle A, B, D is not on the same plane as triangle A, C, E, unless they are symmetric.
+
+Wait, perhaps I'm overcomplicating it. Since each triangle is formed by a unique combination of three vertices, and the vertices are all distinct, their triangles are all distinct.
+
+Therefore, the answer is 8.
+
+But to be thorough, let me think about whether any of the triangles might be the same despite being formed by different vertices. For example, triangle A, B, E and triangle B, E, A are the same triangle. But since we are considering sets of three vertices, not ordered triples, each triangle is uniquely identified by its set of vertices. So, the count is based on unique sets, not on the order of vertices.
+
+Therefore, the count is 8 distinct triangles.
+
+Wait, but earlier I thought that two were degenerate, so 8 are valid. Therefore, the answer is 8.
+
+But to make sure, let me consider the possible triangles:
+
+1. Base triangle: A, B, C (degenerate)
+2. Triangle with two base edges and a lateral edge: A, B, D; A, B, E; A, C, D; A, C, E; A, D, E
+3. Triangle with two lateral edges and a diagonal: B, C, E; B, D, E; C, D, E
+
+Wait, but in the above, triangles with two base edges and a lateral edge are 5, and triangles with two lateral edges and a diagonal are 3, making a total of 8. The two degenerate triangles are the base and the triangle connecting A, B, E.
+
+Wait, no, triangle A, B, E is formed by two base edges and a lateral edge, not a diagonal.
+
+Wait, no, A, B, E: A and B are base vertices, and E is the apex. So, A, B, E is a triangle with sides AB, BE, and AE.
+
+AB is a base edge, BE and AE are lateral edges.
+
+So, in this case, it's not a triangle with two base edges and a diagonal, but rather two lateral edges and a base edge.
+
+Wait, but in reality, AB is a base edge, and BE and AE are lateral edges. So, it's a triangle with two lateral edges and one base edge.
+
+Wait, but I thought earlier that triangles with two lateral edges and a base edge might not be congruent to others.
+
+But in this case, for example, triangle A, B, E has sides AB, BE, AE, which are a, √(a² + h²), √(a² + h²).
+
+Triangle A, C, E has sides AC, CE, AE, which are a√2, √(a² + h²), √(a² + h²).
+
+So, these are not congruent because one has sides of length a, a√2, and the other has sides of length a, √(a² + h²), and √(a² + h²).
+
+So, they are different.
+
+Similarly, triangle A, D, E has sides AD, DE, AE, which are a, √(a² + h²), √(a² + h²).
+
+So, same as triangle A, C, E.
+
+Wait, no, triangle A, D, E: AD is a base edge, DE is a lateral edge, AE is a lateral edge.
+
+So, sides: a, √(a² + h²), √(a² + h²).
+
+Which is the same as triangle A, C, E.
+
+Wait, so triangle A, C, E and triangle A, D, E are both triangles with sides a, √(a² + h²), √(a² + h²). So, they are congruent because they have the same side lengths.
+
+Similarly, triangle B, C, E has sides BC, CE, BE, which are a, √(a² + h²), √(a² + h²).
+
+Similarly, triangle B, D, E has sides BD, DE, BE, which are a√2, √(a² + h²), √(a² + h²).
+
+So, these are different from each other and from the other triangles.
+
+So, in total, we have:
+
+- Degenerate triangle: A, B, C
+- Triangle with two base edges and a lateral edge: A, B, D; A, B, E; A, C, D; A, C, E; A, D, E
+- Triangles with one base edge and two lateral edges: B, C, E; B, D, E; C, D, E
+
+But wait, triangle A, D, E is congruent to triangle A, C, E, so they are the same triangle.
+
+Similarly, triangle B, D, E is unique, as is triangle C, D, E.
+
+So, let's see:
+
+1. A, B, C: degenerate
+2. A, B, D: valid
+3. A, B, E: valid
+4. A, C, D: valid
+5. A, C, E: valid (congruent to A, D, E)
+6. A, D, E: same as A, C, E
+7. B, C, E: valid
+8. B, D, E: valid
+9. C, D, E: valid
+
+So, in terms of distinct triangles, we have:
+
+- Degenerate
+- Two types of non-degenerate triangles: those with two base edges and a lateral edge (A, B, D; A, B, E; A, C, D; A, C, E; A, D, E; which reduces to two unique types: those with two base edges and one lateral edge, and those with one base edge and two lateral edges)
+Wait, actually, no. Because A, C, E and A, D, E are congruent, so they form the same triangle.
+
+Similarly, triangles with two base edges and a lateral edge are different from those with one base edge and two lateral edges.
+
+Wait, so how many unique triangles do we have?
+
+- Degenerate: 1
+- Triangles with two base edges and one lateral edge: 3 (A, B, D; A, B, E; A, C, D; A, C, E; A, D, E reduces to two unique)
+Wait, no, actually, A, B, D and A, B, E are different because they have different positions.
+
+Wait, perhaps I should think in terms of side lengths.
+
+Triangles can be categorized based on their side lengths:
+
+1. Equilateral: Not possible here, since we have only one apex.
+2. Isosceles: Triangles with two equal sides.
+3. Scalene: All sides different.
+
+But in our case, since the square base has equal sides and the apex is connected to all base vertices, which are equidistant.
+
+So, triangles can be:
+
+- Triangles with two sides equal (isosceles)
+- Triangles with all sides equal (equilateral)
+- Triangles with all sides different (scalene)
+
+But in our case, since the base is a square and the apex is equidistant, we can have isosceles triangles with two sides equal, but not equilateral.
+
+So, let's see:
+
+Triangles with two sides equal can be:
+
+- Two base edges and one lateral edge
+- Two lateral edges and one base edge
+
+Wait, no, in a square pyramid, the lateral edges are all equal, but the base edges are equal. So, a triangle can have two base edges and one lateral edge, or one base edge and two lateral edges.
+
+But in terms of congruence, triangles with two base edges and one lateral edge are not congruent to triangles with one base edge and two lateral edges, because the lengths are different.
+
+So, each of these is a distinct triangle.
+
+Therefore, in total:
+
+- Degenerate: 1
+- Isosceles triangles with two base edges and one lateral edge: 3
+- Isosceles triangles with one base edge and two lateral edges: 3
+- Scalene triangles: 1
+
+So, total: 1 + 3 + 3 + 1 = 8.
+
+Therefore, the number of distinct triangles is 8.
+
+So, I think the answer is 8.
+
+But to make sure, let me think about symmetry.
+
+The square pyramid has a certain symmetry, but since we are considering triangles as sets of three vertices, each triangle is unique regardless of its position or orientation.
+
+Therefore, the count remains 8.
+
+So, the final answer is 8.
+
+**Final Answer**
+\boxed{8}
+</think>
+
+To determine how many distinct triangles can be constructed by connecting three different vertices of a square pyramid, we start by noting that a square pyramid has 5 vertices: 4 at the base (A, B, C, D) and 1 at the apex (E).
+
+We need to calculate the number of ways to choose 3 vertices out of 5, which is given by the combination formula \( \binom{5}{3} = 10 \). However, not all of these combinations will form valid triangles, as some may be degenerate (i.e., lie on a straight line).
+
+We list all possible sets of three vertices and analyze each:
+
+1. A, B, C: Degenerate (base of the square)
+2. A, B, D: Valid
+3. A, B, E: Valid
+4. A, C, D: Valid
+5. A, C, E: Valid
+6. A, D, E: Valid
+7. B, C, D: Degenerate (opposite vertices of the square)
+8. B, C, E: Valid
+9. B, D, E: Valid
+10. C, D, E: Valid
+
+Out of these 10, two sets are degenerate. The remaining 8 sets are valid triangles. Each valid triangle is distinct because their side lengths and angles are different.
+
+Thus, the number of distinct triangles that can be formed is:
+
+\[
+\boxed{8}
+\]<｜end▁of▁sentence｜>

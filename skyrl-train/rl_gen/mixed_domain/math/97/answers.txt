@@ -1,0 +1,606 @@
+26
+Okay, so I have this problem where I need to place 10 numbers around a circle, their total sum is 200, and the sum of any three consecutive numbers should not be less than 58. Among all such sets, I need to find the maximum possible value of the largest number. Hmm, let me try to break this down.
+
+First, let's understand the constraints. We have 10 numbers in a circle, sum to 200. Any three consecutive numbers sum to at least 58. So, no three in a row can be too small. I need to maximize the largest number in such a set.
+
+Let me denote the numbers as \( a_1, a_2, ..., a_{10} \) arranged around the circle. So, \( a_{11} = a_1 \) and so on.
+
+The sum of any three consecutive \( a_i \) is at least 58. So, for any \( i \), \( a_i + a_{i+1} + a_{i+2} \geq 58 \).
+
+I need to maximize \( \max(a_1, a_2, ..., a_{10}) \). Let's assume \( a_1 \) is the largest, so \( a_1 \) is what I need to maximize.
+
+To maximize \( a_1 \), I probably need to minimize the other numbers, but subject to the constraint that any three consecutive numbers sum to at least 58. Hmm, but if I minimize some numbers, others might be constrained.
+
+Let me consider the circle pairwise. Each number is part of three triplets: previous, current, and next. So, each \( a_i \) is part of \( a_{i-2}, a_{i-1}, a_i \), \( a_{i-1}, a_i, a_{i+1} \), and \( a_i, a_{i+1}, a_{i+2} \). So, each \( a_i \) is part of three triplets.
+
+But this is getting complicated. Maybe I can use an averaging argument. If the total sum is 200, average is 20. But the triplets sum to at least 58, which is much higher.
+
+或许 I can arrange the numbers such that most of them are as small as possible, except for one which is maximized. But wait, if I maximize one number, the next one might be constrained because of the triplet sum.
+
+Let me try to construct such a set. Let me assume \( a_1 \) is the largest, and all other numbers are equal to some minimal value \( x \). But because it's a circle, the triplet involving \( a_1 \) will be \( a_{10}, a_1, a_2 \). If \( a_1 \) is large, then \( a_{10} + a_1 + a_2 \geq 58 \). If \( a_{10} = x \) and \( a_2 = x \), then \( x + a_1 + x \geq 58 \), so \( 2x + a_1 \geq 58 \.
+
+Similarly, the triplet \( a_9, a_{10}, a_1 \) must be at least 58: \( a_9 + x + a_1 \geq 58 \).
+
+If all others are \( x \), then the total sum would be \( a_1 + 9x = 200 \.
+
+So, \( a_1 = 200 - 9x \.
+
+From the triplet constraints:
+
+\( 2x + a_1 \geq 58 \ => 2x + 200 - 9x \geq 58 \ => -7x + 200 \geq 58 \ => -7x \geq -142 \ => 7x \leq 142 \ => x \leq 20.2857 \.
+
+And from the other triplet involving \( a_9 \):
+
+\( a_9 + x + a_1 \geq 58 \ => x + x + 200 - 9x \geq 58 \ => 200 -7x \geq 58 \ => -7x \geq -142 \ => x \leq 20.2857 \.
+
+So, x is at most approximately 20.2857. Then \( a_1 = 200 -9x \. If x is 20, then \( a_1 = 200 -90 = 110 \. If x is 20.2857, then \( a_1 = 200 -9*20.2857 �approx 200 -182.5 �≈177.5 \.
+
+Wait, but I assumed all other numbers are equal to x. Maybe this is too restrictive because maybe some can be smaller and some larger to satisfy the constraints differently.
+
+Alternatively, perhaps the maximum number is achieved when allexcept one are minimal, but arranged such that the triplet constraints are satisfied.
+
+Let me consider that perhaps the maximum number is 100, and the others sum to 100, but then any three including the large number must be at least 58. So, if one number is 100, the next two must be at least 58 -100 = negative, which isn't possible. So, the maximum cannot be more than 58 + something.
+
+Wait, if one number is \( x \), then the next two numbers in the triplet must be at least 58 -x. So, if \( x \) is large, the next two must be small, but since it's a circle, the arrangement must hold around the circle.
+
+Maybe another approach: suppose that the maximum number is \( x \), and all other numbers are less than or equal to \( y \). Then, the triplet including \( x \) must have the other two numbers sum to at least 58 -x. So, if \( x \) is large, the other two must be small, but they also contribute to the total sum.
+
+Let me try to set up equations. Let me assume \( a_1 = x \ is the maximum. Then, the triplet \( a_{10}, a_1, a_2 \) must be >=58, so \( a_{10} + x + a_2 >=58 \. Similarly, \( a_9 + a_{10} + x >=58 \, and \( a_8 + a_9 + a_{10} >=58 \.
+
+If I assume that \( a_2 = a_3 = ... = a_{10} = y \, to minimize them, then the triplet \( a_{10}, x, y >=58 \ => y + x >=58 \.
+
+Similarly, the triplet \( a_9, a_{10}, x >=58 \ => a_9 + y + x >=58 \.
+
+And the triplet \( a_8, a_9, a_{10} >=58 \ => a_8 + a_9 + y >=58 \.
+
+But this is getting complicated. maybe a better approach is to consider that if one number is large, the next two must be至少（58 -x），but they also contribute to the total sum.
+
+Let me suppose that \( a_1 = x \ is the maximum, and all other numbers are either x or less. But to minimize the total sum, maybe some are x and some are less.
+
+Wait, the total sum is 200, so if one is x, the others sum to 200 -x. If I want to minimize the other numbers, they can be as small as possible, but they still need to satisfy the triplet constraints.
+
+Let me consider the triplet involving \( a_1 \): \( a_{10} + x + a_2 >=58 \. If \( a_{10} and a_2 \) are minimal, then they are possibly very small, but they still need to be at least（58 -x）.
+
+But if \( x \) is large, say 60, then \( a_{10} and a_2 \) would need to be at least 58, which is impossible because the total sum would be too low. So, \( x \) must be such that even if the other two in the triplet are minimal, they still sum to at least 58 -x.
+
+But this is circular. Maybe another approach.
+
+Let me assume that the maximum number is x, and all other numbers are less than or equal to y. Then, the triplet including x must have the other two sum to at least 58 -x. So, if there are two other numbers in that triplet, they must sum to at least 58 -x. If those two are y, then 2y >=58 -x => y >= (58 -x)/2.
+
+But since all other numbers are <= y, including x, which is the maximum, perhaps x is separated by at least one number that is <= y.
+
+Wait, this is getting messy. perhaps a better approach is to consider that the maximum number x must be such that the sum of the other nine numbers is 200 -x. These nine numbers must be arranged such that any three consecutive includes x, so the other two in that triplet must sum to at least 58 -x.
+
+But since it's a circle, each number is part of three triplets. So, each of the nine other numbers is part of three triplets, one of which includes x.
+
+So, for each of these nine numbers, say z, they are part of a triplet with x and another number, say w. So, z + x + w >=58 => w >=58 -x -z.
+
+But since w is also part of other triplets, this might create a chain of constraints.
+
+Alternatively, perhaps the minimal sum of the nine numbers, given that any two plus x >=58, would be when each pair with x sums to exactly 58 -x. But since they are in a circle, this would require that each pair opposite to x sums to 58 -x, which might not be possible.
+
+ perhaps a better approach is to consider that the maximum number x must be such that the sum of the other nine numbers is 200 -x, and among these nine, the smallest any two plus x can be is 58. So, the smallest any two can be is 58 -x. But since they are in a circle, the smallest two must be adjacent to x, so their sum is 58 -x.
+
+But this would mean that there are two numbers adjacent to x that sum to 58 -x, and the rest of the seven numbers sum to 200 -x - (58 -x) = 192.
+
+So, the seven numbers sum to 192, and each of them must be >=0, but likely much larger than 0.
+
+But this is just one pair. In reality, each number is part of three triplets, so each number is part of three pairs that sum to at least58 -x.
+
+This is getting too complex. perhaps a simpler approach is to assume that the maximum number is x, and the rest are minimal enough such that any three including x sum to exactly58. So, x + a + b =58, where a and b are the next two numbers after x.
+
+But since it's a circle, after x, the next two are a and b, then c, d, ..., back to x.
+
+So, x + a + b =58, and then a + b + c >=58, so c >=58 -a -b =58 - (58 -x) =x.
+
+So, c >=x.
+
+Similarly, b + c + d >=58, so d >=58 -b -c >=58 -b -x.
+
+This is getting recursive.
+
+ perhaps a better approach is to assume that the maximum number is x, and all other numbers are either x or less, but arranged such that any two non-x numbers are separated by at least one x.
+
+So, the circle would have x, then some smaller numbers, then x, etc.
+
+So, the pattern would be x, s, x, s, ..., x, s, x, where s is the smaller number.
+
+Since there are nine numbers other than x, and if we alternate x and s, we would need five x's and four s's, but since it's circular, the count would depend on whether 9 is even or odd.
+
+Wait, 9 is odd, so starting with x, the sequence would be x, s, x, s, ..., x, s, x, which would require five x's and four s's, but that sums to nine. So, five x's and four s's.
+
+But then the total sum would be5x +4s =200.
+
+Also, the sum of any three consecutive including x would be x + s + s >=58, because after x, the next two are s and x, then s.
+
+So, x + s + x >=58 =>2x + s >=58.
+
+Similarly, the triplet s + x + s >=58 => same thing.
+
+And the triplet x + s + s >=58 =>2s +x >=58.
+
+So, both2x + s and2s +x >=58.
+
+From the total sum:5x +4s =200.
+
+Let me solve these equations.
+
+Let me denote equation1:2x + s >=58
+
+equation2:2s +x >=58
+
+and equation3:5x +4s =200
+
+我想找到最大x满足这些条件。
+
+From equation3:5x +4s =200 => s = (200 -5x)/4
+
+Substitute into equation1 and equation2.
+
+equation1:2x + (200 -5x)/4 >=58
+
+Multiply through by4:8x +200 -5x >=232 =>3x +200 >=232 =>3x >=32 =>x >=32/3≈10.6667
+
+equation2:2*(200 -5x)/4 +x >=58
+
+Simplify: (200 -5x)/2 +x >=58 =>100 -2.5x +x >=58 =>100 -1.5x >=58 =>-1.5x >=-42 =>x <=28
+
+So, x <=28 and x >=10.6667
+
+So, x is between≈10.6667 and28, but strictly greater than≈10.6667.
+
+But we are looking for the maximum x, so x=28, let's check if it works.
+
+if x=28, then s=(200 -5*28)/4=(200 -140)/4=60/4=15.
+
+So, s=15.
+
+Now, check the triplet conditions:
+
+2x + s=2*28 +15=56+15=71>=58✓
+
+2s +x=30+28=58>=58✓
+
+So, both conditions are satisfied.
+
+Also, the total sum is5*28 +4*15=140+60=200✓
+
+So, this works.
+
+Now, check if x can be greater than28. Let's tryx=29.
+
+Then s=(200 -5*29)/4=(200 -145)/4=55/4=13.75
+
+Now, check triplet conditions:
+
+2x +s=58 +13.75=71.75>=58✓
+
+2s +x=27.5 +29=56.5<58≠✓
+
+So, violates the condition.
+
+Similarly, x=28.5:
+
+s=(200 -5*28.5)/4=(200 -142.5)/4=57.5/4=14.375
+
+Check2s +x=28.75 +28.5=57.25<58≠✓
+
+So,也不满足.
+
+所以，x的最大值是28, achieved when five numbers are28 and four numbers are15.
+
+Wait, no, wait: pentagonally, the pattern is x, s, x, s, ..., x, s, x. So, five x's and four s's.
+
+So, the set would have five28's and four15's arranged alternately around the circle.
+
+So, the maximum number is28.
+
+But let me confirm if this is the maximum possible.
+
+Sup mq asks for the maximum possible value of the largest number among all sets that meet the conditions.
+
+So, if meq can achieve28, and trying29 fails, then28 is the answer.
+
+But let me think if there's another configuration where the maximum is larger than28.
+
+Suppose instead of alternating x and s, some non-x numbers are larger than s, allowing x to be larger.
+
+But perhaps not, because if non-x numbers are larger, then the triplet including x and two larger numbers would exceed58, possibly requiring x to be smaller.
+
+So, perhaps the simplest configuration is the alternating x and s, which givesx=28 as maximum.
+
+Therefore, the answer is28.
+
+Wait, but let me check if all triplets are >=58.
+
+In the configuration pentagonally with28,15,28,15,...,28,15,28.
+
+So, the triplets would be28,15,28 sum to42<58≠✓
+
+Wait, this is a problemOops!.
+
+Wait, no, in this configuration, the triplets would be28,15,28 sum to42, which is less than58, which violates the condition.
+
+Wait, so my previous assumption is wrong.
+
+So,根本问题出在这里。我错误地假设了排列方式，导致某些 triplet sum小于58。
+
+所以，必须保证任何三个 consecutive sum to至少58。
+
+所以，不能 have consecutive28,15,28也是一种 triplet summing to42, which is invalid.
+
+所以，我需要另一种排列方式。
+
+这意味着 my previous approach is wrong。
+
+必须 ensuring that any three consecutive numbers sum to at least58.
+
+所以,不能 have twice the max number consecutive.
+
+所以, the max number must be separated by at least one number that is small enough such that even two max numbers and a small number sum to at least58.
+
+So, let me define the max number as x, and the small number as s.
+
+Then, the triplet x, s, s must sum to x +2s >=58.
+
+Because if x is separated by two s's, then x + s + s >=58.
+
+Similarly, s + x + s >=58, etc.
+
+So, x +2s >=58.
+
+Also, the total sum is10x + sum of the other eight numbers=200.
+
+But the other eight numbers must be >=s, but to minimize their sum, they can be s.
+
+So, let me assume that all other numbers are s, except for two that are x +2s -58, to satisfy the triplet sum.
+
+Wait, this is complicated.
+
+Let me try to formalize it.
+
+Let me have two x's separated by two s's, so the triplet x, s, s sums to x +2s >=58.
+
+Then, the other eight numbers are s, so their sum is8s.
+
+So, total sum:2x +8s=200.
+
+Also, x +2s >=58.
+
+So, we have two equations:
+
+2x +8s=200
+
+x +2s >=58
+
+From the first equation, x +4s=100 => x=100 -4s
+
+Substitute into the second inequality:
+
+100 -4s +2s >=58 =>100 -2s >=58 =>-2s >=-42 =>2s <=42 =>s <=21
+
+So, s can be at most21.
+
+Then, x=100 -4s >=100 -4*21=100 -84=16
+
+So, x is between16 and maximized when s is minimized.
+
+But s must be at least some value to satisfy the total sum.
+
+Wait, if s is minimized, say s=0, then x=100, but then the other eight numbers are0, which would make the total sum2x=200, so x=100, but then the triplet x,0,0 sum to100<58, which is invalid.
+
+So, s cannot be0.
+
+So, we need to find the maximum x such that when s is minimized, the triplet sum x +2s >=58, and the total sum2x +8s=200.
+
+Let me express x=100 -4s, then x +2s=100 -4s +2s=100 -2s >=58 =>2s <=42 =>s <=21.
+
+But also, when s is minimized, let's find the minimum s such that the triplet sum is>=58 and the total sum is200.
+
+If s is minimized, let's say s=k, then x=100 -4k.
+
+The total sum is2x +8k=200=>2(100 -4k) +8k=200=>200 -8k +8k=200=>200=200, which is always true.
+
+So, the only constraint is x +2s >=58 =>100 -4k +2k >=58 =>100 -2k >=58 =>2k <=42 =>k <=21.
+
+So, s can be up to21, then x=100 -4*21=100 -84=16.
+
+Wait, but if s=21, then x=16, and the other eight numbers are21.
+
+So, the set would have two16's and eight21's.
+
+Let me check the triplet sum:16 +21 +21=58>=58, which is valid.
+
+Also, the total sum:2*16 +8*21=32 +168=200, which is correct.
+
+So, in this case, the maximum x is16, with two16's and eight21's.
+
+But Wait, can we have a higher x?
+
+Let me try s=20, then x=100 -4*20=100, but then the other eight numbers are20, so total sum2*100 +8*20=200 +160=360>200, which is invalid.
+
+So, s must be such that2x +8s=200.
+
+If s=21, x=16, as above.
+
+If s=20, x=100 -4*20=0, then other eight numbers are20, total sum2*0 +8*20=160<200, invalid.
+
+So, s must be<=21, and x<=16.
+
+Wait, but wait, if s=14, then x=100 -4*14=100 -56=44.
+
+Then, the other eight numbers are14, so total sum2*44 +8*14=88 +112=200, which is valid.
+
+Now, check the triplet sum:44 +14 +14=72>=58, which is valid.
+
+So, in this case, x=44, with two44's and eight14's.
+
+Wait, but can we have higher x?
+
+Let me try s=15, then x=100 -4*15=100 -60=40.
+
+Other eight numbers are15, so total sum2*40 +8*15=80 +120=200, valid.
+
+ triplet sum:40 +15 +15=70>=58, valid.
+
+So, x=40.
+
+Can we go further?
+
+Let me try s=16, then x=100 -4*16=100 -64=36.
+
+Other eight numbers are16, total sum2*36 +8*16=72 +128=200, valid.
+
+ triplet sum:36 +16 +16=68>=58, valid.
+
+So, x=36.
+
+继续下去：
+
+s=17, x=100 -68=32.
+
+Other eight=17, total=2*32 +136=64+136=200.
+
+ triplet sum:32 +17 +17=56<58≠✓.
+
+So, invalid.
+
+所以, s=17, x=32 invalid.
+
+所以, max s where triplet sum>=58 is s=16, x=36.
+
+Wait, let me check s=16, x=36, other eight=16.
+
+ triplet sum=36 +16 +16=68>=58, valid.
+
+If s=15, x=40, other eight=15, triplet sum=40 +15 +15=70>=58, valid.
+
+如果s=14, x=44, other eight=14, triplet sum=44 +14 +14=72>=58, valid.
+
+如果s=13, x=100 -52=48, other eight=13.
+
+ triplet sum=48 +13 +13=74>=58, valid.
+
+继续：
+
+s=12, x=100 -48=52, other eight=12.
+
+ triplet sum=52 +12 +12=74>=58, valid.
+
+s=11, x=100 -44=56, other eight=111.
+
+ triplet sum=56 +11 +11=68>=58, valid.
+
+s=10, x=100 -40=60, other eight=10.
+
+ triplet sum=60 +10 +10=80>=58, valid.
+
+s=9, x=100 -36=64, other eight=9.
+
+ triplet sum=64 +9 +9=82>=58, valid.
+
+s=8, x=100 -32=68, other eight=8.
+
+ triplet sum=68 +8 +8=84>=58, valid.
+
+s=7, x=100 -28=72, other eight=7.
+
+ triplet sum=72 +7 +7=86>=58, valid.
+
+s=6, x=100 -24=76, other eight=6.
+
+ triplet sum=76 +6 +6=88>=58, valid.
+
+s=5, x=100 -20=80, other eight=5.
+
+ triplet sum=80 +5 +5=85>=58, valid.
+
+s=4, x=100 -16=84, other eight=4.
+
+ triplet sum=84 +4 +4=92>=58, valid.
+
+s=3, x=100 -12=88, other eight=3.
+
+ triplet sum=88 +3 +3=94>=58, valid.
+
+s=2, x=100 -8=92, other eight=2.
+
+ triplet sum=92 +2 +2=96>=58, valid.
+
+s=1, x=100 -4=96, other eight=1.
+
+ triplet sum=96 +1 +1=98>=58, valid.
+
+所以，这里出现矛盾了，因为当s=21, x=16，但当s decreases, x increases, until s=1, x=96, which is valid.
+
+但 Wait, when s=1, x=96, other eight=1, so the set would have two96's and eight1's.
+
+But let me check the triplet sum:96 +1 +1=98>=58, valid.
+
+But the total sum is2*96 +8*1=192 +8=200, which is correct.
+
+So, in this case, the maximum x is96, with two96's and eight1's.
+
+But Wait, can we have more than two96's?
+
+If I try three96's, then the other seven numbers must sum to200 -3*96=200 -288=-88, which is impossible.
+
+So, only two96's.
+
+But let me check if this satisfies all conditions.
+
+Yes, two96's and eight1's sum to200.
+
+Any three consecutive numbers: either96,1,1 sum to98>=58, or1,96,1 sum to98, etc. So, all triplets sum to98, which is>=58.
+
+So, this configuration is valid.
+
+Therefore, the maximum possible value of the largest number is96.
+
+Wait, but earlier when I tried s=16, x=36, which is less than96.
+
+So, indeed,96 is larger.
+
+所以，答案是96。
+
+但是让我再检查一下，当s=1, x=96，其他 eight1's，总和2*96 +8*1=192+8=200，正确。
+
+任何三个 consecutive数 sum to96+1+1=98>=58，正确。
+
+所以，最大可能值是96。
+
+但 Wait,让我想一下，当s=1, x=96，其他 eight1's，那么排列的时候，两个96's must be separated by at least one1 to satisfy the triplet sum condition.
+
+Because if they are adjacent, then96+1+1=98>=58，但 if they are separated by two1's, then96,1,96 sum to193>=58，which is fine, but the triplet1,96,1 sum to98, which is fine.
+
+Wait, but if the two96's are separated by two1's, then the triplet between them would be96,1,96 sum to193, which is fine, but the triplet1,96,1 sum to98, which is also fine.
+
+So, the arrangement would be96,1,96,1,1,1,1,1,1,1, which sums to96+1+96+7=199+96=285>200, which is wrong.
+
+Wait, no, total sum is2*96 +8*1=192+8=200, which is correct.
+
+So, the arrangement would be96,1,96,1,1,1,1,1,1,1, which sum to96+1+96+7=199+96=295>200, which is wrong.
+
+Wait, I'm misunderstanding the arrangement.
+
+Let me think differently.
+
+If I have two96's and eight1's, total sum200.
+
+To arrange them such that any three consecutive sum to at least58.
+
+So, the two96's must be placed such that between them, there are at least two1's, because96+1+96=193>=58, but if they are adjacent,96+1+96=193, which is fine, but if they are separated by one1, then96,1,96,1, which sum to96+1+96+1=194>=58, which is fine.
+
+Wait, but if they are separated by one1, then the triplet1,96,1 sum to98, which is fine.
+
+So, the arrangement would be96,1,96,1,1,1,1,1,1,1, which sum to96+1+96+7=199+96=295>200, which is wrong.
+
+Wait, no, total sum is96+1+96+7=199+96=295>200, which is incorrect.
+
+So, I must arrange them correctly.
+
+Let me try to arrange them as96,1,96,1,1,1,1,1,1,1, but sum is96+1+96+7=199+96=295>200, which is wrong.
+
+So, perhaps the correct arrangement is96,1,1,96,1,1,1,1,1,1, which sum to96+1+1+96+5=194+96=290>200, still wrong.
+
+Wait, this is getting me stuck.
+
+ perhaps the correct arrangement is96,1,1,96,1,1,1,1,1,1, which is96+1+1+96+5=194+96=290>200, which is wrong.
+
+So, perhaps the correct arrangement is96,1,96,1,1,1,1,1,1, which is96+1+96+5=193+96=289>200, still wrong.
+
+Wait, I think I'm mis calculating.
+
+Let me count the numbers: two96's and eight1's, total ten numbers.
+
+So, the sum is2*96 +8*1=192+8=200, which is correct.
+
+Now, to arrange them such that any three consecutive sum to at least58.
+
+So, the two96's must be placed such that between them, there are at least two1's, because96+1+96=193>=58, but if they are separated by one1,96,1,96,1, which is96+1+96+1=194>=58, which is fine.
+
+So, the arrangement would be96,1,96,1,1,1,1,1,1,1, but let me count the1's: after the first96,1,96, then five1's, which is96,1,96,1,1,1,1,1,1,1, which is96,1,96, then seven1's, which is96,1,96,1,1,1,1,1,1,1, which is10 numbers.
+
+Wait, let me write it out:
+
+1.96, 2.1, 3.96, 4.1, 5.1, 6.1, 7.1, 8.1, 9.1, 10.1.
+
+Wait, no, only eight1's.
+
+So, positions1-10:
+
+1:96
+
+2:1
+
+3:96
+
+4:1
+
+5:1
+
+6:1
+
+7:1
+
+8:1
+
+9:1
+
+10:1
+
+Now, let's check the triplets:
+
+1-3:96+1+96=193>=58
+
+2-4:1+96+1=98>=58
+
+3-5:96+1+1=98>=58
+
+4-6:1+1+1=3<58!=✓
+
+Wait, four, five, six:1+1+1=3<58, which is invalid.
+
+So, this arrangement is invalid.
+
+Therefore, the two96's cannot be separated by only one1.
+
+They must be separated by at least two1's.
+
+So, arrangement:
+
+1:96
+
+2:1
+
+3:1
+
+4:96
+
+5:1
+
+6:1
+
+7:1
+
+8:1
+
+9:1
+
+10:1
+
+Now, check triplets:
+
+1-3:96+1+1=98>=58
+
+2-4:1+1+96=98>=58
+
+3-5:1+96+1=98>=58
+
+4-6:96+1+1=98>=58
+
+5-7:1+1+1=3<58!=✓
+
+So, triplet5-7:1+1+1=3<58, invalid.
+
+So, even with two1's between96's, the triplet5-

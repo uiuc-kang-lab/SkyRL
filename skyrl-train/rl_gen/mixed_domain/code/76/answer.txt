@@ -1,0 +1,745 @@
+Okay, let's try to figure out this problem. So, the problem is about a tree with n nodes, rooted at x. Each node has an initial value a_i. We need to perform a series of operations to make all nodes' values zero. The operations are performed in a specific order and on specific nodes.
+
+First, I need to understand the operation sequence. The i-th operation is on node i if i <=n, else on node (i -n). So for example, if n is 3, the 4th operation is on node 1 again, the 5th on node 2, 6th on node3, and so on. So the operations repeat every n steps, cycling through 1 to n.
+
+Each operation on node u involves selecting a single node in its subtree and incrementing or decrementing its value by 1. So each operation can change a node's value by 1, but it's applied to nodes in the subtree of u.
+
+The goal is to find the minimal number of operations needed to make all nodes zero. If it's impossible, output -1.
+
+Hmm. So, each operation affects the subtree of u. So for a node, the number of operations that affect it is equal to the number of times its ancestors' operations (including itself) are performed.
+
+Wait, for example, node u's subtree includes all nodes in the tree that are in its path to the root. So when you perform operation on u, you can adjust all nodes in its subtree. So for any node v in u's subtree, the number of times u is operated on will affect v's value.
+
+So each node's value is the sum of all the operations performed on its ancestors (including itself). Because each operation on a node in the path from v to the root will affect v. For example, if v is in the subtree of u, and u is operated on k times, then v's value is adjusted k times as well.
+
+Wait, no, not exactly. Because each operation on u affects all nodes in u's subtree. So for a node v, if u is an ancestor of v, then any operation on u affects v. So the total number of operations on nodes in u's path to the root (including u) will add up the effect on v.
+
+Wait, no. For example, the root node has all operations. Any node's value is the sum of all operations on its ancestors (including itself). Because each operation on a node in the path to the root will affect the node.
+
+So, for node v, the number of operations that affect it is equal to the number of operations on nodes in the path from v to the root, including both v and the root.
+
+Therefore, for each node v, the sum of the operations on all nodes in the path from v up to the root must equal the absolute value of a_v. Because each operation on a node u in that path increases or decreases the value of v by 1. So the total sum of operations on nodes in the path must be exactly a_v's absolute value.
+
+Wait, no. Because each operation on u adds or subtracts 1 to all nodes in u's subtree. So for a node v, each operation on any ancestor u (including itself) will add or subtract 1 to v's value.
+
+So the total sum of operations on all nodes in the path from v to the root is equal to a_v. So the sum of all operations on each node in that path must equal a_v. But a_v can be positive or negative, so perhaps the actual equation is that the sum of the operations on each node in the path is equal to a_v, considering that each operation can be +1 or -1.
+
+Wait, but a_v can be any integer, positive or negative. So for each node v, the sum of the operations on the path from v to the root is equal to a_v. So for the total sum, it's the sum of (number of times each operation is applied) for each node in the path.
+
+But wait, each operation is a single increment or decrement. So each operation on a node u changes the value of u and all nodes in its subtree by +1 or -1. So each operation is a single step, and in each step, the operation is applied once. So the number of operations on each u is the count of how many times we perform the operation on u. So for each node v, the sum of operations on all u in the path from v to root is equal to a_v.
+
+But wait, let's think about this. For example, suppose you have node u, and you perform the operation on it. Then, for every node in u's subtree, their value is adjusted by +1 or -1. So for all descendants v of u, their value is increased or decreased once. So the number of operations on u is the number of times you touch u, which affects all v in its subtree, including u itself.
+
+Therefore, for each node v, the sum of operations on all nodes in its path to the root is equal to a_v. Because each operation on u in that path affects v.
+
+So, the problem reduces to: for each node v, the sum of the number of times each node u in path(v, root) is operated on equals a_v.
+
+But wait, a_v can be positive or negative. So, for each node v, the sum of the operations for all u in the path is equal to a_v. But each operation is a single step, so the number of operations on u is the number of times u is operated on during the sequence of operations.
+
+But how do we model this? Let's think about the operations. We have a sequence of operations, each being on a node (as per the given rules). The i-th operation is on node i if i <=n, else on node (i-n). So the operations are in the order: 1, 2, ..., n, 1, 2, ..., n, etc.
+
+So the sequence is periodic with period n. So the number of operations on each node u depends on how many times it appears in the sequence of operations up to some total number of steps.
+
+But the total number of operations is unknown. We need to find the minimal number of operations such that for each node v, the sum of operations on all u in the path from v to root is equal to a_v.
+
+Wait, but each operation is a single increment or decrement. Each operation contributes 1 to each node in the subtree of u. So for each node v, the total number of operations on all u in the path from v to root must equal a_v.
+
+But a_v can be positive or negative. So, for example, if a_v is 3, then the sum of operations on u's in the path must be 3. If a_v is -2, the sum must be -2.
+
+So, for each node v, sum_{u in path(v, root)} count_u = a_v.
+
+The count_u is the number of times u is operated on.
+
+But the operations are performed in a sequence that repeats every n steps. So the count_u is the number of times u is in the operation sequence up to some K steps.
+
+Now, the question is: what is the minimal K such that for all v, sum_{u in path(v, root)} count_u = a_v, and count_u is equal to the number of times u is in the first K operations.
+
+But how to model count_u for each u? Let's think about the sequence of operations.
+
+The operation sequence is 1, 2, 3, ..., n, 1, 2, 3, ..., n, etc. So for the K-th operation, the node is (K-1) mod n + 1. So, the count for u is the number of times u appears in the first K operations, which is equal to the number of times (K-1) mod n + 1 is u, up to K operations.
+
+So, for u, the count is floor( (K+1)/n ) if u is in the remainder, but wait, let's think.
+
+Wait, each group of n operations adds 1 to each u in the group. So for K operations, the number of times u is operated on is equal to the number of full cycles (each contributing 1) plus the position in the current cycle.
+
+Wait, no. Let me model it.
+
+In the first cycle (operations 1..n), each u is operated on once. Then, the second cycle (n+1..2n) each u is operated on again, and so on.
+
+So, for K operations, the count for u is the number of times (i mod n) = (u-1) mod n, for i from 1 to K.
+
+Alternatively, the count is the number of times in the first K steps that i mod n equals (u-1) mod n.
+
+So, for u, count_u = number of times i mod n = (u-1) mod n for i in 1..K.
+
+Which is equal to:
+
+count_u = floor( (K) / n ) + (1 if ( (u-1) mod n ) < (K mod n) else 0 )
+
+Wait, perhaps it's easier to think of it as:
+
+count_u = (K + 1) // n - ( ( ( (u-1) mod n ) >= (K mod n) ) ? 1 : 0 )
+
+Wait, let's see. For K operations, each u is operated on how many times?
+
+Let me think of K as equal to q * n + r, where 0 <= r <n. Then, each u is operated on q times. Then, in the remaining r operations, if (u-1) mod n <= r-1, then u is operated on one more time. Else, no.
+
+So, count_u = q + (1 if r > 0 and (u-1) mod n < r else 0 )
+
+Alternatively, count_u = (K + 1) // n - ( ( (u-1) mod n ) >= (K mod n) )
+
+Wait, perhaps I should write it as:
+
+count_u = (K // n) + (1 if (K % n) > (u-1) % n else 0 )
+
+Wait, no. Let's see for K=5, n=3:
+
+K=5, so 5//3 =1, K%3=2.
+
+(u=1, u-1 mod3=0). So for u=1, (K%3) is 2, which is >0. So count is 1+1=2.
+
+Wait, but in K=5, the first 3 operations are 1,2,3. Then, 4 is 1, 5 is 2. So for u=1, count is 2.
+
+Which is equal to (5//3) =1, plus 1 if K%3 >0: 2>0, yes. So count is 1+1=2.
+
+Yes, that seems correct.
+
+So, the formula for count_u is:
+
+count_u = (K // n) + ( 1 if (K % n > (u-1) % n) else 0 )
+
+So, for each node v, sum_{u in path(v, root)} count_u = a_v.
+
+But a_v can be positive or negative. So for each v, the sum of count_u for u in the path equals a_v.
+
+Wait, but how do we model this? It's a system of equations where each equation is for a node v, the sum of count_u's along the path equals the a_v.
+
+We need to find the minimal K such that for all v, this is satisfied, and count_u is as computed.
+
+But K is the total number of operations. So, given this, how can we model the minimal K?
+
+Hmm. So, for each node v, the sum of count_u for u in path(v, root) is a_v.
+
+But each u's count is a function of K: count_u = K//n + 1 if K mod n > (u-1) mod n, else K//n.
+
+So, for each v, the sum is:
+
+sum_{u in path(v, root)} ( (K // n) + (1 if (K % n) > (u-1) % n else 0) ) = a_v.
+
+Let me denote this sum as S(v, K) = a_v.
+
+So, for each node v, S(v, K) is the sum of (K//n) for u in the path plus the number of u in the path where (K mod n) > (u-1) mod n.
+
+But K//n is a function of K, and (u-1) mod n is a function of u.
+
+Wait, but u is in the path of v. So, the path is v, parent(v), parent(parent(v)), ..., root.
+
+So, for each u in the path, the term (u-1) mod n can be precomputed.
+
+So, for each node v, we can precompute the list of (u-1) mod n for u in the path from v to root.
+
+Then, for each v, the sum S(v, K) is equal to:
+
+sum_{u in path(v, root)} (K // n) + sum_{u in path(v, root)} [ 1 if (K mod n) > (u-1 mod n) else 0 ]
+
+Let me denote:
+
+sum1 = K // n * len(path(v, root))
+
+sum2 = number of u in path(v, root) where (K mod n) > (u-1 mod n)
+
+So, S(v, K) = sum1 + sum2 = a_v.
+
+So, for each v, this equation must hold.
+
+Now, the problem is to find the minimal K such that for all v, this equation is satisfied.
+
+But how can we model this? It's a system where for each v, K must satisfy a certain condition. We need to find the minimal K.
+
+This seems tricky because K is involved in two parts: sum1 depends on K, and sum2 depends on K as well.
+
+Let me think about the structure of the equations.
+
+Each node v has a certain path. For the path, len is the depth of v. Let's denote l_v as the length of the path from v to the root.
+
+So, sum1 = (K // n) * l_v.
+
+sum2 is the count of u in the path where (K mod n) > (u-1 mod n).
+
+Now, for each v, sum1 + sum2 = a_v.
+
+But K is the same for all equations.
+
+Hmm. So, the problem is to find K such that for every v, (K//n)*l_v + sum2 = a_v.
+
+Now, the question is, how can we model this?
+
+I think it's necessary to find a K that satisfies all these equations.
+
+But how?
+
+Let me think about the equations for each v.
+
+For each v, sum2 is the count of u in its path where (K mod n) > (u-1 mod n).
+
+But (u-1 mod n) can be precomputed for each u in the path.
+
+Let me denote for each node u, (u-1 mod n) as p_u.
+
+So, p_u = (u-1) mod n.
+
+Then, for a given K, sum2 is the number of p_u in the path such that (K mod n) > p_u.
+
+But for each K, (K mod n) is equal to (K - n * floor(K/n)).
+
+So, for each K, (K mod n) is a value between 0 and n-1.
+
+So, for each v, the sum2 is the number of p_u in the path where p_u < (K mod n).
+
+Wait, no. Because the condition is (K mod n) > p_u, which is equivalent to p_u < (K mod n).
+
+So, sum2 is the count of p_u in the path that are less than (K mod n).
+
+So, for each v, sum2 is the number of p_u in the path where p_u < t, where t is K mod n.
+
+But t can be any integer between 0 and n-1, inclusive.
+
+So, for each v, sum2 is the number of p_u's in the path that are less than t.
+
+So, the sum2 can be represented as the count of p_u's in the path < t.
+
+So, for each v, sum2 is:
+
+sum2(v, K) = count of u in path(v, root) where p_u < t, where t = K mod n.
+
+So, the equation for each v is:
+
+(K//n)*l_v + count_p_less_t = a_v.
+
+We can denote t = K mod n, so t is between 0 and n-1.
+
+So, for each v, the equation is:
+
+t * (l_v) + count_p_less_t = a_v.
+
+But t is K mod n, which depends on K.
+
+So, the problem now is to find t (mod n) such that for all v, t*l_v + count_p_less_t = a_v, and K must be >= t, and K must be >= the maximum l_v, because K must be at least the maximum length of the paths of any node.
+
+Wait, because for K to be valid, it must be at least the maximum path length among all nodes, since each node's path requires at least that many operations.
+
+So, let's precompute for each test case the maximum l_v (the length of the path from each node to the root) and find K >= max_l.
+
+But how?
+
+Hmm. So, for each test case:
+
+1. Precompute for each node v, the path from v to the root. The length is the depth of v.
+
+So, for each node, we can compute the depth.
+
+2. For each node v, precompute the p_u's for u in the path.
+
+p_u = (u-1) mod n.
+
+So, for each v, the list of p_u's is known.
+
+3. Then, for each possible t in 0..n-1, and for each v, compute count_p_less_t (the number of p_u's in the path(v, root) that are less than t).
+
+Then, for each v, the equation is:
+
+l_v * (K // n) + count_p_less_t = a_v.
+
+We can model this as:
+
+For a given t, the equation for each v is:
+
+sum1 + sum2 = a_v, where sum1 = (K // n)*l_v, sum2 = count_p_less_t.
+
+We need to find t and K such that for all v, this holds, and K >= max_l.
+
+But how to find K for a given t?
+
+Well, for a given t, K can be written as K = q * n + r, where r = t (since t is K mod n). But K must be >= r.
+
+Wait, no. K mod n is t, so K can be expressed as K = q*n + t, where q is a non-negative integer and t is in 0..n-1.
+
+So, substituting K = q * n + t, we have:
+
+sum1 = (q * n + t) // n * l_v = q * l_v.
+
+sum2 is the count of p_u's less than t.
+
+So, for each v, the equation becomes:
+
+q * l_v + count_p_less_t = a_v.
+
+So, for a given t, q must satisfy:
+
+For all v, a_v - count_p_less_t must be divisible by l_v.
+
+And q must be such that a_v - count_p_less_t is >= 0 and divisible by l_v, and K = q *n +t must be >= the maximum l_v.
+
+So, the approach is:
+
+For each test case:
+
+a. Compute the depths l_v for each node.
+
+b. For each node v, compute all p_u's along its path.
+
+c. For each possible t in 0..n-1:
+
+   i. For each v, compute count_p_less_t = number of p_u's in the path of v that are < t.
+
+   ii. For each v, compute (a_v - count_p_less_t) / l_v. Let's call this required q_v.
+
+   iii. Check if (a_v - count_p_less_t) is divisible by l_v for all v. If so, get q = (a_v - count_p_less_t) / l_v.
+
+   iv. Then, K = q * n + t.
+
+   v. Check if K >= max_l (the maximum depth among all nodes).
+
+   vi. If K is valid, then record it as a possible solution.
+
+d. Among all valid K's, choose the smallest one.
+
+If no such t and q exist, output -1.
+
+But how do we compute (a_v - count_p_less_t) for all v efficiently?
+
+Wait, for each t, and each v, count_p_less_t is the same for all v? No, because for a given t, each v's count_p_less_t is the number of p_u's in its path that are less than t.
+
+Wait, no. For each t, each v's count_p_less_t is the count of p_u's in their path that are less than t.
+
+So, for a given t, each v's count is determined by how many p_u's in their path are less than t.
+
+So, for each t, we can precompute for all v the count_p_less_t.
+
+But for each t, we can precompute all counts.
+
+But wait, for each node v, the count_p_less_t is the number of p_u's in the path of v that are less than t.
+
+So, for a given t, we can precompute for each node v the count.
+
+But for each t, this can be done in O(l_v) time for each v, but since l_v can be up to 2000, and t is up to n=2000, this could be O(n^2) per test case, which is acceptable.
+
+But for each test case, we can precompute for each t in 0..n-1, and for each node v, the count_p_less_t.
+
+Once we have that, for each t, we can compute for each v whether (a_v - count_p_less_t) is divisible by l_v. If yes, then q must be (a_v - count_p_less_t) / l_v. Then, K = q *n +t, which must be >= max_l.
+
+So, the steps are:
+
+For each test case:
+
+1. Compute the tree structure, build adjacency lists, then compute the parent and depth for each node.
+
+2. For each node v, compute the path from v to the root. For each u in this path, compute p_u = (u-1) mod n.
+
+3. For each possible t in 0..n-1:
+
+   a. For each node v, compute count_p_less_t = number of p_u's in the path of v that are less than t.
+
+   b. For each v, compute (a_v - count_p_less_t). For this to be valid, this must be divisible by l_v. If for any v, (a_v - count_p_less_t) is not divisible by l_v, then this t is invalid.
+
+   c. If all v have (a_v - count_p_less_t) divisible by l_v, compute q = (a_v - count_p_less_t) / l_v. Since q must be the same for all v, check if this q is the same for all v. If yes, then K = q *n +t.
+
+   d. Check if K >= max_l (the maximum depth of the nodes). If yes, then this K is a candidate.
+
+4. Among all candidate K's, select the minimal one.
+
+5. If no such K exists, output -1.
+
+But wait, is this approach correct? Are there any edge cases I'm missing?
+
+Let me think about the sample input.
+
+Sample Input 1:
+
+1
+3
+3 2
+1 2 3
+1 2
+2 3
+1 2 3
+
+So, n=3, x=2. So the tree is:
+
+1 connected to 2.
+
+2 connected to 3.
+
+So the path for node 1 is [1], depth 1.
+
+Path for node 2 is [2], depth 1.
+
+Path for node 3 is [3], depth 1.
+
+Wait, no. Wait, the tree is rooted at 2. So node 2 is root, children are 1 and 3. So node 1's path is [1,2], depth 2.
+
+Node 3's path is [3,2], depth 2.
+
+So, for each node:
+
+v=1: path is [1,2]. p_u for 1 is 0, for 2 is 1.
+
+v=2: path is [2], p_u is 1.
+
+v=3: path is [3,2], p_u for 3 is 2, for 2 is 1.
+
+So, for each t in 0..2:
+
+Let's try t=0.
+
+Compute for each v:
+
+count_p_less_0: how many p_u's <0? None. So count_p_less_0=0.
+
+Then, for each v:
+
+q_v = (a_v - 0) / l_v.
+
+a_v = [1,2,3].
+
+l_v for v=1 is 2, v=2 is 1, v=3 is 2.
+
+So:
+
+q_1 = 1 /2 = 0.5 → not integer, so t=0 is invalid.
+
+t=1:
+
+count_p_less_1 is number of p_u's <1.
+
+For v=1: p_u's are 0 and 1. So <1: 0 is <1, 1 is not. So count is 1.
+
+So sum1 = K//3 *2.
+
+sum2 = 1.
+
+Equation: (K//3)*2 +1 =1 → (K//3)*2=0 → K//3=0 → K is 0, which is less than max_l=2 → invalid.
+
+t=1 is invalid.
+
+t=2:
+
+count_p_less_2: p_u's are 0,1.
+
+So for v=1: 0 <2, 1 <2 → count is 2.
+
+sum1 = K//3 *2.
+
+sum2=2.
+
+Equation: 2*(K//3) +2 = a_v (which is 1).
+
+So 2K//3 +2 =1 → 2K//3 = -1 → impossible.
+
+So t=2 is invalid.
+
+Hmm, but wait, maybe I made a mistake in how t is being interpreted.
+
+Wait, K is the total number of operations. For t=1, K is 3*q +1.
+
+Wait, in this case, t=1, K is 3q +1.
+
+For v=1, l_v=2.
+
+Equation: 2*q + count_p_less_1 = a_v.
+
+count_p_less_1 is 1 (since p_u's <1 are 0).
+
+So 2q +1 =1 → 2q=0 → q=0.
+
+So K=0*3 +1=1.
+
+But K must be >= max_l=2 → K=1 is invalid.
+
+So no solution for t=1.
+
+Wait, but the sample output is 3.
+
+Hmm, perhaps this approach is missing something.
+
+Wait, but in the sample input, the minimal K is 3.
+
+Let me see.
+
+After K=3 operations:
+
+The operations are 1,2,3,1,2,3.
+
+So, each node's count:
+
+count_1: how many times 1 is operated on in 3 operations.
+
+In K=3:
+
+count_1 = (3//3)*1 (since l_v=1 for node1) → 1*1=1.
+
+sum2 is the number of p_u's < t=0 mod3=0.
+
+p_u's for node1 are 0. So 0 <0? No. So sum2=0.
+
+So equation: 1*1 +0 =1 → a_v=1.
+
+Which matches.
+
+node2's path is [2], which is p_u=1.
+
+t=0: sum2=0 (since 1>0). So 0 +0=0 → a_v=2. So invalid.
+
+t=1: sum2 is the count of p_u's <1, which is 1 (p_u=1 is not <1). So sum2=0.
+
+sum1=3//3 *1=1. 1+0=1. a_v=2 → 1=2? No.
+
+t=2: sum2 is the count of p_u's <2. For node2, p_u=1 <2 → count is1.
+
+sum1=3//3 *1=1. sum2=1.
+
+So 1+1=2 → a_v=2. So equation holds.
+
+So for node2, K=3, t=2.
+
+So, 3//3=1. l_v=1.
+
+So equation: 1*1 +1 =2 → holds.
+
+For node3: p_u=2. t=2.
+
+sum2 is count of p_u's <2 → 2 is not <2. So count is 0.
+
+sum1=3//3 *2=2.
+
+2+0=2 → a_v=3. So 2=3? No.
+
+So this t=2 is invalid for node3.
+
+Wait, but in the sample, the minimal K is 3. So perhaps my approach is missing some cases.
+
+Wait, perhaps I made a mistake in the t calculation.
+
+Wait, for K=3, t=3 mod3=0.
+
+So, t=0.
+
+For node1: count_p_less_0 is 0, l_v=1.
+
+Equation: (K//3)*1 + count_p_less_0 = a_v.
+
+So 3//3=1. 1+0=1 → a_v=1: correct.
+
+node2: p_u=1. t=0. So count_p_less_0=0.
+
+sum1=1*1=1. 1+0=1 !=2.
+
+So equation not satisfied.
+
+So this t=0 is invalid.
+
+Hmm, but according to the sample, the minimal K is 3.
+
+So, perhaps my approach is incorrect.
+
+What's wrong?
+
+Wait, perhaps the formula for t is not the correct one.
+
+Wait, t is K mod n. So for K=3, t=0.
+
+But in the sample, it's possible to achieve the desired a_v's with K=3.
+
+But according to the equations, for node2, the sum is 1+0=1, which is not equal to a_v=2.
+
+So, perhaps my approach is incorrect.
+
+Wait, I think I made a mistake in how the formula for t is applied.
+
+Wait, perhaps the formula for sum2 is the number of p_u's in the path that are less than (K mod n), which is t.
+
+But wait, for K=3, t=0.
+
+So, the condition is p_u <0. Since p_u can't be negative, sum2 is zero.
+
+So, for node2, sum1 is 3//3 *1=1. sum2 is 0. So 1+0=1 != a_v=2.
+
+So, t=0 is not a solution.
+
+Hmm, but the sample says it's possible with K=3.
+
+What's the correct way to model this?
+
+Wait, perhaps my model is wrong because I'm assuming that the sum of operations is equal to the sum of (count_u's), but perhaps the model is wrong.
+
+Wait, perhaps the model is correct, but the sample is not matching that.
+
+Wait, let's see.
+
+In the sample, what's the sum of operations?
+
+The operations are 1, 2, 3, 1, 2, 3.
+
+Which is 6 operations.
+
+Each operation's count is:
+
+For node1: in K=6, count_1 is 6 //3 *1 + (6 mod3 >0) → 2*1 + (0>0? No → 2*1=2.
+
+sum1=2, sum2=0.
+
+a_v for node1 is 1. So 2+0=2 !=1. So this is not possible.
+
+But in the sample, all nodes are 0. So how?
+
+Wait, the sample's correct K must be 3.
+
+Wait, perhaps my approach is missing something.
+
+Alternatively, perhaps the initial approach is incorrect.
+
+Maybe the way I model the equation is wrong.
+
+Wait, perhaps the sum of operations on each u is not count_u, but the number of times u is directly operated on.
+
+Wait, no, because the count_u is the number of times u is in the path of any operation. So, it's the sum of all operations on u.
+
+So, the model is correct.
+
+So, perhaps the approach is incorrect.
+
+Alternative plan: perhaps the minimal K is the maximum between the maximum path length and the maximum of (a_v + sum2 - count_p_less_t) / l_v.
+
+But this is getting complicated.
+
+Alternatively, perhaps the approach is correct, but I made a mistake in the sample analysis.
+
+Wait, perhaps the sample is possible with K=3.
+
+In that case, let's see:
+
+The 6 operations can be:
+
+1,2,3,1,2,3.
+
+For each node v:
+
+sum of count_u's is a_v.
+
+But let's compute:
+
+For node1: path is 1,2,3. So, the operations on 1 are 1,4,6.
+
+Each operation is on 1, so count_1 is 3.
+
+sum1=3//3 *1=1.
+
+sum2: how many p_u's < t=0?
+
+For node1, p_u's are 0,1,2.
+
+0 <0? No. 1 <0? No. 2 <0? No. So sum2=0.
+
+So, 1+0=1 → a_v=1. Correct.
+
+For node2: path is 2,3. p_u's are 1,2.
+
+t=0.
+
+count_p_less_0: 0.
+
+sum1=3//3 *1=1.
+
+1+0=1 != a_v=2. So this is not correct.
+
+Hmm, this suggests that the approach is missing something.
+
+So, perhaps the approach is incorrect.
+
+Alternative approach:
+
+Let me think differently.
+
+Each operation on u affects all its descendants.
+
+So, the minimal K must be such that all a_v are achievable by a combination of operations.
+
+But since a_v can be positive or negative, it's more complex.
+
+Wait, perhaps the problem can be transformed into a system of equations, where each equation is a_v = sum_{u in path(v, root)} count_u.
+
+But count_u is the number of times u is operated on.
+
+Each count_u is K//n + (1 if (K mod n) > (u-1 mod n) else 0).
+
+So, for each v, we have:
+
+a_v = (K//n)*l_v + sum_{u in path(v, root)} [ (K mod n) > (u-1 mod n) ]
+
+So, for each v, this is the equation.
+
+We can rewrite this as:
+
+sum_{u in path(v, root)} [ (K mod n) > (u-1 mod n) ] = a_v - (K//n)*l_v.
+
+Let me denote m = K mod n.
+
+So, the equation becomes:
+
+sum_{u in path(v, root)} [ m > (u-1 mod n) ] = a_v - (K//n)*l_v.
+
+Let me denote for each v, l_v is its depth.
+
+Let me precompute for each v the list of (u-1 mod n) for u in the path.
+
+So, for each v, I have a list of numbers, say, p_v = [ (u-1 mod n) for u in path(v, root) ].
+
+So, for each v, I can precompute the count of p in p_v that are < m.
+
+So, for each v, the sum is the number of p in p_v that are < m.
+
+So, for each v, the equation is:
+
+count_p_less_m(v) = a_v - (K//n)*l_v.
+
+But K = q*n + m, where q is the quotient and m is the remainder.
+
+So, substituting K = q*n + m.
+
+So, for each v:
+
+count_p_less_m(v) = a_v - q * l_v.
+
+So, for each v, the equation is:
+
+count_p_less_m(v) = a_v - q * l_v.
+
+We can rewrite this as:
+
+q * l_v = a_v - count_p_less_m(v).
+
+So, for each v, (a_v - count_p_less_m(v)) must be divisible by l_v, and q must be the same for all v.
+
+So, for a given m, we can compute q as (a_v - count_p_less_m(v)) / l_v for each v, and check if it's the same and whether it's an integer.
+
+Moreover, q must be >=0, and m must be <=n-1.
+
+So, the approach is:
+
+For each possible m (0 <= m <n), and for each possible q, we can compute for each v:
+
+count_p_less_m(v) = a_v - q*l_v.
+
+But q must be the same for all v.
+
+Once q is determined, we can check if for all v, the count_p_less_m(v) equals a_v - q*l_v.
+
+But how do we compute count_p_less_m(v) for a given m?
+
+Wait, for a given m, for each v, count_p_less_m(v) is the number of p in p_v that are < m.
+
+So, for each m, we can precompute for each v the count.
+
+But how?
+
+Wait, for a given m, and for a given list p_v, the count is the number of elements in p_v

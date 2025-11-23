@@ -1,0 +1,751 @@
+Okay, I've got this problem to solve. Let's read it carefully.
+
+So, the task is, given a permutation p of length n, count the number of index pairs (i, j) where i < j, and p_i * p_j is divisible by i * j. Hmm.
+
+Wait, permutation means each number from 1 to n appears exactly once. So p is a rearrangement of 1 to n.
+
+The challenge is to find all such pairs efficiently, especially since n can be up to 5e5, and the sum across all test cases is 5e5. So a brute-force approach of checking every pair is O(n^2), which would be way too slow for n=5e5. That's 2.5e11 operations, which is impossible to handle in Python in the given time.
+
+So, I need a smarter approach.
+
+Let me think about the condition: p_i * p_j must be divisible by i * j. So, (p_i * p_j) mod (i*j) should be zero.
+
+Alternatively, (p_i * p_j) / (i * j) must be an integer.
+
+Hmm. So, maybe I can find a way to represent this condition in terms of factors or something.
+
+Another angle: For each i, j, the product p_i * p_j must be a multiple of i*j. So, perhaps for each i, I can find j's that satisfy this condition.
+
+Wait, but how? Let's think about the ratio (p_i / i) * (p_j / j). Because then, (p_i * p_j) / (i*j) = (p_i / i) * (p_j / j). So, the product of these two ratios must be an integer.
+
+So, the condition is that (p_i / i) * (p_j / j) is an integer.
+
+That's an interesting way to look at it. So, for each i, compute q_i = p_i / i. Then, for j > i, we need q_i * q_j to be an integer.
+
+So, the problem reduces to finding the number of pairs (i, j) with i < j, such that q_i * q_j is an integer.
+
+Wait, but q_i is p_i divided by i. Since p is a permutation, p_i is between 1 and n. So, q_i could be a fraction or an integer.
+
+Wait, for example, if p_i is 4 and i is 2, then q_i is 2. So, it's an integer. But if p_i is 3 and i is 2, q_i is 1.5, which is a fraction.
+
+So, the product q_i * q_j must be an integer. So, for each i, j, q_i * q_j must be integer.
+
+So, the problem is to count the number of pairs (i, j) where i < j and q_i * q_j is an integer.
+
+Hmm. How can I model this?
+
+Let me think about the possible q_i values. Since p is a permutation, p_i can be up to n, and i can be up to n. So, q_i can be as small as 0.5 (if p_i is 1 and i is 2) and up to n/1 =n.
+
+Wait, but q_i is p_i / i, which can be a fraction. So, for q_i * q_j to be integer, the product must have all prime factors in the numerator canceled by those in the denominator.
+
+So, perhaps for each q_i, we can represent it in its reduced form, and then find j's such that the product of their reduced forms is an integer.
+
+Alternatively, maybe we can precompute for each i, the reduced form of q_i, and then for each j, check if the product is integer.
+
+But this seems computationally heavy, especially for large n.
+
+Another idea: Let's think about the denominator of q_i. Since q_i = p_i / i, and p_i and i are integers, the denominator is the greatest common divisor of p_i and i. So, q_i can be written as (p_i / d_i) / (i / d_i), where d_i is the GCD of p_i and i.
+
+So, q_i = (a_i) / (b_i), where a_i and b_i are coprime.
+
+So, the product q_i * q_j = (a_i / b_i) * (a_j / b_j) = (a_i * a_j) / (b_i * b_j).
+
+For this to be integer, the denominator must divide the numerator. So, b_i * b_j must divide a_i * a_j.
+
+Hmm, but a_i and b_i are coprime, as are a_j and b_j.
+
+So, the product a_i * a_j must be divisible by b_i * b_j.
+
+Wait, since a_i is coprime with b_i, and a_j is coprime with b_j, the product a_i a_j must be divisible by b_i b_j.
+
+But since b_i and a_i are coprime, b_i must divide a_j, and similarly, b_j must divide a_i.
+
+Wait, because:
+
+Let me think: Since b_i divides a_j * b_j, and since b_i and a_j are coprime (because a_j and b_j are coprime, and b_j is the denominator of q_j. So, a_j and b_j are coprime. So, the factors of b_i must come from a_j and b_j.
+
+Wait, perhaps it's better to think in terms of the product a_i a_j must be divisible by b_i b_j. Since a_i is coprime with b_i, then b_i must divide a_j, and similarly, b_j must divide a_i.
+
+Because:
+
+If b_i divides a_i a_j, and since a_i and b_i are coprime, then b_i must divide a_j. Similarly, b_j must divide a_i.
+
+Yes! Because:
+
+Let’s suppose that b_i divides a_i a_j. Since a_i and b_i are coprime, the factors of b_i must come entirely from a_j. So, b_i divides a_j. Similarly, the factors of b_j must come from a_i. So, b_j divides a_i.
+
+So, the condition is:
+
+b_i divides a_j and b_j divides a_i.
+
+So, for each i, j, if both b_i divides a_j and b_j divides a_i, then the product is integer.
+
+So, this is a key insight. So, for each i, we can precompute b_i and a_i = p_i / d_i, where d_i is the GCD of p_i and i.
+
+Then, for j > i, we need to check if b_i divides a_j and b_j divides a_i.
+
+So, the approach is:
+
+1. Precompute for each i, the reduced form a_i and b_i.
+
+2. For each i, we need to find the number of j > i such that b_i divides a_j and b_j divides a_i.
+
+So, the problem reduces to, for each i, count the number of j in [i+1, n] where (b_i divides a_j) and (b_j divides a_i).
+
+This seems manageable.
+
+But how to do this efficiently?
+
+Because for each i, checking all j > i is O(n) per i, which is O(n^2) total time, which is not feasible.
+
+So, we need a way to precompute for each i, the number of j's that satisfy these conditions.
+
+Let me think about it. For each i, we can precompute the set of j's where b_i divides a_j, and b_j divides a_i.
+
+So, for a given i, the j's must satisfy:
+
+- b_i divides a_j.
+
+- b_j divides a_i.
+
+So, for each i, the j's are those where:
+
+a_j is a multiple of b_i, and
+
+a_i is a multiple of b_j.
+
+Hmm.
+
+So, for each i, we can find all j's > i where a_j is a multiple of b_i, and a_i is a multiple of b_j.
+
+So, how can we represent this?
+
+Perhaps for each possible a, we can store the list of b's that divide a.
+
+Wait, but a_i can be up to n, which is 5e5, so that's manageable.
+
+So, perhaps for each i, we can:
+
+- Find all j > i where a_j is a multiple of b_i.
+
+- Among those j's, count how many have b_j divides a_i.
+
+So, the steps for each i:
+
+1. Compute b_i and a_i.
+
+2. Find all j > i where a_j is a multiple of b_i.
+
+3. For each such j, check if b_j divides a_i.
+
+4. Sum the count of such j's.
+
+So, the question is, how to efficiently find, for each i, the j's > i where a_j is a multiple of b_i, and then among those j's, count how many have b_j divides a_i.
+
+So, let's think about step 2: finding j > i where a_j is a multiple of b_i.
+
+We can precompute a frequency map that, for each possible a value, stores the list of j's (indices) where a_j is equal to a.
+
+Wait, but a_j can be up to n, so perhaps a dictionary where key is a, value is a list of j's.
+
+So, for each i, in step 2, we can get all j's where a_j is a multiple of b_i. Since a_j can be any multiple of b_i, but a_j is up to n, we can loop through all possible multiples of b_i up to n, and for each multiple m, get all j's where a_j is m.
+
+Wait, but that's O(n^2) again. That's not feasible.
+
+So, perhaps we need a different approach.
+
+Alternative idea: For each i, when processing it, we can iterate through all possible multiples m of b_i (where m is a multiple of b_i and m is <= n), and for each such m, look up the list of j's where a_j is m. Then, for each j in that list, check if b_j divides a_i.
+
+So, for each i, the number of j's is the sum over all multiples m of b_i of the number of j's where a_j = m and j > i, and b_j divides a_i.
+
+So, this approach would be O(n * k), where k is the average number of multiples of b_i that are <=n.
+
+But for n=5e5, and b_i up to 5e5, this could be O(n * log n), which is manageable.
+
+Wait, because for each i, the number of multiples of b_i up to n is n / b_i. So, the total across all i is sum_{i=1 to n} (n / b_i). If b_i is 1, this is n per i, which is O(n^2), which is not feasible.
+
+Hmm, that's a problem.
+
+So, this approach might not be efficient enough.
+
+Alternative approach: Instead of precomputing for each i all j's, perhaps we can represent the data in a way that allows us to query, for a given i, the count of j's where b_j divides a_i and a_j is a multiple of b_i, and j > i.
+
+So, let's think about the data structure.
+
+We can have a dictionary, say, a map where for each b, we have a list of a's that are multiples of b. Wait, no. Or perhaps, for each possible b, we can have a list of a's that are multiples of b.
+
+Wait, that's a bit unclear.
+
+Alternatively, for each j, we can store a tuple (b_j, a_j). Then, for a given i, we need to find j's where a_j is a multiple of b_i, and b_j divides a_i.
+
+So, for j's to satisfy both conditions, a_j must be a multiple of b_i, and b_j must be a divisor of a_i.
+
+So, for each j, it's a pair (b_j, a_j). We can represent this as a dictionary where the key is b_j, and the value is a set of a_j's that are multiples of b_j.
+
+Wait, no. Because for a_j to be a multiple of b_i, and b_j must divide a_i, perhaps it's better to precompute for each b, the a's that are multiples of b.
+
+Wait, perhaps the following approach:
+
+We can create a dictionary where for each possible b, we store all a's (from any j) that are multiples of b.
+
+So, for each j, we add a_j to the list of multiples of b_j.
+
+Then, for a given i, when we need to find j's where a_j is a multiple of b_i, we can look into the list for b_i.
+
+So, for each i, the list of j's where a_j is a multiple of b_i is the list of a's in the multiples of b_i's entry.
+
+Then, for each such j, we need to check if b_j divides a_i.
+
+So, the steps are:
+
+1. Precompute for each j, b_j and a_j.
+
+2. For each b in 1..n, create a list multiples[b] which contains all a_j's where b_j = b, and a_j is a multiple of b.
+
+3. For each i, in the permutation:
+
+   a. Compute b_i and a_i.
+
+   b. Look up multiples[b_i], which gives all j's > i where a_j is a multiple of b_i.
+
+   c. For each such j, check if b_j divides a_i.
+
+   d. Sum the count of such j's.
+
+So, the question is, how to implement this efficiently.
+
+Now, how to represent multiples.
+
+The multiples can be a dictionary where for each b, we have a list of a's. So, for example, multiples[2] contains all a's where b_j is 2.
+
+So, for each j, we add a_j to multiples[b_j].
+
+But for n up to 5e5, and each a_j up to n, this is manageable.
+
+So, the steps are:
+
+- Read the permutation p.
+
+- For each j from 1 to n:
+
+   - Compute b_j = p[j] / j, but wait, p is 1-based or 0-based?
+
+Wait, the permutation is 1-based? Or in the problem statement, it's given as p_1, p_2, ..., p_n, which are 1-based indices.
+
+Yes, because the problem says "index pairs 1 ≤ i < j ≤n".
+
+So, for each j, p[j] is the value at position j.
+
+So, for j in 1..n:
+
+   b_j = p[j] // j (integer division, since p[j] is divisible by j because it's a permutation).
+
+Wait, no. Because p is a permutation, so p[j] is between 1 and n, inclusive. So, j and p[j] are integers. So, p[j] / j is an integer only if j divides p[j].
+
+Wait, no. For example, j=2, p[j]=3: 3/2 is 1.5, which is not integer.
+
+So, b_j is the integer division of p[j] by j. So, b_j = p[j] // j.
+
+Wait, no. Because p[j] = b_j * j + r, where 0 ≤ r <j. So, p[j] is not necessarily divisible by j. So, b_j is the quotient when p[j] is divided by j.
+
+So, for j=2, p[j]=3: b_j=1, r=1.
+
+So, for each j, b_j = p[j] // j.
+
+Wait, but in the permutation, p[j] is between 1 and n.
+
+So, for j=1, p[j] can be any number from 1 to n, so b_j is p[j] // 1 = p[j], which is between 1 and n.
+
+For j>1, if p[j] is less than j, then b_j is zero. But since p is a permutation, p[j] can't be zero. So, for j>1, p[j] is at least 1, and since j is at least 2, p[j] is at least 1 which is less than j only if p[j] is 1 and j=2. So, in that case, b_j is 0.
+
+Wait, but wait, in the permutation, p[j] is 1-based, so for j=2, p[j] can be 1, which is less than j=2. So, b_j is 0.
+
+So, in that case, for j=2 and p[j]=1, b_j is 0.
+
+So, in that case, for any i < j, if b_i is zero, then b_i divides a_j, but then b_j must divide a_i. So, perhaps this is a special case.
+
+Hmm. So, perhaps the approach is:
+
+For each j, compute b_j and a_j.
+
+Then, for each i, find all j >i where a_j is a multiple of b_i, and b_j divides a_i.
+
+So, let's proceed.
+
+So, the steps in code:
+
+1. Read t test cases.
+
+2. For each test case:
+
+   a. Read n.
+
+   b. Read the permutation p as a list, 0-based or 1-based? Well, in Python, it's easier to handle 0-based, but the problem uses 1-based indices. So, perhaps for j in 0..n-1, p[j] is the value at position j+1.
+
+   Wait, no. In the problem statement, p is a permutation of length n, and p_i is the value at position i. So, in the code, for j in 0..n-1, p[j] is p_{j+1}.
+
+   So, for j in 0..n-1, the position is j+1.
+
+   So, for j in 0..n-1:
+
+      i = j+1.
+
+      b_j = p[j] // (i) = p[j] // (j+1).
+
+      a_j = p[j] // (i) * i + (p[j] % i) ?
+
+      Wait, no. Because a_j is p[j] / d_j, where d_j is the GCD of p[j] and i.
+
+      So, a_j = p[j] / d_j.
+
+      So, for j in 0..n-1:
+
+          i = j + 1.
+
+          d_j = gcd(p[j], i).
+
+          a_j = p[j] // d_j.
+
+          b_j = p[j] // i.
+
+So, for each j, we can compute a_j and b_j.
+
+So, in code:
+
+for j in range(n):
+
+    i = j + 1
+
+    d = gcd(p[j], i)
+
+    a = p[j] // d
+
+    b = p[j] // i
+
+So, a is p[j] divided by the GCD of p[j] and i.
+
+So, for each j, a_j and b_j are computed.
+
+Then, we need to build a data structure that for each possible b, has a list of a's that are multiples of b.
+
+So, the multiples dictionary can be built as:
+
+multiples = defaultdict(list)
+
+for j in range(n):
+
+    a = a_j[j]
+
+    b = b_j[j]
+
+    multiples[b].append(a)
+
+Wait, but for each j, a is p[j] // d_j, which is a_j. So, for each j, the a_j is stored in multiples[b_j].
+
+So, for each j, a_j is added to multiples[b_j].
+
+So, for all j, multiples[b_j] contains all a_j's where b_j is the current j's b.
+
+Once this is done, for each i, we can:
+
+- Compute b_i and a_i.
+
+- Look into multiples.get(b_i, []) to get all a_j's where a_j is a multiple of b_i.
+
+- For each such a_j, which is a_j, we need to check if b_j divides a_i.
+
+So, the steps for each i are:
+
+1. If i is the first element (i=0), then j must be >i, so all a_j's (since j starts from i+1) are considered. But for i=0, j can be up to n-1.
+
+So, for each i, the j's are those with j >i, which in the code is j from i+1 to n-1.
+
+So, in code, for i in 0..n-1:
+
+   current_i = i+1 (since i is 0-based, j starts at i+1, which is 1-based in the problem. Wait, no, in code, j is 0-based, so j starts at i+1, which is 1-based in the problem.
+
+Wait, no. In code, j is 0-based, so j can be from 0 to n-1, which corresponds to the problem's j from 1 to n.
+
+So, for the problem's i and j, when i is 0-based, it's i+1 in the problem's terms.
+
+So, for i in 0-based code, j must be >i.
+
+So, for each i, the j's are from i+1 to n-1.
+
+So, for each i, in code:
+
+   b_i = b_j for j = i+1 (code's j is i+1, which is problem's j = i+1).
+
+So, b_i is the b value for j = i+1.
+
+a_i is a_j for j = i+1.
+
+So, for each i in 0..n-1:
+
+   if i == n-1: continue (since j can't be > i)
+
+   b_i = b_j for j = i+1 (code's j is i+1, which is problem's j = i+1)
+
+   a_i = a_j for j = i+1.
+
+   So, for j = i+1, a_i is a_j, and b_i is b_j.
+
+So, the plan is:
+
+For all j, compute b_j and a_j.
+
+Build a multiples dictionary where for each b, the list of a's is stored.
+
+Then, for each i in 0..n-1:
+
+   if i is n-1: continue.
+
+   b_i = b_j for j = i+1.
+
+   a_i = a_j for j = i+1.
+
+   Now, look into multiples.get(b_i, []).
+
+   For each a_j in multiples[b_i], we need to check if b_j divides a_i.
+
+   So, for each a in multiples[b_i], check if b_j divides a_i.
+
+   The count for this i is the number of such a's where b_j divides a_i.
+
+So, the code would look like:
+
+count = 0
+
+for i in range(n):
+
+    if i == n-1:
+
+        continue
+
+    j = i+1
+
+    b_i = b_j
+
+    a_i = a_j
+
+    # Now, find all a's in multiples[b_i] where b_j divides a_i.
+
+    # So, for each a in multiples[b_i], check if b_j divides a_i.
+
+    # So, for each a in multiples[b_i]:
+
+    #   if (a_i % b_j) == 0:
+
+    #       count +=1
+
+    # So, to optimize, for each a in multiples[b_i], compute if a_i mod b_j is zero.
+
+    # So, let's precompute for each j, the b_j and a_j.
+
+    # So, for each a in multiples[b_i], check if a_i is divisible by b_j.
+
+    # So, the code:
+
+    current_b = b_i
+
+    current_a = a_i
+
+    current_b_div = b_j
+
+    # Now, for each a in multiples[current_b], check if current_a % current_b_div == 0.
+
+    # So, the count is the sum over a in multiples[current_b] of (current_a % current_b_div == 0)
+
+    # So, let's process each a in the list, and count.
+
+    # So, for each a in multiples[current_b]:
+
+    #   if current_a % current_b_div == 0:
+
+    #       count +=1
+
+    # So, in code:
+
+    for a in multiples.get(current_b, []):
+
+        if a % current_b_div == 0:
+
+            count +=1
+
+So, the problem is, for each i, this could take O(k) time, where k is the number of a's in multiples[b_i]. If b_i is small, this could be expensive.
+
+Wait, but for each j, a_j can be up to j (since p[j] is up to n, and d_j is at least 1, so a_j is p[j]/d_j, which is at least 1 and up to p[j], which is up to n).
+
+So, for each j, a_j is up to n, and for each i, b_i is up to n.
+
+So, the number of a's in multiples[b_i] is O(n) per i, which is O(n^2) total time.
+
+That's not feasible for n=5e5.
+
+So, this approach is too slow.
+
+Hmm, so I need a better approach.
+
+Alternative idea: Precompute for each a, the list of b's that divide a.
+
+Wait, for each a, the b's are the divisors of a. So, for each a, we can keep a list of b's such that b divides a.
+
+So, for each a, we can generate all divisors d of a, and store a list of such d's.
+
+Then, for a given a_i, the b_j's that could satisfy b_j divides a_i are exactly the divisors of a_i.
+
+So, for each i, the j's that satisfy b_j divides a_i are those j's where b_j is a divisor of a_i.
+
+So, for each i, we can find all j's where b_j is a divisor of a_i, and a_j is a multiple of b_i.
+
+So, the steps are:
+
+1. For each j, compute b_j and a_j.
+
+2. For each a in 1..n, precompute the list of divisors of a.
+
+3. For each j, add a_j to the list of b_j's divisors. So, for each j, a_j is the value that is stored in the divisors of a_j, under b_j.
+
+Wait, perhaps not. Let me think.
+
+Wait, for each j, a_j is p[j]/d_j, where d_j is gcd(p[j], j).
+
+So, a_j is an integer, and it's up to p[j], which is up to n.
+
+So, for each j, the a_j is known.
+
+So, for each j, we can find all b's that are divisors of a_j. Then, for each such b, we add j to the list of j's where b_j is b.
+
+Wait, because for a given a_j, any j where b_j is a divisor of a_j will have b_j dividing a_j.
+
+So, for each j, for each divisor d of a_j, we can add j to the list of d's for b_j.
+
+Wait, perhaps that's a way to precompute for each a_j, the list of j's where b_j is a divisor of a_j.
+
+So, the steps are:
+
+- For each j, compute a_j and b_j.
+
+- For each j, find all divisors d of a_j.
+
+- For each such d, add j to the list of d's for b_j.
+
+So, for each d, the list contains all j's where b_j = d and a_j is divisible by d.
+
+Wait, no. Because for a j, a_j is p[j]/d_j, and d_j is the gcd of p[j] and j.
+
+So, a_j is p[j] / d_j, which is an integer.
+
+So, for each j, we can find all divisors d of a_j, and for each such d, add j to the list of d's.
+
+So, for each d, the list of j's where b_j = d and a_j is divisible by d.
+
+Wait, no. Because a_j is p[j]/d_j, which is equal to a_j. So, for a_j to be divisible by d, d must be a divisor of a_j.
+
+So, for each j, a_j is known, and d is a divisor of a_j.
+
+So, for each j, for each d in divisors of a_j, add j to the list for d.
+
+So, the data structure is a dictionary where for each d, we have a list of j's where b_j is d.
+
+Once this is done, for each i, a_i is known, and the divisors of a_i are known.
+
+So, for each i, the j's that satisfy b_j divides a_i are the j's in the list of divisors of a_i.
+
+And among those j's, we need to count those where a_j is a multiple of b_i.
+
+So, the steps are:
+
+1. For each j, compute a_j and b_j.
+
+2. For each j, compute all divisors d of a_j.
+
+3. For each d, add j to a dictionary, say, divisors_dict[d], which contains all j's where b_j =d.
+
+4. For each i, a_i is known.
+
+5. Compute all divisors d of a_i.
+
+6. For each d in divisors of a_i, look into divisors_dict[d], and count how many j's in that list satisfy a_j is a multiple of b_i.
+
+So, the count for i is the sum over d of the number of j's in divisors_dict[d] where a_j is a multiple of b_i.
+
+So, this approach can be efficient if the number of divisors per a_i is small.
+
+Because for each i, the number of divisors of a_i is O(sqrt(a_i)), which is up to about 700 for a_i=1e6.
+
+So, for each i, iterating over the divisors of a_i, and for each d, checking how many j's in divisors_dict[d] have a_j divisible by b_i.
+
+So, the total time is O(n * average number of divisors of a_i + n * average number of divisors of a_j).
+
+Hmm, but for each j, a_j is up to n, which can have up to O(sqrt(n)) divisors. So, for each j, the number of divisors is O(sqrt(n)), which is about 700 for n=5e5.
+
+So, for each j, we're adding j to the divisors_dict[d] for each d that divides a_j.
+
+So, for each j, the number of d's is O(sqrt(a_j)).
+
+So, the total number of entries in divisors_dict is O(n * sqrt(n)), which is about 5e5 * 700 = 3.5e8. That's way too big.
+
+Wait, no. Because n is 5e5, and for each j, the number of divisors is O(sqrt(a_j)), which for a_j up to 5e5 is about 700. So, 5e5 * 700 = 3.5e8, which is way too big.
+
+So, this approach is also not feasible.
+
+So, this is a problem.
+
+Alternative Idea: For each j, a_j is known. So, for each j, we can store a_i = p[j]//d_j, where d_j is the GCD of p[j] and j.
+
+So, for each j, a_j is known.
+
+So, for each j, a_j is known. So, when processing i, for each i, the a_i is known.
+
+So, the problem is, for each i, how many j's are there where b_j divides a_i and a_j is a multiple of b_i.
+
+So, perhaps we can represent this as a bipartite graph, with j's on one side, i's on the other, and edges between j and i if b_j divides a_i and a_j is a multiple of b_i.
+
+But even then, building such a graph is O(n^2), which is impossible.
+
+Hmm.
+
+Alternative Idea: For each j, precompute all possible a_j and b_j, and for each i, find all j's that satisfy the conditions.
+
+But I'm not seeing a way to make this efficient.
+
+Another Idea: Let's think in terms of the problem's constraints.
+
+We need to count the number of pairs (i, j) where i < j, and (p_i * p_j) is divisible by i * j.
+
+Which is equivalent to (p_i / i) * (p_j / j) is an integer.
+
+Because (p_i * p_j) / (i * j) = (p_i / i) * (p_j / j).
+
+So, the condition is that (p_i / i) * (p_j / j) is an integer.
+
+So, the problem reduces to counting the number of pairs (i, j) where i < j, and (p_i / i) * (p_j / j) is an integer.
+
+So, the key is to find pairs where the product of their reduced forms is an integer.
+
+So, for each i, we can represent (p_i / i) as a reduced fraction (a_i, b_i), where a_i and b_i are coprime.
+
+So, the product is (a_i * a_j) / (b_i * b_j).
+
+So, for this product to be an integer, the denominator (b_i * b_j) must divide the numerator (a_i * a_j).
+
+So, b_i * b_j must divide a_i * a_j.
+
+So, we need to find pairs (i, j) where b_i * b_j divides a_i * a_j.
+
+So, the condition is that a_i * a_j is a multiple of b_i * b_j.
+
+So, the problem is transformed into this condition.
+
+So, the plan is:
+
+1. For each i, compute a_i = p_i // d_i, where d_i = gcd(p_i, i).
+
+2. b_i = p_i // i.
+
+3. So, for each i, a_i and b_i are coprime.
+
+4. Now, the condition is that a_i * a_j is divisible by b_i * b_j.
+
+So, the problem reduces to counting the number of pairs (i, j) where i < j, and (a_i * a_j) mod (b_i * b_j) == 0.
+
+So, how to compute this efficiently.
+
+Hmm.
+
+So, for each i, the condition is:
+
+a_i * a_j ≡ 0 mod (b_i * b_j).
+
+Which can be rewritten as:
+
+a_i * a_j ≡ 0 mod b_i and mod b_j.
+
+But since b_i and b_j may share factors, it's not straightforward.
+
+Another Idea: For each i, precompute all j's where b_j divides a_i.
+
+Because, if b_j divides a_i, then a_i is a multiple of b_j, so a_i * a_j is a multiple of b_j * a_j.
+
+Wait, not sure.
+
+Wait, if b_j divides a_i, then a_i = k * b_j for some integer k.
+
+So, then a_i * a_j = k * b_j * a_j.
+
+Which is a multiple of b_j, but not necessarily of b_i.
+
+So, this may not help.
+
+Alternative Idea: For each j, precompute all i's where j < i and a_i is a multiple of b_j.
+
+So, for each j, i can be any index greater than j, and a_i is divisible by b_j.
+
+Then, for each such i, check if b_i divides a_j.
+
+Because then, a_i * a_j is divisible by b_j * a_j, and since b_i divides a_j, then the product a_i * a_j is divisible by b_i.
+
+So, the condition is satisfied.
+
+So, the steps are:
+
+For each j:
+
+   For each i > j where a_i is divisible by b_j:
+
+       if b_i divides a_j:
+
+           count +=1
+
+So, the total count is the sum over all j of the number of i's > j where a_i is divisible by b_j and b_i divides a_j.
+
+So, this approach is O(n * k), where k is the average number of i's per j.
+
+But again, if for each j, there are many i's, this could be O(n^2) in the worst case.
+
+Hmm, but perhaps the number of such i's is manageable.
+
+So, the plan is:
+
+For each j:
+
+   Find all i > j where a_i is divisible by b_j.
+
+   For each such i, check if b_i divides a_j.
+
+   If yes, increment the count.
+
+So, the code would be:
+
+count = 0
+
+for j in range(n):
+
+    if j == n-1:
+
+        continue
+
+    # Find all i > j where a_i is divisible by b_j.
+
+    # So, for i from j+1 to n-1:
+
+    for i in range(j+1, n):
+
+        if a[i] % b_j == 0:
+
+            if b_i % a_j == 0:
+
+                count +=1
+
+So, this approach is O(n^2) in the worst case, which is not feasible.
+
+So, this approach is not efficient enough.
+
+Hmm.
+
+Alternative Idea: Since a_i and b_i are coprime, the condition a_i * a_j is divisible by b_i * b_j can be rewritten as (a_i / b_i) * (a_j / b_j) is an integer.
+
+Wait, because:
+
+a_i / b_i * a_j /

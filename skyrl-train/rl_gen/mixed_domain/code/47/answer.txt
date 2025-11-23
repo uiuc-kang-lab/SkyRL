@@ -1,0 +1,797 @@
+Okay, I need to solve this problem where I have to find the minimum sum of the perimeters of the connected regions of black squares after using n stamps on an infinite grid. Let me try to understand the problem step by step.
+
+So, each stamp is a rectangle of size w_i by h_i. I have to place each stamp exactly once on the grid. The stamp can cover any part of the grid, and when I place it, it covers that area entirely black, but the cells it covers might already be black from previous stamps. The goal is to arrange the stamps such that the total perimeter of all connected black regions is minimized.
+
+Hmm. The key here is to find the optimal positions to place the stamps. Since the grid is infinite, I can choose any positions for each stamp. So the problem is about finding how to arrange the stamps so that the black regions are as compact as possible, thereby minimizing the perimeter sum.
+
+Wait, but each stamp is placed exactly once, and each must cover a rectangle of size w_i x h_i. So each stamp's placement is fixed in size. The question is, how to position them so that the black regions form the smallest possible connected regions, which in turn will have the least perimeter.
+
+I remember that the minimal perimeter for a connected region is achieved when the region is as compact as possible. So maybe the optimal arrangement is to place all the stamps in a way that their black regions are connected and as tight as possible, perhaps overlapping in a way that the union forms a larger rectangle.
+
+Wait, but each stamp is placed on the grid, and each affects a rectangle of size w_i x h_i. So the union of all these rectangles will form the final black region. The perimeter of this union would be the sum of the perimeters of each rectangle minus twice the area where they overlap, but that's complicated because the arrangement can vary.
+
+But perhaps the minimal perimeter is achieved when the union of all the stamps' rectangles is as compact as possible. So maybe the optimal way is to arrange all the stamps to form a single rectangle that covers the maximum possible area, thus minimizing the perimeter.
+
+Wait, what's the minimal perimeter for a given area? The minimal perimeter for a rectangle is achieved when it's as close to a square as possible. So for a given area, the minimal perimeter is when the rectangle is as square as possible.
+
+So, perhaps the problem reduces to finding the minimal perimeter for the union of all the stamps' areas, which is the minimal perimeter of a rectangle that can cover all the stamps. But wait, no, because the union's perimeter is more complex than just the minimal perimeter of a rectangle. Because the arrangement can create more complex shapes.
+
+But maybe to minimize the perimeter, the union of all the stamps should form a single rectangle. Because a rectangle has the minimal perimeter for a given area. So if I can arrange all the stamps in such a way that their union is a rectangle, then that might give the minimal perimeter.
+
+So, the approach would be:
+
+1. Find the minimal area that can cover all the stamps when placed optimally.
+2. Then, find the minimal perimeter of a rectangle with that area.
+
+Wait, but the stamps are placed on the grid, and each can be anywhere. So perhaps the minimal area is the sum of the areas of all stamps, because each stamp's area is w_i * h_i, and if they are placed without overlapping, the total area is the sum. But the union could have a larger area if there are overlaps. So the minimal possible area is the sum of all the areas, but that's only possible if all the stamps are placed without overlapping. But in practice, maybe it's better to arrange them in a way that the union is as compact as possible, which may involve overlapping, thus possibly reducing the total area.
+
+Wait, no. If you place the stamps in such a way that their union is a rectangle, then the area is the sum of their individual areas minus the overlapping regions. But in the case where the union is a rectangle, the area is exactly the sum of the areas of the stamps. Because overlapping regions are subtracted, but the union is a rectangle, so the area is the sum of the individual areas minus the overlapping parts. But that's not possible because the sum of individual areas is larger than the area of the union. So, this approach may not work.
+
+So perhaps I need to find the minimal enclosing rectangle that can contain all the stamps arranged optimally, and then compute its perimeter.
+
+Wait, but how to compute the minimal enclosing rectangle that covers all the stamps, regardless of their positions. Because the stamps can be placed anywhere, the minimal enclosing rectangle might be determined by the maximum and minimum x and y coordinates covered by all the stamps.
+
+Alternatively, perhaps it's better to model this as the union of all the stamps' rectangles, and find the minimal perimeter of this union. But how?
+
+Another approach: since each stamp is placed exactly once, and the order of placement doesn't matter (since each stamp can be placed anywhere), the problem is to arrange all the stamps such that the union's perimeter is minimized.
+
+But considering that the stamps can be placed anywhere, perhaps the minimal perimeter is the sum of the perimeters of the stamps minus twice the sum of the overlapping areas. But calculating that seems complicated.
+
+Wait, but the perimeter of a union of rectangles can't be minimized by minimizing the individual perimeters, because overlapping reduces the total perimeter. So the minimal perimeter is achieved when the union's perimeter is as small as possible, which may involve overlapping in a way that reduces the overall perimeter.
+
+This is getting a bit complicated. Maybe I should think about the problem differently.
+
+An alternative approach: the minimal sum of perimeters is achieved when all the stamps are placed such that their union is a single rectangle. Because a rectangle has the minimal perimeter for a given area, and if the union is as compact as possible, then the perimeter is minimized.
+
+So, the strategy is to arrange all the stamps to form a single rectangle. The minimal perimeter for the union would then be the perimeter of a rectangle that encloses all the stamps.
+
+Wait, but how to arrange the stamps to form a single rectangle with minimal perimeter.
+
+So, for each stamp, its rectangle is w_i x h_i. To form a single rectangle, the total area covered must be the sum of all the individual areas minus the overlapping regions. But the union's area is the sum of the individual areas minus the sum of the overlapping areas. However, finding the minimal perimeter would require that the union is a rectangle with minimal perimeter.
+
+So, perhaps the minimal perimeter is the perimeter of the minimal area rectangle that can contain all the individual stamp areas. But how to compute that.
+
+Alternatively, perhaps the minimal perimeter is the sum of the perimeters of all the stamps minus 2 times the sum of the overlapping regions. But calculating the overlapping regions is tricky.
+
+Hmm. Maybe I should think about the problem in terms of the minimal enclosing rectangle.
+
+Let me try to model this.
+
+Each stamp is a rectangle of size w_i x h_i. The union of all these rectangles is the area that is covered by at least one stamp.
+
+The perimeter of this union is the sum of all the perimeters of the individual stamps minus twice the sum of all overlapping areas. Because when two rectangles overlap, their overlapping area is counted twice in the sum of their perimeters, but in reality, it's only part of the perimeter that is covered.
+
+But perhaps this is not the right way to think about it. Because when two rectangles overlap, the overlapping region is part of both perimeters, but the union's perimeter would subtract that overlapping area from the total sum.
+
+Wait, no. The perimeter of the union is the sum of the perimeters of all the individual rectangles minus twice the sum of the overlapping areas. Because each overlapping area is counted twice when you sum the perimeters, but in the union's perimeter, each overlapping part is part of the boundary, so it's subtracted.
+
+But calculating this is complicated. So perhaps it's better to model the problem as finding the minimal possible perimeter of the union of all the stamps, given that each stamp is placed anywhere on the grid.
+
+But how?
+
+Another idea: the minimal perimeter is the sum of the perimeters of all the stamps minus 2 times the sum of the overlapping areas. But since the overlapping areas can be as much as possible, this would minimize the perimeter.
+
+Wait, but the overlapping areas are variable. So perhaps the minimal sum is when all the stamps are placed in such a way that their union is as compact as possible, which would be a single rectangle with minimal possible perimeter.
+
+So, the problem reduces to finding the minimal perimeter of a rectangle that can cover all the individual stamp rectangles, and then the minimal perimeter of that rectangle.
+
+Wait, no. Because each stamp is placed on the grid, their positions can vary, but the union's perimeter depends on how they're arranged. So the minimal perimeter is not necessarily the sum of the individual perimeters minus something, but perhaps the minimal perimeter is the perimeter of the minimal rectangle that can cover all the stamps when placed optimally.
+
+So, how to find the minimal possible perimeter of the union of the stamps.
+
+Wait, perhaps the minimal perimeter is the same as the minimal perimeter of the union of all the stamps, which is the perimeter of the minimal rectangle that can contain all the individual stamp rectangles.
+
+So, the approach would be:
+
+1. Compute the minimal area rectangle that can cover all the individual stamp rectangles, placed optimally.
+2. The perimeter of this rectangle is the minimal sum of the perimeters.
+
+Hmm, but how to compute this minimal area rectangle.
+
+Each stamp is a rectangle of size w_i x h_i. So, for all the stamps, what is the minimal rectangle that can cover all of them, considering that each can be placed anywhere.
+
+Wait, the minimal rectangle that can cover all the stamps is determined by the maximum and minimum x and y coordinates covered by all the stamps.
+
+So, for each stamp, it has a width w_i and height h_i. The x-coordinate of the stamp can be placed anywhere, so the minimal x is the minimum x of any stamp, and the maximal x is the maximum x of any stamp. Similarly for the y-coordinate.
+
+So, the minimal x is the minimum of the x positions of all stamps, and the maximal x is the maximum of their x positions. Similarly for y.
+
+But since each stamp can be placed anywhere, perhaps the minimal rectangle is determined by the union of all the stamps' x and y ranges.
+
+Wait, no. Because each stamp can be placed anywhere, the minimal x is the minimal x of any stamp, and the maximal x is the maximal x of any stamp. Similarly for y.
+
+So, the minimal x is min(w1, w2, ..., wn) and the maximal x is max(w1, w2, ..., wn). Wait, no. Wait, each stamp is placed as a rectangle of size w_i x h_i. So, the x-dimension of each is w_i, and the y-dimension is h_i.
+
+Wait, no. The width is w_i, so the x-dimension is from some x0 to x0 + w_i. Similarly, the y-dimension is from y0 to y0 + h_i.
+
+So, to find the minimal x0 and maximal x0 + w_i, across all stamps.
+
+Similarly for y0.
+
+So, the minimal x0 is the minimal x0 for all stamps, and the maximal x0 is the maximum x0 for all stamps. So, the width of the enclosing rectangle is (max_x0 - min_x0), and the height is (max_y0 - min_y0).
+
+The perimeter of this rectangle is 2*(width + height).
+
+So, the minimal perimeter is the perimeter of the minimal rectangle that can cover all the stamps, considering that each is placed with their own x and y ranges.
+
+So, for each stamp, compute its x and y ranges, then find the minimal overall x0 and maximal x0, same for y0. Then compute the perimeter.
+
+Wait, but this is assuming that each stamp is placed in such a way that their x and y ranges are exactly the stamps' width and height. But that's not correct because each stamp's x and y ranges can be placed anywhere.
+
+Wait, no. Because each stamp is a rectangle of size w_i x h_i, but the x and y ranges can be any, as they are the x and y coordinates of the stamp's position on the grid. So, for each stamp, the x range is [x_i, x_i + w_i], and y range is [y_i, y_i + h_i], where x_i and y_i are any integers (or real numbers, but since the grid is infinite, it's fine).
+
+So, to find the minimal rectangle that can cover all the stamps, we need to find the minimal x0 and maximal x0, and minimal y0 and maximal y0, such that for each stamp, x_i is in [x0, x0 + w_i] and y_i is in [y0, y0 + h_i].
+
+So, x0 must be <= x_i <= x0 + w_i for each stamp i.
+
+Similarly for y0.
+
+So, the minimal x0 is the minimal x_i across all stamps, and the maximal x0 is the maximum x_i across all stamps. Because x0 has to be <= x_i, so the minimal x0 is the minimal x_i, and the maximal x0 is the maximum x_i.
+
+Wait, no. Because x0 is the starting x-coordinate of the stamp, so x0 must be <= x_i for all i. So the minimal x0 is the minimal x_i across all stamps. Because x0 can't be smaller than any x_i, otherwise the stamp's x range would extend into negative, which is allowed as the grid is infinite.
+
+Similarly, the maximal x0 is the maximum x_i across all stamps.
+
+Wait, that's correct. Because x0 is the starting x-coordinate of each stamp, so x0 must be <= x_i for all i. So the minimal possible x0 is the minimal x_i across all stamps. And the maximal possible x0 is the maximum x_i across all stamps.
+
+So, the width of the minimal covering rectangle is (max_x_i - min_x_i). Similarly, the height is (max_y_i - min_y_i).
+
+Wait, but what about the y0? For each stamp i, y_i must be >= y0 and y_i <= y0 + h_i. So y0 must be <= y_i for all i, and y0 + h_i >= y_i for all i.
+
+So, y0 must be <= all y_i, which implies y0 is the minimal y_i of all stamps. And y0 + h_i must be >= y_i for all i, which implies y0 >= y_i - h_i for all i. So, the minimal y0 is the minimal (y_i - h_i) across all stamps, and the maximal y0 is the maximum y_i across all stamps.
+
+Wait, no. Let me think again.
+
+For each stamp, its y range is [y_i, y_i + h_i]. To fit into the rectangle [y0, y0 + H], where H is the height, the stamp's y range must be entirely within this rectangle.
+
+So, for each stamp i, y_i >= y0 and y_i + h_i <= y0 + H.
+
+So, rearranging the inequalities:
+
+y0 <= y_i for all i.
+
+y0 + h_i >= y_i for all i.
+
+So, y0 <= min(y_i) for all i.
+
+And y0 + h_i >= y_i for all i.
+
+Which implies y0 >= y_i - h_i for all i.
+
+So, the minimal possible y0 is the maximum of (y_i - h_i) across all i.
+
+And the maximal possible y0 is the minimal y_i across all i.
+
+So, the height H is (y0_max - y0_min) = min(y_i) - max(y_i - h_i).
+
+Wait, that's getting a bit complicated. Let me take an example.
+
+Suppose we have two stamps: stamp 1 has w1=2, h1=1, and stamp 2 has w2=3, h2=2.
+
+So, for stamps 1 and 2, their x ranges are [x1, x1+2], [x2, x2+3], and their y ranges are [y1, y1+1], [y2, y2+2].
+
+The minimal x0 is min(x1, x2), and the maximal x0 is max(x1, x2).
+
+Similarly, for y0: it must satisfy y0 <= y1 and y0 <= y2, so y0 <= min(y1, y2). Also, y0 must be >= y1 - h1 = y1 -1, and y0 >= y2 - h2 = y2 -2. So the minimal y0 is the maximum of (y1-1, y2-2), and the maximal y0 is min(y1, y2).
+
+So, the height H is min(y1, y2) - max(y1-1, y2-2).
+
+So, in this case, the minimal rectangle is determined by the minimal x0, maximal x0, minimal y0, maximal y0.
+
+So, in general, for each stamp, the x0 is the minimal x_i, and the maximal x0 is the maximal x_i. Similarly, y0 is the maximum of (y_i - h_i) for all stamps, and the maximal y0 is the minimal y_i.
+
+So, the rectangle's width is (max_x_i - min_x_i), and the height is (max_y_i - min_y_i).
+
+Wait, no. Because for y0, the minimal possible is the maximum of (y_i - h_i) across all i, and the maximal y0 is the minimal y_i across all i. So the height is (min_y_i) - (max (y_i - h_i)).
+
+So, the perimeter is 2*( (max_x_i - min_x_i) + (min_y_i - max(y_i - h_i)) ) ).
+
+So, this is the formula for the minimal perimeter.
+
+So, the approach is:
+
+For each test case:
+
+1. Collect all w_i and h_i.
+
+2. Compute min_x = min of all w_i.
+
+   max_x = max of all w_i.
+
+3. Compute min_y = min of all h_i.
+
+   max_y = max of all h_i.
+
+4. Compute max_y0 = min of all h_i.
+
+   Compute min_y0 = max of (h_i - w_i) for each i.
+
+5. The width is (max_x - min_x).
+
+   The height is (min_y - max_y0).
+
+6. The perimeter is 2 * (width + height).
+
+Wait, no. Because in step 4, for max_y0, it's the minimal y_i. And for min_y0, it's the maximum of (y_i - h_i).
+
+So, the height is (min_y - max_y0).
+
+So, the perimeter is 2*( (max_x - min_x) + (min_y - max_y0) ).
+
+So, this is the minimal perimeter.
+
+So, the steps are:
+
+For each stamp, compute min_x = min(w_i), max_x = max(w_i).
+
+Compute min_y = min(h_i), max_y = max(h_i).
+
+Compute max_y0 = min(h_i).
+
+Compute min_y0 = max( (h_i - w_i) for all i ).
+
+Then, width = max_x - min_x.
+
+height = min_y - max_y0.
+
+perimeter = 2 * (width + height).
+
+So, that's the formula.
+
+So, in code, for each test case:
+
+Read n.
+
+Then read n pairs of w_i and h_i.
+
+Compute min_x as the minimum of all w_i.
+
+Compute max_x as the maximum of all w_i.
+
+Compute min_y as the minimum of all h_i.
+
+Compute max_y as the maximum of all h_i.
+
+Compute max_y0 as the minimum of all h_i.
+
+Compute min_y0 as the maximum of (h_i - w_i) for all i.
+
+Compute width = max_x - min_x.
+
+Compute height = min_y - max_y0.
+
+perimeter = 2 * (width + height).
+
+So, that's the minimal perimeter.
+
+Wait, but wait. Let's test this with some examples.
+
+Example 1:
+
+n = 1.
+
+w_i = 2, h_i = 3.
+
+So, min_x = 2, max_x =2.
+
+min_y =3, max_y=3.
+
+max_y0 =3.
+
+min_y0 = 3-2=1.
+
+width =0.
+
+height=3-3=0.
+
+perimeter is 0.
+
+Which is correct, as a single stamp covers a 2x3 rectangle, which has perimeter 2*(2+3) =10.
+
+Wait, no. Wait, the perimeter of the rectangle is 2*(2+3) =10. So, in the formula, width is 0, height is 0, perimeter is 0. That's wrong.
+
+Wait, wait, why?
+
+Because in the formula, width is (max_x - min_x) which is 0, and height is (min_y - max_y0) which is 0. So perimeter is 0, which is incorrect.
+
+Ah, I see. Because the formula is incorrect.
+
+Wait, what's wrong here.
+
+Wait, for n=1, the formula gives perimeter 0, which is not correct. The correct perimeter is 2*(2+3) =10.
+
+So, the formula is wrong.
+
+Hmm. So, where did I go wrong.
+
+Let me re-examine the steps.
+
+The formula is:
+
+width = max_x - min_x.
+
+height = min_y - max_y0.
+
+So, for n=1, w_i=2, h_i=3.
+
+max_x is 2, min_x is 2. So width is 0.
+
+max_y0 is min(h_i) =3.
+
+min_y is 3.
+
+So height is 0.
+
+So, perimeter is 0.
+
+But the actual perimeter is 10.
+
+So, the formula is incorrect.
+
+Hmm. So, what's wrong with the approach.
+
+Wait, perhaps the formula is incorrect because the rectangle is determined by the x and y ranges of all stamps.
+
+Wait, but each stamp's x and y ranges can be placed anywhere. So, to cover all stamps, the minimal rectangle is determined by the union of their x and y ranges.
+
+So, the minimal rectangle is determined by the maximum and minimum x and y across all stamps.
+
+Thus, for the x dimension, the minimal rectangle's width is (max_x - min_x). Similarly for y.
+
+So, the formula is correct.
+
+But for n=1, this gives a perimeter of 0, which is incorrect.
+
+Because the stamp is 2x3, so the perimeter is 10.
+
+So, this suggests that the formula is wrong.
+
+Hmm. So, what's wrong with the approach.
+
+I think the approach is incorrect because the formula is assuming that the minimal rectangle is determined by the minimal x0 and maximal x0, and minimal y0 and maximal y0, which are the minimal and maximal of the stamps' x and y ranges. But that's not correct, because each stamp can be placed anywhere, so the x0 and y0 can be chosen to minimize the overall rectangle.
+
+Wait, but the x0 and y0 are determined by the minimal and maximal x and y of all stamps.
+
+So, for n=1, the stamp's x range is from x0 to x0 + w_i. So, to minimize the x0, we can set x0 to negative infinity, but since the grid is infinite, we can choose x0 to be as small as possible. But that's not practical because the x0 can be anything. So, the minimal rectangle is determined by the stamp's x and y ranges.
+
+So, for n=1, the minimal rectangle is determined by the stamp's x and y ranges, which are w_i and h_i. So, the perimeter is 2*(w_i + h_i). But according to the formula, it's 2*(0 + (min_y - max_y0)) = 0.
+
+Which is not correct.
+
+So, the formula is incorrect.
+
+Hmm. So, I need to rethink the approach.
+
+Alternative Idea:
+
+The minimal perimeter is the sum of the perimeters of all the stamps minus twice the sum of the overlapping areas.
+
+But calculating the overlapping areas is complicated.
+
+Another Idea:
+
+The minimal perimeter is achieved when all the stamps form a single rectangle. So, the minimal perimeter is the perimeter of the minimal rectangle that can cover all the stamps.
+
+Which is determined by the maximum and minimum x and y of all the stamps.
+
+So, for each stamp, the x range is [x_i, x_i + w_i], and the y range is [y_i, y_i + h_i].
+
+So, the minimal x0 is the minimal x_i across all stamps.
+
+The maximal x0 is the maximal x_i across all stamps.
+
+The minimal y0 is the minimal y_i across all stamps.
+
+The maximal y0 is the maximal y_i across all stamps.
+
+So, the width of the rectangle is (max_x - min_x).
+
+The height is (max_y - min_y).
+
+So, perimeter is 2*(width + height).
+
+But this is only correct if all stamps can be placed such that their x and y ranges are within this rectangle.
+
+Which they can, because each stamp can be placed anywhere.
+
+So, in the case of n=1, the correct perimeter is 2*(w_i + h_i) = 2*(2+3) =10.
+
+But according to the formula, the width is (max_x - min_x) = 2-2=0, and height is (max_y - min_y) =3-3=0. So perimeter is 0, which is wrong.
+
+So, the formula is incorrect.
+
+Hmm, so what's wrong with the formula.
+
+Ah! Because the formula is treating the x and y ranges as the minimal and maximal of the stamps' x and y ranges, not considering that each stamp's x and y ranges can be placed anywhere, thus allowing the entire grid to be covered by the union of the stamps' x and y ranges.
+
+Wait, no. Because each stamp can be placed anywhere, their x and y ranges can be any, but the minimal x0 is the minimal x_i, and the maximal x0 is the maximal x_i.
+
+So, for the x dimension, the minimal x0 is the minimal x_i, and the maximal x0 is the maximal x_i. So, the width is (max_x - min_x).
+
+Similarly for y.
+
+So, the formula is correct, but in the case of n=1, it's wrong.
+
+So, why?
+
+Because for a single stamp, the minimal rectangle is determined by the stamp's x and y ranges, which is w_i and h_i. So, the formula is wrong.
+
+So, the formula is correct for n>1, but not for n=1.
+
+So, perhaps the formula is correct for n>=2, but for n=1, it's different.
+
+So, perhaps the approach is:
+
+Compute the formula as before, and then, if n=1, set the perimeter to 2*(w_i + h_i).
+
+Otherwise, use the formula.
+
+So, let's test this.
+
+Test case 1: n=1, w=2, h=3.
+
+According to the formula: min_x=2, max_x=2. So width=0.
+
+min_y=3, max_y=3. So height=0.
+
+Perimeter=0, which is wrong.
+
+But according to the formula, when n=1, the perimeter is 2*(w + h) = 2*(2+3)=10.
+
+So, the correct approach is to use the formula when n>1, and for n=1, compute 2*(w + h).
+
+So, in code, we can do:
+
+if n == 1:
+
+    perimeter = 2 * (w1 + h1)
+
+else:
+
+    compute as before.
+
+So, that's the fix.
+
+Another test case:
+
+n=2, stamps with w1=1, h1=1, w2=1, h2=1.
+
+Formula:
+
+min_x = 1, max_x=1. Width=0.
+
+min_y=1, max_y=1. Height=0. Perimeter=0.
+
+But the actual union is a 1x1 square, which has perimeter 4.
+
+So, the formula is wrong.
+
+So, what's the issue here.
+
+Ah, because each stamp is placed with their own x and y ranges, but the minimal x0 is the minimal x_i, which is 1, and the maximal x0 is 1. So the width is 0, but the stamps can be placed such that their x ranges are [0,1], [0,1]. So the union is a 2x2 square, which has perimeter 8.
+
+So, the formula is incorrect.
+
+So, what's the correct approach.
+
+Hmm, perhaps the formula is incorrect, and I need to rethink.
+
+Alternative Idea:
+
+The minimal rectangle that can cover all the stamps is the minimal x0, maximal x0, minimal y0, maximal y0, where x0 is the minimal x_i of all stamps, and maximal x0 is the maximal x_i of all stamps. Similarly for y0.
+
+Wait, that's what I thought before, but in the case of n=2, each stamp's x ranges can be [0,1], so the x0 is 0, and maximal x0 is 1. So the width is 1-0=1.
+
+Similarly for y0.
+
+So, the minimal rectangle has width 1, height 1.
+
+Perimeter is 2*(1+1)=4.
+
+But the actual union is 2x2, which has perimeter 8.
+
+So, the formula is wrong.
+
+So, the problem is that the formula assumes that each stamp's x and y ranges are exactly the stamp's dimensions, but in reality, they can be placed with their x and y ranges anywhere.
+
+So, the minimal rectangle is determined by the minimal and maximal x and y of all the stamps.
+
+So, for each stamp, their x range is [x0, x0 + w_i], and y range is [y0, y0 + h_i].
+
+So, to cover all stamps, x0 must be <= x_i for all i, and x0 + w_i >= x_i for all i.
+
+So, x0 must be <= min(x_i) and x0 + w_i >= x_i for all i.
+
+Which implies x0 <= min(x_i) and x0 >= x_i - w_i for all i.
+
+Thus, the minimal x0 is the maximum of (x_i - w_i) across all i.
+
+Similarly, the maximal x0 is the minimal x_i across all i.
+
+So, the width is (max_x0 - min_x0) = (min_x_i - max (x_i - w_i)).
+
+Similarly for y.
+
+So, for each stamp, compute x_i - w_i and y_i - h_i.
+
+Compute the minimal x0 as the maximum of (x_i - w_i) for all i.
+
+Compute the maximal x0 as the minimal x_i for all i.
+
+Compute the height as (max_y0 - min_y0), where min_y0 is the maximum of (y_i - h_i) for all i, and max_y0 is the minimal y_i for all i.
+
+So, the formula is:
+
+width = max_x0 - min_x0.
+
+height = max_y0 - min_y0.
+
+perimeter = 2*(width + height).
+
+Yes, this makes sense.
+
+So, let's apply this to the test case where n=2, w1=1, h1=1, w2=1, h2=1.
+
+x_i =1,1, y_i=1,1.
+
+Compute x_i - w_i for each i: 0, 0.
+
+max (x_i - w_i) is 0.
+
+min x_i is 1.
+
+max_x0 = min x_i =1.
+
+min_x0 = 0.
+
+width = 1-0=1.
+
+y_i - h_i: 0, 0.
+
+max (y_i - h_i) is 0.
+
+min y_i is1.
+
+max_y0 =1.
+
+min_y0 =0.
+
+height =1-0=1.
+
+perimeter=2*(1+1)=4.
+
+Which is correct.
+
+Another test case: n=2, w1=1, h1=1, w2=1, h2=1.
+
+Compute x_i -w_i: 0,0.
+
+max is 0.
+
+min x_i is1.
+
+so, min_x0=0, max_x0=1.
+
+width is 1.
+
+y_i - h_i: 0,0.
+
+max is 0.
+
+min y_i is1.
+
+so, min_y0=0, max_y0=1.
+
+height is1.
+
+perimeter is 4.
+
+Which is correct.
+
+Another test case: n=2, w1=2, h1=2, w2=2, h2=2.
+
+x_i -w_i:0,0.
+
+max is0.
+
+min x_i is2.
+
+min_x0=0, max_x0=2.
+
+width=2.
+
+y_i -h_i:0,0.
+
+max is0.
+
+min y_i is2.
+
+min y0=0, max y0=2.
+
+height=2.
+
+perimeter=2*(2+2)=8.
+
+Which is correct.
+
+Another test case: n=2, stamps with w1=3, h1=1, w2=1, h2=3.
+
+Compute x_i -w_i:3-3=0, 1-1=0.
+
+max is0.
+
+min x_i is1.
+
+so, min_x0=0, max_x0=1.
+
+width=1-0=1.
+
+y_i -h_i:1-1=0,3-3=0.
+
+max is0.
+
+min y_i is1.
+
+so, min_y0=0, max_y0=1.
+
+height=1.
+
+perimeter=2*(1+1)=4.
+
+Which is correct.
+
+So, this formula works for these cases.
+
+So, the plan is:
+
+For each test case:
+
+1. Read n.
+
+2. Read each w_i, h_i.
+
+3. Compute for each stamp, x_i - w_i and y_i - h_i.
+
+4. Compute:
+
+   a. min_x0 = max( (x_i - w_i) for all i )
+
+   b. max_x0 = min( x_i for all i )
+
+   c. min_y0 = max( (y_i - h_i) for all i )
+
+   d. max_y0 = min( y_i for all i )
+
+5. width = max_x0 - min_x0
+
+6. height = max_y0 - min_y0
+
+7. perimeter = 2 * (width + height)
+
+So, the code can be written as follows.
+
+Now, let's test this with the previous test case where n=1, w=2, h=3.
+
+Compute x_i -w_i: 2-2=0.
+
+max (x_i -w_i) is 0.
+
+min x_i is 2.
+
+max_x0=2.
+
+min_x0=0.
+
+width=2.
+
+y_i -h_i: 3-3=0.
+
+max (y_i -h_i) is 0.
+
+min y_i is3.
+
+max_y0=3.
+
+height=3-0=3.
+
+perimeter=2*(2+3)=10.
+
+Which is correct.
+
+Another test case: n=1, w=1, h=1.
+
+x_i -w_i =0.
+
+max is0.
+
+min x_i=1.
+
+max_x0=1.
+
+min_y0=0.
+
+max_y0=1.
+
+width=1.
+
+height=1.
+
+perimeter=4.
+
+Which is correct.
+
+So, the code should implement this.
+
+So, in Python, the code would be:
+
+Read t test cases.
+
+For each test case:
+
+- Read n.
+
+- Read n pairs of w_i and h_i.
+
+- Compute for each pair, x_i -w_i and y_i -h_i.
+
+- Compute min_x0 as the maximum of all (x_i -w_i).
+
+- Compute max_x0 as the minimum of all x_i.
+
+- Compute min_y0 as the maximum of all (y_i -h_i).
+
+- Compute max_y0 as the minimum of all y_i.
+
+- width = max_x0 - min_x0.
+
+- height = max_y0 - min_y0.
+
+- perimeter = 2 * (width + height).
+
+- Print perimeter.
+
+Yes, that's the code.
+
+So, the code in Python would be:
+
+Read t.
+
+For each t:
+
+   Read n.
+
+   Read n lines, each line is two integers, w and h.
+
+   Compute for each stamp:
+
+      x_diff = w - w_i  ? Wait, no.
+
+Wait, for x_i - w_i, where x_i is the stamp's x position. So, for each stamp, x_diff is w_i - w_i? No, wait.
+
+Wait, x_i is the stamp's x position, which can be any integer. So, the x_i - w_i is (x_i) - w_i.
+
+Wait, no. For each stamp, the x_i is the starting x coordinate of the stamp.
+
+So, x_i can be any integer, but for each stamp, the x range is [x_i, x_i + w_i].
+
+So, to cover all x_i, x0 must be <= x_i for all i, and x0 + w_i >= x_i for all i.
+
+Which implies x0 <= min(x_i) and x0 >= max(x_i - w_i).
+
+So, to find the minimal x0, we take the maximum of (x_i - w_i) across all i.
+
+max_x0 = min(x_i)
+
+min_x0 = max( x_i - w_i for all i )
+
+So, in code:
+
+x_diff = w_i - w_i? No, the stamp's w_i is the width, so x_i is the starting x, so x_i - w_i is x_i - w_i.
+
+Wait, no. For each stamp i, x_diff is w_i - x_i. No, wait, no.
+
+Wait, for each stamp, x_i is its starting x coordinate.
+
+So, for the stamp, the x range is [x_i, x_i + w_i].
+
+So, to cover all stamps, x0 must

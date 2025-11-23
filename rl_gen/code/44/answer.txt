@@ -1,0 +1,723 @@
+0
+Okay, let's try to tackle this problem. Hmm, the problem statement is a bit tricky, but I'll break it down step by step.
+
+So, Yaroslav is playing a game where he selects a subsegment of mushrooms. Each mushroom has a toxicity level a_i. He eats them from left to right. The process involves the character's toxicity level g, which starts at 0. For each mushroom, he increases g by its toxicity level k. But if after that, g exceeds the maximum toxicity x in the segment, then g resets to zero, and the process continues. Wait, no, the process continues as long as g is <= x. So, if after adding a_i, g becomes larger than x, then g resets to zero, and the process continues from the next mushroom.
+
+Wait, no. Let me re-read the process. When eating a mushroom with toxicity k:
+
+1. g increases by k.
+2. If g is <= x, the process continues; else, g becomes zero and the process continues.
+
+Wait, so the process after adding the k is: if g is larger than x, then g resets to zero, and the next step is to eat the next mushroom. So, for each step, you add a_i to g, then if g exceeds x, reset to zero. So, the process can loop through multiple mushrooms until all are eaten.
+
+The final g is the sum of all a_i in the subsegment, but considering the reset. Hmm, but how does that work?
+
+Wait, no, because after each step, if g exceeds x, it resets to zero. So, for example, imagine a subsegment where the a_i sum is S. But during the process, each addition may cause g to exceed x, resetting each time. So the final g depends on the sum S and how many times it wraps around.
+
+Let me think of an example. Suppose x=5, and the subsegment is [3,3,3,3]. Let's see the process:
+
+- Start with g=0. Add 3: g becomes 3. Since 3 <=5, continue.
+- Next, add 3: g becomes 6. Now, 6 >5, so g resets to 0. The process continues.
+- Then, next mushroom is 3: add to g (0+3)=3, which is <=5.
+- Next, add 3: 3+3=6>5, so reset g to 0.
+- So at the end, g is 0.
+
+So, the sum of 3+3+3+3 is 12. But the final g is 0 because it wrapped around multiple times.
+
+Wait, another example. Suppose x=4, and subsegment is [2,2,2,2]. Let's see:
+
+- Add 2: g=2 (<=4).
+- Next, add 2: 4 (still <=4). Next, add 2: 6>4, so reset to 0.
+- Next, add 2: 2.
+
+So final g is 2.
+
+Hmm. So the final g is the sum of the subsegment, but considering possible resets.
+
+But how do we model this? It's tricky. Since n can be up to 2e5, we need an efficient way to compute for each possible subsegment [l, r] whether the final g is not zero.
+
+The problem asks to count the number of such subsegments where the final g is not zero.
+
+So for each [l, r], compute the final g, and count it if it's non-zero.
+
+The challenge is to find an efficient way to compute this for all possible subsegments.
+
+But considering all possible subsegments is O(n^2), which is way too slow for n=2e5. So we need a smarter approach.
+
+Let me think about the properties of the final g.
+
+The process is similar to adding a_i to g, and each time if g exceeds x, reset to 0. So the final g is the sum of all a_i in the subsegment, but the sum is computed modulo some value? Or perhaps, it's the sum minus some multiple of x.
+
+Wait, perhaps it's better to model the process as follows: each a_i is added to g, but whenever g exceeds x, it's reset to 0. So the total g is the sum of all a_i's, but subtracted by the maximum number of times x was exceeded.
+
+Wait, but the number of resets depends on how the a_i's add up.
+
+Alternatively, perhaps the final g is the sum of all a_i's in the subsegment minus k*x, where k is the number of times x was exceeded during the process.
+
+So final g = s - k*x, where s is the sum of a_i in [l, r].
+
+If final g is non-zero, then s - k*x != 0.
+
+But we need to find whether s - k*x is not zero.
+
+Wait, but how to model k. Hmm, it's tricky because k depends on the order in which the a_i's are added.
+
+Wait, but perhaps for a given subsegment, the sum s can be broken down into the number of times x was exceeded.
+
+Alternatively, perhaps the final g can be determined by the sum s, and the number of times x is exceeded, but it's not straightforward.
+
+Wait, another approach: For a given subsegment [l, r], the process will add each a_i to g, and each time it's more than x, reset to zero. So, the final g is equal to the sum of all a_i's in the subsegment, minus the sum of the x's that were exceeded.
+
+Wait, but the number of times you reset depends on the sum s.
+
+Wait, perhaps not. For example, if s is 10, x is 5, and the a_i's are [5,5,5,5], then s =20. Since each a_i is 5, and x is 5, each addition would cause a reset. So, after each 5, g becomes 0, then 5 again. So for four 5's, you have 5 added as 5, 0, 5, 0, then 5. So the final g is 5.
+
+Wait, but that's a sum of 20, but the final g is 5. So s - k*x =20 - 4*5=0, but the actual g is 5. So that approach isn't correct.
+
+Hmm, perhaps the initial approach is wrong.
+
+Alternative idea: Let's model the process. Imagine adding each a_i to g, and each time it exceeds x, reset g to zero. So, the process is similar to a cumulative sum, but whenever the sum exceeds x, it's set to zero and the next a_i is added.
+
+So, for a subsegment [l, r], let's compute the sum s and the number of times the sum exceeds x when adding each a_i.
+
+But how?
+
+Perhaps, for each subsegment, we can compute the sum s, and the number of times the sum exceeds x after adding each a_i.
+
+But this seems complicated.
+
+Wait, perhaps the key is to find for each subsegment [l, r], whether s is a multiple of x, but that doesn't seem right.
+
+Alternatively, perhaps the final g is s minus the sum of all the x's that were added beyond the previous sum.
+
+Wait, maybe it's better to model it as a state machine.
+
+Each time you add a_i to g. If g exceeds x, reset to 0. So, for each a_i, the process is: g = (g + a_i) mod (x+1), but wait, no, because if g exceeds x, it's reset to zero. So, the process is not modulo, it's a simple addition that resets when it's greater than x.
+
+Wait, perhaps the final g is the sum of all a_i's, but considering that whenever the sum exceeds x, it's subtracted by x.
+
+But that's not exactly right, because the sum is being modified as you go through each a_i.
+
+Wait, perhaps the process is equivalent to s = sum of a_i's, and then the number of times s exceeds x is k, so the final g is s - k * x, but only if s is not a multiple of x. Or something like that.
+
+Wait, let's test this with the earlier example.
+
+Example 1: x=5, subsegment [3,3,3,3]. Sum s=12.
+
+Each a_i is 3.
+
+After adding the first 3, g is 3 (<=5). Second a_i: 3+3=6 >5. So, reset to 0, and add 3 again: 3.
+
+Third a_i: 3+3=6>5, reset. Fourth a_i: 3.
+
+So final g is 3.
+
+s is 12, x is 5.
+
+12 divided by 5 is 2 with a remainder of 2. So 12 = 5*2 + 2. So according to the earlier idea, the final g is s - k*x = 12 - 2*5=2. But in reality, it's 3. So that approach is incorrect.
+
+Another example: x=4, subsegment [2,2,2,2]. Sum s=8.
+
+Each a_i is 2.
+
+Add 2: 2 <=4.
+
+Add 2:4 <=4.
+
+Add 2:6>4, reset to 0. Add 2 again: 2.
+
+So g is 2.
+
+s=8, x=4. 8-2*4=0. But the actual g is 2.
+
+So that approach is also incorrect.
+
+Hmm, so that idea of s - k*x is incorrect.
+
+Alternative idea: Perhaps the final g is equal to the sum of all a_i's, but with any multiple of x subtracted. But in the first example, that would give 12-2*5=2, which is not the case. So that's not the way.
+
+Wait, perhaps the final g is equal to s minus the maximum possible number of x's that can be subtracted. But again, the first example has s=12, x=5. So the maximum number of x's is 2, giving 12-2*5=2, but actual g is 3.
+
+Hmm, that's not matching.
+
+Alternatively, perhaps the process can be modeled as a series of steps. For each a_i, after adding it to g, if it's more than x, reset to zero. So the final g is the sum of the a_i's, but considering that any multiple of x that was added beyond the previous sum.
+
+Wait, but that's still not clear.
+
+Alternatively, perhaps the process can be thought of as the sum of the a_i's, but whenever the sum exceeds x, it's reset. So, the final g is the sum of all a_i's, but with any number of resets.
+
+But how to model this?
+
+Wait, perhaps the key is to find for each subsegment [l, r], the sum s, and the number of times that the sum after adding a_i is more than x.
+
+But the number of resets depends on the order of a_i's.
+
+Wait, maybe the process is similar to a cumulative sum that wraps around when exceeding x. So, for example, the sum is s, and the number of resets is k, such that s = k * x + r, where r is the remainder when s is divided by x.
+
+Wait, but in the first example, s=12, x=5. 12 divided by 5 is 2.4, so k=2, r= 12-2*5= 2. But the actual g is 3.
+
+Hmm, that doesn't align.
+
+Wait, perhaps the final g is the sum s minus k*x, but only if s is not a multiple of x.
+
+But in the first example, s is 12, x is5, and 12 is not a multiple. So 12 - 2*5=2. But the actual g is 3.
+
+So that approach is incorrect.
+
+Alternatively, perhaps the final g is the sum s, minus the number of times x was added.
+
+Wait, but in the first example, the number of times x was added is 2: after the first two a_i's, the sum is 6 which is more than 5, so reset. Then, the next two a_i's add 3 each, so 6 again. So two resets, leading to 3.
+
+Hmm, but in terms of the sum s, 12, perhaps the number of resets is 2, and the final g is 12 - 2*5=2, but actual is 3. So that's not matching.
+
+This is getting complicated. Maybe I should try to model the process for a general subsegment.
+
+Let me think about the process for a single a_i, then two a_i's, etc.
+
+Case 1: a single a_i.
+
+- g starts at 0.
+- Add a_i: g becomes a_i.
+- If a_i > x: reset to 0, and done. So final g is 0.
+- Else: g is a_i.
+
+So for a single a_i, the final g is a_i if a_i <=x, else 0.
+
+Case 2: two a_i's, a and b.
+
+Process:
+
+Add a: g = a.
+If a >x: reset to 0.
+Add b: g = b.
+If b >x: reset to 0.
+Final g is 0 if a >x, or if b >x, or both.
+
+Wait, no. Let's see:
+
+If a <=x and b <=x: g = a + b.
+
+If a >x: g reset to 0, then add b: g is b.
+
+If a <=x, b >x: then after a, g is a. Then add b: a +b >x, so reset to 0.
+
+So final g is 0.
+
+If a >x and b >x: after a, g is 0. Then add b: g is b.
+
+So final g is b.
+
+If a <=x and b> x: after a, g is a. Then add b: a +b could be larger than x, so reset to 0.
+
+So final g is 0.
+
+So for two a_i's, the final g is:
+
+if a <=x and b <=x: a +b.
+
+else if a >x: b.
+
+else if b >x: a.
+
+else: 0.
+
+Wait, that's an interesting pattern. So for two a_i's, the final g depends on whether a and b are <=x, or not.
+
+Hmm, perhaps the final g can be determined by the sum of the a_i's, but considering the resets.
+
+Wait, but how?
+
+Wait, perhaps the final g is equal to (sum of a_i's) mod (x+1). Because when the sum is larger than x, it's reset. But that's not the case in the first example.
+
+Wait, first example: sum is 12, x=5. 12 mod 6 is 0, but g is 3. So that's not matching.
+
+Hmm, maybe another approach is needed.
+
+Let me think about the process in terms of equations.
+
+Each a_i is added to g, but if g exceeds x, it's reset to 0, and the next a_i is added.
+
+So the process is:
+
+g = sum_{i=0}^{m} a_{l+i} * (g_prev + a_{l+i} >x ? 0 : 1), where m is the number of a_i's.
+
+Wait, perhaps not. Because each addition depends on whether the current g plus a_i causes a reset.
+
+Alternatively, the process is similar to:
+
+g = 0
+
+for each a in a_l to a_r:
+
+    g += a
+
+    if g >x:
+
+        g =0
+
+After all a's, g is the final value.
+
+So, for each a_i, if the current g plus a_i is <=x, then add it. Else, add it but reset to 0.
+
+Wait, but this is a bit tricky because the order matters.
+
+Let me think of the process as a series of steps where g can be in either the active state (g <=x) or reset state (g> x). So, for each a_i, depending on whether adding a_i would cause a reset.
+
+So, for a subsegment [l, r], the process is:
+
+current_g = 0
+
+for i from l to r:
+
+    if current_g <=x:
+
+        current_g += a_i
+
+    else:
+
+        current_g =0
+
+So, this is the process.
+
+We need to find for which subsegments [l, r] the current_g after processing all a_i's is not zero.
+
+Hmm.
+
+The problem is that for each subsegment, we need to compute this current_g, which is O(r-l+1). For n=2e5, this is O(n^2) and will be too slow.
+
+Thus, we need a way to find the number of subsegments where the current_g is non-zero, without explicitly computing it for each.
+
+So, perhaps, we can model the process in terms of the sum s of the subsegment and the number of resets k.
+
+Wait, but how?
+
+Wait, when a subsegment is processed, each a_i is added until it causes a reset.
+
+But each reset happens when the sum so far exceeds x.
+
+So, the final g is the sum of all a_i's, minus the sum of x's that were added when the sum exceeded x.
+
+Wait, perhaps not.
+
+Wait, let's model it as follows: the sum s of the subsegment is the total sum. The number of times a reset occurs is k, which is the number of times the sum s exceeds x after adding each a_i.
+
+Then, the final g is s - k * x.
+
+But in the first example, s=12, x=5, so s -2*5=2, but actual g is 3. So that's incorrect.
+
+Alternatively, perhaps the number of resets is the number of times the sum after adding a_i is more than x. So, for each a_i, if (current_g + a_i) >x, then current_g is set to 0, and increment k by 1. Else, current_g +=a_i.
+
+Wait, that's the process.
+
+So, for each a_i, current_g is updated as:
+
+current_g = (current_g + a_i) if current_g + a_i <=x else 0
+
+Thus, the final current_g is the sum of all a_i's, where each a_i is added only if the sum so far (before adding a_i) is such that adding a_i doesn't cause a reset.
+
+But how can we model this for all possible subsegments?
+
+Hmm.
+
+Another idea: For a given subsegment, the current_g can be represented as the sum of all a_i's that are added without causing a reset, plus some a_i's that are added after a reset.
+
+Wait, but this seems unclear.
+
+Alternatively, perhaps we can model the final g as the sum of the a_i's, minus the maximum number of times x was added. But that doesn't fit with the examples.
+
+Wait, perhaps we can model the final g as s minus the number of times the sum exceeds x during the process.
+
+But in the first example, s=12, x=5, and k=2, so 12-2=10, which is not the case.
+
+Alternatively, perhaps k is the number of times that a_i's sum after adding to current_g exceeds x, which is the same as the number of times a_i is added after a reset.
+
+So, for each subsegment, the final g is s - k*x, where k is the number of times a reset occurs during processing each a_i.
+
+But in the first example, s=12, x=5, and k=2, so 12-2*5=2, but actual g is 3.
+
+So that approach is incorrect.
+
+Hmm.
+
+Alternative approach: Let's think of the process as the sum of the a_i's, but each time the sum exceeds x, it's reset to zero. So, the final g is the sum of all a_i's, but any part that causes a reset is subtracted.
+
+Wait, but again, not sure.
+
+Alternatively, perhaps the final g is the sum s minus x multiplied by the number of times the sum after adding a_i is greater than x.
+
+Wait, but that's similar to the earlier approach.
+
+But how to model this?
+
+Another idea: For a given subsegment [l, r], the number of resets k is equal to the number of a_i's in the subsegment such that the sum of a_i's before a_i is s, and s + a_i >x.
+
+But again, not sure.
+
+Alternatively, perhaps the final g is equal to the sum of all a_i's in the subsegment that are part of the non-resetting steps.
+
+But that's also unclear.
+
+Another approach: Let's think about when the process results in g not being zero.
+
+g is non-zero only if, after processing all a_i's, the total sum s is not a multiple of x, or that the sum s is not a multiple of x plus some number of x's that were added but not reset.
+
+Wait, perhaps the final g is non-zero if and only if s mod x is non-zero.
+
+Wait, let's see.
+
+In the first example, s=12 mod 5 is 2, which is non-zero. And g is 3.
+
+In the second example, s=8 mod4 is 0, and g is 2.
+
+Hmm, that doesn't fit.
+
+In the first example, s modx is 2, and g is 3.
+
+In the second example, s modx is 0, and g is 2.
+
+So that's not consistent.
+
+Wait, maybe not the sum modulo x.
+
+Hmm.
+
+Alternatively, perhaps the final g is non-zero if and only if s is not divisible by x.
+
+But in the first example, 12 is not divisible by5, so g is non-zero.
+
+In the second example, 8 is divisible by4, and g is 2, which is non-zero. So that holds.
+
+Another example: x=4, a_i = [2,2,2,2]. s=8, which is 0 mod4. g is 2, which is non-zero.
+
+Another example: x=4, a_i=[2,2,2,2,2]. s=10, which is 2 mod4. So g is non-zero.
+
+So, in this case, when s modx is non-zero, g is non-zero.
+
+But what about x=5, a_i=[3,3,3,3]. s=12. 12 mod5 is 2, but g is 3.
+
+Hmm, so that's a problem.
+
+Another test case: x=5, a_i=[3,3,3,3]. s=12, mod5 is 2. g is 3.
+
+So, 2 !=0, but g is non-zero. So, that suggests that the modx approach is not sufficient.
+
+Wait, but in the first case, s modx is 2, and g is non-zero. So, that doesn't hold.
+
+Hmm.
+
+Alternative Idea: Maybe the final g is non-zero if and only if s is not a multiple of x, but I'm not sure.
+
+But in the case of [3,3,3,3], s=12, mod5 is 2, but g is 3, which is non-zero.
+
+So, perhaps that approach is not correct.
+
+Another Idea: Maybe the final g is non-zero if and only if the sum s is greater than the sum of all x's that can be added without resetting. Or perhaps another way of saying, the sum s must be greater than or equal to k*x + 1, where k is the number of resets.
+
+But I'm not sure.
+
+Hmm, perhaps I should think differently. Let's model the process and see what conditions lead to g being non-zero.
+
+The process of adding a_i's can be considered as a series of steps where each step is adding a_i and possibly resetting.
+
+So, the final g is the sum of a_i's, but each a_i is added only if the sum before adding a_i was less than or equal to x.
+
+Wait, no. Because the sum before adding a_i is the current_g, which can be zero or something else.
+
+Wait, let's think about the state transitions.
+
+After processing a subsegment [l, r], the final g is determined by the sum of the a_i's, but each a_i is added only if the current_g (before adding a_i) is such that current_g + a_i <=x.
+
+Wait, no. Because the condition is whether current_g + a_i >x.
+
+Wait, no. The condition is whether adding a_i would cause current_g to exceed x, thus resetting to zero.
+
+So, for each a_i:
+
+current_g = current_g + a_i if current_g + a_i <=x, else 0.
+
+So, for each a_i, it's added only if current_g before adding a_i is <=x - a_i.
+
+So, the process is:
+
+current_g starts as 0.
+
+for each a_i in [l, r]:
+
+    if current_g <= (x - a_i):
+
+        current_g +=a_i
+
+    else:
+
+        current_g =0
+
+So, for a subsegment [l, r], the final g is the sum of the a_i's that are added when current_g before adding a_i is <=x -a_i.
+
+So, the problem reduces to finding for each subsegment [l, r], the sum of a_i's where a_i <= (x - current_g_before).
+
+But that seems too vague.
+
+Alternatively, perhaps we can model this as a prefix sum, but with some conditions.
+
+Let me think about the prefix sums.
+
+Let's define prefix sums s_0=0, s_1 = a_1, s_2 = a_1 +a_2, etc., up to s_n.
+
+For each i, s_i is the sum of the first i elements.
+
+Now, for a subsegment [l, r], the process is:
+
+current_g starts at 0.
+
+For each i from l to r:
+
+    if s_prev (the sum before adding a_i) <= (x - a_i):
+
+        current_g +=a_i
+
+    else:
+
+        current_g =0
+
+So, the process depends on the sum before adding each a_i.
+
+Hmm, that's not helpful.
+
+Alternative Idea: For each position i, determine the maximum possible sum s' such that when you process a subsegment ending at i, the current_g doesn't reset.
+
+But I'm not sure.
+
+Alternatively, perhaps the problem can be modeled as a two-pointer approach, where for each end r, we find the earliest l such that the subsegment [l, r] satisfies the condition that the final g is non-zero.
+
+But for n=2e5, that's O(n^2), which is too slow.
+
+Hmm.
+
+Another Idea: Maybe the subsegments [l, r] where the sum s of a_i's is not a multiple of x, and the number of resets is such that s - k*x is non-zero.
+
+But I'm not sure.
+
+Wait, perhaps the final g is non-zero if and only if the sum s is not a multiple of x, but in the first example, s=12 is 12 mod5=2, which is non-zero, and g is 3, which is non-zero.
+
+In the second example, s=8 mod4=0, but g is 2, which is non-zero.
+
+So, that approach is incorrect.
+
+Hmm.
+
+Alternative Idea: Maybe the final g is non-zero if and only if the sum s is not less than x, but again, the first example has s=12>5, and g is 3, which is non-zero. So that holds.
+
+In the second example, s=8>4, and g is 2, non-zero.
+
+In the case where x=5 and a_i's are [3,3,3,3], s=12>5, and g is 3, non-zero.
+
+But in the case where x=5 and a_i's are [2,2,2,2], s=8>5, but g=2, non-zero.
+
+Another example: x=5, a_i's are [5,5,5,5]. s=20.
+
+Processing:
+
+Each a_i is 5.
+
+First a_i=5: current_g is 0 <=5-5=0, so add. Now current_g=5.
+
+Next a_i=5: current_g=5 <=5-5=0? No. So reset to 0.
+
+Next a_i=5: current_g is 0, which is <=5-5=0, so add, current_g=5.
+
+Next a_i=5: current_g=5 >5-5=0. So reset to 0.
+
+So final g is 0.
+
+So, s=20, which is a multiple of x=5, and g is 0.
+
+So, this example shows that when s is a multiple of x, g can be zero or non-zero.
+
+So, the initial approach of checking whether s is a multiple of x is not sufficient.
+
+Hmm.
+
+This is getting complicated. Let's try to find another way.
+
+Another Idea: For a subsegment [l, r], the process can be viewed as each a_i is added to current_g, but if adding it would cause current_g to exceed x, it's reset to zero.
+
+So, the process is similar to a prefix sum, but with each step possibly resetting.
+
+So, for each subsegment, the final g is the sum of the a_i's in the subsegment, but with any a_i's that cause the sum to exceed x to be considered as a reset.
+
+Wait, but how to represent this.
+
+Alternative Idea: Let's model the process as the sum of the a_i's, but with each a_i potentially being added only if the previous sum is less than or equal to x - a_i.
+
+So, for each a_i, it's added to the sum only if the current sum before adding is <=x -a_i.
+
+But how to model this across a subsegment.
+
+Wait, perhaps for a given subsegment [l, r], the process can be represented as:
+
+g = 0
+
+for i in [l, r]:
+
+    if g <= x - a_i:
+
+        g += a_i
+
+    else:
+
+        g =0
+
+So, for each a_i in the subsegment, it's added if the current g is <= x -a_i.
+
+Hmm.
+
+But how to find for a subsegment [l, r] whether g is non-zero.
+
+Perhaps, for each a_i, we can find the range of subsegments ending at i where the a_i is added, and the previous g was <=x -a_i.
+
+But I'm not sure.
+
+Alternatively, perhaps we can model the process as a series of intervals where the a_i is added, based on the previous sum.
+
+But again, I'm not sure.
+
+Hmm.
+
+Alternative Idea: Let's think of the problem in terms of the minimum and maximum possible values of the sum s, and how the process affects the final g.
+
+But I'm not sure.
+
+Let me think about the problem in terms of the final g.
+
+The final g is the sum of all a_i's in the subsegment, but each a_i is added only if the sum up to that point minus the sum before a_i is <=x.
+
+Wait, no. Because the condition is based on the sum before adding a_i.
+
+Hmm.
+
+Wait, perhaps the process is similar to the greedy algorithm for the problem of finding the minimal number of steps to reach a certain sum, but I'm not sure.
+
+Another Idea: The process can be viewed as a series of steps where each step adds a_i to the current_g only if it doesn't exceed x. So, the final g is the sum of a_i's that were added in the steps where the sum before adding was <=x -a_i.
+
+So, the problem is to find all subsegments where the sum of a_i's is not entirely in one step.
+
+Wait, perhaps.
+
+Wait, for a given subsegment, the sum s = sum a_i's. The process will reset whenever adding a_i would cause the sum to exceed x.
+
+So, the final g is the sum of the a_i's that were added in the steps where the sum before adding was s_prev <=x -a_i.
+
+Hmm.
+
+But I'm not seeing how to model this for counting.
+
+Another Idea: Let's model the process as the sum s, and find for each a_i, the maximum possible sum that can be added before a reset.
+
+But I'm not sure.
+
+Wait, perhaps the key is to find for each a_i, the maximum possible prefix sum before adding a_i would cause a reset. Then, the sum of a_i's can be broken down into segments where each a_i is added, and the sum is s = sum a_i's.
+
+But how?
+
+Alternatively, perhaps the problem can be transformed into finding for each subsegment [l, r], whether the sum s is >= k*x, where k is the number of resets.
+
+But I'm not sure.
+
+Another Idea: Let's think of the process in terms of the sum s and the number of resets k.
+
+Each reset happens when s_prev >x, where s_prev is the sum before adding a_i.
+
+So, the final g is s - k*x.
+
+But wait, in the first example, s=12, x=5. 12 - 2*5=2, but the actual g is 3, so that's not matching.
+
+Hmm.
+
+Alternatively, perhaps the final g is s - (k+1)*x.
+
+But in the first example, 12-3*5= -3, which is not right.
+
+Hmm.
+
+Alternatively, perhaps the number of resets is the number of times s increases by a_i, which is more than x.
+
+No, that's not helpful.
+
+Hmm.
+
+Another Idea: Let's look for a pattern in the process.
+
+Each reset resets g to zero, and the next a_i is added. So, the process is similar to a carry-over.
+
+For example, if a_i is 5, and x is 5, then adding it resets g to zero, and the next a_i is added.
+
+So, in this case, the sum of a_i's in the subsegment would be s, and the final g is s - k*5, where k is the number of resets.
+
+But for a subsegment with all a_i's being 5, the final g is zero, because each a_i is added, and resets happen.
+
+Wait, for a subsegment of [5,5,5], x=5.
+
+Processing:
+
+g starts at 0.
+
+Add 5: 5 <=5? No, wait, 5 is equal to x, so 5 <=5 is true. So, add 5: g=5.
+
+Next a_i=5: current_g=5 <=5? Yes. Add it: g=10.
+
+Next a_i=5: current_g=10>5? Yes. Reset to 0.
+
+So, final g=0.
+
+So, in this case, s=15, x=5. k=1 (only one reset). So s -k*x=15-5=10, which is not correct.
+
+Hmm.
+
+So, this approach is not working.
+
+Another Idea: Perhaps the final g is equal to the sum of a_i's minus the maximum possible number of x's that can be added, but that's not clear.
+
+Wait, perhaps the final g is equal to s - x multiplied by the number of times x could be added without resetting.
+
+But in the first example, s=12, x=5, the number of times x could be added is 2, so 12-2*5=2, but actual g is 3.
+
+Hmm.
+
+I'm stuck. Maybe I should look for patterns or think of a different way.
+
+Let me think about the problem differently.
+
+Suppose for a subsegment [l, r], the process is as follows:
+
+g starts at 0.
+
+For each a_i in [l, r], in order:
+
+    if g + a_i <=x: g +=a_i
+    else: g=0
+
+Thus, the final g is the sum of the a_i's that are added without causing a reset.
+
+So, the problem reduces to counting the number of subsegments where the sum of the a_i's, but only those a_i's that are added without causing a reset, is non-zero.
+
+Hmm.
+
+But how to model this.
+
+Wait, perhaps the key is to find for each subsegment [l, r], whether the sum of the a_i's in [l, r] is greater than x, or whether the sum exceeds x in such a way that it can't be added without resetting.
+
+Alternatively, perhaps the final g is non-zero if and only if the sum of the a_i's in [l, r] is not a multiple of x.
+
+But earlier examples show that this isn't the case.
+
+Another Idea: Let's think about the minimal subsegment that can cause a reset, and see what conditions are needed for g to be non-zero.
+
+Alternatively, perhaps the problem can be transformed into a two-pointer approach, where for each r, we determine the earliest l such that the subsegment [l, r] is a valid one.
+
+But again, not sure.
+
+Wait, perhaps the key is to realize that the final g is non-zero if and only if the sum s of the subsegment is not equal to k *x, where k is the number of resets.
+
+But in the first example, s=12, x=5, and k=2, so 12=2*5 +2, so s is not equal to k*x. So, 12 is not a multiple of 5, and g is 3.
+
+In the second example, s=8, x=4. 8

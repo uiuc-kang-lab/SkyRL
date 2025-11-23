@@ -1,0 +1,449 @@
+Okay, I have this problem to solve, and I need to figure out the best approach. Let me read the problem statement carefully.
+
+So, the problem is about two arrays a and b, each of length n. For each i, I can choose to swap a_i and b_i, which costs c_i coins. I can do this for any number of elements, but the total cost must be at most d. For each query d, I need to find the maximum possible value of gcd of all a's (after swaps) plus the gcd of all b's (after swaps). And I have q queries, each asking for a specific d.
+
+Hmm, the challenge is to compute, for each d, the maximum possible sum of the two gcds, considering that some swaps are made with a total cost not exceeding d.
+
+Let me think about the constraints. n and q are up to 5e5, which is 500,000. So any O(n * q) approach is probably going to be too slow unless optimized well. So I need an efficient way to process each query.
+
+First, I need to think about the possible ways to model this problem. Each element can be in its original state or swapped. The choice for each element affects the sum of the two gcds. But since the gcds depend on all elements, the choices are interdependent.
+
+Wait, but for the sum of the two gcds, maybe we can find a way to model this as a problem where for each element, we choose whether to swap or not, such that the sum of the two gcds is maximized, given the cost constraint.
+
+But the problem is that the choice for one element affects the other elements' gcds. For example, if I swap a pair, that could influence the overall gcd of the a array and the overall gcd of the b array.
+
+This seems tricky. Maybe there's a way to pre-process the possible options for each element, and then find a way to select a subset of elements to swap, such that the sum is maximized, and the total cost is within d.
+
+But with 5e5 elements, even that is challenging.
+
+Alternatively, perhaps we can precompute for each element the possible gcds for a and b, considering whether to swap or not. But I'm not sure.
+
+Wait, let's think about the maximum possible sum. The sum is max_a_gcd + max_b_gcd, where max_a_gcd is the gcd of the a array after swaps, and similarly for b. But how to choose which elements to swap to maximize this sum.
+
+Another idea: For each element, compute all possible options for a_i and b_i (i.e., the two possibilities: not swapped, or swapped), and then for each element, find the pair (g_a, g_b) that can be achieved by selecting whether to swap or not. Then, the problem becomes selecting a subset of elements where, for each element, we choose either (g_a, g_b) or (g_a', g_b') (swapped version), such that the sum of the selected g_a's and g_b's is maximized, and the total cost is <= d.
+
+But this seems like a variation of the knapsack problem, which is NP-hard. So it's not feasible to compute this directly for large n.
+
+So, we need a smarter approach.
+
+Let me think about the problem differently. For each possible swap state (swap or not swap each element), the sum of the gcds is a certain value, and the cost is the sum of the c_i's for the swapped elements. We need to select a subset of elements where the sum of their c_i is <= d, and the sum of the gcds is maximized.
+
+But how to model this? It's a 0-1 knapsack-like problem, where each item (element) can be either included (swap) with a cost and gain, or not included with no cost and no gain. The goal is to maximize the total gain for a given total cost.
+
+But with n up to 5e5, a standard DP approach is impossible because the state would be too large.
+
+So, perhaps we can find a way to represent the possible states in a way that allows us to process them efficiently.
+
+Wait, but the possible values of the sum of gcds are limited. Wait, no, because each a_i and b_i can be up to 1e8, but the gcds can be anything up to the minimum of a_i and b_i. So the sum could be up to 2e8, which is way too big for a DP approach.
+
+Hmm, that's a problem.
+
+Alternative approach: Instead of considering all possible swaps, perhaps find a way to precompute for each element the best possible choice (swap or not) in terms of the sum of the gcds and the cost, and then find a way to combine these choices optimally.
+
+Wait, but each element's choice affects the overall gcds, which are the gcds of the entire array. So, making a swap for one element affects all the elements in the array, making it impossible to make independent decisions.
+
+Another idea: The maximum possible sum is the sum of the maximum possible gcd of a and the maximum possible gcd of b. But that's only possible if all elements are swapped. But that's not necessarily the case.
+
+Alternatively, perhaps for each element, we can compute the possible contributions to the sum of the two gcds, and then try to find a way to select elements to maximize this sum without considering the interdependency.
+
+Wait, but how?
+
+Let me think about the properties of the sum of the two gcds. Let's denote the sum as S = G_a + G_b, where G_a is the gcd of a array and G_b is the gcd of b array.
+
+If I can find for each element, the best possible (G_a, G_b) that can be achieved by swapping or not, and then choose a subset of elements where the sum of costs is <= d, while trying to maximize G_a + G_b.
+
+But again, the problem is that the choices are interdependent.
+
+Hmm, maybe we can model this as a problem where for each element, we have two options: swap or not. The cost is either c_i or 0. The gain is the sum of G_a and G_b for each option. We need to select a subset of elements, the sum of their costs is <= d, and the sum of gains is maximized.
+
+But because the G_a and G_b are dependent on all elements, it's not straightforward.
+
+Wait, perhaps another approach: For each element, the maximum possible contribution to the sum S is the maximum between (g_a, g_b) when not swapped and (g_a', g_b') when swapped. So, for each element, we can compute the best possible (g_a, g_b) pair, and then the problem becomes selecting a subset of elements where the sum of their costs is <= d, and the sum of the g_a's and g_b's is maximized.
+
+But wait, that's not necessarily the case. Because the sum of the g_a's is the gcd of the a array, which is the same as the gcd of all a_i's, which may or may not be the same as the g_a of each element.
+
+Wait, no. The gcd of the a array is the same as the gcd of the g_a values for each element. Similarly for the b array.
+
+So, for the a array, after swapping, the gcd is the gcd of all the a_i's after their choices. So, for each element, if you choose to swap, its contribution to the a array's gcd is g_a'; otherwise, it's g_a. The overall a's gcd is the gcd of all these values.
+
+Similarly for the b array.
+
+So, the sum S is the sum of the a's gcd and the b's gcd. So, for the sum to be as large as possible, we need to choose for each element to swap or not, in a way that the overall a's gcd and b's gcd are as large as possible.
+
+But since the a's and b's gcds are computed from all elements, the choices are not independent.
+
+This seems complicated.
+
+Another angle: Let's think of each element as having two possible options, and we can model this as a problem where for each element, we choose to take option 1 or option 2, with cost c_i or 0, respectively. The goal is to select a subset of elements such that the sum of their costs is <= d, and the sum of G_a and G_b is maximized.
+
+But because the G_a and G_b are functions of all elements, it's not straightforward.
+
+Wait, but what if we fix the G_a and G_b for each element, and then choose elements to maximize the sum, but ensuring that the sum of costs is within d? It's unclear.
+
+Alternatively, perhaps we can precompute for each possible G_a and G_b, the minimal cost to achieve that G_a and G_b, and then for a given d, find all (G_a, G_b) pairs where the minimal cost is <= d, and then find the maximum G_a + G_b.
+
+But again, the problem is that the minimal cost for a given (G_a, G_b) is not straightforward to compute, especially since the G_a and G_b are interdependent.
+
+Wait, perhaps it's better to think in terms of the possible G_a and G_b values. For each element, we can precompute the possible (g_a, g_b) pairs (not swapped or swapped). Then, for each element, we can choose to take either option, and the sum of the two gcds is the sum of the maximum possible g_a and g_b for each element in the selection.
+
+But again, the problem is that the overall G_a and G_b are the gcd of all the selected elements, so it's not just the sum of the individual g_a and g_b.
+
+Hmm, perhaps this is not the way to go. Let's think about the problem differently.
+
+Let me consider that, for a given d, I want to find a subset S of elements to swap (cost sum <= d), such that the sum of the a's gcd and the b's gcd is as large as possible.
+
+But how to model this?
+
+An alternative approach is to realize that the sum of the two gcds can't be larger than the sum of the maximum possible individual gcds for a and b. So perhaps, for each element, we can compute the maximum possible contribution to the sum, and then try to select a subset of elements that can achieve that.
+
+Wait, but each element's contribution depends on the other elements as well. So, for example, if I choose to swap an element, it affects the a array's gcd, which in turn affects the b array's gcd.
+
+Hmm, perhaps it's better to model this as a problem where for each element, we have a choice, and the selection of swaps affects the sum of the two gcds. The key is to find the best possible combination of swaps such that the sum of the two gcds is maximized, subject to the cost constraint.
+
+But how can I model this?
+
+Another idea: For each element, the maximum possible contribution to the sum is either the sum of the two options (swap and not swap). For example, if not swapping gives a higher sum than swapping, then not swapping is better. Otherwise, swapping is better.
+
+So, for each element, compute the sum of the two options, and choose the maximum between the two. Then, the problem reduces to selecting a subset of elements where the sum of their costs is <= d, and the sum of the chosen options is maximized.
+
+But wait, this approach is incorrect because choosing a swap for one element affects the options for other elements.
+
+For example, if I swap element 1, then the a array's gcd is the gcd of a_2, a_3, ..., a_n (assuming I swapped 1) and b array's gcd is the gcd of b_2, b_3, ..., b_n. If I swap element 2, then a array's gcd is the gcd of a_1, a_3, ..., a_n, and b array's gcd is the gcd of b_1, b_3, ..., b_n. So, the sum of the options for element 2 would be the swap option for element 2, but the a and b arrays are now considering other elements.
+
+This suggests that the initial idea of considering each element's maximum contribution without considering the interdependency is incorrect.
+
+So, that approach won't work.
+
+Let me think of the problem in terms of the maximum possible sum S = G_a + G_b. I need to find the maximum S such that I can choose a subset of elements (possibly zero) to swap, with the total cost <= d.
+
+The problem is that each swap affects the overall G_a and G_b, which are the gcds of the entire arrays.
+
+Hmm, perhaps this is a problem that can be approached with a priority queue, where for each element, I can choose to include it in the swap or not, and track the possible sums.
+
+But with n being 5e5, I need an efficient way to compute this.
+
+Wait, another observation: The sum S is G_a + G_b. Since G_a is the gcd of a_1, a_2, ..., a_k, and G_b is the gcd of b_1, b_2, ..., b_k, perhaps the maximum S is achieved when both G_a and G_b are as large as possible.
+
+But again, the interdependency complicates things.
+
+Let me think about the problem differently. What if I precompute for each element the best possible option (swap or not) in terms of the sum of the two gcds. Then, the problem becomes selecting a subset of elements such that their cost is <= d, and the sum of their best options is maximized.
+
+But the problem is that swapping one element affects the other elements' gcds. So, selecting an element to swap affects the sum, but not in a way that can be easily precomputed.
+
+Alternatively, perhaps we can model this as a knapsack problem where each item (element) can be either included (swap) with a cost c_i and a gain of (g_a, g_b) for that element, or not included (no swap) with a cost of 0 and a gain of 0.
+
+Then, the problem is to find a subset of items where the total cost is <= d, and the sum of the gains is maximized.
+
+But with n up to 5e5, a standard knapsack approach is impossible. So, we need a way to optimize this.
+
+Hmm, what's the maximum possible sum of gains? It's the sum of the maximum possible g_a and g_b for each element. But that's a theoretical maximum, and in practice, it's not achievable because the choices are interdependent.
+
+Wait, but perhaps we can find for each possible d, the maximum sum S that can be achieved for a cost <= d, by considering all possible subsets of elements.
+
+But how?
+
+An alternative approach is to precompute for each element the best possible pair (g_a, g_b) when it's swapped or not, and then for each element, we can represent the choice as adding either (g_a, g_b) or (0, 0) with a cost of c_i or 0, respectively.
+
+Then, the problem reduces to finding a subset of these choices where the total cost is <= d, and the sum of the g_a's and g_b's is maximized.
+
+But again, this is a 0-1 knapsack problem, which is not feasible for large n.
+
+So, perhaps we need to find a way to model this in a more efficient manner.
+
+Wait, perhaps for each element, we can precompute the best possible (g_a, g_b) pair, and then find a way to select a subset of elements such that the sum of their costs is <= d, and the sum of their (g_a, g_b) is as large as possible.
+
+But no, because the sum of the (g_a, g_b) is not the same as the overall gcd of the a array and the b array.
+
+Wait, but the overall a array's gcd is the gcd of all the a_i's, which may be different from the sum of the individual g_a's. So, the individual g_a's don't directly translate to the overall gcd.
+
+So, that approach is incorrect.
+
+Hmm, perhaps this problem is similar to the problem where you have multiple options for each item, and you need to select a subset that maximizes the sum under a cost constraint. But standard knapsack methods are not applicable.
+
+So, what's the alternative?
+
+Wait, perhaps the key is to realize that for each element, the maximum possible contribution to the sum S is the maximum between the current sum and the sum when you swap or not. But again, the interdependency makes this tricky.
+
+Another idea: Since each swap decision affects the overall gcds, perhaps the maximum S is achieved by choosing for each element whether to swap or not based on the maximum possible increase in S. But I'm not sure.
+
+Wait, perhaps the problem can be approached by considering that for each element, the maximum contribution to S is the maximum of (g_a, g_b) when swapped or not. Let me denote this as a binary choice for each element: swap or not, and choose the option that gives the higher gain.
+
+Then, the sum S is the sum of all these gains, and the cost is the sum of the chosen gains' c_i's. But again, this approach is incorrect because the sum of the gains is not the same as the overall gcds.
+
+But perhaps, for the sake of finding an upper bound, this approach can give a starting point. Then, perhaps we can use a priority queue to greedily select the swaps that give the highest gain, up to the cost d.
+
+But this approach might not yield the optimal solution because swapping one element could give a higher overall gain, but swapping another might have a lower gain, but in combination, they could give a higher total.
+
+So, this greedy approach might not work.
+
+Hmm, this is getting complicated.
+
+Let me think of a different angle. What's the maximum possible sum S?
+
+It's the sum of the maximum possible G_a and G_b.
+
+But how to find G_a and G_b?
+
+Wait, the maximum possible G_a is the gcd of all a_i's after swaps, and similarly for G_b. So, for G_a, the maximum possible is the gcd of all a_i's, which can be achieved by swapping or not. But the same applies for G_b.
+
+So, for each element, swapping it or not affects both G_a and G_b. So, the sum S is G_a + G_b, which is the sum of the two individual gcds.
+
+So, the problem is to choose for each element whether to swap or not, such that the sum of the two individual gcds is maximized, with the cost of swaps being <= d.
+
+Now, the challenge is how to model this selection efficiently.
+
+Perhaps the solution is to precompute for each element the maximum possible contribution to S if it's swapped or not. Then, select a subset of elements such that the sum of their costs is <= d, and the sum of their contributions is maximized.
+
+But as before, the problem is that the contributions are not independent.
+
+So, perhaps another approach is to model this as a problem where for each element, you can choose to swap it or not, and the sum S is the sum of the two gcds. We need to select a subset of elements with total cost <= d and maximize S.
+
+But again, the key is to find a way to compute this efficiently.
+
+Let me think about the possible maximum S.
+
+The maximum possible S is the sum of the two individual maximum possible gcds for a and b. To find this, we can compute the overall gcd of the a array after swapping (either all or none), and similarly for the b array. But since swapping is optional, the maximum S is the maximum between:
+
+1. The sum of the original a's gcd and the original b's gcd.
+
+2. The sum of the swapped a's gcd and the swapped b's gcd.
+
+3. The sum of the a's gcd when some elements are swapped and the b's gcd is computed based on the new a array, which depends on which elements are swapped.
+
+Wait, but this is not correct because the swapped a array affects the swapped b array's gcd.
+
+Alternatively, perhaps it's better to precompute for each element the maximum possible contribution to S if it's swapped or not, and then model this as a knapsack problem.
+
+But again, the problem is that the contributions are not additive in a way that can be modeled with standard knapsack techniques.
+
+Another Idea:
+
+What if we precompute for each element the maximum possible (g_a, g_b) pair, considering whether to swap it or not. Then, for each element, we can choose to take it as is or swap it, with a cost of c_i or 0. Then, the problem is to select a subset of these elements (with total cost <= d) such that the sum of g_a's and g_b's is maximized.
+
+But this is a 0-1 knapsack problem, which is not feasible for n=5e5.
+
+So, perhaps we need to find a way to represent the possible states in a way that allows us to process the elements efficiently.
+
+Wait, what's the maximum possible sum of g_a's and g_b's?
+
+Each g_a is a divisor of a certain number. For each element, the maximum possible g_a is a_i, and the maximum g_b is b_i. So, the maximum possible S is the sum of the maximum possible g_a and g_b across all elements. But how to compute that.
+
+Wait, perhaps the maximum S is the sum of the overall maximum possible G_a and G_b, but that's not necessarily possible because swapping some elements could affect both.
+
+So, perhaps the maximum S is the sum of the maximum possible G_a (across all elements) and the maximum possible G_b (across all elements).
+
+But that's not necessarily achievable because the swaps are per element.
+
+Wait, but if I can choose to swap all elements, then G_a is the gcd of all a_i's, and G_b is the gcd of all b_i's. So, that's the global maximum S.
+
+But perhaps, for some cases, it's better to swap a subset of elements to get a higher sum.
+
+But again, the problem is that the sum isn't additive.
+
+Hmm, perhaps the key is to precompute for each element the maximum possible gain in S for swapping or not, and then model this as a knapsack problem.
+
+But again, the problem is that the gains are not independent.
+
+So, perhaps we can model this as a knapsack problem where each item has a 'weight' (cost) and a 'value' (gain), and we need to select items to maximize the total value, with the total weight <= d.
+
+The value of each item is the gain in S when we swap that element, which is the maximum between (g_a, g_b) for swapping minus the sum of the other elements' contributions.
+
+Wait, no. Because the gain is not additive. For example, if I swap element 1, the gain is (g_a_swapped - g_a_original) + (g_b_swapped - g_b_original). But the overall S is the sum of all elements' gains.
+
+So, the problem is indeed a 0-1 knapsack problem where each item has a weight (cost) and a value (gain), and we want to maximize the total value with total weight <= d.
+
+Yes, that's correct.
+
+So, the problem reduces to a knapsack problem where each element can be either included (swap) with a cost of c_i and a gain of (g_a_swapped - g_a_original) + (g_b_swapped - g_b_original), or not included (no swap), with a cost of 0 and a gain of 0.
+
+But wait, no. Because when you swap an element, the overall S changes. So, the gain for swapping is not simply the sum of the individual gains, but the sum of the individual gains minus the cost.
+
+So, for each element, swapping gives a gain of (g_a_swapped + g_b_swapped) - (g_a_original + g_b_original) = (g_a_swapped - g_a_original) + (g_b_swapped - g_b_original). The cost is c_i.
+
+So, each element can be represented as an item with a weight of c_i and a value of (g_a_swapped + g_b_swapped) - (g_a_original + g_b_original).
+
+But for each element, the maximum possible gain is the maximum between swapping and not swapping. So, for each element, the gain is the maximum between the gain of swapping or not.
+
+Wait, but that's not correct. Because the overall S is the sum of the gains of all elements. So, for each element, the gain is the sum of the individual gains of whether you swap or not. So, for each element, the maximum possible gain is the maximum between (swapped gain) and (not swapped gain).
+
+So, for each element, the gain can be computed as:
+
+gain = max( (swapped_g_a + swapped_g_b) - (original_g_a + original_g_b), 0 )
+
+Because if swapping gives a positive gain, you choose to swap; otherwise, you choose not to.
+
+But is that correct?
+
+Wait, for example, if swapping an element gives a gain of 5, but the cost is 10, and another element gives a gain of 3 with cost 5, then swapping both is better because 5+3=8 in gain for a total cost of 15, which is better than not swapping any.
+
+So, the gain for the knapsack is the sum of the individual gains, and the cost is the sum of individual costs.
+
+So, the problem is indeed a 0-1 knapsack problem, where each element can be included (swap) with a cost of c_i and a gain of (swapped_g_a + swapped_g_b - original_g_a - original_g_b). The goal is to select a subset of elements with total cost <=d, and the maximum total gain.
+
+Once we compute the maximum gain for each possible d, that's our answer.
+
+But with n up to 5e5, this is impossible to process in O(n) time. So, we need a way to compute this efficiently.
+
+So, the problem is to compute the maximum gain for each possible d, which is the sum of the gains of a subset of elements, with the sum of their costs <=d.
+
+This is a classic unbounded knapsack problem, but with the constraints of 0-1. So, the standard approach is to use dynamic programming, but with n up to 5e5, it's not feasible.
+
+So, what's the alternative?
+
+Wait, perhaps the gains can be precomputed, and then the maximum gain for each d can be found using a binary search approach.
+
+That is, for each possible d, find the maximum gain by considering all elements that can be swapped (i.e., those that give a positive gain). Then, for each d, the maximum gain is the maximum sum of gains of a subset of these elements with total cost <=d.
+
+If we can precompute the gains and the costs for each element, then the problem is to find, for each d, the maximum sum of gains where the sum of costs is <=d.
+
+This is the classic unbounded knapsack problem, but with each item having a 0-1 choice.
+
+So, the approach is:
+
+1. For each element, compute the gain of swapping it, which is (swapped_g_a + swapped_g_b) - (original_g_a + original_g_b). If this is positive, the gain is positive, and the cost is c_i. Otherwise, the gain is 0, and the cost is 0.
+
+2. Collect all elements with positive gain.
+
+3. Compute the maximum gain for each possible total cost using a dynamic programming approach.
+
+But with n up to 5e5, this is not feasible.
+
+So, perhaps we can find a way to model this problem using a frequency array and a prefix approach.
+
+Wait, another Idea: The maximum gain for each d is the maximum sum of gains of a subset of elements, where the sum of their costs is <=d. So, this is similar to the problem of finding the maximum value in a knapsack with capacity d.
+
+To compute this for all d, we can use a dynamic programming approach, but with n up to 5e5, it's impossible.
+
+Thus, perhaps we can find a way to compute the maximum gain for all d in O(n + q log n) time.
+
+Wait, let me think about the possible maximum sum of gains. Since each gain is positive, the maximum possible sum is the sum of all possible positive gains across all elements. So, if we can compute for each possible d, the maximum sum, that's the answer.
+
+But how?
+
+Another Idea: The problem can be transformed into a knapsack problem where each item has a certain cost and a certain gain, and we need to find the maximum gain for each possible cost.
+
+The standard approach is to use a DP array where dp[i] represents the maximum gain achievable with cost i. Then, for each i, we update dp[i + c] = max(dp[i + c], dp[i] + gain) if c is positive.
+
+But with n up to 5e5 and q up to 5e5, this approach is not feasible, as it would require O(n*q) time, which is 2.5e11 operations. That's way too slow.
+
+So, perhaps we can find a way to compress the DP array.
+
+But how?
+
+Wait, perhaps the number of possible gain values is small. But I don't think so. For example, each element can have a gain of up to (a_i + b_i), which can be up to 2e8 per element. So, the possible gains can be up to 5e5 * 2e8 = 1e14. So, that approach is not feasible.
+
+Another Idea: Can we find a way to represent the DP as a frequency array, and then for each d, compute the maximum gain by considering the frequencies of each possible gain.
+
+For example, if we have a frequency array freq[k], which is the number of elements with gain k, then the maximum gain for d can be computed by iterating through the gains in increasing order and adding as much as possible.
+
+But with the gains potentially up to 1e14, this approach is impractical.
+
+Hmm, this is getting really challenging.
+
+Let me think about the problem again. The constraints are tight, but perhaps there's a way to model the problem in a way that allows us to compute the maximum gain for all d efficiently.
+
+Wait, perhaps we can precompute for each element the maximum possible gain if we swap it or not. Then, the problem reduces to selecting a subset of elements (with total cost <=d) that maximizes the sum of gains.
+
+But again, the 0-1 knapsack approach is not feasible for n=5e5.
+
+So, perhaps the problem is intended to be solved with a different approach, perhaps involving precomputing the maximum gains in a way that allows for binary search or other optimizations.
+
+Wait, another Idea: For each element, the gain of swapping is (swapped_g_a + swapped_g_b) - (original_g_a + original_g_b). So, for each element, the gain is the difference between the sum of the swapped a and b and the original sum. So, if this is positive, swapping this element is beneficial.
+
+So, for each element, if swapping it gives a positive gain, we can consider swapping it, as it's more beneficial than not swapping.
+
+So, for each element, we can compute the maximum between swapping and not swapping, and represent it as a 0-1 item with cost c_i and gain (swapped gain - original gain).
+
+Then, the problem is to select a subset of these items with total cost <=d and maximum total gain.
+
+So, the problem is the 0-1 knapsack problem, and the maximum gain for each d is the answer.
+
+But with n up to 5e5, we need to find a way to compute this efficiently.
+
+So, what can we do? Well, perhaps we can find that for each element, the gain is either positive or not, and then we can process all elements with positive gain, and compute the maximum gain for each d.
+
+But how?
+
+Another Idea: Since the cost is per element, and the gain is per element, perhaps the maximum gain for a given d is the sum of the top k elements with the highest gains, where the sum of their costs is <=d.
+
+But this is only true if the gains are independent, which they are not, so this approach is incorrect.
+
+Wait, but perhaps we can sort the elements in a certain way, and then for each possible d, compute the maximum gain by selecting the top elements up to a certain point.
+
+But again, this is not accurate because the gains are interdependent.
+
+So, perhaps the problem requires an approach that precomputes the possible gains and then uses a binary search approach to find the maximum gain for each d.
+
+But I'm not sure.
+
+Another Idea: Let's precompute the maximum possible gain for each element, which is max(gain, 0). Then, for each d, the maximum gain is the maximum sum of these gains, with the sum of costs <=d.
+
+But this is a classic 0-1 knapsack problem, which for n=5e5 and d up to 1e15 is impossible.
+
+So, perhaps we can find a way to represent the DP in a way that allows us to compute the maximum gain for all d values quickly.
+
+Wait, what if we can model the problem as a frequency array, and then for each possible d, compute the maximum gain by summing the frequencies of the gains up to a certain point.
+
+But with gains up to 1e14, this is not feasible.
+
+Hmm.
+
+Perhaps another approach is needed.
+
+Let me think: the maximum possible S is the sum of the maximum possible G_a and G_b. So, perhaps it's possible to precompute for each element the maximum possible contribution to S if swapped or not, and then model this as a knapsack problem.
+
+But again, the interdependence makes this difficult.
+
+Wait, perhaps I can precompute for each element the maximum possible contribution to the sum S when swapped or not, and then model this as a knapsack where each element can be swapped or not, with a cost of c_i or 0, and the goal is to maximize the sum of the maximum contributions.
+
+In this case, the problem becomes a 0-1 knapsack problem with n items, each having a weight c_i and a value (max (swapped_g_a + swapped_g_b) - (original_g_a + original_g_b)).
+
+So, the maximum gain for each d is the maximum value of a subset of these items with total weight <=d.
+
+But with n up to 5e5, this is not feasible to compute for each d.
+
+So, perhaps the problem requires a different approach.
+
+Another Idea: Since each element can be included or excluded, perhaps we can model the problem as a graph where each node represents a possible state of the current cost, and edges represent including or excluding an element. But again, with n=5e5, this is impossible.
+
+Hmm.
+
+Wait, perhaps the problem can be optimized by noting that for each element, the gain is (swapped_g_a + swapped_g_b) - (original_g_a + original_g_b). So, for each element, if the gain is positive, swapping it increases the sum S. So, perhaps, for each element, we can choose to swap it if the gain is positive, and add it to the knapsack solution.
+
+So, the problem reduces to selecting a subset of elements (with positive gains) with total cost <=d, to maximize the sum of gains.
+
+Thus, the problem is the 0-1 knapsack problem, but with n up to 5e5 and d up to 1e15, which is impossible to compute directly.
+
+So, perhaps, the only way is to find that the maximum gain for each d can be computed using a different approach, perhaps by precomputing the possible gains and then using a greedy approach.
+
+But greedy approaches are not optimal for knapsack problems.
+
+So, perhaps, the problem requires a different approach.
+
+Wait, perhaps the maximum S is simply the sum of the maximum possible G_a and G_b. So, to compute this, we can find the overall maximum G_a and G_b after swapping any elements, and sum them.
+
+But in that case, the problem becomes to find the maximum G_a and the maximum G_b, regardless of which elements are swapped.
+
+But no, because swapping certain elements may allow both G_a and G_b to be larger than their original maximums.
+
+Hmm.
+
+Alternatively, perhaps the maximum S is achieved when G_a is the gcd of the a array after swaps, and G_b is the gcd of the b array after swaps, and their sum is maximized.
+
+So, perhaps, for each element, we can choose to swap it or not, and then compute the sum of the two gcds, and find the maximum.
+
+But again, the interdependency makes this difficult.
+
+So, perhaps, given the time constraints, the best approach is to model the problem as a 0-1 knapsack, but find a way to compute it efficiently.
+
+Wait, but given that n is 5e5, we can't process each element as a separate item. So, perhaps, there's a way to find that only a few elements contribute to the maximum gain, and then compute the maximum gain for each d by considering these elements.
+
+But how?
+
+Another Idea: Let's precompute for each element the maximum possible contribution to the sum S (swapped or not swapped). Then, for each element, the gain is the maximum of (swapped_g_a + swapped_g_b - original_g_a - original_g_b) and 0. So, for each element, the gain is the difference between the sum of the swapped a and b and the original sum.
+
+So, the problem is to select a subset of elements with sum of costs <=d, and maximum sum of gains.
+
+But again, with n up to 5e5, it's impossible to compute for each d.
+
+So, perhaps, the solution is to precompute for each element the gain of swapping it, and then compute the maximum gain for each d using a frequency

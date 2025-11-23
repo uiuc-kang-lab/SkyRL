@@ -1,0 +1,446 @@
+0
+x = \frac{n\pi}{10}, \quad n \in \mathbb{Z}
+Okay, so I have this trigonometric equation to solve: \(\cos 3x \cos 6x = \cos 4x \cos 7x\). I need to find the value of x that satisfies this equation. Let me think about how to approach this.
+
+First, I remember that there are product-to-sum identities in trigonometry that can convert products of cosines into sums. Maybe I can apply those here. The product-to-sum identities are:
+
+\[
+\cos A \cos B = \frac{1}{2} [\cos(A+B) + \cos(A-B)]
+\]
+
+So, I can apply this identity to both sides of the equation.
+
+Let's start with the left side: \(\cos 3x \cos 6x\). Using the identity, this becomes:
+
+\[
+\frac{1}{2} [\cos(3x + 6x) + \cos(3x - 6x)] = \frac{1}{2} [\cos 9x + \cos(-3x)]
+\]
+
+But \(\cos(-3x)\) is the same as \(\cos 3x\) because cosine is an even function. So, the left side simplifies to:
+
+\[
+\frac{1}{2} [\cos 9x + \cos 3x]
+\]
+
+Now, the right side: \(\cos 4x \cos 7x\). Applying the same identity:
+
+\[
+\frac{1}{2} [\cos(4x + 7x) + \cos(4x - 7x)] = \frac{1}{2} [\cos 11x + \cos(-3x)]
+\]
+
+Again, \(\cos(-3x) = \cos 3x\), so the right side becomes:
+
+\[
+\frac{1}{2} [\cos 11x + \cos 3x]
+\]
+
+Now, both sides have the same term \(\frac{1}{2} \cos 3x\), so if I subtract that from both sides, I get:
+
+\[
+\frac{1}{2} \cos 9x = \frac{1}{2} \cos 11x
+\]
+
+Multiplying both sides by 2 to eliminate the fraction:
+
+\[
+\cos 9x = \cos 11x
+\]
+
+Now, I need to solve \(\cos 9x = \cos 11x\). I know that \(\cos \theta = \cos \phi\) implies that \(\theta = 2n\pi \pm \phi\), where n is an integer. So, applying this here:
+
+\[
+9x = 2n\pi + 11x \quad \text{or} \quad 9x = 2n\pi - 11x
+\]
+
+Let's solve both cases separately.
+
+First case:
+
+\[
+9x = 2n\pi + 11x
+\]
+
+Subtract 9x from both sides:
+
+\[
+0 = 2n\pi + 2x
+\]
+
+Rearrange:
+
+\[
+2x = -2n\pi \implies x = -n\pi
+\]
+
+Second case:
+
+\[
+9x = 2n\pi - 11x
+\]
+
+Add 11x to both sides:
+
+\[
+20x = 2n\pi
+\]
+
+Divide by 20:
+
+\[
+x = \frac{n\pi}{10}
+\]
+
+So, the general solutions are \(x = -n\pi\) and \(x = \frac{n\pi}{10}\), where n is any integer.
+
+But I should check if these solutions are valid by substituting them back into the original equation to ensure they don't lead to any undefined expressions or contradictions.
+
+Let's take \(x = \frac{n\pi}{10}\). Plugging into the original equation:
+
+\[
+\cos 3x \cos 6x = \cos 4x \cos 7x
+\]
+
+Substitute \(x = \frac{n\pi}{10}\):
+
+\[
+\cos \left(\frac{3n\pi}{10}\right) \cos \left(\frac{6n\pi}{10}\right) = \cos \left(\frac{4n\pi}{10}\right) \cos \left(\frac{7n\pi}{10}\right)
+\]
+
+Simplify the arguments:
+
+\[
+\cos \left(\frac{3n\pi}{10}\right) \cos \left(\frac{3n\pi}{5}\right) = \cos \left(\frac{2n\pi}{5}\right) \cos \left(\frac{7n\pi}{10}\right)
+\]
+
+I can use the product-to-sum identities again on both sides to verify if they are equal. Let's do that.
+
+Left side:
+
+\[
+\frac{1}{2} [\cos(\frac{3n\pi}{10} + \frac{3n\pi}{5}) + \cos(\frac{3n\pi}{10} - \frac{3n\pi}{5})]
+\]
+
+Simplify the angles:
+
+\[
+\frac{3n\pi}{10} + \frac{6n\pi}{10} = \frac{9n\pi}{10}
+\]
+\[
+\frac{3n\pi}{10} - \frac{6n\pi}{10} = -\frac{3n\pi}{10}
+\]
+
+So, left side becomes:
+
+\[
+\frac{1}{2} [\cos \frac{9n\pi}{10} + \cos(-\frac{3n\pi}{10})] = \frac{1}{2} [\cos \frac{9n\pi}{10} + \cos \frac{3n\pi}{10}]
+\]
+
+Right side:
+
+\[
+\frac{1}{2} [\cos(\frac{2n\pi}{5} + \frac{7n\pi}{10}) + \cos(\frac{2n\pi}{5} - \frac{7n\pi}{10})]
+\]
+
+Simplify the angles:
+
+\[
+\frac{4n\pi}{10} + \frac{7n\pi}{10} = \frac{11n\pi}{10}
+\]
+\[
+\frac{4n\pi}{10} - \frac{7n\pi}{10} = -\frac{3n\pi}{10}
+\]
+
+So, right side becomes:
+
+\[
+\frac{1}{2} [\cos \frac{11n\pi}{10} + \cos(-\frac{3n\pi}{10})] = \frac{1}{2} [\cos \frac{11n\pi}{10} + \cos \frac{3n\pi}{10}]
+\]
+
+Now, comparing both sides:
+
+Left side: \(\frac{1}{2} [\cos \frac{9n\pi}{10} + \cos \frac{3n\pi}{10}]\)
+
+Right side: \(\frac{1}{2} [\cos \frac{11n\pi}{10} + \cos \frac{3n\pi}{10}]\)
+
+For these to be equal, \(\cos \frac{9n\pi}{10}\) must equal \(\cos \frac{11n\pi}{10}\).
+
+But \(\cos \theta = \cos \phi\) implies \(\theta = 2k\pi \pm \phi\). So,
+
+\[
+\frac{9n\pi}{10} = 2k\pi \pm \frac{11n\pi}{10}
+\]
+
+Let's solve for n:
+
+Case 1: \(\frac{9n\pi}{10} = 2k\pi + \frac{11n\pi}{10}\)
+
+Subtract \(\frac{9n\pi}{10}\) from both sides:
+
+\[
+0 = 2k\pi + \frac{2n\pi}{10}
+\]
+
+Simplify:
+
+\[
+0 = 2k\pi + \frac{n\pi}{5}
+\]
+
+Divide by \(\pi\):
+
+\[
+0 = 2k + \frac{n}{5}
+\]
+
+Rearrange:
+
+\[
+\frac{n}{5} = -2k \implies n = -10k
+\]
+
+Case 2: \(\frac{9n\pi}{10} = 2k\pi - \frac{11n\pi}{10}\)
+
+Add \(\frac{11n\pi}{10}\) to both sides:
+
+\[
+\frac{20n\pi}{10} = 2k\pi
+\]
+
+Simplify:
+
+\[
+2n\pi = 2k\pi \implies n = k
+\]
+
+So, the solutions are consistent when n is an integer, which means our general solutions are correct.
+
+Therefore, the solutions are \(x = -n\pi\) and \(x = \frac{n\pi}{10}\), where n is any integer.
+
+But let me double-check with a specific value to ensure there are no errors. Let's take n=1.
+
+For \(x = \frac{\pi}{10}\):
+
+Left side: \(\cos \frac{3\pi}{10} \cos \frac{6\pi}{10} = \cos \frac{3\pi}{10} \cos \frac{3\pi}{5}\)
+
+Right side: \(\cos \frac{4\pi}{10} \cos \frac{7\pi}{10} = \cos \frac{2\pi}{5} \cos \frac{7\pi}{10}\)
+
+Using calculator values:
+
+\(\cos \frac{3\pi}{10} \approx 0.5878\)
+
+\(\cos \frac{3\pi}{5} \approx -0.3090\)
+
+So, left side: 0.5878 * (-0.3090) ≈ -0.1816
+
+\(\cos \frac{2\pi}{5} \approx 0.3090\)
+
+\(\cos \frac{7\pi}{10} \approx -0.3090\)
+
+Right side: 0.3090 * (-0.3090) ≈ -0.0955
+
+Wait, that's not equal. Hmm, so perhaps I made a mistake in my general solution.
+
+Wait, maybe I should check the solutions more carefully. Let me try n=1, x=π/10.
+
+Left side: cos(3π/10)cos(6π/10) = cos(54°)cos(108°) ≈ 0.5878 * (-0.3090) ≈ -0.1816
+
+Right side: cos(4π/10)cos(7π/10) = cos(72°)cos(126°) ≈ 0.3090 * (-0.6040) ≈ -0.1866
+
+These are close but not exactly equal. Maybe I made a mistake in the general solution.
+
+Alternatively, perhaps I should consider that the solutions might not be as straightforward. Let me try another approach.
+
+Alternatively, instead of using product-to-sum, maybe I can use the sum-to-product identities on the original equation.
+
+Wait, another approach: maybe rearrange the equation to see if it can be factored.
+
+\(\cos 3x \cos 6x - \cos 4x \cos 7x = 0\)
+
+Not sure if that helps. Alternatively, perhaps express everything in terms of sine or cosine of multiple angles.
+
+Alternatively, maybe use the fact that \(\cos A = \sin(\pi/2 - A)\), but not sure if that helps.
+
+Alternatively, perhaps consider using the identity for \(\cos A - \cos B\), but that's for sum and difference, not product.
+
+Alternatively, perhaps consider writing the equation as:
+
+\(\cos 3x \cos 6x - \cos 4x \cos 7x = 0\)
+
+Then, group terms:
+
+\(\cos 3x \cos 6x - \cos 4x \cos 7x = 0\)
+
+Not sure. Alternatively, perhaps use the identity for \(\cos A \cos B - \cos C \cos D\), but I don't recall a specific identity for that.
+
+Alternatively, perhaps consider using the identity for \(\cos A - \cos B = -2 \sin \frac{A+B}{2} \sin \frac{A-B}{2}\), but that's for subtraction, not sure.
+
+Alternatively, perhaps consider expressing each product as a sum, as I did before, and then see if the equation can be simplified further.
+
+Wait, I think I might have made a mistake in the general solution. Let me revisit that.
+
+From \(\cos 9x = \cos 11x\), the general solution is:
+
+\(9x = 2n\pi \pm 11x\)
+
+So, two cases:
+
+1. \(9x = 2n\pi + 11x\) => \( -2n\pi = 2x\) => \(x = -n\pi\)
+
+2. \(9x = 2n\pi - 11x\) => \(20x = 2n\pi\) => \(x = \frac{n\pi}{10}\)
+
+So, the solutions are \(x = -n\pi\) and \(x = \frac{n\pi}{10}\), where n is any integer.
+
+Now, let's test x = π/10.
+
+Left side: cos(3π/10)cos(6π/10) = cos(54°)cos(108°) ≈ 0.5878 * (-0.3090) ≈ -0.1816
+
+Right side: cos(4π/10)cos(7π/10) = cos(72°)cos(126°) ≈ 0.3090 * (-0.6040) ≈ -0.1866
+
+These are close but not exactly equal. Maybe due to rounding errors. Let me compute more accurately.
+
+cos(54°) ≈ 0.5877852523
+
+cos(6π/10) = cos(108°) ≈ -0.3090169944
+
+So, left side: 0.5877852523 * (-0.3090169944) ≈ -0.1816
+
+cos(4π/10) = cos(72°) ≈ 0.3090169944
+
+cos(7π/10) = cos(126°) ≈ -0.6040102626
+
+Right side: 0.3090169944 * (-0.6040102626) ≈ -0.1866
+
+So, -0.1816 ≈ -0.1866, which is not exactly equal. So, perhaps the solutions are not exact, or maybe I made a mistake in the general solution.
+
+Alternatively, perhaps the general solution should include multiples of π, but maybe the solutions are only specific values.
+
+Alternatively, perhaps I should consider that the equation \(\cos 9x = \cos 11x\) can be rewritten as:
+
+\(\cos 9x - \cos 11x = 0\)
+
+Using the identity for difference of cosines:
+
+\(\cos A - \cos B = -2 \sin \frac{A+B}{2} \sin \frac{A-B}{2}\)
+
+So,
+
+\(-2 \sin \frac{9x + 11x}{2} \sin \frac{9x - 11x}{2} = 0\)
+
+Simplify:
+
+\(-2 \sin 10x \sin (-x) = 0\)
+
+Which is:
+
+\(2 \sin 10x \sin x = 0\)
+
+So, the equation becomes:
+
+\(\sin 10x \sin x = 0\)
+
+Therefore, either \(\sin 10x = 0\) or \(\sin x = 0\).
+
+So, the solutions are:
+
+1. \(\sin x = 0\) => \(x = n\pi\), where n is integer.
+
+2. \(\sin 10x = 0\) => \(10x = m\pi\) => \(x = \frac{m\pi}{10}\), where m is integer.
+
+So, combining both, the general solution is \(x = n\pi\) or \(x = \frac{m\pi}{10}\), where n and m are integers.
+
+Wait, but this contradicts my earlier general solution. So, perhaps I made a mistake earlier.
+
+Let me see. From \(\cos 9x = \cos 11x\), I used the identity to get to \(\sin 10x \sin x = 0\), which gives the solutions as above.
+
+So, the correct general solutions are \(x = n\pi\) or \(x = \frac{m\pi}{10}\), where n and m are integers.
+
+Therefore, the solutions are all real numbers x such that x is an integer multiple of π, or x is an integer multiple of π/10.
+
+So, for example, x = 0, π, 2π, ..., and x = π/10, π/5, 3π/10, ..., up to 10π/10 = π, etc.
+
+So, the solutions are x = nπ or x = (mπ)/10, where n, m ∈ ℤ.
+
+Therefore, the answer is x = nπ or x = (mπ)/10, where n and m are integers.
+
+But the problem asks to present the answer in LaTeX format: \boxed{Your answer}
+
+So, perhaps the answer is x = kπ/10, where k is any integer, including both even and odd multiples.
+
+Alternatively, combining both, the solutions are x = kπ/10, where k is any integer.
+
+Wait, because x = nπ is also x = (10n)π/10, so it's included in the general solution x = kπ/10.
+
+Therefore, the complete solution is x = kπ/10, where k is any integer.
+
+So, the final answer is \boxed{\dfrac{k\pi}{10}} where k is an integer.
+
+But perhaps the question expects specific solutions within a certain interval, but since it's not specified, the general solution is x = kπ/10.
+
+So, I think that's the correct approach.
+</think>
+
+To solve the equation \(\cos 3x \cos 6x = \cos 4x \cos 7x\), we can use trigonometric identities to simplify and find the values of \(x\).
+
+First, we apply the product-to-sum identities to both sides:
+
+\[
+\cos A \cos B = \frac{1}{2} [\cos(A+B) + \cos(A-B)]
+\]
+
+Applying this to both sides:
+
+\[
+\cos 3x \cos 6x = \frac{1}{2} [\cos 9x + \cos(-3x)] = \frac{1}{2} [\cos 9x + \cos 3x]
+\]
+
+\[
+\cos 4x \cos 7x = \frac{1}{2} [\cos 11x + \cos(-3x)] = \frac{1}{2} [\cos 11x + \cos 3x]
+\]
+
+Setting both sides equal:
+
+\[
+\frac{1}{2} [\cos 9x + \cos 3x] = \frac{1}{2} [\cos 11x + \cos 3x]
+\]
+
+Subtracting \(\frac{1}{2} \cos 3x\) from both sides:
+
+\[
+\frac{1}{2} \cos 9x = \frac{1}{2} \cos 11x
+\]
+
+Multiplying both sides by 2:
+
+\[
+\cos 9x = \cos 11x
+\]
+
+The general solutions for \(\cos \theta = \cos \phi\) are:
+
+\[
+\theta = 2k\pi \pm \phi
+\]
+
+Applying this to our equation:
+
+1. \(9x = 2k\pi + 11x\)
+2. \(9x = 2k\pi - 11x\)
+
+Solving these:
+
+1. \(0 = 2k\pi + 2x \implies x = -k\pi\)
+2. \(20x = 2k\pi \implies x = \frac{k\pi}{10}\)
+
+Thus, the general solutions are:
+
+\[
+x = n\pi \quad \text{or} \quad x = \frac{n\pi}{10}, \quad \text{where } n \text{ is an integer}
+\]
+
+Therefore, the final answer is:
+
+\[
+\boxed{\dfrac{k\pi}{10}}
+\]
+
+where \(k\) is any integer.<｜end▁of▁sentence｜>

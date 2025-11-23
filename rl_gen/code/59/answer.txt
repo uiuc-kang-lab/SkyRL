@@ -1,0 +1,977 @@
+0
+Okay, I need to solve this problem where I have to find the minimum x that Robin Hood needs to appear. Let's read the problem carefully.
+
+So, the problem is about determining the minimum amount of gold the richest person should take so that more than half of the population becomes unhappy. Unhappy is defined as having strictly less than half of the average wealth.
+
+Let me break this down step by step.
+
+First, for each test case, I have n people with their current wealth a_i. The richest person is j, and their wealth is max(a). We can increase j's wealth by x, where x is a non-negative integer. We need to find the smallest x such that after this change, more than n/2 people are unhappy.
+
+Wait, wait. The condition is that strictly more than half of the population is unhappy. So, for n people, more than n/2 is n/2 rounded up. Like, if n is 3, more than 1.5 means 2 or more. So, the number of unhappy people needs to be >= ceil(n/2 + 1/2) or something? Wait, no. Let me see: for n people, more than half means more than n/2. So, if n is even, like 4, more than 2 means 3 or more. If n is odd, like 3, more than 1.5 means 2 or more.
+
+So, the required number of unhappy people is (n + 1) // 2. Because for n=3, (3+1)/2=2, which is correct. For n=4, (4+1)/2=2.5, but integer division gives 2, but wait no, (4+1)//2 is 2 in Python, which is correct since more than 2 is 3. Wait, wait, wait. Wait, no: n=4, half is 2. So more than half is 3 people. So required is 3. So the formula is (n // 2) + 1. Because for n=4, 4//2 is 2, adding 1 gives 3. For n=3, 3//2 is 1, adding 1 gives 2. So, yes, the required number is (n // 2) + 1.
+
+So, the task is to find the minimal x such that after adding x to the maximum a_j, the number of people with a_i < (total_sum + x) / 2 is at least (n // 2) + 1.
+
+Wait, no. Wait, the average is (sum + x) / n, right? Because x is added to a_j, so the new sum is sum + x.
+
+So, the average is (sum + x) / n.
+
+A person is unhappy if a_i < average. So, for each person i, if a_i < (sum + x)/n, they are unhappy.
+
+We need to find the minimal x such that the count of such unhappy people is >= (n // 2) + 1.
+
+So, the steps for each test case are:
+
+1. Compute the initial sum S = sum(a_i).
+2. Find the maximum value in a, let's call it max_a.
+3. Determine which elements are max_a. Since there might be multiple, any can be chosen.
+4. For each possible x (starting from 0 upwards), simulate adding x to max_a, compute the new sum S + x, compute the new average, and count how many a_i are less than this average.
+5. Check if the count of unhappy people is >= required threshold.
+6. The minimal x for which this is true is our answer.
+
+But wait, x can be any non-negative integer. So, the problem is to find the minimal x such that when we add x to the maximum, the number of people with a_i < (S + x)/n is >= required.
+
+So, the approach is to perform a binary search on x.
+
+Because x is non-negative, and we can find the minimal x that satisfies the condition.
+
+So, the plan is:
+
+For each test case:
+
+- Compute S = sum(a)
+- Compute required_unhappy = (n // 2) + 1
+- Compute the initial max_a, and the initial list of a's.
+
+We need to find the minimal x such that:
+
+number of a_i < (S + x)/n >= required_unhappy.
+
+So, how can we find such x efficiently?
+
+We can perform a binary search on x. The minimal x is 0, and the maximal x could be something like required_unhappy * n, but perhaps more. Because if adding x makes the average so high that all but required_unhappy people are above, but that's unlikely. Wait, no. The average is the mean of all a_i plus x. So, x can't be more than, say, the maximum possible a_i * 2, but that's not necessarily true. So, the upper bound for x could be something like (required_unhappy * n - S) / 1, but perhaps it's better to compute an upper bound.
+
+Wait, let's think about the upper bound. Suppose we have to make all the people except required_unhappy have a_i >= average. So, the sum of the a_i's excluding the top (required_unhappy) people must be >= (sum + x)/n * (n - required_unhappy). Because when we add x to max_a, the new sum is S + x. The average is (S + x)/n. So, the sum of the top (n - required_unhappy) people must be >= (S + x)/n * (n - required_unhappy).
+
+Wait, but the problem is that the top (n - required_unhappy) people are the ones that are allowed to be >= average. So, the sum of these people's a_i's after adding x must be >= (S + x) * (n - required_unhappy) / n.
+
+Hmm, but perhaps it's easier to model this as a binary search problem.
+
+So, the binary search will find the minimal x such that the count of a_i's less than (S + x)/n is >= required_unhappy.
+
+The binary search will proceed as follows:
+
+- low = 0
+- high = some upper limit. What's a good upper limit?
+
+Well, the maximum possible x is when all other people are as low as possible, but that's not helpful. Alternatively, the upper bound can be (required_unhappy * n - S) / 1, but since x is added to the max, perhaps the required x is at least (required_unhappy * n - S) / 1. Wait, but when x is added to the max, the sum increases by x, so the average is (S + x)/n. So, to have the sum of the top (n - required_unhappy) people >= (S + x) * (n - required_unhappy) /n.
+
+Wait, perhaps it's easier to model the condition as:
+
+sum_{i} a_i < (S + x)/n * (n - required_unhappy) ?
+
+Wait, no. The sum of the a_i's that are less than the average must be >= required_unhappy.
+
+So, perhaps the binary search can be set as follows:
+
+We want the minimal x such that the count of a_i < average is >= required_unhappy.
+
+We can perform a binary search on x, from 0 to some maximum value.
+
+What's the maximum possible x we can have? Well, in the worst case, all the people except required_unhappy can be reduced, but since we can only add x to one person, perhaps the upper bound is (required_unhappy * n - S) / 1, but that's not correct because when x is added to the max, the sum increases, which affects the average.
+
+Wait, let's think about the condition:
+
+After adding x, the average is (S + x) / n.
+
+We need the number of a_i < average to be >= required_unhappy.
+
+Let me consider the worst case where the sum of (n - required_unhappy) people is as small as possible. Because if the sum is too small, even a small x can make the average high enough that many people are above it.
+
+Wait, perhaps the upper bound can be found by considering that the sum of the top (n - required_unhappy) people is S + x - sum of the (required_unhappy) people.
+
+Wait, I'm not sure. Maybe it's easier to set the upper bound as (required_unhappy * n - S) / 1. Because when x is added, the sum is S + x. Let's see:
+
+We need the sum of the (n - required_unhappy) people to be >= (S + x) * (n - required_unhappy) / n.
+
+So, sum_{top} a_i < average * (n - required_unhappy) ?
+
+Wait, I'm getting stuck. Let's think differently.
+
+Let me denote:
+
+After adding x to the max, the average is (S + x)/n.
+
+The number of a_i's less than average must be >= required_unhappy.
+
+We can represent this as:
+
+sum_{a_i < avg} a_i >= required_unhappy.
+
+So, the sum of the a_i's that are below the average must be at least required_unhappy.
+
+So, the average is (S + x)/n.
+
+So, for each a_i, if a_i < (S + x)/n, then it's unhappy.
+
+Now, the sum of all a_i is S + x. The average is (S + x)/n.
+
+So, the sum of unhappy people is the sum of a_i's less than the average.
+
+We need this sum to be >= required_unhappy.
+
+So, the problem reduces to finding the minimal x such that the sum of a_i's less than (S + x)/n is >= required_unhappy.
+
+Now, how to compute this efficiently.
+
+The approach is to perform a binary search on x. For each x, compute the average and then the sum of a_i's less than average. If this sum is >= required_unhappy, then x is a candidate, and we try to find a smaller x. Otherwise, we need a larger x.
+
+So, the steps are:
+
+For each test case:
+
+1. Compute S as sum(a)
+2. required_unhappy = (n // 2) + 1
+3. Compute the initial max_a. Let me call it current_max.
+4. We can start with x = 0. But perhaps the optimal x is larger than 0. So, we perform binary search.
+
+Now, the binary search process:
+
+- low = 0
+- high = some maximum possible x. Let's think: what's the maximum x can be.
+
+The maximum x is such that when all the people except required_unhappy have a_i's as high as possible, and the required_unhappy have a_i's as low as possible.
+
+Wait, perhaps the maximum x can be (required_unhappy * n - S) / 1. Because, if we add x to the maximum, the sum becomes S + x. Let's say all the other people are as low as possible. Then, the average is (S +x)/n. The sum of the other (n - required_unhappy) people is (S + x) - a_j - x, but wait, a_j was the maximum, but after adding x, it's a_j + x.
+
+Wait, maybe I'm overcomplicating. Let's compute the maximum x such that the sum of the top (n - required_unhappy) people is as small as possible. Or perhaps, the maximum x is when all other people (n - required_unhappy) are as small as possible.
+
+Wait, let's compute the minimal possible sum of the top (n - required_unhappy) people.
+
+Wait, the top (n - required_unhappy) people are the ones that are not unhappy. So, their a_i's must be >= average.
+
+So, the sum of these (n - required_unhappy) people is >= average * (n - required_unhappy).
+
+The average is (S + x)/n.
+
+So, sum of top (n - required_unhappy) >= (S + x) * (n - required_unhappy) / n.
+
+We can rearrange this to find x.
+
+Let me denote k = n - required_unhappy.
+
+So, sum_top >= (S + x) * k / n.
+
+sum_top is the sum of the top k people after adding x.
+
+Wait, but after adding x, the maximum increases by x, so the top k people are the original top k, except for the maximum, which is now a_j +x.
+
+So, the sum of the top k people after adding x is sum_top = sum of the top k a_i's (excluding the maximum) plus (a_j +x) if it's part of the top k.
+
+Wait, no. Because when you add x to a_j, which was the maximum, a_j becomes a_j +x. So, the new a_j is larger than the original a_j. So, the top k people after adding x are the original top k a_i's, because adding x to a_j increases it, so it's now larger than the original a_j.
+
+Wait, but the top k people after adding x are all the people except the smallest k, but wait, no. Because adding x to a_j increases it, so the new a_j is larger than the original a_j. So, the top k people after adding x are the original top k, plus possibly a_j. But since a_j was the maximum, adding x to it makes it the new maximum, so it's definitely in the top k.
+
+Wait, for example, suppose k is 2, n is 4. The top 2 are the two largest. Adding x to the maximum, which is now the new maximum, so it's one of the top 2, so the top 2 after adding x are the new maximum and the second maximum.
+
+So, the sum of top k after adding x is sum of the top k a_i's before adding x, plus a_j (the previous maximum) + x? No, wait, no. Because a_j was the maximum, so a_j is in the top k. So, when we add x to a_j, it's still in the top k. So, the sum of the top k after adding x is sum_top = sum of the top k a_i's (before adding x) + (a_j + x) ?
+
+No, that can't be right. Because a_j was already the maximum, so after adding x, it's now a_j + x, which is larger than the previous a_j. So, the top k after adding x are the top k a_i's, which are the previous top k, except that a_j is now a_j +x, which is the maximum. So, the sum of top k is the sum of the previous top k, minus a_j, plus a_j +x.
+
+So, sum_top = sum_prev_top - a_j + (a_j + x) = sum_prev_top + x.
+
+So, sum of top k after adding x is sum_prev_top + x.
+
+And the average is (S +x)/n.
+
+So, the condition is sum_prev_top + x >= (S +x) * k /n.
+
+Let me write this equation:
+
+sum_prev_top + x >= (S + x) * k / n.
+
+But sum_prev_top is the sum of the top k a_i's before adding x. So, sum_prev_top = sum(a_i) - a_j, where a_j is the original maximum.
+
+So, substituting:
+
+sum_prev_top = S_total - a_j, where S_total is the sum of all a_i.
+
+Wait, yes. Because S_total = sum(a_i) = sum_prev_top + a_j.
+
+So, sum_prev_top = S_total - a_j.
+
+So, substituting into the equation:
+
+(S_total - a_j) + x >= (S_total + x) * k / n.
+
+Let me rearrange this equation.
+
+Multiply both sides by n:
+
+n (S_total - a_j + x) >= (S_total +x) * k.
+
+Expanding:
+
+n S_total - n a_j + n x >= k S_total + k x.
+
+Bring all terms to left:
+
+n S_total - n a_j + n x - k S_total - k x >= 0.
+
+Factor:
+
+(n - k) S_total - n a_j + x (n - k) >= 0.
+
+Factor x:
+
+x (n - k) + (n - k) S_total - n a_j >= 0.
+
+Factor (n -k):
+
+(n -k)(S_total - a_j) + x (n -k) >= 0.
+
+Wait, because (n -k) is (n - (n - required_unhappy)) = required_unhappy.
+
+So, n -k = required_unhappy.
+
+So, the equation becomes:
+
+required_unhappy * (S_total - a_j) + x * required_unhappy >= 0.
+
+Dividing both sides by required_unhappy (which is positive):
+
+S_total - a_j + x >= 0.
+
+Which is always true, since S_total is the sum of all a_i's, and a_j is the maximum. So, S_total >= a_j, so S_total - a_j is non-negative.
+
+Wait, this suggests that the condition is always satisfied for any x >= 0. That can't be right.
+
+Hmm, perhaps I made a mistake in the derivation.
+
+Let me re-examine the steps.
+
+We have:
+
+sum_prev_top + x >= (S_total + x) * k / n.
+
+sum_prev_top is S_total - a_j.
+
+So:
+
+S_total - a_j + x >= (S_total +x) * k /n.
+
+Multiply both sides by n:
+
+n (S_total - a_j + x) >= k (S_total +x).
+
+Expanding:
+
+n S_total - n a_j + n x >= k S_total + k x.
+
+Rearranged:
+
+n S_total - k S_total - n a_j + n x - k x >=0.
+
+Factor S_total:
+
+S_total (n -k) - n a_j + x (n -k) >= 0.
+
+(n -k) is equal to required_unhappy.
+
+So, required_unhappy * S_total - n a_j + x * required_unhappy >= 0.
+
+Wait, but S_total is sum(a_i) = sum_prev_top + a_j.
+
+So, S_total = sum_prev_top + a_j.
+
+So, substituting:
+
+required_unhappy * (sum_prev_top + a_j) - n a_j + x * required_unhappy >= 0.
+
+Hmm, perhaps I'm getting stuck here. Maybe I should think of the problem differently.
+
+Alternative approach: For a given x, compute the new sum S' = S + x.
+
+The new average is S' / n.
+
+The sum of the a_i's that are less than the average is the number of such a_i multiplied by their values. We need this sum to be >= required_unhappy.
+
+So, the question is, how to compute, for a given x, whether the sum of a_i's less than (S +x)/n is >= required_unhappy.
+
+Now, how can we compute this sum for a given x efficiently?
+
+We can precompute the prefix sums, and for each x, calculate the average, then find how many a_i's are less than the average, and sum their a_i's.
+
+But for each x, this would take O(n) time, which is acceptable since n is up to 2e5 and t is up to 1e4, but 2e5 * 1e4 is 2e9, which is way too big.
+
+So, we need a way to compute this sum quickly for any x.
+
+Hmm, perhaps we can find a way to compute the minimal x using binary search, but the sum computation needs to be O(1) or O(log n) per query.
+
+Let me think about the variables.
+
+Let me denote:
+
+sum_total = S + x
+
+required_unhappy = (n // 2) + 1
+
+We need the sum of a_i's < average (sum_total /n) to be >= required_unhappy.
+
+Let me denote avg = sum_total / n.
+
+We need sum_less = sum_{a_i < avg} a_i >= required_unhappy.
+
+So, the sum_less is the sum of all a_i that are less than avg.
+
+We can think of this as sum_less >= required_unhappy.
+
+Now, to compute sum_less for a given avg, we can use the prefix sums.
+
+Let me precompute the prefix sum array.
+
+prefix[0] = 0
+
+prefix[1] = a[0]
+
+prefix[2] = a[0] + a[1]
+
+...
+
+prefix[k] = sum of first k a_i's.
+
+So, for a given avg, the number of a_i's less than avg is the maximum k such that prefix[k] < avg.
+
+Wait, no. Because the a_i's are sorted, so we can find the largest index where a_i < avg, and sum all a_i's up to that index.
+
+So, the sum_less is the prefix up to that index.
+
+So, the steps are:
+
+1. Sort the array a.
+
+2. Compute prefix sums.
+
+3. For a given avg, find the largest index where a_i < avg.
+
+4. The sum_less is the prefix up to that index.
+
+So, the question is, for a given x, compute avg, find the maximum index where a_i < avg, and sum the a_i's up to that index.
+
+This can be done in O(log n) time using binary search on the sorted array.
+
+So, the plan is:
+
+For each test case:
+
+- Compute S = sum(a)
+- required_unhappy = (n // 2) + 1
+- Sort a in non-decreasing order.
+- Compute prefix sums.
+
+Then, perform a binary search on x, from 0 to some upper limit.
+
+The binary search will check for a given x, whether the sum of a_i's less than (S +x)/n is >= required_unhappy.
+
+If it is, we can try to find a smaller x. If not, we need a larger x.
+
+So, the binary search steps:
+
+low = 0
+
+high = some maximum value.
+
+We need to find the minimal x where the condition is true.
+
+The maximum x can be determined as follows: the sum of all a_i's after adding x must be such that the average is high enough to have enough a_i's below it.
+
+The maximum x can be computed as (required_unhappy * n - S) / 1, but that's not necessarily correct because adding x to the maximum a_j may not be enough.
+
+Wait, perhaps the maximum x can be (required_unhappy * n - S) / 1, but we need to ensure that a_j + x is >= some value.
+
+Alternatively, the maximum x can be (required_unhappy * n - S) / 1, but since x can't be negative, the maximum x is max(0, (required_unhappy * n - S)).
+
+Wait, because if S + x >= required_unhappy * n, then the average is at least required_unhappy, and all a_i's are <= average, so sum_less is 0, which is less than required_unhappy. So, this is not sufficient.
+
+Hmm, perhaps the maximum x is up to (required_unhappy * n - S) / 1, but if that's negative, then x is 0.
+
+Wait, for example, if S is 100, n is 3, required_unhappy is 2. So, required_unhappy * n is 6. If S is 100, then 6 - 100 is negative, so x can be 0.
+
+But if S is 5, required_unhappy is 2, n is 3. required_unhappy * n is 6. 6 -5=1. So x can be up to 1.
+
+So, the maximum x is (required_unhappy * n - S) if that's positive, else 0.
+
+So, high can be set to max(0, (required_unhappy * n - S)).
+
+So, in code:
+
+required_unhappy = (n // 2) + 1
+
+high = max(0, required_unhappy * n - S)
+
+So, the binary search is from low=0 to high=high.
+
+Now, for each mid in the binary search, compute x = mid, compute avg = (S + mid) / n.
+
+Then, find the largest index where a_i < avg.
+
+sum_less = prefix[index + 1] (since prefix is 0-based).
+
+If sum_less >= required_unhappy, then x is a candidate, and we try to find a smaller x. Else, we need a larger x.
+
+So, this is manageable.
+
+Now, the steps for each test case:
+
+1. Read n and a.
+
+2. Compute S = sum(a)
+
+3. required_unhappy = (n // 2) + 1
+
+4. Sort a.
+
+5. Compute prefix sums.
+
+6. Set low=0, high = max(0, required_unhappy * n - S)
+
+7. Initialize answer to -1.
+
+8. While low <= high:
+
+   a. mid = (low + high) // 2
+
+   b. x = mid
+
+   c. new_sum = S + x
+
+   d. avg = new_sum / n
+
+   e. Find the largest index where a_i < avg.
+
+      - Since a is sorted, use binary search.
+
+   f. sum_less = prefix[index + 1]
+
+   g. if sum_less >= required_unhappy:
+
+      i. set high = mid - 1
+
+      ii. update answer to mid if it's the new minimal x.
+
+   h. else:
+
+      i. set low = mid + 1
+
+9. After binary search, if answer is found, output it. Else, output -1.
+
+Wait, but how to handle the binary search correctly.
+
+Wait, in the binary search, we want the minimal x such that the condition is true. So, in each step, if the condition is true, then we can try to find a smaller x. So, in the binary search, if mid is a candidate, we move high to mid-1, and keep track of the minimal x. If mid is not a candidate, we move low to mid+1.
+
+So, in code, during each iteration:
+
+if condition is met:
+
+   high = mid -1
+
+   if current mid is smaller than the previous answer, update answer.
+
+else:
+
+   low = mid +1
+
+So, once the binary search completes, if the answer is found, output it. Else, output -1.
+
+Wait, but in the initial setup, answer is -1. So, during the binary search, if the condition is met, we set high to mid-1 and check if mid is smaller than the current answer.
+
+Wait, perhaps in code:
+
+Initially, answer = -1.
+
+For each mid:
+
+if condition is true:
+
+   if answer == -1 or mid < answer:
+
+      answer = mid
+
+   high = mid -1
+
+else:
+
+   low = mid +1
+
+So, this way, the minimal x is found.
+
+Now, let's test this logic with some examples.
+
+Test case 1:
+
+n=3
+
+a = [1, 2, 3]
+
+S = 6
+
+required_unhappy = 2 (since 3//2 +1 = 1+1=2)
+
+Sort a: [1,2,3]
+
+prefix: [0,1,3,6]
+
+high = max(0, 2*3 -6) = 0.
+
+So, low=0, high=0.
+
+mid=0.
+
+x=0.
+
+new_sum=6+0=6.
+
+avg=2.
+
+Find largest index where a_i <2.
+
+a is [1,2,3]. So, 2 is not less than 2. So, the largest a_i <2 is 1. So, index=0.
+
+sum_less=1.
+
+required_unhappy is 2. So, 1 <2. So, condition is false.
+
+So, low becomes 1.
+
+Now, loop ends.
+
+So, answer remains -1. So, output is -1.
+
+Which matches the example.
+
+Another test case:
+
+n=4
+
+a = [1,2,3,4]
+
+S=10
+
+required_unhappy= 2+1=3.
+
+So, high = max(0, 3*4 -10) = 2.
+
+So, binary search between 0 and 2.
+
+mid=1.
+
+x=1.
+
+new_sum=11.
+
+avg=2.75.
+
+a is [1,2,3,4]. Find largest a_i <2.75.
+
+Which is 2. So, index=1.
+
+sum_less=1+2=3 >=3. So, condition is true.
+
+So, set high=0.
+
+Now, low=0, high=0.
+
+mid=0.
+
+x=0.
+
+new_sum=10.
+
+avg=2.5.
+
+Find largest a_i <2.5. Which is 2. So, index=1.
+
+sum_less=3 >=3. So, condition is true.
+
+So, set high=-1. Loop ends.
+
+So, answer is 0.
+
+So, Robin can make x=0, but wait, in this case, the condition is met. So, output is 0.
+
+So, the code would return 0.
+
+Another test case:
+
+n=2
+
+a = [1,3]
+
+S=4.
+
+required_unhappy=2.
+
+high= max(0, 2*2 -4) =0.
+
+So, x can be 0.
+
+new_sum=4.
+
+avg=2.
+
+a is [1,3]. So, 1 <2, 3>2. So, sum_less=1 >=2? No, 1<2. So, condition is false.
+
+So, x=0 is not sufficient.
+
+So, high becomes -1, loop ends. Answer is -1.
+
+So, Robin can't make any changes to satisfy the condition.
+
+So, output is -1.
+
+So, the code should handle this.
+
+Now, the code.
+
+So, in Python, the steps are:
+
+Read t test cases.
+
+For each test case:
+
+Read n.
+
+Read a as list of integers.
+
+Compute S = sum(a).
+
+required_unhappy = (n//2) +1.
+
+If n ==1:
+
+   then, after adding x, the average is a[0] +x. Only one person, so no one is unhappy. So, no need for any x. So, output 0.
+
+Else:
+
+   sort a.
+
+   compute prefix sums.
+
+   compute high = max(0, required_unhappy *n - S).
+
+   perform binary search.
+
+Now, in code.
+
+Wait, but n can be 1. So, in that case, required_unhappy is 1. Because (1//2)+1=0+1=1. So, for n=1, required_unhappy is 1.
+
+But for n=1, after adding x, the average is a[0] +x. Since there's only one person, they are not unhappy. So, it's impossible to have more than 0 unhappy people, which is less than required_unhappy=1. So, the answer is -1.
+
+So, in code, before the binary search, we can handle n=1 as a special case.
+
+So, the code will be:
+
+for each test case:
+
+n = int(input())
+
+a = list(map(int, input().split()))
+
+if n ==1:
+
+   print(0 if (1//2 +1) ==1 else -1)
+
+   continue
+
+S = sum(a)
+
+required_unhappy = (n//2) +1
+
+if required_unhappy >n:
+
+   # because if required_unhappy is larger than n, it's impossible.
+
+   print(-1)
+
+   continue
+
+high = max(0, required_unhappy *n - S)
+
+low =0
+
+answer =-1
+
+while low <= high:
+
+   mid = (low + high) //2
+
+   x = mid
+
+   new_sum = S +x
+
+   avg = new_sum /n
+
+   # find the largest index where a[i] < avg.
+
+   # binary search on a.
+
+   left =0
+
+   right =n-1
+
+   best =-1
+
+   while left <= right:
+
+       mid_b = (left + right) //2
+
+       if a[mid_b] < avg:
+
+           best = mid_b
+
+           left = mid_b +1
+
+       else:
+
+           right = mid_b -1
+
+   if best !=-1:
+
+       sum_less = prefix[best +1]
+
+       if sum_less >= required_unhappy:
+
+           answer = mid
+
+           high = mid -1
+
+       else:
+
+           low = mid +1
+
+   else:
+
+       low = mid +1
+
+if answer ==-1:
+
+   print(-1)
+
+else:
+
+   print(answer)
+
+Wait, but in the code, the prefix is 0-based, with prefix[0]=0, prefix[1]=a[0], etc.
+
+Wait, in code:
+
+prefix = [0]
+
+for num in a:
+
+   prefix.append(prefix[-1] + num)
+
+So, prefix has length n+1.
+
+So, for index in a, a[i], the prefix up to i is prefix[i+1].
+
+So, in the binary search for a_i < avg, we can have left=0, right =n-1.
+
+So, in code, the binary search for the largest index where a[i] < avg.
+
+Once best is found, sum_less is prefix[best+1].
+
+So, the code should work.
+
+Now, let's see.
+
+Another test case:
+
+n=3
+
+a = [1,2,4]
+
+S=7
+
+required_unhappy=2.
+
+high = max(0, 2*3 -7) = -1, so high=0.
+
+So, binary search between 0 and 0.
+
+mid=0.
+
+x=0.
+
+new_sum=7.
+
+avg=7/3 ~2.333.
+
+Find a[i] <2.333.
+
+a[0]=1 <2.333: yes.
+
+a[1]=2 <2.333: yes.
+
+a[2]=4 >=2.333: no.
+
+So, best is 1.
+
+sum_less = prefix[2] =1+2=3 >=2.
+
+So, condition is true.
+
+So, set high=-1.
+
+Loop ends.
+
+So, answer is 0.
+
+So, Robin can make x=0, but in this case, the sum_less is 3 >=2.
+
+So, output is 0.
+
+So, that's correct.
+
+Another test case:
+
+n=4
+
+a = [1, 2, 3, 4]
+
+S=10
+
+required_unhappy=3.
+
+high= max(0, 3*4 -10)=2.
+
+So, binary search between 0 and 2.
+
+mid=1.
+
+x=1.
+
+new_sum=11.
+
+avg=2.75.
+
+Find a[i] <2.75.
+
+a[0]=1: yes.
+
+a[1]=2: yes.
+
+a[2]=3: no.
+
+a[3]=4: no.
+
+So, best is 1.
+
+sum_less=3 >=3. So, condition is true.
+
+Set high=0.
+
+Now, mid=0.
+
+x=0.
+
+new_sum=10.
+
+avg=2.5.
+
+Find a[i] <2.5.
+
+a[0]=1: yes.
+
+a[1]=2: yes.
+
+a[2]=3: no.
+
+So, best is 1.
+
+sum_less=3 >=3. So, condition is true.
+
+Set high=-1.
+
+So, answer is 0.
+
+So, Robin can make x=0.
+
+Wait, but after adding x=0, the sum is 10, average is 2.5.
+
+a[0]=1 <2.5: yes.
+
+a[1]=2 <2.5: yes.
+
+a[2]=3 >=2.5: no.
+
+a[3]=4 >=2.5: no.
+
+sum_less is 3 >=3. So, condition is met.
+
+So, Robin doesn't need to make any changes. So, output is 0.
+
+Which is correct.
+
+Another test case:
+
+n=2
+
+a = [1,3]
+
+S=4
+
+required_unhappy=2.
+
+high= max(0, 2*2 -4)=0.
+
+So, binary search between 0 and 0.
+
+mid=0.
+
+x=0.
+
+new_sum=4.
+
+avg=2.
+
+Find a[i] <2.
+
+a[0]=1 <2: yes.
+
+a[1]=3 >=2: no.
+
+best is 0.
+
+sum_less=1 >=2? No, 1 <2.
+
+So, condition is false.
+
+So, low becomes 1.
+
+Loop ends. answer remains -1.
+
+So, output is -1.
+
+Which is correct.
+
+So, the code seems to handle all these cases correctly.
+
+Thus, the code should be implemented as described.
+</think>
+
+To solve this problem, we need to determine the minimum amount of gold the richest person should take to make Robin Hood appear by ensuring more than half of the population becomes unhappy. A person is considered unhappy if their wealth is strictly less than the average wealth of the pot.
+
+### Approach
+1. **Problem Analysis**:
+   - The goal is to make more than half of the population (i.e., more than `n/2` people) unhappy.
+   - The average wealth after the richest person takes `x` gold should be such that more than half of the population's wealth is below this average.
+
+2. **Key Insights**:
+   - Calculate the initial sum of wealth `S` and the required number of unhappy people `required_unhappy = (n // 2) + 1`.
+   - Use binary search to find the minimum `x` such that the number of people with wealth less than the new average is at least `required_unhappy`.
+
+3. **Algorithm**:
+   - Sort the list of wealth values to efficiently find the number of people with wealth less than a given value using binary search.
+   - Use binary search to determine the minimum `x` by checking if the number of

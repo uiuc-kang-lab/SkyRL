@@ -1,0 +1,723 @@
+0
+Okay, so I have this problem to solve. Let me read it carefully and understand what's being asked.
+
+The problem is about a grid with n rows and m columns, all initially white. We have two types of operations, H and V. H is a horizontal operation which selects a 1xk rectangle and turns all its cells black. V is a vertical operation which does the same but for a kx1 rectangle.
+
+After each operation, if any rows or columns become completely black, all the cells in those rows and columns are reset to white. So, it's like a cascading effect. For example, if a row is completely black, any subsequent operations that affect it will reset it back.
+
+The task is to process q operations and determine if it's possible to perform all of them. If it's impossible, output -1. Otherwise, output the top-left cell of each H or V operation.
+
+Hmm. So each operation is either H or V, and after each, we might have to reset some rows and columns.
+
+I need to model this process. Let's think about what H and V operations do.
+
+For H operations: each H operation affects a horizontal line of k cells. So, for each row, if we perform H operations across that row, the cells can be turned on. But if a row is completely black after any operation, any new H operations on that row will reset it.
+
+Same for V operations: they affect a column's cells. After each V operation, if a column is fully black, any further V operations on that column will reset it.
+
+But how do these operations interact? For example, if I perform an H operation on row i, covering columns 1 to k, then perform a V operation on column j (which is within the same row i), then the cell (i,j) will be black. But if I perform another H operation on row i, it might turn some cells black again, but if the entire row is black, it resets.
+
+So the key is to model the black and white regions in the grid, and after each operation, check if any rows or columns have become completely black, and if so, reset them.
+
+The challenge is to find a way to represent the state of the grid efficiently, and process each operation quickly.
+
+But considering the constraints (n and m up to 100, q up to 1000 per test case), perhaps a simulation approach is feasible, but we need to find a way to model the operations without excessive computation.
+
+Wait, but for each operation, the process is: apply the H or V, then check if any row or column is fully black, and reset them. So, the state of the grid can change after each operation, but we have to manage it carefully.
+
+Let me think about the structure of each operation.
+
+For H: each operation covers a 1xk rectangle. So, each H operation on row i, column j affects k consecutive cells in row i, starting from column j.
+
+But when we perform all H operations, each row can have multiple such operations. But, after all operations, if any row is completely black, it resets.
+
+Similarly for V operations, each affects k consecutive cells in a column.
+
+So, the problem seems similar to a problem where each operation is a range update, and after each, we have to check and possibly reset the rows or columns.
+
+But how to model the state of the grid and efficiently apply these operations.
+
+Idea: For each row, track the leftmost and rightmost positions that are black. Similarly for each column. Then, for each H operation, determine if it can fit within the current state.
+
+Wait, but H operations are horizontal. So for each row, each H operation would extend the black region to the right. But if the entire row is already black, any new H operation would reset it.
+
+Similarly, V operations extend the black region upwards.
+
+So, perhaps for each row, we can track the leftmost and rightmost indices that are black. Similarly for columns.
+
+This way, when processing an H operation on row i, we check if the current left is 0 and the current right is k-1 (assuming 0-based or 1-based indices). If so, the H operation can't do anything, and we just apply it. Otherwise, the new right is min(current right +k, m-1). Wait, but the operation is 1xk, so the rectangle must fit within the grid.
+
+Wait, no. The H operation is a 1xk rectangle, so for a row i, the H operation can be applied from column j to j+k-1, as long as j +k-1 <= m.
+
+So, for each row i, H operation on (i, a, b), where a is the starting column, and b = a +k -1.
+
+Similarly for V: for a column j, a V operation is a kx1 rectangle, so it spans rows a to a +k-1.
+
+So, perhaps for each row, we can keep track of the range of columns that are black. Similarly for each column, the range of rows.
+
+But how to model this? Let's think of each row as a set of intervals, but perhaps for each row, the black columns are a contiguous range if the operations are applied in a way that doesn't leave gaps.
+
+Wait, but when you apply H operations, they could create gaps. For example, if you apply H on row i from column 0 to k-1, then another H on row i from k to 2k-1, but if k is 2, then the second H covers columns 2,3, but if the first was 0,1, then the second is 2,3. So, the first H leaves columns 0,1, but the second adds columns 2,3.
+
+Now, in that scenario, the row would have black cells from 0 to 3 (if k=2). But if any of those cells are black, then after each operation, the row might be reset.
+
+Wait, but that's not necessarily the case. Because, each operation is processed, and if the row becomes completely black, it's reset.
+
+So, for each row, after each operation, if the union of all black cells in that row is the entire row, then it's reset to white.
+
+Same for columns.
+
+So, perhaps the approach is to model each row and column as a set of black cells, but since the grid is big, it's not feasible to represent each row and column as a set. Instead, for each row, we can track the leftmost and rightmost black cells. Because, any H operation on that row will potentially expand the rightmost as far as possible, but only in the right direction.
+
+Wait, no. Because H operations are applied in the row, they can affect any k consecutive cells. So, the black regions can be in any position within the row.
+
+But tracking for each row the left and right black cells would allow us to determine if the entire row is black.
+
+Let me think: For a row i, suppose that the leftmost black cell is l and the rightmost is r. If r - l + 1 >= m, then the row is completely black. Otherwise, it's not.
+
+Similarly for columns.
+
+So, for each row i, we can track l_i and r_i, the leftmost and rightmost black cells. Similarly, for each column j, track t_j and b_j, the topmost and bottommost black cells.
+
+This way, after each operation, for each row i, we can check if the entire row is black. If yes, reset it. Similarly for columns.
+
+This seems manageable.
+
+Now, for each operation, we need to process it, and after each, update the l_i, r_i, t_j, b_j for the affected rows or columns, and then check for any rows or columns that are now completely black.
+
+But how to process the H and V operations.
+
+For H operations:
+
+Each H operation is a 1xk rectangle in a row. So, for a given row i, and a column j, the H operation affects cells (i, j) to (i, j + k -1).
+
+But j + k-1 can't exceed m-1 (assuming 0-based indices).
+
+So, for row i, in columns j to j +k-1, the cells are turned black.
+
+So, before applying this H operation, we can check the current state of the row i. If the current l_i is 0 and r_i is m-1 (assuming 0-based), then the row is already black, so nothing changes.
+
+Otherwise, the H operation will expand the current black region. So, for row i, the new l_i' would be the minimum of current l_i and j. The new r_i' would be the maximum of current r_i and j +k -1.
+
+If the new l_i' is 0 and new r_i' is m-1, then the row is now completely black, so after processing this operation, we need to reset it.
+
+Similarly for a V operation on column j:
+
+Each V operation affects k consecutive rows starting at row a. So, for column j, the V operation affects rows a, a+1, ..., a +k-1.
+
+So, for column j, the new t_j' is the minimum of current t_j and a. The new b_j' is the maximum of current b_j and a +k -1.
+
+Again, if the new t_j' is 0 and new b_j' is the last row (n-1), then the column is reset.
+
+So, the plan is:
+
+1. For each row, track l_i and r_i. Initially, all rows are white, so l_i = 0 and r_i = m-1.
+
+2. For each column, track t_j and b_j. Initially, all columns are white, so t_j = 0 and b_j = n-1.
+
+3. For each operation in the sequence:
+
+   a. If it's H, apply to a row i, starting at column j, covering j to j +k-1.
+
+   i. For the row i, before applying, check if current l_i == 0 and r_i == m-1. If yes, do nothing.
+
+   ii. Otherwise, compute new_l = min(l_i, j), new_r = max(r_i, j +k -1).
+
+   iii. If new_l ==0 and new_r == m-1, then after this operation, the row is black. So, set l_i and r_i to 0 and m-1, respectively.
+
+   iv. Else, set l_i = new_l, r_i = new_r.
+
+   v. After this, check if l_i ==0 and r_i == m-1. If yes, reset the row.
+
+   Similarly for V operations.
+
+   But wait, the operation may not be possible if j +k-1 exceeds m-1 for H operations, or a +k-1 exceeds n-1 for V operations.
+
+   So, before applying the operation, we need to check if the operation is possible. If not, then the operation can't be applied, and we have to output -1.
+
+   Because according to the problem statement, we need to process all operations. So, if any operation is impossible, output -1.
+
+   So, for each H operation, we must check if j +k-1 <= m-1. Similarly for V operations, a +k-1 <= n-1.
+
+   So, step a.3i checks if it's possible, and step a.5i also checks for the V.
+
+   So, if any operation is not possible (i.e., j +k-1 > m-1 for H, or a +k-1 >n-1 for V), then the process is impossible, so output -1.
+
+   So, for each operation, first check if it's possible. If not, output -1.
+
+   So, in code: for each operation, check if it's H and j +k-1 exceeds m-1, or V and a +k-1 exceeds n-1. If so, output -1.
+
+   Now, after processing the operation, we have to check if any row or column is now entirely black. Because after each operation, if any row is completely black, any further operations on those rows will reset the row.
+
+   So, after each operation, for each row, if l_i is 0 and r_i is m-1, then that row is completely black. Similarly for columns.
+
+   So, after each operation, we need to:
+
+   - For each row i:
+     if l_i ==0 and r_i == m-1:
+         mark this row as to be reset.
+   - Similarly for each column j:
+     if t_j ==0 and b_j ==n-1:
+         mark this column as to be reset.
+
+   - Then, for all marked rows, set l_i =0 and r_i =m-1.
+
+   - For all marked columns, set t_j =0 and b_j =n-1.
+
+   - Then, output the operation's result.
+
+   But wait, the problem says that after each operation, if any row or column becomes completely black, any further operations on those rows or columns will reset. So, after processing the operation, the grid is updated, and we have to check and reset any rows/columns that are now entirely black.
+
+   So, for each operation, after applying it, we need to check and reset the rows and columns that are now completely black.
+
+   So, during each step, after processing the operation, we do the following:
+
+   1. For each row, check if it's completely black. For each such row, add it to a list of rows to reset.
+
+   2. For each column, check if it's completely black. For each such column, add it to a list of columns to reset.
+
+   3. For each row in the reset list, set l_i =0 and r_i =m-1.
+
+   4. For each column in the reset list, set t_j =0 and b_j =n-1.
+
+   So, after each operation, the grid may have some rows and columns reset. Then, any new operation that could affect these rows or columns will be applied.
+
+   So, the plan is:
+
+   For each test case:
+
+   - Read n, m, k, q, and the string s of operations.
+
+   - Initialize for each row i, l_i =0, r_i =m-1.
+
+   - Initialize for each column j, t_j=0, b_j =n-1.
+
+   - For each operation in s:
+
+      a. Check if the operation is H or V.
+
+         i. For H: j is the starting column, and j +k-1 must be <=m-1.
+
+         ii. For V: a is the starting row, a +k-1 must be <=n-1.
+
+      b. If the operation is not possible (e.g., j +k-1 > m-1 for H, a +k-1 >n-1 for V), output -1.
+
+      c. Apply the operation:
+
+         i. For H: a row i is selected. So, for that row i, apply the H operation.
+
+            - Check if current l_i is 0 and r_i is m-1. If so, do nothing.
+
+            - Else, compute new_l = min(l_i, j), new_r = max(r_i, j +k-1).
+
+            - If new_l is 0 and new_r is m-1, then the entire row is black. So, set l_i =0, r_i =m-1.
+
+            - Else, set l_i = new_l, r_i = new_r.
+
+            - Then, check if l_i ==0 and r_i ==m-1. If so, mark this row for reset.
+
+         ii. For V: a column j is selected. So, for that column j, apply the V operation.
+
+            - Check if current t_j is 0 and b_j is n-1. If so, do nothing.
+
+            - Else, compute new_t = min(t_j, a), new_b = max(b_j, a +k-1).
+
+            - If new_t is 0 and new_b is n-1, then the entire column is black. So, set t_j =0, b_j =n-1.
+
+            - Else, set t_j = new_t, b_j = new_b.
+
+            - Then, check if t_j ==0 and b_j ==n-1. If so, mark this column for reset.
+
+      d. After applying the operation, collect all rows that are now completely black (l_i ==0 and r_i ==m-1) and all columns that are now completely black (t_j ==0 and b_j ==n-1).
+
+      e. For each row in the reset list, set l_i = 0, r_i =m-1.
+
+      f. For each column in the reset list, set t_j =0, b_j =n-1.
+
+      g. Output the operation's result (whether it's H or V).
+
+   Now, the question is: After each operation, how many rows and columns are reset?
+
+   But for each operation, after applying it, the grid may have some rows or columns that are now completely black. So, for each such row or column, we have to mark it to be reset, and then reset them after processing.
+
+   So, the steps are:
+
+   After each operation:
+
+   - Create a list of rows that are now completely black (l_i ==0 and r_i ==m-1).
+
+   - Create a list of columns that are now completely black (t_j ==0 and b_j ==n-1).
+
+   - For each row in the reset list, set l_i =0 and r_i =m-1.
+
+   - For each column in the reset list, set t_j=0 and b_j =n-1.
+
+   - Then, output the operation's result.
+
+   Now, the problem is that each operation can potentially reset multiple rows and columns, but each reset operation may affect the subsequent processing.
+
+   So, for example, if a row is reset, any future H operations in that row would be applied to a new row, not the same one. So, the row is now considered as completely black and won't be affected by further operations in the same row.
+
+   So, the process is correct.
+
+   Now, let's think about the data structures.
+
+   For each row, we can track l_i and r_i as variables.
+
+   For each column, t_j and b_j.
+
+   So, in Python, for each row i, 0 <=i <n, we can have l[i] and r[i].
+
+   Similarly, for each column j, t[j] and b[j].
+
+   Now, the initial values are:
+
+   l[i] =0, r[i] =m-1 for all i.
+
+   t[j] =0, b[j] =n-1 for all j.
+
+   So, for each row and column, these variables are properly initialized.
+
+   Now, for each operation, we have to perform the following steps.
+
+   So, let's outline the code.
+
+   Read t test cases.
+
+   For each test case:
+
+      Read n, m, k, q.
+
+      Read s (sequence of H and V operations).
+
+      Initialize l = [0] * n, r = [m-1] *n.
+
+      Initialize t = [0] * m, b = [n-1] * m.
+
+      reset_rows = set()
+
+      reset_cols = set()
+
+      for each op in s:
+
+          if op is 'H':
+
+              i = column index (the starting column is i, the part after H is k columns, starting at i to i +k-1.
+
+              Wait, wait. Wait, the operation is H: a 1xk rectangle. So, for example, if k=2, the H operation can be applied starting at column 0, covering 0 and 1. Or starting at column 1, covering 1 and 2, etc.
+
+              So, for a row i, the H operation is applied to columns j ... j +k-1.
+
+              So, for the operation, the starting column is j, and the operation covers j, j+1, ..., j +k-1. So, the starting column can be from 0 to m-1 -k +1.
+
+              So, during processing, for H, j can be from 0 to (m -k) inclusive.
+
+              So, during the processing, for each H op, the starting column j is given. So, in the input string, each H is a single character (e.g., 'H') followed by some parameters. Wait, no. The input string is a sequence of H and V operations, each operation is a single character.
+
+              Wait, no. The input string is a sequence of H and V. For each operation, it's either an H or V, without any parameters.
+
+              Wait, looking back at the problem statement: the input is a string of length q, consisting of 'H' and 'V' — each operation is a single character.
+
+              So, for each op in s, it's either H or V.
+
+              So, for each op, we can check if it's H or V.
+
+              So, for an H op, j is the starting column, and the operation covers j to j +k -1.
+
+              So, for example, if j is 0 and k is 2, then the H operation is applied to columns 0 and 1.
+
+              So, the starting column j can be from 0 to (m -k) inclusive.
+
+              So, for the H operation, j is given as part of the op.
+
+              So, in code, for each op in s:
+
+                  if op == 'H':
+
+                      j = ... (the starting column)
+
+                      a = j
+
+                      b = j +k -1
+
+                      if b >= m:  # because j +k-1 > m-1 is not allowed.
+
+                          # Wait, no. Because j +k-1 can't exceed m-1.
+
+                          # So, if j +k-1 >= m: invalid, output -1.
+
+                          # So, before applying, check if j +k-1 >= m.
+
+                          if j +k-1 >= m:
+
+                              print(-1)
+
+                              # process next op.
+
+                              continue
+
+                  else: # V
+
+                      a = ... (the starting row)
+
+                      b = a +k -1
+
+                      if b >=n:
+
+                          print(-1)
+
+                          # process next op.
+
+                          continue
+
+              So, for each H op, j is given as the starting column, so the operation affects columns j, j+1, ..., j +k-1.
+
+              So, for the H op, j must satisfy j +k-1 <= m-1.
+
+              Similarly for V op, a +k-1 <=n-1.
+
+              So, in code, for each op in s:
+
+                  if op == 'H':
+
+                      j = op[1]  # assuming that the input is a string with j as the second character.
+
+                      # wait, no, the input is a string like 'H' followed by the parameters.
+
+                      Wait, wait. The input is a single string, each character is H or V. So, for example, for q=3 and s='HVV', the operations are H followed by V, then V.
+
+                      So, for each op in s:
+
+                          op_char = s[i]
+
+                          if op_char is 'H':
+
+                              j = starting column
+
+                              k is fixed as the parameter of H. But in the problem statement, k is given for each operation. Wait, no, the input is a string s of length q, where each op is H or V, and k is given as per the problem statement.
+
+                      Wait, wait, the problem says that the input is a string s of length q, where each operation is H or V. But the problem also says that for each operation, k is known.
+
+                      Wait, the problem statement says: "the sequence of operation types".
+
+                      Then, for each test case, the string s is given, and each character is H or V. So, the k is given as per the problem statement.
+
+                      So, in the code, for each test case, the k is known, and for each op in s, the operation is H or V, and the parameters are not given. So, in the code, for each op, j or a is not given. So, how to get j or a?
+
+                      Wait, this seems conflicting.
+
+                      Oh wait, I think I made a mistake here.
+
+                      The problem statement says that for each test case, the second line is a string s of length q, which consists of 'H' and 'V' — each operation is H or V. But for each operation, the parameters are not given. Because in the problem statement, the input is a string s of length q, which for H and V operations, the parameters are not given. So, each op is either H or V, and the k is given in the problem statement.
+
+                      So, in the code, for each op in s, it's either H or V. So, for each op, the parameters are not given, meaning that k is the same for all operations.
+
+                      So, for each test case, the first line is n, m, k, q, and the second line is a string s of length q, each character is H or V.
+
+                      So, for each op, the parameters are not known. Therefore, for each op, the H or V operation is applied with k as a fixed parameter.
+
+                      Wait, but then the problem says that each operation is a 1xk or kx1 rectangle. So, for H, the operation is a 1xk rectangle, which must fit within the grid. So, for each H op, the starting column j must satisfy j +k -1 <=m-1.
+
+                      So, in the code, for each op:
+
+                          if op is H: then j is the starting column, and the operation covers j to j +k-1.
+
+                          So, for H ops, j can be from 0 to m -k.
+
+                          Similarly for V ops: a can be from 0 to n -k.
+
+                          So, in code, for each op in s:
+
+                              if op is H:
+
+                                  j = the starting column.
+
+                                  a = j
+
+                                  b = j +k -1
+
+                                  if b >= m: impossible, output -1.
+
+                              else:
+
+                                  a = the starting row.
+
+                                  b = a +k -1
+
+                                  if b >=n: impossible, output -1.
+
+                          So, for each op, we have to get j or a.
+
+                          But wait, wait. The input is a string s of q characters, each is H or V. So, for each op, the starting column or row is not given. So, how to get j or a?
+
+                          Oh wait, no. Wait, I think I'm misunderstanding the problem.
+
+                          Looking back:
+
+                          The input for each test case is a string s of length q, where each character is H or V. So, the first line is n, m, k, q.
+
+                          So, the string s is of length q, each being H or V. So, for each op in s, it's either H or V, but the parameters (like j for H, a for V) are not provided.
+
+                          So, that's a problem because, without knowing j or a, how to apply the H or V operations.
+
+                          Wait, this is a critical misunderstanding. Because, in the problem statement, for each op, it's either H or V, but the parameters are not given.
+
+                          Oh wait, this can't be right. Because then, the problem would require us to process H and V operations without any parameters, which is impossible.
+
+                          So, perhaps I misread the problem.
+
+                          Let me reread the problem statement.
+
+                          Problem statement:
+
+                          You are given a grid consisting of n rows and m columns, where each cell is initially white. Additionally, you are given an integer k, where 1 <=k <= min(n, m).
+
+                          You will process q operations of two types: H (horizontal) and V (vertical).
+
+                          So, the problem is, for each op, it's H or V, but for each, the parameters are not given. So, how to model them.
+
+                          Oh wait, no. Wait, the problem statement says that each operation is either H or V, and each H is a 1xk rectangle, each V is a kx1 rectangle.
+
+                          So, for H operations, the parameters are 1xk, so the operation is a 1xk rectangle. So, the H operation is applied to a 1xk rectangle — which means that it's a horizontal operation that covers k consecutive columns in a single row.
+
+                          So, for H, the operation is applied to a row, starting at column j, covering j to j +k -1 columns. So, the parameters are not given, so how is the starting column j determined?
+
+                          Wait, this is a problem because the starting column j is not given.
+
+                          Oh wait, perhaps the H operation is applied to a 1xk rectangle, but the position is determined by the problem. So, perhaps the H operation is always applied to the first k columns of the grid, but that's not clear.
+
+                          Or perhaps, the H and V operations are not specified by the problem, but that's not the case.
+
+                          Hmm, this is getting confusing.
+
+                          Let me re-examine the problem statement.
+
+                          The problem says that each H operation is a 1xk rectangle. So, for H, the operation is applied to a 1xk rectangle, but the starting position is not given. So, perhaps for H operations, the starting column is 0, and the operation covers columns 0 to k-1. So, for each H operation in the input string, it's applied to the same starting columns.
+
+                          But then, how can we process it, as the starting column is fixed.
+
+                          Alternatively, perhaps the H and V operations are determined by the problem's parameters, but that's not the case.
+
+                          Wait, no. The problem statement says that each H is a 1xk rectangle, and each V is a kx1 rectangle. So, H is applied to a 1xk rectangle, which is a row, and V is applied to a kx1 rectangle, which is a column.
+
+                          So, the parameters for H and V operations are fixed as 1xk and kx1, but the starting positions are not given. So, this can't be. So, perhaps the starting position is determined by the position in the grid. So, for each H operation, the starting column is 0, and the operation covers 0 to k-1.
+
+                          But then, how can we process this because the problem is that in the input string, the H and V operations are given as H and V, but the starting positions are not given.
+
+                          Wait, no. I think I'm making a mistake here. Let me re-examine the problem statement.
+
+                          Oh! Wait, I think I see the confusion. The problem statement says that each H operation is a 1xk rectangle. So, for H, the operation is applied to a 1xk rectangle, which is a row. But the specific columns are not given in the input. So, how can we know which columns to apply it to?
+
+                          Oh, wait no. Because the H operation is applied to a 1xk rectangle. So, the starting column j is not given. So, how can it be applied?
+
+                          Wait, perhaps the H operation is applied to the first k columns of the entire grid. So, for H, j is 0, and covers 0 to k-1.
+
+                          Similarly, for V, a is 0, and covers 0 to k-1.
+
+                          But then, in the input string, the H and V are given, but the starting positions are not given. So, how can we process this?
+
+                          Hmm. Oh, perhaps this is a mistake in the problem statement. Or perhaps, the H and V operations are applied to the entire grid, always starting at column 0 or row 0.
+
+                          But that's not clear from the problem statement.
+
+                          Alternatively, perhaps the H operations are applied to the entire grid, starting at column 0, and the V operations are applied to the entire grid, starting at row 0.
+
+                          So, the starting position is fixed as the top-left corner.
+
+                          But the problem statement says that each H is a 1xk rectangle. So, perhaps the starting column is 0, but the problem is that the H operations are applied to the first k columns, but the input string has different H and V operations.
+
+                          Hmm, this is unclear. So, perhaps the correct approach is to assume that for each H operation, the starting column is 0, and the operation covers 0 to k-1 columns.
+
+                          Or perhaps, the H and V operations are applied to the entire grid, and for each H operation, the starting column is 0, and for V, starting row is 0.
+
+                          Because otherwise, how else can the operations be applied.
+
+                          Let me think about the sample input.
+
+                          Wait, no sample input is given.
+
+                          So, perhaps the correct approach is that for each H operation, the starting column is 0, and the operation covers 0 to k-1 columns.
+
+                          Similarly, for V operations, the starting row is 0, and the operation covers 0 to k-1 rows.
+
+                          So, the starting position is fixed as the top-left corner.
+
+                          So, in the code, for each H op, the starting column is 0, and operation covers 0 to k-1.
+
+                          For each V op, the starting row is 0, and operation covers 0 to k-1.
+
+                          So, in the code, for each op in s:
+
+                              if op is 'H':
+
+                                  j = 0.
+
+                                  a = 0.
+
+                                  b = k-1.
+
+                                  if j +k-1 >=m: output -1.
+
+                              else if op is 'V':
+
+                                  a = 0.
+
+                                  b =k-1.
+
+                                  if b >=n: output -1.
+
+                          So, that's the assumption.
+
+                          But this is a big assumption given by the problem statement. Because, in the problem statement, the H and V operations are not given any parameters, which suggests that the starting position is not given.
+
+                          So, perhaps the correct approach is to model each H and V as being applied to the entire grid, starting at column 0 and row 0.
+
+                          But I'm not sure.
+
+                          Alternatively, perhaps the H operations are applied to the first k columns, and V to the first k rows.
+
+                          So, in the code, for each H op, j is 0, and covers 0 to k-1.
+
+                          Similarly, for V ops, a is 0, and covers 0 to k-1.
+
+                          So, the code would process each op as such.
+
+                          So, let's proceed with this assumption.
+
+                          Now, moving on.
+
+                          So, for each op in s:
+
+                              if op is 'H':
+
+                                  j =0.
+
+                                  a =0.
+
+                                  b =k-1.
+
+                                  if j +k-1 >=m: impossible, output -1.
+
+                  else:
+
+                      a =0.
+
+                      b = a +k -1.
+
+                      if b >=n: impossible, output -1.
+
+                          So, that's the code for handling each op.
+
+                          So, in code, for each op in s:
+
+                              if op == 'H':
+
+                                  j =0
+
+                                  a =0
+
+                                  b =k-1
+
+                                  if j +k-1 >=m:
+
+                                      print(-1)
+
+                                      continue
+
+                              else:
+
+                                  a=0
+
+                                  b= a +k-1
+
+                                  if b >=n:
+
+                                      print(-1)
+
+                                      continue
+
+                          So, that's the code.
+
+                          Now, for each operation, after applying it, the grid may have new rows or columns completely black. These need to be reset.
+
+                          So, after processing each op, we need to:
+
+                          - For each row i, check if l[i] ==0 and r[i] ==m-1.
+
+                          - For each column j, check if t[j] ==0 and b[j] ==n-1.
+
+                          Then, for each such row, set l[i] and r[i] to 0 and m-1.
+
+                          For each such column, set t[j] and b[j] to 0 and n-1.
+
+                          Then, output the operation's result.
+
+                          So, in code:
+
+                          for each op in s:
+
+                              if op is 'H':
+
+                                  j =0
+
+                                  a =0
+
+                                  b =k-1
+
+                                  if j +k-1 >=m:
+
+                                      print(-1)
+
+                                      continue
+
+                                  # apply the H operation
+
+                                  # current row is i=0 (first row)
+
+                                  if current row i is 0,1,...n-1.
+
+                                  So, for a H op, the row i is fixed.
+
+                                  So, the H operation is on row i, starting at j=0, covering j to j +k-1.
+
+                                  So, for this row i:
+
+                                      if j +k-1 >=m: invalid.
+
+                                      else:
+
+                                          new_l =0
+
+                                          new_r =j +k -1.
+
+                                          if new_l ==0 and new_r ==m-1:
+
+                                              reset row i.
+
+                                          else:
+
+                                              l[i] = new_l
+
+                                              r[i] = new_r.
+
+                                  But wait, the row i is the one in which the H operation is applied.
+
+                                  So, in code, for a H op, the row is i, and the starting column is j.
+
+                                  So, for each H op, the row i is fixed.
+
+                                  So, for each H op, after applying, check if the row i is completely black.
+
+                                  Similarly for V ops.
+
+                                  So, in code:
+
+                                  if op is 'H':
+
+                                      row_i = j
+
+                                      # because for H, the operation is a 1xk rectangle, which is a row.
+
+                                      # So, the row is row_i, and the operation is applied to columns j to j +k-1.
+
+                                      # So, for this row, the new l and

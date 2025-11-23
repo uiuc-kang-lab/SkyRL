@@ -1,0 +1,650 @@
+0
+Okay, I need to solve this problem where Monocarp is fighting a dragon, and after each query (adding a hero or an artifact), I have to determine the maximum number of rounds he can survive by optimally distributing the artifacts. 
+
+Let me start by understanding the problem.
+
+So, the battle consists of multiple rounds. In each round:
+1. The dragon deals damage to each alive hero. The damage is 1/(a + b), where a is the number of alive heroes and b is the number of active artifacts. 
+2. Heroes with health 0 or less die.
+3. Some artifacts are deactivated. An artifact is inactive if not held by any hero and is deactivated when the hero (if any) that holds it dies or receives x total damage (x is the artifact's durability).
+
+The goal is to maximize the number of rounds before all heroes die. So, after each query, I have to compute the maximum possible rounds.
+
+Hmm. So, the key is to model the optimal distribution of artifacts to heroes such that the number of rounds is maximized.
+
+Let me think about what determines the number of rounds. Each round, the damage to the heroes is 1/(a + b). The heroes' health is reduced by this amount, so the order in which the heroes are hit matters, but since each round's damage is based on a and b, which can change, perhaps the optimal strategy is to assign the strongest artifacts first.
+
+Wait, but a and b depend on the number of alive heroes and active artifacts. So, as rounds proceed, the values of a and b change, which affects how many artifacts are active and how much damage each round does.
+
+This seems complicated. Let's think about the problem in terms of constraints.
+
+Each round, the damage is 1/(a + b). The total number of rounds is the maximum k such that after k rounds, no hero is dead.
+
+Wait, but the damage in each round is 1/(a + b) for that round. So, for each round, the sum of 1/(a_i + b_i) over i up to k must be greater than or equal to 1? Or wait, no, because each round's damage is a fraction. So, the sum of all damages across all rounds must be at least the total health of all heroes.
+
+Wait, that's an important point. Let me rephrase: the sum of (1/(a_t + b_t)) for t=1 to k must be >= sum of hero's health. Because each round contributes a damage of 1/(a + b) to each alive hero. So, the total damage over all rounds must be enough to kill all heroes.
+
+So, the maximum k is the largest integer such that the sum of 1/(a_t + b_t) for t=1 to k is >= sum of hero's health.
+
+But wait, no. Because in each round, the damage is 1/(a + b) for that round. So, for each round t, the damage is 1/(a_t + b_t), but the number of active artifacts (b_t) can change because in each round, some artifacts are deactivated.
+
+Wait, no. Let me re-examine the battle process:
+
+- Each round starts with the dragon dealing damage to all alive heroes.
+- Then, some artifacts are deactivated.
+- So, the number of active artifacts (b) can decrease over rounds.
+
+So, each round, the damage is 1/(a + b), where a is the current alive heroes, and b is the current active artifacts.
+
+But the order of which artifacts are active matters. For example, if an artifact is active during a round, it contributes 1/(a + b) damage that round. If it's not active, it doesn't contribute.
+
+So, the total damage over k rounds is the sum for each round t of 1/(a_t + b_t), where a_t is the number of alive heroes at the start of round t, and b_t is the number of active artifacts at the start of the round.
+
+Wait, no. Because in each round, the damage is 1/(a + b) for that round. So, for each round, the damage is 1/(a_t + b_t), where a_t is the number of alive heroes before the round starts, and b_t is the number of active artifacts before the round starts.
+
+But then, after the round, some artifacts are deactivated. So, the next round's b increases by the number of active artifacts that were deactivated.
+
+So, the total damage is the sum of 1/(a_t + b_t) for each round t from 1 to k.
+
+But this seems tricky to model.
+
+Alternatively, perhaps the maximum number of rounds is determined by the sum of 1/(a_t + b_t) across all rounds being at least the total hero health.
+
+So, the problem reduces to finding the maximum k where the sum of 1/(a_t + b_t) for t=1 to k is >= sum of hero's health.
+
+But how do a_t and b_t evolve over the rounds?
+
+Each round, a_t is the number of alive heroes before the round. Let's say before round t, a_t is A. After the round, some heroes die, so the next a_{t+1} is less than A.
+
+But the number of active artifacts, B, starts at some value, and for each round, some artifacts are deactivated. So, B decreases by the number of artifacts that were active during that round.
+
+So, B is the sum of the number of active artifacts in each round.
+
+Wait, but each round, b_t is the number of active artifacts before the round. So, the total number of active artifacts is the sum of b_t over t=1 to k.
+
+So, the total B is the sum of b_t for all t.
+
+So, the total damage is sum_{t=1 to k} 1/(a_t + B') where B' is the sum of b_1 to b_t? Wait, no: B is the sum of the b_t's for each round t. Because each round, the number of active artifacts is b_t. So, the total number of active artifacts is B = b_1 + b_2 + ... + b_k.
+
+So, the total damage is sum_{t=1 to k} 1/(a_t + B).
+
+Wait, no. Because B is the sum of the b_t's, which is the total number of active artifacts over all rounds. So, the total damage is the sum of 1/(a_t + B), where a_t is the number of alive heroes at the start of round t.
+
+So, the problem is to find the maximum k such that sum_{t=1 to k} 1/(a_t + B) >= sum of hero's health.
+
+But how do a_t and B evolve?
+
+a_t is the number of alive heroes before round t.
+
+At the start of each round, a_t is the current count of alive heroes.
+
+After the round, some heroes die (so a_{t+1} = a_t - d_t, where d_t is the number of alive heroes that die in round t).
+
+So, a_t is non-increasing.
+
+The B is the sum of b_t for all t. Each b_t is the number of active artifacts at the start of round t.
+
+So, the total number of active artifacts is B = b_1 + b_2 + ... + b_k.
+
+So, the total damage is sum_{t=1 to k} 1/(a_t + B) >= total_health.
+
+So, the problem is to model the process of adding heroes and artifacts, and for each step, compute the maximum k where this sum is >= total health.
+
+But how? Because for each query, we can add a hero or an artifact, and then compute the maximum k.
+
+The constraints are q up to 3e5, which suggests that per query processing needs to be O(1) or O(log n) time.
+
+So, I need a data structure or a way to model the state after each query efficiently.
+
+Let me think about the state variables.
+
+We need to track:
+
+- The number of alive heroes (A).
+- The number of active artifacts (B).
+- The sum of hero's health (S).
+
+When a hero is added, S increases by their health. When an artifact is added, B increases by 1 (assuming it's a new artifact).
+
+But wait, when we add an artifact, it's a new artifact. So, for each query, we can update S by adding the hero's health or adding the artifact's durability.
+
+But for the artifact, it's a new one, so B increases by 1.
+
+So, the initial state is A=0, B=0, S=0.
+
+Each query:
+
+- If it's a hero query: add v_i to S. So, S += v_i.
+- If it's an artifact query: add 1 to B. So, B +=1.
+
+Then, after each query, we need to compute the maximum k such that the sum of 1/(a_t + B) for t=1 to k is >= S.
+
+But how to model a_t and B?
+
+Wait, a_t is the number of alive heroes before round t. So, a_t can be thought of as the number of heroes present at the start of round t.
+
+Each round t, the damage is 1/(a_t + B), and this is added to the total damage.
+
+But the a_t depends on the order in which the heroes are killed.
+
+Wait, the problem is that the order in which the heroes are killed affects a_t and thus the sum.
+
+So, the sum is dependent on the sequence in which the heroes are killed.
+
+But since we want to maximize the number of rounds, we need to choose the optimal distribution of the artifacts to maximize k.
+
+So, the problem is to choose how to assign the heroes to the rounds such that the sum of 1/(a_t + B) is as large as possible, given that sum >= S.
+
+But how?
+
+Let me think about the sum for a given B.
+
+The sum is sum_{t=1 to k} 1/(a_t + B).
+
+Each a_t is the number of alive heroes before round t.
+
+So, the a_t's are non-increasing. Because a_{t+1} = a_t - d_t, where d_t is the number of dead heroes in round t.
+
+So, a_t starts at A and is non-increasing.
+
+Now, the sum is the sum of 1/(A + B) + 1/(a_2 + B) + ... + 1/(a_k + B).
+
+To maximize this sum, we need to maximize each term. But since a_t is non-increasing, once a_t becomes less than or equal to a_{t+1}, the terms may decrease.
+
+Wait, but it's possible that a_t decreases as much as possible, which would increase the sum.
+
+So, to maximize the sum, we want to have a_t as large as possible for as many terms as possible.
+
+Which would happen if we have as few rounds as possible, but that's not the case. Wait, no, because each round reduces the number of alive heroes. So, the more rounds, the fewer heroes are alive, but the sum of 1/(a_t + B) could be larger or smaller depending on the a_t.
+
+Wait, perhaps the optimal strategy is to have each a_t as large as possible, which would be when the heroes are killed as late as possible. Because each term is 1/(a_t + B), so a larger a_t contributes more to the sum.
+
+So, to maximize the sum, we want the a_t's to be as large as possible for as many terms as possible.
+
+Hmm, that makes sense. So, the optimal strategy is to have as many rounds as possible, with a_t being as large as possible.
+
+So, for each round, a_t is the number of alive heroes at the start of that round.
+
+So, the first round has a_1 = A (the initial alive heroes), the second round has a_2 = A - d_1 (where d_1 is the number of dead heroes in round 1), and so on.
+
+So, the maximum sum is achieved when each a_t is as large as possible.
+
+Therefore, the sum is maximized when the a_t's are as large as possible for as many terms as possible.
+
+So, to model this, perhaps the optimal distribution is to have the first k rounds each have a_t = A - (k-1) (assuming that all heroes are killed in the last round).
+
+Wait, but that's not possible because the first k-1 rounds can't kill all heroes in the first k-1 steps.
+
+Wait, perhaps the optimal strategy is to kill the heroes as late as possible, so that the a_t's are as large as possible for the earlier rounds, which increases the sum.
+
+So, the sum is maximized when the a_t's are as large as possible for the first k rounds.
+
+Thus, the maximum sum occurs when all a_t's are as large as possible, which is when each a_t is A - (t-1), but this is only possible if A >= t for all t up to k. Otherwise, once A < t, a_t can't be larger than A - (t-1).
+
+So, for A >= k, the a_t's are A, A-1, A-2, ..., A - (k-1).
+
+If A < k, then the a_t's are A, A-1, ..., 0, but that's not possible because a_t can't be zero.
+
+Wait, no. Once a_t becomes zero, the next rounds can't have any more heroes alive. So, in that case, the sum of 1/(a_t + B) would drop to 1/B for the next rounds.
+
+So, perhaps the maximum sum is achieved when the a_t's are as large as possible, which is when the heroes are killed as late as possible, but the order of killing is such that the later rounds have the largest a_t's.
+
+So, the maximum sum is achieved when the first round has a_1 = max possible, which is A, then a_2 = A - d_1, and so on.
+
+But this depends on the order in which the heroes are killed.
+
+Hmm, this seems complicated.
+
+But perhaps, for the purpose of this problem, the optimal distribution is to assign the heroes in such a way that the sum of 1/(a_t + B) is maximized, which would require that each a_t is as large as possible.
+
+So, perhaps the maximum sum is achieved when the a_t's are in non-increasing order, and each a_t is as large as possible.
+
+So, for the initial A, the maximum sum is sum_{t=1 to k} 1/(A - t + 1 + B), provided that A - t + 1 >= 1 for all t up to k.
+
+So, to model this, perhaps the sum can be approximated as sum_{t=1 to k} 1/(A - t + 1 + B).
+
+But wait, when A is small, this sum may not include all A terms.
+
+Hmm, perhaps that's a way to model it.
+
+So, the maximum sum is sum_{t=1 to k} 1/(A - t + 1 + B), but this is only valid if A >= t for all t up to k.
+
+Otherwise, for t > A, the a_t would be zero, which would cause the term to be 1/(0 + B) = 1/B.
+
+So, the sum would be sum_{t=1 to A} 1/(A - t + 1 + B) + (k - A) * 1/(0 + B).
+
+So, the sum is S1 + S2, where S1 is the sum of the first A terms, and S2 is the sum of the remaining (k - A) terms.
+
+So, the total damage is S1 + S2.
+
+We need this to be >= S.
+
+So, the problem reduces to finding the maximum k such that S1 + S2 >= S.
+
+But how do we model S1 and S2?
+
+S1 is the sum of 1/(A - t + 1 + B) for t from 1 to A.
+
+S2 is the sum of 1/(0 + B) for (k - A) terms.
+
+So, S2 is (k - A) / B.
+
+So, the equation becomes:
+
+sum_{i=1 to A} 1/( (A - i + 1) + B ) + (k - A)/B >= S.
+
+So, solving for k in this equation.
+
+But how?
+
+Let me denote C = B. So, the equation is:
+
+sum_{i=1 to A} 1/( (A - i + 1) + C ) + (k - A)/C >= S.
+
+We can rearrange this to find k.
+
+So, sum_{i=1 to A} 1/( (A - i + 1) + C ) + (k - A)/C >= S.
+
+Let me denote the sum as sum_{i=1 to A} 1/( (A - i + 1) + C ) = sum_{i=1 to A} 1/( (A - i + 1) + C ) = sum_{j=1 to A} 1/(j + C), where j = A - i +1.
+
+Wait, when i=1, j = A - 1 + 1 = A. When i=A, j=1.
+
+So, sum_{j=1 to A} 1/(j + C).
+
+So, the equation becomes:
+
+sum_{j=1 to A} 1/(j + C) + (k - A)/C >= S.
+
+We can denote this as:
+
+sum_j=1^A 1/(j + C) + (k - A)/C >= S.
+
+We need to find the maximum k such that this holds.
+
+Now, how can we find k given A, C, S?
+
+Hmm.
+
+Let me think about the sum sum_j=1^A 1/(j + C). Since C is positive, each term is positive.
+
+So, for a given A and C, I can compute this sum.
+
+Then, the equation is sum_j=1^A 1/(j + C) + (k - A)/C >= S.
+
+We can rearrange to:
+
+(k - A)/C >= S - sum_j=1^A 1/(j + C).
+
+But only if S - sum_j=1^A 1/(j + C) is positive. If it's negative, then any k is acceptable.
+
+So, if S - sum >= 0:
+
+k - A >= C * (S - sum).
+
+So, k >= A + C*(S - sum).
+
+But k must be an integer. So, the maximum k is floor( A + C*(S - sum) ) + something, but I'm not sure.
+
+Wait, no. Because the sum is sum_j=1^A 1/(j + C). So, for given A and C, the left side is fixed, and then (k - A)/C is added.
+
+So, the equation is sum + (k - A)/C >= S.
+
+So, solving for k:
+
+(k - A) >= C*(S - sum).
+
+So, k >= A + C*(S - sum).
+
+But since k must be an integer, and (k - A) must be an integer, the maximum possible k is the largest integer where this holds.
+
+So, k_max = floor( (A + C*(S - sum)) ) + 1?
+
+Wait, no. Let's think in terms of the maximum k that satisfies the inequality.
+
+Let me denote the left side as:
+
+sum + (k - A)/C.
+
+We need this to be >= S.
+
+So, (k - A)/C >= S - sum.
+
+So, if S - sum > 0:
+
+k >= A + C*(S - sum).
+
+But since k must be an integer, the maximum possible k is the maximum integer such that k >= A + C*(S - sum).
+
+But wait, that's not correct because the sum is being added, so for k to be as large as possible, the sum plus (k - A)/C must be >= S.
+
+So, for example, if sum is 3 and S is 4, and C is 1. Then, (k - A)/1 >= 1, so k >= A +1. So, the maximum k is A +1.
+
+But if sum is 3 and S is 2, then (k - A)/C >= -1. So, any k >= A - C*1 is allowed, but since k must be >=1, the maximum k is A.
+
+So, the approach is:
+
+- Compute the sum sum_j=1^A 1/(j + C).
+- Compute the remaining S' = S - sum.
+- If S' <= 0: then any k >= A is acceptable. So, the maximum k is as large as possible, which is unbounded. But since the battle can't continue indefinitely, perhaps the maximum k is unbounded, but in reality, the sum is fixed, so the maximum k is unbounded. Wait, no, because the sum is fixed, and each additional round adds 1/(B) to the damage. So, as k increases, the sum approaches a value.
+
+Wait, no. Because as k increases, more terms are added, but each term is 1/(B) which is a fixed value. So, the sum would approach sum + (k - A)/B, which increases without bound as k increases. So, if S is fixed, the maximum k is unbounded. But that's not possible because in practice, the sum can't exceed a certain value.
+
+Wait, no. Wait, the sum is sum_j=1^A 1/(j + C) + (k - A)/B.
+
+As k increases, (k - A)/B increases, so the sum increases. So, for any S, as long as sum_j=1^A 1/(j + C) + (k - A)/B >= S, which is always true for large enough k, so the maximum possible k is unbounded. But that can't be the case, because each round adds a damage of 1/(a + B), and a is decreasing.
+
+Wait, this suggests that my approach is incorrect. Maybe I'm missing something.
+
+Wait, the sum is the sum of the first k terms, each of which is 1/(a_t + B). So, as k increases, a_t decreases, so each term is smaller. So, the sum might not increase indefinitely. So, perhaps for a given A and C, the sum can be computed, and then for k beyond a certain point, the sum is fixed.
+
+Wait, perhaps not. Because for each t, a_t is A - (t-1), so the terms are 1/(A) + 1/(A-1) + ... until some point, and then the terms become 1/B, 1/B, etc.
+
+So, the sum is sum_{j=1}^A 1/(j + C) + (k - A) * (1/B).
+
+Each term beyond A is 1/B.
+
+So, the sum is fixed for j up to A, then it's linear in (k - A).
+
+So, for the sum to be >= S, we can compute the sum up to A, and then see how much more damage is needed.
+
+So, if sum_A + (k - A)/B >= S, then k >= (S - sum_A) * B + A.
+
+But (k - A) must be >= (S - sum_A) * B.
+
+So, k >= A + (S - sum_A) * B.
+
+So, the maximum k is the maximum integer where sum_A + (k - A)/B >= S.
+
+So, solving for k:
+
+sum_A + (k - A)/B >= S
+
+=> (k - A) >= B*(S - sum_A)
+
+=> k >= A + B*(S - sum_A)
+
+So, k can be as large as possible, but in reality, the sum may not reach S.
+
+Wait, no. Because for k = A + B*(S - sum_A), the sum is exactly S.
+
+For k larger than that, the sum increases by (k - A)/B, which is positive, so sum increases.
+
+So, the maximum k is unbounded, but that can't be the case.
+
+Hmm, this suggests that the sum will eventually exceed S, but the maximum k is not bounded.
+
+Wait, no. Because each round adds a term, but the sum can be made arbitrarily large by adding a lot of 1/B terms.
+
+So, for any S, there exists a k such that sum >= S. So, the maximum k is unbounded.
+
+But that's not correct because the sum is sum_A + (k - A)/B, which can be made larger than S by choosing k large enough.
+
+So, the maximum k is unbounded, but in reality, the battle could end when no heroes are left, but that's not the case here.
+
+Wait, no. The battle ends when all heroes are dead. So, the maximum number of rounds is the number of rounds until all A heroes are dead.
+
+But wait, the initial A is the number of alive heroes, which is the number of heroes added minus the number killed so far.
+
+So, the maximum k can't exceed A, because if you have A heroes, you can have at most A rounds, because each round can kill at least one hero (assuming all others are alive).
+
+So, the maximum possible k is A, because you can't have more rounds than the number of alive heroes.
+
+But wait, no. Because each round, you have some heroes alive. So, the maximum number of rounds is A, because you can have A rounds, each killing one hero.
+
+So, the maximum k is min( A, ceiling( (S - sum_A) * B + A ) ). Wait, no. Because sum_A is sum of 1/(j + C) for j from 1 to A. So, sum_A is fixed. For k to be as large as possible, the sum must be at least S.
+
+So, sum_A + (k - A)/B >= S.
+
+So, (k - A) >= B*(S - sum_A).
+
+So, k >= A + B*(S - sum_A).
+
+But k can't exceed A, because you can't have more than A rounds.
+
+So, the maximum k is the minimum between A and (A + B*(S - sum_A)).
+
+Wait, but that's not correct because sum_A + (k - A)/B >= S is a condition that may be satisfied for a k larger than A.
+
+But that's impossible because you can't have more than A rounds, as you can kill at most A heroes.
+
+So, the maximum k is the minimum of A and (A + B*(S - sum_A)).
+
+Wait, no. Because if sum_A is already >= S, then (k - A) can be zero, so k = A.
+
+If sum_A < S, then (k - A) must be >= B*(S - sum_A). So, k >= A + B*(S - sum_A). So, the maximum k is A + B*(S - sum_A), but it can't exceed A.
+
+So, the maximum possible k is the minimum between A and (A + B*(S - sum_A)).
+
+Wait, but that's not correct because sum_A + (k - A)/B >= S.
+
+If sum_A >= S, then (k - A) can be zero, so k = A.
+
+If sum_A < S, then (k - A) must be >= B*(S - sum_A), so k >= A + B*(S - sum_A).
+
+So, the maximum k is the minimum of A and (A + B*(S - sum_A)).
+
+Wait, no. Because for sum_A < S, k can be as large as possible, as long as sum_A + (k - A)/B >= S. So, solving for k:
+
+k >= A + B*(S - sum_A).
+
+So, the maximum possible k is as large as possible, but is limited by the fact that the sum can't exceed S.
+
+Wait, no. Because for k beyond a certain point, sum increases beyond S, so the maximum k is the smallest where sum >= S.
+
+So, the sum is sum_A + (k - A)/B.
+
+We need sum_A + (k - A)/B >= S.
+
+So, solving for k:
+
+(k - A)/B >= S - sum_A
+
+k - A >= B*(S - sum_A)
+
+k >= A + B*(S - sum_A)
+
+So, the maximum k is A + B*(S - sum_A), but since sum_A + (k - A)/B must be >= S, if sum_A >= S, then k can be A.
+
+Otherwise, k is as large as possible, but in reality, sum_A + (k - A)/B can be made larger than S by increasing k, but the sum can't be made larger than S once sum_A is fixed.
+
+Wait, no. For example, if sum_A is 3 and S is 5, and B is 1, then (k - A) needs to be >= 2, so k >= A+2. So, the maximum k is unbounded, but in reality, the sum will be 3 + (k - A)/1 = 5 + (k - A - 2), which can be made larger than 5 by increasing k.
+
+So, in this case, the maximum k is unbounded, but in reality, the battle can't proceed beyond a certain point because the sum can't exceed a certain limit.
+
+Wait, but the sum can be made larger than S by adding more terms. So, the maximum k is unbounded.
+
+But that's not possible because the battle ends when all heroes are dead.
+
+So, the maximum k is the number of rounds where all A heroes are dead, which is A.
+
+So, the maximum k is the minimum between A and the value obtained from the equation.
+
+Wait, no. Because if sum_A >= S, then the maximum k is A.
+
+If sum_A < S, then the maximum k is unbounded. But that's impossible because the number of rounds can't exceed A.
+
+Wait, no. Because sum_A + (k - A)/B can be made arbitrarily large by increasing k.
+
+So, as long as sum_A < S, the maximum k is unbounded. But in practice, the battle can't proceed beyond the point where all heroes are dead, which is A rounds.
+
+So, in this case, the maximum number of rounds is A.
+
+So, putting it all together:
+
+The maximum number of rounds is the minimum between A and (A + B*(S - sum_A)), but when sum_A >= S, the maximum is A.
+
+Wait, but no. Because sum_A is sum of 1/(j + C) for j=1 to A.
+
+So, for sum_A < S, the maximum k is unbounded, but in reality, the maximum is A.
+
+So, the maximum k is the minimum between A and (A + B*(S - sum_A)).
+
+Wait, no. Because (A + B*(S - sum_A)) could be larger than A, but in that case, the maximum k is A.
+
+So, the formula is:
+
+max_k = min( A, A + B*(S - sum_A) )
+
+But wait, when sum_A >= S, A + B*(S - sum_A) is <= A, so max_k is A.
+
+Yes.
+
+So, the approach is:
+
+After each query, compute sum_A = sum_{j=1 to A} 1/(j + C), where C is B.
+
+Then, compute:
+
+if sum_A >= S:
+
+   max_k = A
+
+else:
+
+   max_k = A + B*(S - sum_A)
+
+But wait, no. Because when sum_A is less than S, the max_k is unbounded. But in reality, the maximum possible k is A, because you can't have more than A rounds.
+
+So, the maximum k is min( A, A + B*(S - sum_A) )
+
+But in the case where sum_A < S, the second term (A + B*(S - sum_A)) could be larger than A, so the min is A.
+
+So, the formula is:
+
+max_k = min( A, A + B*(S - sum_A) )
+
+But wait, no. Because when sum_A < S, the second term is A + B*(S - sum_A) = A + B*S - B*sum_A.
+
+But in this case, the sum is sum_A + (k - A)/B >= S.
+
+So, (k - A) >= B*(S - sum_A).
+
+So, k >= A + B*(S - sum_A).
+
+So, the maximum k is as large as possible, but since the sum can be made arbitrarily large by increasing k, the maximum k is unbounded.
+
+But in reality, the maximum k is A, because after A rounds, all heroes are dead.
+
+So, the correct formula is:
+
+max_k = min( A, A + B*(S - sum_A) )
+
+Wait, but when sum_A >= S, the second term is A + B*(S - sum_A) which is <= A.
+
+So, the min is A.
+
+Yes.
+
+So, the steps are:
+
+1. For each query, maintain A, C (B is the current B), sum_A.
+
+2. When a new hero is added, A increases by 1, sum_A is the sum of 1/(j + C) for j=1 to A.
+
+3. When an artifact is added, B increases by 1, so C becomes B.
+
+4. After each query, compute sum_A, and then compute max_k as min( A, A + B*(S - sum_A) )
+
+But wait, S is the sum of all hero's health. So, S is the sum of all v_i.
+
+So, for each query, after adding the hero or artifact, we compute S as the sum of the v_i.
+
+So, the plan is:
+
+- For each query:
+
+   a. If it's a hero query: add v_i to S, increment A by 1, compute sum_A as sum_{j=1 to A} 1/(j + current B).
+
+   b. If it's an artifact query: add 1 to B, so C becomes B.
+
+- Compute sum_A, then compute:
+
+   if sum_A >= S:
+
+      max_k = A
+
+   else:
+
+      max_k = A + B*(S - sum_A)
+
+   Then, output max_k.
+
+Wait, but this is only correct if the sum_A is computed correctly.
+
+So, how do I compute sum_A?
+
+sum_A is the sum of 1/(j + C) for j from 1 to A, where C is the current B.
+
+Wait, no. Because C is B.
+
+So, for each hero query, after adding v_i, we need to compute sum_A as sum_{j=1 to A} 1/(j + C), where C is the current B.
+
+So, the steps are:
+
+When adding a hero:
+
+   A += 1
+
+   C = B
+
+   sum_A = 0
+
+   for j in 1 to A:
+
+       sum_A += 1/(j + C)
+
+When adding an artifact:
+
+   B += 1
+
+   C = B
+
+So, for each query, I can compute sum_A as the sum of 1/(j + C) for j from 1 to A.
+
+But wait, that's O(A) time, which is not feasible for q up to 3e5.
+
+So, I need a way to compute sum_A efficiently.
+
+Hmm, the sum is sum_{j=1 to A} 1/(j + C).
+
+This can be written as sum_{k = C+1 to C+A} 1/k.
+
+Because j + C = k, so when j=1, k=C+1, when j=A, k = C + A.
+
+So, the sum is the difference between the harmonic series from C+1 to C+A.
+
+So, sum_{k=C+1}^{C+A} 1/k.
+
+So, sum_A = H(C+A) - H(C), where H(n) is the nth harmonic number.
+
+But computing harmonic numbers for large n is not feasible, but perhaps we can approximate it with the natural logarithm.
+
+The harmonic number H(n) is approximately ln(n) + gamma, where gamma is the Euler-Mascheroni constant (approximately 0.5772).
+
+So, sum_A ≈ ln(C+A) - ln(C) = ln( (C+A)/C ) = ln(1 + A/C).
+
+So, for large A and C, sum_A can be approximated as ln(1 + A/C).
+
+But for small A and C, this approximation may not be accurate.
+
+So, perhaps we can precompute H(n) up to a certain limit, but for q up to 3e5, it's not feasible.
+
+Hmm, so perhaps the problem is that for each query, we need to compute sum_A in O(1) time, but I can't see a way to do that.
+
+Wait, but in the problem, the sum of v_i can be up to 1e9, and the number of queries is up to 3e5. So, for each query, after adding a hero or artifact, I need to compute sum_A as sum_{j=1 to A} 1/(j + C).
+
+But for large A, this is O(A) time, which is not feasible.
+
+So, perhaps, we need to find a way to compute this sum quickly.
+
+But I can't see a way to do that. So, perhaps, the problem expects us to model the sum as a function and find a mathematical way to compute it.
+
+Wait, let's think about sum_{j=1 to A} 1/(j + C) = sum_{k=C+1}^{C+A} 1/k.
+
+So, the sum is sum_{k= C+1 }^{ C + A } 1/k.
+
+Which is equal to H(C + A) - H(C).
+
+So, to compute sum_A, we need to compute H(C+A) - H(C).
+
+But H(n) can be approximated as ln(n) + gamma

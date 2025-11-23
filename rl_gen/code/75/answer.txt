@@ -1,0 +1,710 @@
+0
+Okay, so I need to solve this problem where Gretel is trying to find the parent array of a tree structure. The tree is rooted at node 0, and each node's parent is given by p_i for i from 1 to n-1. The constraints are a bit specific, and the problem is interactive, meaning Gretel has to query the system to gather information.
+
+Let me try to understand the problem step by step.
+
+First, the tree structure is such that when root node 0 is removed, the remaining forest consists of paths. So each node that was directly connected to 0 is the end of some path. For example, if node 1 is connected to 0, then node 1 must be the root of a path. Similarly, other nodes connected to 0 must also be roots of paths.
+
+Another constraint is that the parent array must satisfy p_x ≤ p_y whenever x ≤ y. So the parent array must be non-decreasing as we go down the tree. That's an important property we can use.
+
+Also, node 1 has exactly two adjacent nodes: 0 and another node. So node 1 is connected to 0 and another node, say k. So the parent of k must be 1, and the parent of 1 is 0.
+
+The queries she can make are "? a b" which check if the path between a and b includes node 0. So if a and b are from different subtrees, then the path between them doesn't go through 0. But if a and b are in the same subtree, then the path must pass through 0.
+
+The goal is to find all p_i's with as few queries as possible, but the maximum allowed is 2n-6. So for each node, we need to find its parent without querying too many times.
+
+Hmm. Let's think about the approach.
+
+I think a possible way is to perform a BFS or DFS traversal starting from node 0, and for each node, determine its parent based on the paths. But since the tree is given, and the queries are about paths, perhaps we can use some BFS to find the parent.
+
+Wait, but the parent array is what we're trying to find. So perhaps a BFS can help us assign parents, but we need to find a way to do it with the given constraints on the number of queries.
+
+Wait, the constraints are that for each test case, we can make at most 2n-6 queries. For example, for n=4, the maximum queries allowed are 2*4-6=2. So our algorithm needs to be efficient, perhaps O(n) time.
+
+Let me think about how to reconstruct the tree structure.
+
+Since each node (except 0) has exactly one parent, the structure is a tree. So for each node, except 0, we can find its parent by looking at the path from 0 to it.
+
+But how to find the parent without querying every possible path.
+
+Wait, the query "? a b" tells us whether the path between a and b goes through 0. So if a and b are in different subtrees, their path does not go through 0. So if we can find two nodes a and b such that their path does pass through 0, then one of them is in a subtree of 0, and the other is in another subtree.
+
+Wait, but perhaps we can find the parents by looking for nodes that are in different subtrees. For example, if we can find a node a that is a child of 0, then any other node b that is not a child of 0 will be in a different subtree, so the path between a and b will go through 0.
+
+So perhaps, if we can find such a and b, then the parent of b is a.
+
+So this suggests that if a is a child of 0, and b is another node, then if the path between a and b goes through 0, then the parent of b must be a.
+
+So the plan is:
+
+1. Find all the children of 0. Let's call them C = [c_1, c_2, ..., c_k], where k is the number of children of 0. Since the tree is connected and the nodes are numbered from 0 to n-1, 0 has some children.
+
+2. For each node in C, we can query it against other nodes not in C, which would indicate that their paths go through 0. So for a node b not in C, the path from 0 to b must pass through some child of 0. So if we can find a child c of 0, and query (c, b), then if the result is true, the parent of b is c.
+
+So this is the approach: for each child c of 0, query every node not in C to see if their path to c goes through 0. If yes, then their parent is c.
+
+But wait, for each c in C, how many nodes are not in C? n - (k + 1) = (n-1) - k + 1? Wait, no. Wait, the number of nodes in C is the number of children of 0, which is the degree of 0 minus 1 (since 0 is connected to all children). So C has k = deg(0) - 1 nodes. So the total nodes not in C is n - (k + 1) = n - (deg(0) - 1 + 1) = n - deg(0).
+
+So for each c in C, the number of nodes not in C is (n - deg(0)), which is the size of the other subtrees.
+
+So for each c in C, we can query all nodes not in C against c using "? c b" for each b not in C. If the path from c to b goes through 0, then the parent of b is c.
+
+This way, for each c in C, we can find the parents of all nodes not in C by querying each b against c. But wait, that's O(k * (n - k - 1)) queries, which could be expensive if k is large. For example, if 0 has many children, then this approach could require many queries.
+
+But given that 2n-6 is the maximum allowed, perhaps this is manageable.
+
+Additionally, since the parents must be in non-decreasing order, we can use this to help in reconstructing the parent array.
+
+Another idea: since the parent array is non-decreasing, the in-order traversal of the tree (from 0) would have the parents in a certain way.
+
+But maybe that's not directly helpful.
+
+Let me think about how to represent the children of 0. Let's say 0 has children C = [c_1, c_2, ..., c_k]. For each c in C, the nodes not in C are in the subtrees rooted at c.
+
+So for each c in C, the nodes not in C are in the subtrees of c. So for each such node b, the parent is c.
+
+So the plan is:
+
+- For each c in C, find all nodes b not in C, and for each, query "? c b" to determine if the path from c to b passes through 0. If yes, then parent[b] = c.
+
+But how do we find all such b's? Well, since the tree is connected, all nodes not in C are in the subtrees of the children of 0.
+
+So for each c in C, the nodes not in C are in the subtrees of c. So for each c, we can find all nodes in the subtree of c, and for each, query "? c b" for b not in C.
+
+Wait, but this sounds like for each c, we need to query every node not in C against c. So that's O(k*(n - k -1)) queries, which is O(n) in the worst case if k is O(n), but that would be 2n-6, which is acceptable.
+
+But for each test case, the maximum allowed queries is 2n -6. So for n=1e4, that's 2e4, which is manageable.
+
+So the steps are:
+
+1. Find the children of 0. Let's call this list C.
+
+2. For each c in C:
+
+   a. Collect all nodes not in C. Let's call this list D.
+
+   b. For each b in D:
+
+      i. Query "? c b" to see if the path from c to b goes through 0.
+
+      ii. If yes, set parent[b] = c.
+
+3. Additionally, process the nodes in C. For each c in C, any node in C's subtrees (i.e., other children of 0) would have their parent determined by the above steps.
+
+But wait, for the nodes in C, their parent is supposed to be either another node in C or a node in D.
+
+Wait, no. Because each node in C has exactly one parent, which is in C or in D.
+
+Wait, no. Each node except 0 has exactly one parent. So for a node in C, its parent is in C or in D. But in reality, since 0 is connected to all nodes in C, each node in C is connected to 0, so their parent is 0? No, wait, no. Because in the problem statement, node 1 has exactly two adjacent nodes: 0 and another. So node 1 is connected to 0 and another node, which could be a child of 0.
+
+So for node 1, the parent is 0 only if 1 is a child of 0. Otherwise, its parent is another node in C.
+
+Wait, no. Because node 1 is connected to 0 and another node (say c). So node 1's parent is c, which is in C.
+
+So in the case where a node is in C, its parent is another node in C, except for node 1.
+
+Wait, no. Wait, node 1 is connected to 0 and another node. So the parent of node 1 is the other node. So if 1's parent is another node in C, then node 1 is a child of that node.
+
+So all nodes in C have their parent in C.
+
+Wait, no. For example, node 1 is a child of 0. So its parent is 0. So in that case, the parent is 0, which is not in C.
+
+Wait, no, because C is the list of children of 0. So for node 1, which is a child of 0, its parent is 0, which is not in C. But node 1's parent is 0, which is not a child of 0, but a node that's not in C.
+
+Wait, that's a problem because earlier steps would have considered C as the children of 0, and for node 1, which is in C, the parent is 0, not in C.
+
+So perhaps the initial approach is flawed.
+
+Hmm. So perhaps the initial approach of finding all children of 0 and then querying other nodes against them is not sufficient, because some nodes in C may have parents outside of C.
+
+So this suggests that the initial plan is not sufficient.
+
+So perhaps we need a different approach.
+
+Let me think about the properties:
+
+1. The parent array p is non-decreasing.
+
+2. Any node that is a child of 0 (i.e., has 0 as a parent) must have a parent that is another child of 0, except for node 1, which is a child of 0 and has a parent that is another node.
+
+Wait, no. Node 1 is a child of 0, and its parent is another node, which could be a child of 0 or not. Wait, no, because node 1 is connected to 0 and another node. So the other node must be a child of 0, because in the tree, each node is connected to 0 once, except for 1 which is connected to 0 and another node.
+
+Wait, no. Node 1 has two adjacent nodes: 0 and another. So that other node must be a child of 0, because in a tree, each node can have only one parent. So node 1's parent is another node in C.
+
+So node 1's parent is in C.
+
+So for node 1, p[1] is in C.
+
+Similarly, for node 2, which is a child of 0, its parent is 0, because it's a child of 0.
+
+So node 2's parent is 0.
+
+So in the parent array p, p[2] = 0.
+
+So node 2's parent is 0.
+
+So when reconstructing the parent array, for node 2, p[2] is 0.
+
+So for nodes in C (children of 0), their parents are either:
+
+- 0 (if they are children of 0)
+
+- Another node in C (if they are children of some other node in C)
+
+But wait, node 1 is a child of 0, so its parent is another child of 0.
+
+So for node 1, p[1] is in C.
+
+So in general, for each node in C, its parent is in C.
+
+So the parent array p is such that for any node in C, p[node] is in C.
+
+So this gives us a way to structure the tree.
+
+So perhaps the approach is to find the parent of each node in C, which is in C.
+
+So, how can we find the parent of each node in C?
+
+We can note that for any two nodes in C, say a and b, their parent's parent is 0. So the path from a to b must go through 0. So, if we can find a path that goes through 0, then their parent is 0.
+
+Wait, but that's not the case. Because a and b are in different subtrees of 0. So their path goes through 0.
+
+So for a and b, their path from a to b goes through 0. So, the query "? a b" will return true, because the path between them includes 0.
+
+So for any a and b in different subtrees of 0, the query will return true, meaning that one of them is in a subtree of 0, and the other is not, so their path passes through 0.
+
+So for each a in C, we can query all nodes b not in C against a. If the path from a to b includes 0, then the parent of b is a.
+
+So for this, for each a in C, we can query all nodes b not in C against a. If the path includes 0, then the parent of b is a.
+
+But how to do this efficiently.
+
+So, for each a in C, the number of nodes not in C is (n - (k + 1)), where k is the number of children of 0. So for each a, we have to make (n - k -1) queries.
+
+But for each such query, it's a "? a b" which is O(1) in terms of checking.
+
+So the total number of queries would be k * (n - k -1) = O(n^2) in the worst case, which is way beyond the allowed 2n-6.
+
+So this approach is not feasible.
+
+So I need a better way to find the parent of each node in C without querying every possible b.
+
+Hmm. So perhaps, for each a in C, the parent of a is 0, except for node 1, which has parent in C.
+
+Wait, no. Node 1's parent is in C.
+
+So, for node 1, p[1] is in C.
+
+For nodes in C, their parents are either 0 or another node in C.
+
+So for node 1, p[1] is in C, but for other nodes in C, their p is also in C.
+
+So, perhaps, the approach is to find all the nodes in C, and for each, determine their parent in C.
+
+But how?
+
+Another idea: since the parent array is non-decreasing, perhaps the parents of nodes in C can be found in a certain order.
+
+Wait, for example, the children of 0 can be arranged in an order such that their parents are in a non-decreasing order.
+
+Wait, perhaps the parent array p is such that the nodes in C are ordered in a way that their parents are in non-decreasing order.
+
+But I'm not sure.
+
+Alternatively, since the parent array is non-decreasing, the parents of the nodes in C are in C, and the parents of nodes not in C are 0 or in C.
+
+Wait, perhaps the children of 0 are arranged in a certain order, and their parents are in non-decreasing order.
+
+So perhaps the approach is to find the order of the children of 0, and then for each child, assign their parent based on the queries.
+
+But how?
+
+Let me think: For each child c of 0, the nodes not in C (i.e., the subtrees of other children of 0) have their parents set to c.
+
+So, for each c, we can query all the nodes in the subtrees of other children of 0 against c. If the path from c to that node includes 0, then the parent is c.
+
+So, for each c, the parent of all nodes in its subtrees is c.
+
+So, the plan is:
+
+1. Find all children of 0, which is C.
+
+2. For each c in C, collect all nodes not in C.
+
+3. For each c, query all nodes not in C against c. If the path from c to that node includes 0, then parent of that node is c.
+
+But again, this requires O(k*(n -k)) queries, which is not feasible for large n.
+
+So, another approach is needed.
+
+Another thought: the parent array is non-decreasing. So the children of 0, when ordered, must have parents in non-decreasing order.
+
+Wait, no. Because the parent of a node is its parent, which is a parent of some other node. So the parent array is non-decreasing, but the children of 0 can be in any order.
+
+Hmm.
+
+Alternatively, perhaps the children of 0, when ordered, have parents that are also in non-decreasing order.
+
+But I'm not sure.
+
+Wait, considering the parent array p is non-decreasing. So, for two children c1 and c2 of 0, where c1 < c2, p[c1] <= p[c2].
+
+So, perhaps, the children of 0 are arranged in such a way that their parents are in non-decreasing order.
+
+So, for the children of 0, their parents are in non-decreasing order.
+
+So, perhaps, the children of 0 can be ordered in a way that their parents are non-decreasing.
+
+So, perhaps, the children of 0 are ordered, and for each child, we can query the nodes in their subtree to find their parents.
+
+But I'm not sure how to do this.
+
+Wait, perhaps the children of 0 can be ordered in such a way that their parents are in non-decreasing order. So, for example, the parent of c1 is p1, and the parent of c2 is p2, with p1 <= p2.
+
+So, for each child c, if we can find p[c], which is the parent, then the parent of c is the smallest p among the children.
+
+But I'm not sure.
+
+Alternatively, perhaps the children of 0 can be arranged in a way that their parents are in non-decreasing order, and we can find them in that order.
+
+But again, not sure.
+
+So, perhaps, I should think of another approach.
+
+Let me think about the structure of the tree.
+
+Each node's parent is either 0 (if it's a child of 0), or another node in C.
+
+So, for the children of 0, the parent of each child is another child of 0, except for node 1.
+
+Wait, no. Node 1 is a child of 0, and its parent is another child of 0.
+
+So, the children of 0 form a tree rooted at 0. So the children of 0 form a subtree, and the parent of each child is another child of 0.
+
+So, the children of 0 can be considered as a tree, and each node in this tree has a parent in C.
+
+So, the parent array p is built such that p[i] is the parent of node i.
+
+So, the parent array is non-decreasing.
+
+So, perhaps, the children of 0, when ordered, have parents in non-decreasing order.
+
+So, for example, the children of 0 are ordered in a way that their parents are non-decreasing.
+
+So, perhaps, the approach is to find the order of the children of 0, and for each child, find its parent based on the queries.
+
+But again, how?
+
+Let me think about the process of querying the path between 0 and a node.
+
+To find the parent of a node, we can perform a query against 0.
+
+For example, to find p[a], we can query "? 0 a".
+
+If the result is true, then the parent of a is 0.
+
+If the result is false, then the path from 0 to a goes through some other node. So, to find p[a], we can query "? p[a] a".
+
+If the path from p[a] to a includes 0, then p[a] is the parent of a.
+
+Wait, that might not work.
+
+Alternatively, perhaps we can find the parent of a node by querying against its parent.
+
+But that's not necessarily the case.
+
+Wait, perhaps a better approach is to use the fact that the parent array is non-decreasing.
+
+So, for each node i, p[i] is the smallest parent in the tree.
+
+So, for each node, if I can find its parent, then I can find the parent of that parent, and so on, until I reach 0.
+
+But that might not be efficient.
+
+Alternatively, perhaps the parent array can be determined by the structure of the subtrees.
+
+Wait, for any node i, its parent is its first ancestor in the tree.
+
+So, perhaps, for the children of 0, their parents are in C, and the parents of these children are arranged in non-decreasing order.
+
+So, perhaps the children of 0 can be processed in order, and for each, their parent is the next in the non-decreasing sequence.
+
+But how to find this order.
+
+Another idea: the parent array is non-decreasing. So the children of 0, when ordered, must have parents in non-decreasing order.
+
+So, for the children of 0, when ordered in non-decreasing order, their parents must be in non-decreasing order.
+
+So, perhaps, the children of 0 can be sorted, and for each child, the parent is the next in the sorted list.
+
+But how to find which child is connected to which.
+
+Hmm.
+
+Another approach: for each child c of 0, the nodes in its subtree (i.e., the nodes in C's other subtrees) have their parent set to c. So, for each c, the parent of all nodes in its subtree is c.
+
+So, perhaps, for each c, the parent of all nodes in its subtree is c.
+
+So, the parent array is such that for each subtree, the nodes in that subtree have parent c.
+
+So, the parent array can be determined by the order of the children of 0.
+
+So, the plan is:
+
+1. Find the children of 0, which are C.
+
+2. Sort C in non-decreasing order.
+
+3. For each c in the sorted C, assign p[c] = c.
+
+Wait, no, because p[c] is the parent of c, which is in C. So, for each c in C, p[c] is another node in C.
+
+Wait, but the parent array is non-decreasing, so for the children of 0, their parents must be in non-decreasing order.
+
+So, if we sort C, and assign p[c] as the next child in the sorted list, then the parent array would be non-decreasing.
+
+So, for example, if C is [1, 2, 3], and sorted, then p[1] = 1, p[2] = 2, p[3] = 3.
+
+But wait, node 1 is a child of 0. Its parent is 0, not 1. So this approach may not work.
+
+Hmm.
+
+Wait, perhaps the parent of each child c is the next child in the sorted list.
+
+But in that case, for node 1, which is a child of 0, its parent is the next child in the sorted order, which could be 2, for example.
+
+But node 1's parent is 0, not 2.
+
+So that approach may not work.
+
+So perhaps, the parent of the children of 0 is not necessarily in the same order as their indices.
+
+So, this idea is not directly applicable.
+
+Another idea: the parent array is non-decreasing, so for any two children c1 and c2 of 0, if c1 < c2, then p[c1] <= p[c2].
+
+So, perhaps, the children of 0 are arranged in a way that their parents are in non-decreasing order.
+
+So, for example, the children of 0 are ordered such that their parents are also in non-decreasing order.
+
+So, perhaps, the children of 0 can be processed in an order where their parents are in non-decreasing order.
+
+So, the plan is:
+
+1. Find all children of 0, which is C.
+
+2. Sort C in non-decreasing order.
+
+3. For each child in the sorted order, assign their parent as the next child in the sorted list.
+
+But wait, node 1 is a child of 0. Its parent is another child of 0, which could be the first child, but in this approach, it would be node 0.
+
+No, wait, this approach may not capture that.
+
+So perhaps, I need to find another way.
+
+Let me think of the tree as a collection of subtrees of 0. Each subtree is a set of nodes connected to 0. For each such subtree, all the nodes in it have their parent set to 0.
+
+Wait, no. Because the children of 0 are the immediate children, and their parents are 0.
+
+But for the nodes in the subtrees of other children of 0, their parent is another child of 0.
+
+So, perhaps, the approach is to find the order of the children of 0, and for each, find their parent.
+
+But how.
+
+Another idea: for each child c of 0, the nodes in its subtree (i.e., all nodes in C that are not in other children's subtrees) have their parent set to c.
+
+So, for each c, the parent of all nodes in its subtree is c.
+
+So, to find the parent of c, we can query "? c b" for any b in its subtree.
+
+If the path from c to b goes through 0, then the parent is c.
+
+But again, this requires querying a lot.
+
+Wait, but if we can find a way to determine which nodes are in c's subtree, then we can query those nodes and find if the path from c to them includes 0.
+
+So, perhaps, for each c, we can find all nodes not in C and in the subtree of c, and for each, query "? c b".
+
+If yes, then p[b] = c.
+
+But this seems again time-consuming.
+
+So, I'm stuck. Let me think of alternative approaches.
+
+Another observation: the parent array is non-decreasing, which means that for any i < j, p[i] <= p[j].
+
+So, perhaps, the parents of the nodes in C can be determined by the order in which they are processed.
+
+So, perhaps, the children of 0 can be processed in the order of increasing p[i], which would allow us to assign their parents correctly.
+
+But how.
+
+Alternatively, perhaps the children of 0 can be processed in a way that their parents are in non-decreasing order.
+
+So, the first child's parent is 0, the second child's parent is the first child's parent, and so on.
+
+Wait, that's possible.
+
+So, for example, the children of 0 are [c1, c2, c3, ...], sorted in non-decreasing order of their parent array values.
+
+So, the parent of c1 is 0, the parent of c2 is c1, the parent of c3 is c2, and so on.
+
+But in this case, for node 1, which is a child of 0, its parent is 0, which is correct.
+
+For node c2, its parent is c1, which is correct.
+
+So, this seems to fit.
+
+So, the plan is:
+
+1. Find the children of 0, which is C.
+
+2. Sort C in non-decreasing order of p[i], which is their parent.
+
+3. Assign p[c] = c's parent.
+
+Wait, but the parent of c is already in C, so how to find p[c]?
+
+This is circular.
+
+So perhaps, this approach is not directly applicable.
+
+Hmm.
+
+Another approach: the parent array is non-decreasing, so the children of 0 can be ordered in such a way that their parents are in non-decreasing order.
+
+So, for each child c of 0, p[c] is the next in the sorted list.
+
+So, for example, the children of 0 are [c1, c2, c3], sorted in non-decreasing order, and their parents are [p1, p2, p3], where p1 <= p2 <= p3.
+
+So, for the children, the parent is the next in the sorted list.
+
+So, perhaps, the plan is:
+
+1. Find all children of 0, C.
+
+2. Sort C in non-decreasing order.
+
+3. Assign p[c] = next in the sorted list, which would be the parent of c.
+
+But wait, the parent of c is in C, so for the first child c1, p[c1] is the next child c2 in the sorted list.
+
+But for c2, p[c2] would be the next child, which is c3, and so on.
+
+So, for example, if C is [c1, c2, c3], sorted as [c1, c2, c3], then p[c1] = c2, p[c2] = c3, p[c3] = 0.
+
+Wait, that may not fit because node 1's parent is 0, but in this case, c3's parent would be 0.
+
+So, perhaps, the plan is:
+
+- For each child in the sorted C, assign their parent as the next child in the sorted list.
+
+But the first child's parent would be the next child, which is the second child.
+
+So, for the children of 0:
+
+c1, c2, c3, ... (sorted by p[i])
+
+p[c1] = c2
+
+p[c2] = c3
+
+p[c3] = 0
+
+But wait, node 1's parent is 0, but in this case, c3's parent would be 0, which is correct.
+
+So, this seems to fit.
+
+So, the steps are:
+
+1. Find C, the children of 0.
+
+2. Sort C in non-decreasing order based on p[i], which is their parent.
+
+3. For each c in the sorted C, assign p[c] = next in the sorted list.
+
+So, for example, if C is [c1, c2, c3], sorted as [c1, c2, c3], then p[c1] = c2, p[c2] = c3, p[c3] = 0.
+
+This would create a parent array that is non-decreasing.
+
+So, the plan is:
+
+For each test case, find the children of 0, sort them in the order of their parent array, and assign parents accordingly.
+
+So, the steps are:
+
+a. Find C, the children of 0.
+
+b. For each c in C, query "? p[c] c". If the path from p[c] to c includes 0, then p[c] is the parent of c.
+
+Wait, but that's not correct. Because in this case, for node c, p[c] is the parent, which is in C.
+
+So, perhaps, for each c in C, the parent is p[c] = the next in the sorted list.
+
+So, the process is:
+
+1. Find C.
+
+2. Sort C in non-decreasing order.
+
+3. For each i from 0 to len(C)-1:
+
+   a. p[C[i]] = C[i+1] if i < len(C)-1, else 0.
+
+So, but how to implement this.
+
+Wait, for example, in the sorted list, C is [c1, c2, c3, ...].
+
+Then, p[c1] = c2.
+
+p[c2] = c3.
+
+p[c3] = 0.
+
+This ensures that the parent array is non-decreasing.
+
+So, this seems promising.
+
+So, this approach would allow us to find all the parents of the children of 0.
+
+But what if the children of 0 have varying parents, not in a sorted order.
+
+So, the first step is to find all children of 0, which is C.
+
+Then, for each c in C, p[c] is determined by the sorted order of their parents.
+
+So, the plan is:
+
+- For each test case, find C.
+
+- Sort C in non-decreasing order.
+
+- For each c in C, assign p[c] = next in the sorted list.
+
+So, now, to find the parent of the other nodes not in C.
+
+These nodes are in the subtrees of other children of 0.
+
+So, for each such node, its parent is the child in C that is in its subtree.
+
+So, for example, a node b in C's subtree would have p[b] = c, where c is the child in C that is the root of b's subtree.
+
+So, the approach is:
+
+For each node b not in C, find which child c of 0 is the parent of b.
+
+How?
+
+We can perform the following steps:
+
+a. For each child c of 0, collect all nodes not in C, and query "? c b" for each b.
+
+   i. If the path from c to b includes 0, then p[b] = c.
+
+b. Also, for each node b not in C, assign p[b] as the child c in C that is the parent of b.
+
+But how to find this c.
+
+Alternatively, for each node b not in C, find the child c in C that is the parent.
+
+So, for each b not in C, find the child c in C such that the path from c to b goes through 0.
+
+So, for each b not in C, the parent is the child c in C for which the path from c to b passes through 0.
+
+So, the plan is:
+
+For each b not in C:
+
+   For each c in C:
+
+      if "? c b" returns true, then p[b] = c.
+
+So, the code would be:
+
+for b in 1 to n-1:
+
+   if b not in C:
+
+      for c in C:
+
+          if query "? c b" returns True:
+
+              p[b] = c
+
+              break
+
+So, this is O(k*(n-k)) queries, which is again expensive for large n.
+
+So, we need a smarter way.
+
+Alternative idea: For each node b not in C, the parent is the child c in C for which the path from c to b includes 0.
+
+So, for each b, the parent is the child c in C that is the ancestor of b in the tree, and the path from c to b includes 0.
+
+So, perhaps, for each b, the parent is the child c in C that is the unique child in C for which b is in its subtree.
+
+So, for each b not in C, p[b] is the child c in C that is the parent of b.
+
+So, the question is, how to find, for each b not in C, which child c in C is the parent.
+
+So, perhaps, for each c in C, the subtree of c (excluding 0 and the other children) has all nodes b whose parent is c.
+
+So, for each c in C, the nodes in its subtree are exactly those b's for which p[b] = c.
+
+So, the plan is:
+
+For each c in C:
+
+   Collect all nodes not in C and not in any other c's subtree.
+
+   For each such node b, query "? c b" to determine if the path from c to b includes 0.
+
+   If yes, then p[b] = c.
+
+So, the code is:
+
+for c in C:
+
+   for b in all nodes not in C and not in any other c's subtree:
+
+       if "? c b" is true:
+
+           p[b] = c
+
+So, the problem is to find, for each c, the nodes b not in C and not in any other c's subtree, and for which the path from c to b includes 0.
+
+But how.
+
+Another approach: For each c in C, the nodes in its subtree (excluding 0) are the nodes in C's other subtrees. So, for each c, the nodes in its subtree are the nodes not in C and not in any other c's subtree.
+
+So, for each c in C, the nodes in its subtree can be found by querying for each other c' in C, whether their subtree contains b.
+
+But again, this is time-consuming.
+
+So, perhaps, the way to proceed is:
+
+1. Find C, the children of 0.
+
+2. Sort C in non-decreasing order.
+
+3. For each c in C, assign p[c] as the next child in the sorted list.
+
+4. For each node b not in C, assign p[b] as the child c in C for which b is in the subtree of c.
+
+So, the code can be structured as follows:
+
+- For each test case:
+
+   a. Read the tree structure.
+
+   b. Find C, the children of 0.
+
+   c. Sort C in non-decreasing order.
+
+   d. Assign p[c] = next in the sorted list.
+
+   e. For each node b not in C:
+
+       For each c in

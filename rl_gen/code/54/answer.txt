@@ -1,0 +1,662 @@
+0
+Okay, let's try to figure out how to solve this problem. So, the problem is about counting the number of brilliant subarrays in a given array. Hmm, what's a brilliant array?
+
+From the description, a subarray is brilliant if, after performing some operations, it becomes consecutive. The operations allowed are adding two elements x and y (where their average is an integer not already in the set) to the set. So, each step, we can add elements that are averages of two existing elements.
+
+Wait, but for the subarray to become consecutive, it must be possible to add elements step by step to make all adjacent elements differ by 1. So the original subarray must already form a structure that can be expanded into a consecutive set.
+
+I think a consecutive set is one where after sorting, each pair of adjacent elements has a difference of 1. So, for the subarray to be brilliant, it must already contain elements that can be expanded step by step to form such a set.
+
+Hmm, so what properties must the original subarray have to be brilliant?
+
+Let's think about it. Suppose we have a subarray that's initially a set S. For S to be able to be expanded into a consecutive set, it must have certain properties. For example, the elements must form a contiguous range, but perhaps not necessarily in order, because the operations can add elements in between.
+
+Wait, no. Because the operations are adding elements that are the average of two existing elements. So, for example, if you have elements a and b, you can add (a+b)/2 only if it's an integer and not already present. So, the process of adding elements can only add new elements that are averages of pairs.
+
+This suggests that the set S must be such that all the elements in the final consecutive set are reachable through these additions. So, perhaps the initial subarray must contain elements that allow the expansion to form a consecutive set.
+
+But how can we model this? Maybe it's easier to think in terms of the minimal and maximal elements. Because, to form a consecutive set, the minimal and maximal elements must be such that their difference is equal to the length of the subarray minus one, but that's only if we can add all the elements in between.
+
+Wait, but adding elements is not just about having the minimal and maximal. Because each step allows adding new elements, but the process is more about connectivity. For example, if the subarray is [2,4,5,6], can we form a consecutive set? Let's see: between 2 and 4, you can add 3. Then between 3 and 5, add 4 (but 4 is already present), so maybe not. So the initial set [2,4,5,6] can't form a consecutive set because 3 is missing. So the subarray [2,4,5,6] is not brilliant.
+
+So, for a subarray to be brilliant, it must have elements that can form a consecutive set by adding the necessary midpoints. So, the necessary conditions are that the subarray is a subset of a consecutive sequence and that the minimal and maximal elements are such that they can be connected via the allowed operations.
+
+Wait, perhaps the subarray must form a consecutive range in itself, and the minimal and maximal elements must satisfy certain conditions. Let me think.
+
+Let's say the subarray is s = [a, a+1, a+2, ..., b]. Then, the minimal and maximal can be connected via adding elements in between. So in this case, the subarray is brilliant.
+
+But wait, the subarray doesn't have to be in order. Oh, wait no. Because the subarray is a subarray of the original array, which is a set. So the order in the original array doesn't matter, but the elements in the subarray must form a consecutive set. So the subarray must consist of consecutive integers, but the elements can be in any order as long as they form a consecutive sequence.
+
+Wait, but the way the problem is structured, the subarray is a set. So when considering the subarray as a set, the elements can be in any order. So, for the subarray to be brilliant, when sorted, it must be a consecutive sequence.
+
+So the problem reduces to finding all subarrays where, when sorted, they form a consecutive sequence of integers. Because, if the sorted subarray is consecutive, then by adding the missing elements step by step, we can form a consecutive set.
+
+Wait, but that's not sufficient. Because for example, the subarray [1,3,5] is not a consecutive set, but it can't be expanded into a consecutive set either. Because the only way to add elements is through averages, but 1 and 3 can't form 2, so you can't add 2. So the subarray [1,3,5] is not brilliant.
+
+So, the subarray must be such that when sorted, all elements form a consecutive sequence. So the sorted subarray must be something like {k, k+1, k+2, ..., k+m-1}.
+
+So, the first condition is that the subarray, when sorted, must consist of consecutive integers. So, the subarray must be a consecutive set in the sorted order.
+
+But wait, what about a subarray that's not a consecutive set, but when expanded, it can become one. For example, the subarray [2,3,5]. When sorted, it's [2,3,5], which isn't consecutive. So can it be expanded?
+
+Wait, the initial set is {2,3,5}. To make it consecutive, we can add 4, but wait, how? Because 2 and 5 have an average of 3.5, which is not an integer. So we can't add 4.5. So no, we can't add any new elements. So the subarray is not brilliant.
+
+Another example: subarray [1,2,3]. Sorted, it's consecutive. So Eri can add nothing, it's already consecutive. So yes, it's brilliant.
+
+So, the key condition is: the subarray, when sorted, must form a consecutive sequence.
+
+Therefore, the problem reduces to finding the number of subarrays where, when sorted, all elements are consecutive.
+
+So, the approach is to find all subarrays where the elements form a consecutive sequence when sorted.
+
+But how do we count such subarrays efficiently?
+
+Hmm, for a subarray to have all consecutive elements when sorted, the subarray must consist of a consecutive range. So, for example, the subarray must be like [k, k+1, ..., k+m-1], for some k and m.
+
+So, the problem is to find all subarrays where the elements, when sorted, form a consecutive sequence. So the subarray has to consist of a range of consecutive integers, but the order is not important because we can sort them.
+
+So, for any subarray, the minimal element is m, the maximal is M. The subarray must consist of all integers from m to M, inclusive.
+
+So, for a subarray to be brilliant, the elements must be exactly the set {m, m+1, ..., M}.
+
+So, the problem is to find the number of subarrays where the set of elements is exactly the range from the minimum to maximum of the subarray.
+
+Now, how to count this efficiently.
+
+But how can we model this? Let's think about the properties.
+
+For a subarray a_l...a_r, the minimal element is m, the maximal is M. For the subarray to be brilliant, the set must be exactly {m, m+1, ..., M}.
+
+So, the subarray must contain all integers between m and M. So, for each possible pair m and M, we need to find the number of subarrays where:
+
+1. m is the minimal element in the subarray.
+2. M is the maximal element in the subarray.
+3. All elements between m and M are present in the subarray.
+
+So, for each possible m and M, we can calculate the number of subarrays where all elements are between m and M, and the minimal is m, maximal is M, and the subarray includes all elements from m to M.
+
+Wait, but that's a bit vague. Let's think differently.
+
+Let’s consider that for a subarray to be brilliant, it must be a consecutive sequence of integers. So, the subarray must consist of a range of integers that can be sorted into consecutive order.
+
+So, for each possible range [k, k + d], we can find the number of subarrays that consist exactly of the numbers k, k+1, ..., k + d.
+
+Wait, but this is only a necessary condition, not sufficient. Because, for example, the subarray [2,4,5,6] is not a consecutive range, but perhaps it can be expanded.
+
+Wait, no. Because the subarray [2,4,5,6] is not a consecutive range. So, it's not a candidate for being brilliant.
+
+But for a subarray to be brilliant, it must be a consecutive range. So, the subarray must consist of a set of consecutive integers.
+
+So, for example, the subarray [2,3,5] is not a consecutive range, but it's not a consecutive set either.
+
+So, the first condition is that the subarray, when sorted, is a consecutive range.
+
+So, the approach is to find all subarrays where the elements form a consecutive range.
+
+So, how can we model this?
+
+Idea: For each possible starting point l, find the longest possible subarray starting at l where the elements are a consecutive range. Then, for each possible l, count the number of such subarrays.
+
+But with n up to 4e5, this approach must be efficient.
+
+So, perhaps we can model this by tracking, for each position, the ranges that can form a consecutive sequence.
+
+An alternative approach is to note that a subarray is brilliant if and only if it is a subarray that is a consecutive range. So, for each possible start l, we can find all r such that the subarray a_l..a_r is a consecutive range.
+
+But how to find that efficiently.
+
+Hmm, perhaps for each position, we can track the current possible consecutive sequence.
+
+Let me think in terms of the minimal and maximal elements.
+
+Suppose we have a current window [left, right], and we know that the current window is a consecutive range. Then, as we expand right, we can check if the new element is either current_max +1 or current_min -1.
+
+Wait, no. Because the window is a consecutive range, the elements must be a consecutive sequence. So, for example, if the window is [m, m+1, ..., M], then the next element must be either m-1 or M+1 to extend the range.
+
+Wait, but perhaps not. Because the window could be [m, m+1, ..., M], and the next element could be m-1 (thus making the new window [m-1, m, m+1, ..., M], which is a consecutive range) or M+1 (making the window [m, m+1, ..., M+1], which is also consecutive).
+
+So, for a window [m, M], the next element can be m-1 or M+1 to extend the window.
+
+So, perhaps we can model this as a two-pointer approach, where for each starting point, we expand the window as much as possible, ensuring that the window remains a consecutive range.
+
+This approach would be O(n) in time if the number of possible windows is manageable.
+
+Let me outline this approach:
+
+Initialize left = 0, current_min = a[0], current_max = a[0]. Then, for each right from 1 to n-1:
+
+- If a[right] == current_max + 1, then current_max increases by 1.
+- Else if a[right] == current_min - 1, then current_min decreases by 1.
+- Else, the window is broken. So, we need to reset current_min and current_max to a[right], and left to right.
+
+But wait, this approach only allows the window to grow either to the right by expanding the current window, but it's not clear whether all possible consecutive ranges are being considered. Because a consecutive range can start at any point, not necessarily the first element.
+
+Hmm, perhaps this approach is insufficient because it only considers the consecutive ranges that start at the leftmost element.
+
+For example, if the array is [1,3,4,5], the window [1,3,4,5] can't be extended because 3 is not current_min -1 (current_min is 1, so 3 is current_min + 2).
+
+So, according to this approach, the window would only include [1,3,4,5], which is not a consecutive range, so it's not considered as a brilliant subarray.
+
+So, this approach fails to capture all possible consecutive ranges.
+
+So, perhaps a better approach is needed.
+
+Alternative idea: for each element, track the possible ranges of consecutive integers that can be extended.
+
+Wait, perhaps for each position, we can find the maximum possible l and r such that a_l, a_{l+1}, ..., a_r form a consecutive sequence.
+
+But how to compute this efficiently.
+
+Another idea: for each element a[i], we can look for the longest possible consecutive sequence starting at a[i], and then for each such sequence, count how many subarrays it contributes.
+
+But again, this might not account for all possible intervals.
+
+Wait, perhaps the problem can be transformed into finding all intervals [l, r] such that the multiset of elements in [l, r] is exactly the set {m, m+1, ..., M}.
+
+So, for each possible m, we can find the maximal interval where all elements are consecutive.
+
+But how?
+
+Alternatively, perhaps we can model the problem by considering each possible m and M, and find the number of subarrays where all elements are in [m, M], and the minimal is m, the maximal is M, and the elements are exactly m, m+1, ..., M.
+
+So, for each possible m and M, the number of subarrays that include all elements from m to M, and the minimal is m, and the maximal is M.
+
+But how to find these.
+
+Let me consider the minimal and maximal of a subarray. For the subarray to be brilliant, it must have minimal m, maximal M, and all elements between m and M must be present.
+
+So, the problem is to find the number of subarrays where the min is m, the max is M, and all elements are in [m, M].
+
+Wait, but that's a bit vague. How can we model this?
+
+Another approach: For each possible subarray, it's brilliant if and only if it's a consecutive range. So, the subarray must be exactly [m, m+1, ..., M], for some m and M.
+
+So, the problem reduces to finding the number of such subarrays.
+
+So, the task is to count all intervals [l, r] where the elements in the subarray a_l to a_r form a consecutive range.
+
+Now, the question is, how to find the number of such intervals.
+
+Hmm, perhaps we can model this as a sliding window problem, where for each position r, we determine the earliest position l such that the subarray [l, r] is a consecutive range.
+
+Then, for each r, the number of subarrays ending at r is (r - l + 1) - 1, because the window [l, r] is a consecutive range, but the subarrays can be any [k, r] where k >= l.
+
+Wait, no. Because for example, if the window [l, r] is the maximum possible, then the subarrays [l, r], [l+1, r], ..., [r, r] are all within the window.
+
+Wait, but perhaps for each r, the window [l, r] is the maximum possible, and the number of brilliant subarrays ending at r is (r - l + 1) - 1, but I'm not sure.
+
+Wait, perhaps for each r, we can find the smallest l where the subarray [l, r] is a consecutive range. Then, all subarrays [k, r] where k >= l and <= r form a consecutive range. So, the number of such subarrays is (r - l + 1).
+
+Wait, that makes sense. Because for each r, the earliest l possible is l, and any subarray starting at or after l and ending at r is a consecutive range.
+
+So, the total number of brilliant subarrays ending at r is (r - l + 1). So, if we can compute l for each r, we can accumulate the count.
+
+But how to compute l for each r.
+
+This seems similar to the problem of finding the longest substring without repeating characters, but in this case, it's about finding the minimal l for each r such that the subarray [l, r] is a consecutive range.
+
+To compute this, perhaps we can track the current window [current_l, r], and for each r, determine if the subarray [current_l, r] is a consecutive range. If it is, then l can be as small as current_l. Otherwise, we need to adjust current_l to the left until the subarray is a consecutive range.
+
+But how to efficiently check if a subarray is a consecutive range.
+
+Wait, the subarray [current_l, r] is a consecutive range if and only if all elements between current_l and r are present and form a consecutive sequence.
+
+Wait, no. Because the subarray [current_l, r] could have a range that is consecutive, but some elements outside that range are present. For example, the subarray [1,2,4,5]. The elements 3 are missing, so the entire subarray isn't a consecutive range.
+
+So, for a subarray [current_l, r], to be a consecutive range, it must satisfy:
+
+- The maximum element is current_max, the min is current_min, and current_max - current_min +1 == (r - current_l +1).
+
+Wait, wait. Let's see:
+
+If the subarray is a consecutive range, then the number of elements is (current_max - current_min + 1). So, if the subarray has length (current_max - current_min +1), then it's a consecutive range.
+
+But this alone isn't sufficient. Because the subarray could have elements that are in the consecutive range, but perhaps some elements are missing.
+
+Wait, no. Because the subarray is a consecutive range, so the elements must exactly be current_min, current_min+1, ..., current_max.
+
+So, the subarray must have length (current_max - current_min + 1).
+
+So, for a subarray [current_l, r], the condition is:
+
+max(a[current_l ... r]) - min(a[current_l ... r]) + 1 == (r - current_l + 1).
+
+And that condition must be true for the subarray to be a consecutive range.
+
+So, for each r, we can try to find the earliest l such that the subarray [l, r] satisfies this condition.
+
+But how to find it quickly.
+
+Wait, the window [current_l, r] is the maximum possible consecutive range ending at r. So, for each r, we can move current_l to the left until the condition is satisfied.
+
+But how to compute this efficiently.
+
+Let's think of it as a sliding window:
+
+For each r from 0 to n-1:
+
+- Compute the current window [l, r], starting from r and moving left.
+
+- While the condition is not satisfied, increase l.
+
+- Once the condition is satisfied, all subarrays [k, r] where k >= l are consecutive ranges.
+
+Thus, for each r, the number of subarrays is (r - l + 1).
+
+So, the approach is to use a two-pointer (left and right) approach, where for each r, we find the minimal l such that the subarray is a consecutive range, and then add (r - l + 1) to the total count.
+
+But the question is, how to efficiently compute l for each r.
+
+Let's think about the data structures we can use.
+
+We can keep track of the current window [l, r], and for each r, we adjust l as necessary.
+
+We can also maintain the current min and max of the window [l, r].
+
+So, for each r:
+
+- While the condition (max - min + 1 == r - l + 1) is not satisfied:
+
+   - l += 1
+
+- Once the condition is satisfied, the number of subarrays ending at r is (r - l +1), so add this to the total.
+
+But wait, this approach may not be correct, because the window could have a larger size than necessary. For example, the window [l, r] could be the minimal possible, but perhaps a larger window is possible.
+
+Wait, no. Because as we move l to the left, the window becomes larger, but the condition is checked each time. So, the first time the condition is satisfied, the window [l, r] is the minimal possible.
+
+Wait, no. Because perhaps the condition is satisfied for a window that is larger than the current window. For example, suppose the window [l, r] is a consecutive range, but a larger window [l', r] is also a consecutive range. So, we have to find the minimal l for which the window is a consecutive range.
+
+Wait, no, because the condition is that the window's size is equal to the max - min +1. So, if a larger window [l', r] is a consecutive range, then the condition is satisfied. So, the minimal l is the leftmost position where the window is a consecutive range.
+
+So, the approach is correct: for each r, find the smallest l such that the window [l, r] is a consecutive range. Then, add (r - l +1) to the total.
+
+So, how to implement this.
+
+We'll need for each r, to find the smallest l such that the subarray [l, r] is a consecutive range.
+
+To do this, we can use a sliding window approach, keeping track of the current min and max.
+
+But wait, for each r, we can have a window [l, r], and as we move l to the left, the min and max can change. So, for each step, we can update min and max as l decreases.
+
+But this could be O(n^2) in the worst case, which is not acceptable for n=4e5.
+
+So, we need a more efficient way.
+
+Alternative idea: track the possible l for each r. Let's see.
+
+We can track for each r, the leftmost possible position l such that the subarray [l, r] is a consecutive range.
+
+We can represent this with a two-pointer approach where for each r, we find the minimal l.
+
+But how to do this efficiently.
+
+Another approach is to realize that for a subarray [l, r] to be a consecutive range, all elements must be between current_min and current_max, and the size is exactly current_max - current_min + 1.
+
+So, for each r, we can keep track of current_min and current_max in the window [l, r]. As we move l to the left, these values can change.
+
+But the problem is that for each r, we need to find the minimal l where the window is a consecutive range.
+
+An alternative is to use a deque to track the possible l's, but I'm not sure.
+
+Wait, perhaps we can precompute for each position r the earliest l where the subarray [l, r] is a consecutive range.
+
+Let's consider that for each r, the window [l, r] is the smallest possible l such that the subarray is a consecutive range.
+
+To compute this, for each r, we can move l to the left until the condition is satisfied.
+
+But again, this could be O(n) in the worst case, which is acceptable.
+
+Let me try to model this.
+
+Initialize l = 0.
+
+For each r from 0 to n-1:
+
+   while l <= r:
+
+      current window is [l, r]
+
+      compute current_max and current_min of a[l..r]
+
+      if (current_max - current_min + 1) == (r - l + 1):
+
+          break
+
+      else:
+
+          l += 1
+
+   count += (r - l +1)
+
+Wait, no. Because in this case, for each r, the condition is checked for the current l, and l is increased until the condition is met. Then, the count is increased by (r - l +1).
+
+But this could be O(n) per r, leading to O(n^2) time, which is too slow.
+
+So, this approach is not feasible for n=4e5.
+
+Alternative idea: find a way to compute the number of consecutive ranges in O(n) time.
+
+Let me think about the problem differently.
+
+Each consecutive range is determined by its starting and ending points, and the elements in between.
+
+So, for each possible starting point l, find the maximum r such that the subarray [l, r] is a consecutive range.
+
+Once we have this, the number of subarrays for this l is (r - l +1).
+
+But how to compute r for each l.
+
+Hmm, perhaps for each l, r is the maximum index such that a[l..r] is a consecutive range.
+
+How to find this r.
+
+For a given l, we can find the maximum r where the subarray [l, r] is a consecutive range.
+
+To do this, we can track the current window [current_l, r], and for each l, find the maximum r.
+
+But how.
+
+Another approach is to note that a consecutive range is a set of consecutive integers. So, for a given l, the maximum possible r is such that all elements from l to r are consecutive.
+
+So, perhaps for l, the maximum r is the rightmost position where the subarray [l, r] is a consecutive range.
+
+How can we compute this efficiently.
+
+Let’s consider that for each l, the maximum r is such that the subarray [l, r] is a consecutive range. So, the elements from l to r are all consecutive.
+
+Thus, for each l, the maximum r is the rightmost position where the subarray [l, r] is a consecutive range.
+
+So, to compute this for all l, we can use a similar two-pointer approach.
+
+Initialize current_l = 0, current_max = a[0], current_min = a[0].
+
+For each r from 0 to n-1:
+
+   while current_max - current_min + 1 > (r - current_l +1):
+
+       current_l +=1
+
+   current_max = max(current_max, a[r])
+
+   current_min = min(current_min, a[r])
+
+   if current_max - current_min +1 == (r - current_l +1):
+
+       max_r = r
+
+   else:
+
+       // move current_l to the right until the condition is met.
+
+   total += (max_r - current_l +1)
+
+Wait, no. Because the while loop is not correct. Because the condition is checked each time, but the while loop is not properly structured.
+
+Let me think again.
+
+Wait, the condition is that the window [current_l, r] is a consecutive range. So, for each r, we can adjust current_l to the left until the condition is satisfied.
+
+So, for each r:
+
+   while the window [current_l, r] is not a consecutive range:
+
+       current_l +=1
+
+   then, the window is a consecutive range, and the number of subarrays ending at r is (r - current_l +1).
+
+But how to implement this efficiently.
+
+Wait, perhaps we can precompute for each r, the current window [current_l, r] is the maximal possible.
+
+But again, this is O(n^2) in the worst case.
+
+Hmm, perhaps it's better to consider that for each possible consecutive range, the subarray must have a certain structure.
+
+Another idea: a consecutive range can be represented as a sequence of consecutive integers. So, the entire subarray must consist of a sequence of consecutive integers, which forms a contiguous block.
+
+So, for each such block, the subarray is brilliant.
+
+Thus, the problem reduces to finding all such blocks in the array.
+
+Now, how can we find all such blocks in O(n) time.
+
+An alternative approach is to find for each possible start l, the maximum r such that the subarray [l, r] is a consecutive range.
+
+This can be done by maintaining a sliding window [current_l, r] for each r, ensuring that the window is a consecutive range.
+
+But how to implement this.
+
+Let me think about the window [current_l, r]. For each r, we can try to find the minimal current_l such that the window is a consecutive range.
+
+Wait, but this is the same as the earlier approach.
+
+So, perhaps the two-pointer approach is the way to go, but we need to find an efficient way to track current_l and current_max, current_min for each r.
+
+Wait, perhaps for each r, we can maintain current_l and current_max, current_min, but in a way that allows us to compute for the next r.
+
+But I'm not sure.
+
+Let's think about how to compute this.
+
+We can have variables:
+
+- current_l: the leftmost position for which the window [current_l, r] is a consecutive range.
+
+- current_max: the maximum value in the window.
+
+- current_min: the minimum value in the window.
+
+For each r, we can:
+
+1. Compute the current window [current_l, r], find if it's a consecutive range.
+
+   - If it is, then the number of subarrays ending at r is (r - current_l +1).
+
+   - Else, we need to move current_l to the right until the window is a consecutive range.
+
+But how to do this efficiently.
+
+Wait, perhaps for each r, the current window [current_l, r] is the maximal possible consecutive range ending at r.
+
+So, for each r, current_l is the earliest position where the window [current_l, r] is a consecutive range.
+
+Thus, for each r, the number of subarrays is (r - current_l + 1).
+
+So, the problem is to find for each r, the current_l, which is the earliest possible.
+
+So, how to compute this.
+
+Let me think of it as a sliding window.
+
+We can have variables:
+
+- current_l: the earliest l for which [current_l, r] is a consecutive range.
+
+- current_max: the maximum in [current_l, r].
+
+- current_min: the minimum in [current_l, r].
+
+As we process r from left to right:
+
+   While the window [current_l, r] is not a consecutive range:
+
+       current_l +=1
+
+   Then, the window is a consecutive range, so the number of subarrays ending at r is (r - current_l +1).
+
+But wait, how to check if the window is a consecutive range.
+
+The condition is:
+
+current_max - current_min +1 == (r - current_l +1)
+
+So, for each r, we can check this condition.
+
+But for n=4e5, this approach would take O(n) per r, which is O(n^2) time, which is not acceptable.
+
+So, we need a more efficient way to compute this.
+
+Alternative idea: for each r, the earliest current_l is the first position where the window [current_l, r] has all elements in [current_min, current_max] and the size is current_max - current_min +1.
+
+So, perhaps we can precompute for each r the current_min and current_max, and then find the earliest current_l where the size is current_max - current_min +1.
+
+But again, this seems O(n^2) in the worst case.
+
+Wait, but for each r, the current_min and current_max are known because we are processing from left to right.
+
+So, for each r, the current window's min and max are a[r] and a[r], but as we move current_l to the left, the min and max can change.
+
+Wait, perhaps for each r, the current window is [current_l, r], and the min and max are the min and max of a[current_l ... r].
+
+So, for each r, the condition is:
+
+current_max - current_min +1 == (r - current_l +1).
+
+So, for each r, we can compute the current_max and current_min in the current window.
+
+But again, how to find current_l quickly.
+
+Alternative idea: for each r, the current_l is the leftmost position where the window [current_l, r] has all elements in [current_min, current_max], which is the same as the current_max - current_min +1 == (r - current_l +1).
+
+So, for each r, we can compute the current l as the maximum between the previous l and the position where a[r] - (current_min - current_max) == 1.
+
+Wait, perhaps not.
+
+Another approach: for each r, the current_l is the leftmost position where the window [current_l, r] is a consecutive range.
+
+So, for r+1, the current_l can be the same as before, or increased by 1, depending on whether the new element introduces a gap.
+
+But this seems similar to the two-pointer approach.
+
+Wait, in the two-pointer approach, we can maintain current_l and current_max, current_min.
+
+For each r, we can compute the current_max and current_min as the maximum and minimum of the window [current_l, r].
+
+If the window is a consecutive range, then we can move l to the left until the condition is satisfied.
+
+But how to compute this efficiently.
+
+Hmm, perhaps we can precompute for each r the current_max and current_min in O(1) time.
+
+So, we can have an array that for each r, stores the current_max and current_min in the window [current_l, r].
+
+But how.
+
+Alternatively, perhaps we can use a monotonic queue to keep track of the current_max and current_min.
+
+But I'm not sure.
+
+Alternatively, perhaps we can precompute for each position r, the earliest l such that the window [l, r] is a consecutive range.
+
+But I'm not sure.
+
+Another idea: for a window [l, r] to be a consecutive range, the elements must be exactly {current_min, current_min +1, ..., current_max}.
+
+So, for each r, the window [l, r] can be represented as [min, max], where max - min +1 = r - l +1.
+
+So, for each r, the earliest l is the leftmost position where the elements from l to r form a consecutive range.
+
+So, the problem is to find for each r, the earliest l such that the elements from l to r form a consecutive range.
+
+But how.
+
+Perhaps, for each r, the current_l is the leftmost position such that the elements from current_l to r form a consecutive range.
+
+So, for each r, current_l is the maximum between current_l and (r - (max - min) +1).
+
+But not sure.
+
+Alternatively, perhaps for each r, the earliest l is the maximum between the previous l and (r - (max - min) +1).
+
+Wait, perhaps I'm getting stuck here.
+
+Let me think about the sample input.
+
+Sample Input 1:
+
+5
+
+1 2 3 4 5
+
+Sample Output: 10.
+
+Explanation: All possible subarrays are considered.
+
+So, in this case, each subarray is a consecutive range.
+
+Another sample:
+
+Input is 2 4 5 6 8 7.
+
+The subarrays that are brilliant are [2,4,5,6] and [5,6,8,7].
+
+Wait, no. Because [2,4,5,6] is a consecutive range, but [5,6,8,7] is not because the elements are 5,6,8,7. Wait, but 5 is followed by 6, which is consecutive, but 7 is not 8-1. So, the subarray [5,6,8,7] is not a consecutive range.
+
+Wait, but in the initial array, 8 is followed by 7. So, when considering the entire array, the subarray would have to be a consecutive range.
+
+So, the sample output is 2, meaning two subarrays.
+
+Hmm.
+
+So, perhaps the approach is to find all possible intervals [l, r] where the elements form a consecutive range.
+
+So, the plan is:
+
+For each consecutive range [l, r], count 1.
+
+So, the task is to find all such [l, r].
+
+Thus, the problem reduces to finding all such [l, r] where the elements form a consecutive range.
+
+So, the plan is:
+
+1. Iterate through each possible [l, r].
+
+2. For each [l, r], check if the elements form a consecutive range.
+
+3. If yes, add 1 to the count.
+
+But this is O(n^2), which is not feasible for n=4e5.
+
+Thus, we need a more efficient way.
+
+Alternative idea: For each position r, find the earliest l such that the subarray [l, r] is a consecutive range. Then, the number of subarrays ending at r is (r - l +1).
+
+So, the total count is the sum over all r of (r - l +1), where l is the earliest position where [l, r] is a consecutive range.
+
+So, the question is how to compute this l for each r.
+
+Let me think about the two-pointer approach.
+
+Initialize current_l = 0.
+
+For each r in 0 to n-1:
+
+   while current_l <= r:
+
+       compute current_max and current_min of a[current_l..r]
+
+       if (current_max - current_min +1) == (r - current_l +1):
+
+           l = current_l
+
+           break
+
+       else:
+
+           current_l += 1
+
+   count += (r - l +1)
+
+But this is O(n^2) in the worst case, which is not acceptable.
+
+Thus, this approach is not feasible.
+
+Alternative idea: For each r, find the earliest l such that the subarray [l, r] is a consecutive range.
+
+We can model this as a sliding window, and for each r, find the earliest l by checking if the current window is a consecutive range.
+
+But again, for large n, this is not efficient.
+
+Another approach: For each r, the earliest

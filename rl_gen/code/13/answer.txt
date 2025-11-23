@@ -1,0 +1,809 @@
+0
+Okay, so I have this problem to solve, and I'm a bit stuck, but let's try to break it down step by step.
+
+The problem is about Kevin who participated in n contests on this new online judge called Forcescode. He hacked into the system and wants to select an interval [l, r] to skip, so that his recalculated rating is maximized. The rules for how his rating changes are a bit specific, so I need to make sure I understand them correctly.
+
+So, initially, his rating x is 0. Then, for each contest from 1 to n, if the contest is in the interval [l, r], his rating remains the same. Otherwise, he updates his rating based on the contest's a_i value. The update rules are:
+- If a_i > x, x increases by 1.
+- If a_i == x, x stays the same.
+- If a_i < x, x decreases by 1.
+
+Our goal is to choose [l, r] such that after skipping this interval, the final x is as large as possible. Also, the interval must include at least one contest because he has to skip some.
+
+Hmm, okay. So the task is to find the optimal interval to skip so that the final x is maximized.
+
+Let me think about how to approach this. Since n can be up to 3e5, we need an efficient algorithm, probably O(n) or O(n log n) per test case.
+
+First, I need to model how the rating x changes based on the chosen interval. Maybe we can precompute some information about the a_i's to help us find the best interval.
+
+Wait, let's think about what happens when we skip an interval [l, r]. The rating x is adjusted for all contests not in [l, r]. So, for each contest i not in [l, r], the x is updated based on a_i compared to x's current value.
+
+This seems a bit tricky because the update is dependent on the previous state, which complicates things. It's not straightforward to model this as a series of operations that can be optimized.
+
+Let me consider the possible scenarios for each a_i not in the interval [l, r]. For each such i, a_i can change x in one of three ways, which could be increasing, decreasing, or staying the same.
+
+But since the interval is [l, r], the contests not in this interval are those before l or after r. So for i < l, all a_i's are updated, and for i > r, all a_i's are updated.
+
+Wait, no. The interval is [l, r], so the contests not in this interval are i < l or i > r. So, for i < l, all a_i's are updated, and for i > r, all a_i's are updated. So, the order in which we process these updates matters, right? Because each update depends on the previous x.
+
+This seems complicated. Maybe we can find a way to model the effect of skipping [l, r] on x.
+
+Let me think about the final x after skipping [l, r]. The initial x is 0.
+
+For each i < l: a_i is updated. So, for each such i, a_i's effect is to either increase, decrease, or leave x as is.
+
+Similarly, for each i > r: a_i's effect is applied after the initial x is updated for i < l, but before considering i > r.
+
+Wait, no. Because the updates are processed in order from 1 to n. So, for i < l, the x is updated, then for i = l, it's skipped, so x remains. Then i = l+1 is processed, and so on until r, which is skipped. Then, for i > r, each a_i is processed.
+
+So, the order is: process all i < l, then process i > r, because i >= l and i <= r are skipped.
+
+Wait, no. The interval [l, r] is skipped, so the contests are processed in order 1, 2, ..., n. So, for all i not in [l, r], their a_i's are processed. So, the processing order is:
+
+1 to l-1: process i < l
+l to r: skip
+r+1 to n: process i > r.
+
+Wait, no. Because the interval [l, r] is skipped, so the contests are processed in order:
+
+1 to l-1: process i < l
+l: skip
+l+1: process
+...
+r: skip
+r+1: process
+...
+n.
+
+So, the x starts at 0.
+
+For i < l: x is updated based on a_i, then i = l is skipped.
+
+For i > r: x is updated based on a_i, then i = r+1 is skipped, and so on.
+
+Wait, no. The interval is [l, r], so all i from l to r are skipped. So the order is:
+
+Process i from 1 to n.
+
+For each i:
+
+if i is in [l, r], skip. So no change to x.
+
+Else, update x based on a_i and current x.
+
+So, the updates are in the order of i=1, 2, ..., n, but skipping [l, r].
+
+So, the processing is:
+
+for i in 1 to n:
+
+   if i is in [l, r]: continue
+
+   else:
+
+      if a_i > x: x +=1
+
+      elif a_i == x: x remains
+
+      else: x -=1
+
+So, the x is updated for each i not in [l, r], in order.
+
+This seems like a crucial point. So, for each i, if it's not in [l, r], we process a_i, which could change x, but the processing is in order.
+
+So, the challenge is to find [l, r] such that after processing all the a_i's not in [l, r], the x is as large as possible, with at least one i in [l, r].
+
+Hmm. So, the problem is to find the interval [l, r] (with at least one element) that maximizes the final x after processing all the a_i's not in [l, r], in order.
+
+Given that n can be up to 3e5, we need an O(n) or O(n log n) solution.
+
+So, how can we model this?
+
+It's tricky because the x changes in a way that depends on the order of the a_i's. So, the effect of skipping [l, r] is that all the a_i's before l and after r are processed, but the order is important.
+
+Let me think about what happens when we choose to skip [l, r]. The x is computed as follows:
+
+x starts at 0.
+
+For i from 1 to l-1: process a_i, updating x.
+
+Then, for i from l to r: x remains the same.
+
+Then, for i from r+1 to n: process a_i, updating x.
+
+So, the x is:
+
+x = [after processing i < l] 
+
+then, for i > r: [after processing each i > r]
+
+So, the x is a function of l and r, but it's not clear how to find the optimal l and r.
+
+Hmm. So, perhaps we can model this for each possible l and r, but that's not feasible because there are O(n^2) possible pairs.
+
+We need a smarter approach.
+
+Let me think about the effect of choosing a certain interval [l, r]. The x is determined by the a_i's not in [l, r], processed in order.
+
+So, for a given l, the x after skipping [l, r] is determined by the a_i's for i < l and i > r.
+
+Wait, but r can vary for each l. So, perhaps for each l, we can find the optimal r that maximizes the final x.
+
+Alternatively, perhaps we can precompute some information.
+
+Let me consider the possible scenarios when l is fixed.
+
+Suppose we fix l. Then, for each possible r (r >= l), we need to find the optimal r that maximizes x.
+
+But even that seems difficult.
+
+Alternatively, perhaps we can model the x as a function of l and r, and find a way to compute it efficiently.
+
+Wait, but for each l, the x can be computed in O(n) time, which is too slow for n=3e5.
+
+So, we need a way to compute this in O(n) or O(n log n) time overall.
+
+Hmm.
+
+Another approach: think about the x after skipping [l, r] as the sum of the changes from the a_i's before l and after r.
+
+Wait, no. Because each a_i affects x in a way that depends on the current x at that time. So, the order of processing is important.
+
+But perhaps we can model the x after processing i < l and i > r.
+
+Wait, perhaps we can model the x after the first phase (i < l) and the second phase (i > r) separately.
+
+So, let's denote:
+
+- After processing i < l, the x is x_left.
+
+- Then, for each i > r, the x is updated based on a_i and x_left.
+
+So, the x after all processing is x_final = x_left after processing i > r.
+
+So, the problem reduces to choosing r >= l, and for each such r, compute x_left and then process the a_i's for i > r, updating x_final.
+
+But how?
+
+Hmm.
+
+Wait, for a fixed l, the x_left is the result of processing all i < l. So, x_left is a function of a_1, a_2, ..., a_{l-1}.
+
+Then, for a given r >= l, the x after processing i > r is computed based on x_left.
+
+So, for each l, we can precompute x_left, and then for each r >= l, compute x_final as the result of processing a_{r+1}, a_{r+2}, ..., a_n, in order.
+
+The key is to find, for each l, the optimal r >= l that maximizes x_final.
+
+But even this approach is O(n^2), which is not feasible.
+
+We need a way to find, for each l, the optimal r in O(1) or O(log n) time.
+
+Hmm.
+
+Alternatively, perhaps we can find, for each l, the best possible r that, given x_left, gives the maximum x_final.
+
+This seems challenging.
+
+Wait, let's think about what happens when we choose r.
+
+For a fixed l, and x_left, what r should we choose to maximize x_final?
+
+Well, x_final is computed by processing a_{r+1}, a_{r+2}, ..., a_n, in order.
+
+Each a_i in this range is processed in order, and x starts as x_left.
+
+So, x_final is the result of processing these a_i's, given x_left.
+
+So, for a fixed x_left, the x_final is a function f(x_left, r), where r is the starting index of the interval to skip in the second phase (i > r).
+
+Wait, no. Because r is the end in the first phase, but the second phase is r+1 to n.
+
+Wait, no, r is the end of the interval [l, r], so the second phase is r+1 to n.
+
+Wait, no. The interval is [l, r], so the first phase is 1 to l-1, the second phase is r+1 to n.
+
+So, for a fixed l, the second phase is the a_i's from r+1 to n, where r >= l.
+
+So, for each l, we can precompute x_left, which is the result of processing 1 to l-1.
+
+Then, for each r >= l, we process a_{r+1} to a_n, in order, starting from x_left.
+
+So, the x_final is x_left after processing a_{r+1}, then a_{r+2}, etc.
+
+So, the x_final is a function of r, given x_left.
+
+So, for each l, we can precompute x_left, and then for each r >= l, compute x_final, and find the maximum x_final.
+
+But again, this is O(n^2), which is too slow.
+
+Hmm.
+
+We need a way to find, for each l, the best r that maximizes x_final, without checking all possible r's.
+
+Alternatively, perhaps we can find for each l, the best r in O(1) or O(log n) time.
+
+Let me think about what's required for x_final to be as large as possible.
+
+The x_final is x_left after processing the a_i's from r+1 to n.
+
+Each a_i in this range affects x: if a_i > x_prev, x increases by 1; if equal, same; if less, decreases by 1.
+
+So, for a fixed x_left, processing a_i's in order can only increase x if a_i > x_left, or decrease it if a_i < x_left. Or leave it as is.
+
+So, the maximum x_final for a given x_left is when we process all a_i's in the second phase, and each a_i's effect is to either increase or decrease x.
+
+Wait, but the order of processing matters. So, for example, if x_left is 3, and the second phase has a_i's 4, 4, 4, then each a_i will increase x by 1 each time, leading to x_final = 3 + 3 =6.
+
+But if the second phase has a_i's 2, 2, 2, then each a_i will decrease x by 1, leading to x_final = 3 -3 =0.
+
+So, the order of a_i's in the second phase determines whether x increases or decreases.
+
+So, for a fixed x_left, the maximum x_final is achieved by processing the a_i's in the second phase in such a way that as many as possible a_i's are greater than x_left, leading to increases, and as few as possible are less, leading to decreases.
+
+But how can we model this?
+
+Alternatively, perhaps for each l, we can find the best r by considering the a_i's in the second phase and determining the optimal r.
+
+Wait, but this seems complicated.
+
+Another idea: For each possible l, we can precompute x_left, which is the result of processing 1 to l-1.
+
+Then, for the second phase, which is r+1 to n, we can precompute for each possible r, the x after processing a_{r+1}, a_{r+2}, ..., a_n.
+
+But again, this is O(n^2), which is not feasible.
+
+So, perhaps we can find a way to represent the second phase processing in a way that allows us to compute x_final quickly for any r.
+
+Wait, what if we precompute for each position i, the best possible x after processing from i to n?
+
+No, that doesn't seem helpful.
+
+Alternatively, maybe we can precompute for each i, the best possible x that can be achieved by processing a_i and all subsequent a_j's.
+
+But I'm not sure.
+
+Let me think differently. Maybe the optimal [l, r] is such that the first phase (i < l) is as optimal as possible, and the second phase (i > r) is also as optimal as possible.
+
+So, perhaps for each possible l, we can find the best r >= l that maximizes x_final.
+
+But again, this is O(n^2), which is not feasible.
+
+Wait, but maybe we can precompute for each possible l, the best possible r in O(1) or O(log n) time.
+
+Hmm.
+
+Let me think about the structure of the problem. The x is a function of the a_i's processed in two phases: before l, and after r.
+
+So, for a given l, x_left is fixed, and the second phase's processing depends on r.
+
+So, perhaps for each l, we can compute x_left, and then find the best r that, when processed after l, gives the maximum x_final.
+
+So, the question is, for a given x_left, what r (>= l) will maximize the x_final.
+
+But how?
+
+Another idea: For a given x_left, the x_final is the result of processing a_{r+1}, a_{r+2}, ..., a_n, starting from x_left.
+
+Each a_i in this range can either increase, decrease, or leave x as is.
+
+But the order is important. So, for the second phase, the best x_final is achieved by processing the a_i's in such a way that as many as possible a_i's are >= x_prev, thus increasing x, and as few as possible are < x_prev, thus decreasing x.
+
+But how to model this.
+
+Wait, perhaps for a given x_left, the optimal r is the smallest r >= l such that all a_i's in r+1 to n are >= x_left. Or something like that.
+
+Wait, let me think. Suppose that for r+1, the a_i is >= x_left. Then, processing it will increase x. So, the best is to process as many a_i's as possible in the second phase that are >= x_left, followed by those < x_left, to minimize the decrease.
+
+So, the optimal r is the smallest r such that all a_i's from r+1 to n are >= x_left. Because then, processing them all would increase x as much as possible.
+
+Wait, no, because some a_i's might be less than x_left. So, if we can find the earliest r where all a_i's from r+1 to n are >= x_left, then processing them would maximize the x.
+
+Wait, let's think: suppose x_left is 3.
+
+The a_i's after r are 4,5,6,7. So, processing them all would increase x by 4, leading to x = 7.
+
+But if a_i's are 2,4,5,6, then processing them would increase x to 5, then decrease by 1 to 4, then increase by 1 to 5, etc. So, the order matters.
+
+So, the optimal r is the one where the a_i's in the second phase are as many as possible >= x_left, and as few as possible < x_left.
+
+Wait, but how to find that r.
+
+Alternatively, for a given x_left, the best r is the minimal r such that all a_i's from r+1 to n are >= x_left.
+
+Because, in that case, processing them would all increase x, and the x would be as large as possible.
+
+Wait, but that's not necessarily the case. For example, suppose x_left is 3, and the a_i's are 3, 4, 2, 5.
+
+If r is 2, then the second phase is i=3,4.
+
+a_3 is 2 <3: so x would decrease by 1.
+
+a_4 is 5>3: x increases by 2.
+
+So, x starts at 3.
+
+After a_3: 2, x becomes 2.
+
+After a_4:5, x becomes 3.
+
+So, x_final is 3.
+
+If r is 3, then the second phase is i=4.
+
+a_4 is 5>3: x increases by 2, so x_final is 5.
+
+Which is better.
+
+So, in this case, choosing r=3 is better than r=2.
+
+So, the earlier r is, the more a_i's are in the second phase. So, the earlier r is, the more a_i's are processed.
+
+Wait, but in this case, r=3 is better than r=2.
+
+So, perhaps for a given x_left, the best r is the smallest r such that all a_i's from r+1 to n are >= x_left.
+
+Wait, no. Because in the example above, r=3 is better than r=2.
+
+Hmm.
+
+Alternatively, perhaps the best r is the minimal r where all a_i's from r+1 to n are >= x_left.
+
+Wait, in the example, when r=2, a_3 is 2 <3, so x decreases. But when r=3, a_4 is 5>3, so x increases.
+
+So, in this case, r=3 gives a better x_final.
+
+So, perhaps the optimal r is the first position where all a_i's from r+1 to n are >= x_left, but that's not necessarily the case.
+
+Hmm, this is getting complicated.
+
+Maybe I should try to model x_left as a function of l, and then for each l, find the best r in O(1) or O(log n) time.
+
+So, let's proceed step by step.
+
+First, precompute for each l, the x_left, which is the result of processing 1 to l-1.
+
+How can we compute x_left efficiently for all l?
+
+Yes, we can precompute the prefix sums or use a monotonic queue.
+
+Wait, for each l, x_left is the result of processing a_1, a_2, ..., a_{l-1}.
+
+So, for l=1, x_left is 0.
+
+For l=2, x_left is the result of processing a_1.
+
+For l=3, x_left is the result of processing a_1, a_2.
+
+So, this is similar to a running process where each step depends on the previous state.
+
+So, we can precompute x_left for all l from 1 to n.
+
+How?
+
+We can precompute a list where x_left[l] is the result of processing a_1 to a_{l-1}.
+
+We can initialize x_left[1] = 0.
+
+Then, for l from 2 to n:
+
+x_left[l] = x_left[l-1] + (1 if a_{l-1} > x_left[l-1] else (0 if a_{l-1} == x_left[l-1] else -1))
+
+Wait, no. Because x_left[l] is the result of processing a_1 to a_{l-1}.
+
+Wait, wait. Let me clarify.
+
+Let me think of l as the starting point of the first phase. So, for l=2, the first phase is a_1. So x_left[2] is the result after processing a_1.
+
+Similarly, for l=3, the first phase is a_1 and a_2: x_left[3] is the result after processing both.
+
+So, the x_left array can be computed as follows:
+
+x_left[1] = 0.
+
+For l from 2 to n:
+
+x_left[l] = x_left[l-1] + (1 if a_{l-1} > x_left[l-1] else 0 if a_{l-1} == x_left[l-1] else -1)
+
+Wait, no. Because when processing l, we process a_{l-1}, which is the (l-1)-th element. So, for each l, a_{l-1} is the element being processed.
+
+So, for l=2, we process a_1.
+
+For l=3, process a_1 and a_2.
+
+So, the x_left array is built as follows:
+
+x_left[1] = 0.
+
+x_left[2] = x_left[1] + (if a_1 > x_left[1] (0) else ... )
+
+Wait, a_1 is the first element. So, x_left[2] = x_left[1] + (if a_1 > x_left[1] then 1 else if a_1 == x_left[1] then 0 else -1).
+
+Yes.
+
+So, this can be computed in O(n) time.
+
+Once we have x_left for all l, then for each l, we can compute x_left[l], and then for each possible r >= l, compute x_final as the result of processing a_{r+1}, a_{r+2}, ..., a_n, starting from x_left[l].
+
+So, x_final is the result of processing the a_i's from r+1 to n, starting with x_left[l].
+
+So, for each l, we can precompute x_left[l], and then for each r >= l, compute x_final.
+
+The question is, how to compute x_final for all possible r >= l efficiently.
+
+Wait, but for each l, the second phase is a fixed set of a_i's, which can be processed in order.
+
+So, for each l, we can precompute an array where for each position i, we store the x after processing a_i to a_n.
+
+Wait, but that's O(n) per l, which is O(n^2) overall, which is not feasible.
+
+Hmm.
+
+Alternative idea: For each l, the second phase is the a_i's from r+1 to n, where r >= l.
+
+So, the second phase is a suffix starting at r+1.
+
+So, for each l, we can precompute the suffix x arrays, which for each possible starting index s (s >= l), store the x after processing a_s, a_{s+1}, ..., a_n.
+
+Wait, but that's again O(n^2) in total.
+
+No, because for each l, the suffix is a certain starting point, and each suffix can be processed in O(n) time.
+
+Wait, no. That would again be O(n^2), which is too slow.
+
+So, perhaps we need a way to compute x_final for any r in O(1) time.
+
+Hmm.
+
+Another approach: For a given l, the x_left is known. Then, the x_final is the result after processing a_{r+1}, a_{r+2}, ..., a_n, starting from x_left.
+
+So, the x_final can be computed as follows:
+
+We can precompute for each position i, the x after processing a_i, a_{i+1}, ..., a_n.
+
+Wait, but that's O(n) per l, which is again O(n^2).
+
+No, that's not feasible.
+
+Hmm.
+
+Alternatively, perhaps we can precompute for each position i, the x after processing a_i, a_{i+1}, ..., a_n.
+
+Let me define an array suffix_x where suffix_x[i] is the x after processing a_i, a_{i+1}, ..., a_n.
+
+We can compute this array in O(n) time.
+
+Then, for any l, and any r, the second phase is the a_i's from r+1 to n. So, the x after the second phase is suffix_x[r+1].
+
+Because, suffix_x[r+1] is the x after processing a_{r+1}, a_{r+2}, ..., a_n.
+
+So, for example, if r = n, then the second phase is empty, so x_final is x_left[l].
+
+If r < l, then the second phase is empty, but wait, r >= l.
+
+So, for each l, the x_final is suffix_x[r+1], but only if r+1 <=n.
+
+So, for a given l, the x_final is:
+
+if r+1 >n: x_left[l]
+
+else: suffix_x[r+1]
+
+So, for each l, we can precompute suffix_x, and then for each r >= l, x_final is suffix_x[r+1], provided r+1 <=n.
+
+So, the maximum x_final over all r >= l is the maximum of suffix_x[r+1] for r >= l and r+1 <=n.
+
+So, for each l, the best r is the one that maximizes suffix_x[r+1], where r >= l and r+1 <=n.
+
+So, for each l, the best r is the smallest r >= l such that r+1 is as small as possible, but as far to the left as possible, but with suffix_x[r+1] as large as possible.
+
+Wait, no. Because suffix_x[r+1] is the x after processing a_{r+1}, a_{r+2}, ..., a_n.
+
+So, for a given l, the x_final is suffix_x[r+1] if r+1 <=n.
+
+So, for each l, we can precompute suffix_x, and then for each l, find the maximum suffix_x[r+1] where r >= l and r+1 <=n.
+
+Wait, but for each l, r can be from l to n-1.
+
+So, for each l, the maximum suffix_x[r+1] for r >= l.
+
+Which is equivalent to finding the maximum value in suffix_x[l+1] to suffix_x[n], inclusive.
+
+So, for each l, the maximum x_final is the maximum of suffix_x[l+1 ... n].
+
+But how to compute this quickly?
+
+We can precompute for each l, the maximum suffix_x from l+1 to n.
+
+So, for example, for l=2, we need the maximum of suffix_x[3,4,...,n].
+
+This can be precomputed using a suffix maximum array.
+
+Yes! So, let's precompute a suffix_max array, where suffix_max[i] is the maximum value of suffix_x[j] for j >=i.
+
+Then, for each l, the maximum x_final is suffix_max[l+1].
+
+So, putting it all together:
+
+1. Precompute x_left for all l from 1 to n.
+
+2. Precompute suffix_x for all i from 1 to n, which is the x after processing a_i, a_{i+1}, ..., a_n.
+
+3. Precompute the suffix_max array, where suffix_max[i] is the maximum value of suffix_x[j] for j >=i.
+
+4. For each l from 1 to n:
+
+   a. Compute x_left[l].
+
+   b. The second phase starts at r+1, which must be <=n.
+
+   c. So, the possible r's are from l to n-1.
+
+   d. The x_final is suffix_x[r+1], but only if r+1 <=n.
+
+   e. So, for each l, the maximum x_final is the maximum of suffix_x[r+1] for r >= l, r+1 <=n.
+
+   f. Which is the maximum of suffix_x from l+1 to n.
+
+   g. So, the maximum is suffix_max[l+1].
+
+   h. Then, the x_final is suffix_max[l+1].
+
+   i. So, for each l, the maximum x_final is suffix_max[l+1].
+
+   j. So, the maximum x_final for l is suffix_max[l+1].
+
+5. The overall maximum x is the maximum of all x_final for all l.
+
+Wait, but this is not correct. Because for l=1, r can be any value up to n-1, and r+1 can be up to n.
+
+So, suffix_max[2] is the maximum of suffix_x[2,3,...,n].
+
+Which is correct.
+
+But wait, for l=1, x_left is 0, and then the second phase is from r+1 to n.
+
+So, the maximum x_final is the maximum of suffix_x[r+1] for r >=1, r+1 <=n.
+
+Which is the maximum of suffix_x[2 ...n], which is suffix_max[2].
+
+Yes.
+
+So, the plan is:
+
+- Compute x_left for all l.
+
+- Compute suffix_x for all i.
+
+- Compute suffix_max array, where suffix_max[i] is the maximum of suffix_x[i ...n].
+
+- For each l, the best r is l, and x_final is suffix_max[l+1].
+
+Wait, but is that correct?
+
+No, because for each l, the best r is the one that gives the maximum x_final, which is the maximum of suffix_x[r+1] for r >= l and r+1 <=n.
+
+Which is the maximum of suffix_x[l+1 ... n], which is suffix_max[l+1].
+
+So, for each l, the maximum x_final is suffix_max[l+1].
+
+So, the overall maximum x is the maximum of all suffix_max[l+1] for l from 1 to n.
+
+Wait, but l can be 1 to n-1, because r can be up to n-1, making r+1 =n.
+
+So, for l=1, suffix_max[2] is the maximum of suffix_x[2 ...n].
+
+Which is correct.
+
+So, the steps are:
+
+Compute x_left for all l.
+
+Compute suffix_x for all i.
+
+Compute suffix_max array.
+
+For each l, the maximum x_final is suffix_max[l+1].
+
+Then, the overall maximum is the maximum of all these suffix_max[l+1].
+
+Wait, but what about l =n?
+
+Because r can be up to n-1, so r+1 =n.
+
+So, for l=n, r can be n-1, which makes r+1 =n.
+
+So, suffix_max[n] is the maximum of suffix_x[n], which is the x after processing a_n.
+
+Which is correct.
+
+So, this approach seems to work.
+
+But let's test it on the example given.
+
+Example:
+
+n=5
+
+a = [1,2,3,4,5]
+
+Compute x_left for each l:
+
+l=1: x_left[1] =0.
+
+l=2: x_left[2] = x_left[1] + (1-0) =1.
+
+Because a_1 is 1, which is >0.
+
+So, x_left[2] =1.
+
+l=3: x_left[3] = x_left[2] + (2-1)=2.
+
+Because a_2 is 2, which is equal to x_left[2]=1? Wait, wait, no.
+
+Wait, x_left[2] is 1.
+
+a_2 is 2.
+
+So, a_2 >x_left[2] (2>1). So, x increases by 1.
+
+So, x_left[3] =1 +1=2.
+
+Wait, wait, no.
+
+Wait, x_left[l] is the result after processing a_1 to a_{l-1}.
+
+So, for l=3, we process a_1 and a_2.
+
+x_left[3] = x_left[2] + (a_2 > x_left[2] ? 1 : (a_2 ==x_left[2] ?0 : -1)).
+
+a_2 is 2.
+
+x_left[2] is 1.
+
+So, 2>1: add 1.
+
+So, x_left[3] =1+1=2.
+
+Similarly:
+
+l=4:
+
+a_3 is 3.
+
+x_left[3] is 2.
+
+3>2: add 1.
+
+x_left[4] =2+1=3.
+
+l=5:
+
+a_4 is4.
+
+x_left[4] is3.
+
+4>3: add 1.
+
+x_left[5]=3+1=4.
+
+So, x_left array is: [0,1,2,3,4].
+
+Wait, no, because l ranges from 1 to5.
+
+Wait, x_left[1] is 0.
+
+x_left[2] is 1.
+
+x_left[3] is 2.
+
+x_left[4] is3.
+
+x_left[5] is4.
+
+So, x_left[l] = l-1.
+
+Because for l=1, 0; l=2,1; l=3,2; etc.
+
+Yes.
+
+Now, compute suffix_x.
+
+Compute for each i, the x after processing a_i, a_{i+1}, ..., a_n.
+
+So, let's compute it step by step.
+
+i=5: a_5 is5.
+
+x is 5.
+
+i=4: a_4 is4.
+
+4 <5: x decreases by 1 to4.
+
+i=3: a_3 is3.
+
+3 <4: x decreases by1 to3.
+
+i=2: a_2 is2.
+
+2 <3: x decreases by1 to2.
+
+i=1: a_1 is1.
+
+1 <2: x decreases by1 to1.
+
+So, suffix_x is [1,2,3,4,5].
+
+Because for i=1, processing a_1, a_2, ..., a5.
+
+a_1 is1: x becomes 0 (since 1>0).
+
+Then, a_2 is2>0: x becomes1.
+
+a_3 is3>1: x becomes2.
+
+a_4 is4>2: x becomes3.
+
+a_5 is5>3: x becomes4.
+
+So, suffix_x[1] is4.
+
+Wait, but according to the computation above, for i=1, the x after processing all is4.
+
+Yes.
+
+So, suffix_x for i=1 is4.
+
+i=2: processing a2, a3, a4, a5.
+
+a2 is2: 2<4 (x before a2 is4?), no.
+
+Wait, no: for i=2, the processing is a2, a3, a4, a5.
+
+So, x starts at4 (from suffix_x[2] =4).
+
+a2 is2: 2<4: x becomes3.
+
+a3 is3: 3<3? No, 3 ==3: x remains3.
+
+a4 is4:4>3: x becomes4.
+
+a5 is5>4: x becomes5.
+
+So, suffix_x[2] is5.
+
+Wait, but according to the previous computation, for i=2, processing a2, a3, a4, a5 gives x=5.
+
+So, suffix_x[2] is5.
+
+Similarly:
+
+i=3: processing a3, a4, a5.
+
+x starts at5.
+
+a3 is3:3<5: x becomes4.
+
+a4 is4:4<4? No, 4==4: x remains4.
+
+a5 is5>4: x becomes5.
+
+So, suffix_x[3]=5.
+
+i=4: processing a4, a5.
+
+x starts at5.
+
+a4 is4:4<5: x becomes4.
+
+a5 is5>4: x becomes5.
+
+So, suffix_x[4]=5.
+
+i=5: processing a5.
+
+x starts at5.
+
+a5 is5: equals x, so x remains5.
+

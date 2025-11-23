@@ -1,0 +1,808 @@
+0
+Okay, so I need to solve this problem where I have an apartment with n rooms, each with a light that's initially off. There are chips installed in each room at different times, and each chip changes the light every k minutes. The task is to find the earliest moment when all the lights are turned on.
+
+Hmm. Let's break this down. Each room's light is turned on at some time, and the chips are installed at a_i. The light starts off, then turns on for k minutes, then off for k, and so on. So for each room, the light will be on during certain intervals.
+
+Wait, the key is to find the earliest time t such that for every room i, t is in one of the intervals where the light is on. And t must be at least a_i, because the chip is installed at a_i, and the light starts changing at that moment.
+
+So for each room, the light is on during the intervals [a_i + m*k, a_i + (m+1)*k) for m >= 0. So t has to be in one of these intervals for each room.
+
+The problem is to find the smallest t that is >= a_i for all i, and for which t is in the on intervals of every room.
+
+Wait, but the on intervals are [a_i + m*k, a_i + (m+1)*k) for m=0,1,2,... So for a room, the light is on during [a_i, a_i +k), [a_i +k, a_i +2k), etc. So it's all intervals where the interval is [a_i + m*k, a_i + (m+1)*k) for some m >=0.
+
+So for each room i, we can model the intervals where the light is on. The overall time t must be in the intersection of all these intervals for all rooms. We need to find the earliest t that is >= a_i for all i, and is in all of the rooms' on intervals.
+
+If there's no such t, we return -1.
+
+So the approach is to find the earliest t that is >= a_i for all i, and for which t is in the on interval of every room.
+
+How can we compute this?
+
+Hmm. Let's think about the constraints.
+
+For a given t, it must be >= a_i for all i. So the earliest possible t is the maximum of all a_i. But that's not sufficient because even if t is the maximum a_i, it might not be in the on intervals of all rooms.
+
+So the first step is to compute the maximum a_i. Let's call this max_a. Then, we need to check if max_a is in the on intervals of all rooms.
+
+If yes, then that's the answer. If no, then we have to find the next possible t that is >= max_a, and is in the on intervals of all rooms.
+
+Wait, no. Because even if max_a is >= all a_i, but it's not in the on interval of any room, then we need to find the earliest t after max_a that is in all on intervals.
+
+But how?
+
+This seems complicated. Let's think about the intervals.
+
+Each room i has intervals [a_i, a_i +k), [a_i +k, a_i +2k), etc. So for a room i, the intervals where the light is on are the ranges where t is >= a_i + m*k and t < a_i + (m+1)*k, for some m >=0.
+
+So for each room i, the available times for the light to be on are [a_i + m*k, a_i + (m+1)*k) for some m.
+
+So for a given t, t must be in one of these intervals for each room i.
+
+So the problem is to find the smallest t that is >= a_i for all i, and for each i, t is in [a_i + m_i *k, a_i + (m_i +1)*k) for some m_i >=0.
+
+So how can we model this?
+
+One way is to find the earliest t such that t is >= a_i for all i, and for each i, t is in the union of all on intervals of room i.
+
+But checking this directly for each t is not feasible for large n and k.
+
+We need a more efficient approach.
+
+Let me think about what the on intervals look like.
+
+For each room i, the on intervals are periodic with period k. So, for the light to be on, t must be >= a_i + m*k and < a_i + (m+1)*k for some m >=0.
+
+So for each room, the earliest possible t where the light is on is a_i. But if a_i is not in an on interval, which it can't be because a_i is a starting point. Wait no, a_i is the moment when the chip is installed. So the light is on for k minutes starting at a_i. So at a_i, the light is on, then for the next k minutes, it's off, then on again, etc.
+
+Wait, the light is on for k minutes. So at a_i, it's on. Then, from a_i to a_i +k, it's on. Then, a_i +k to a_i + 2k is off, a_i +2k to a_i +3k is on again, etc.
+
+So for room i, the on intervals are [a_i, a_i +k), [a_i +k, a_i +2k), and so on.
+
+So for each room, the earliest t where the light is on is a_i. But if a_i is not in the on interval, wait no, a_i is the start of the on interval. So at a_i, it's on.
+
+So for a room i, the earliest possible t is a_i, but only if a_i is in an on interval. Which it always is, since a_i is the start.
+
+Wait, no. Because a_i is the time when the chip is installed. So the light is on for k minutes starting at a_i. So at a_i, it's on, then for the next k minutes, it's off, and so on.
+
+So for each room, the on intervals are [a_i, a_i +k), [a_i +k, a_i +2k), etc.
+
+So for any t >= a_i, if t is in any of these intervals, the room is on.
+
+So the problem reduces to: find the earliest t such that t >= all a_i, and for every i, t is in some [a_i + m_i *k, a_i + (m_i+1)*k) for some m_i >=0.
+
+So to find the earliest t, we can think of it as the maximum of a_i, but only if that maximum t is in all on intervals. Otherwise, we need to find the next possible t that is in all on intervals.
+
+But how?
+
+This sounds like a problem where for each room, we can represent the on intervals as a range, and we need to find the earliest t that is in the intersection of all these ranges.
+
+But since each room's on intervals are overlapping, the earliest t that is in all on intervals is the maximum of the earliest on times for each room, but only if that maximum time is in all on intervals.
+
+Wait, perhaps not. Because the earliest on time for each room is a_i, but perhaps a_i is not in the on interval for that room. Which it is, because the on intervals start at a_i.
+
+Wait, no. For each room, the on intervals are [a_i + m*k, a_i + (m+1)*k) for m >=0. So a_i is the start of the first interval, which is on. So a_i is included in the on interval.
+
+So the earliest possible t is the maximum of all a_i. Because t must be >= a_i for all i. So the earliest possible t is max_a = max(a_i).
+
+But then, we need to check if max_a is in all on intervals.
+
+If yes, then that's the answer.
+
+If not, then we need to find the next possible t.
+
+So how do we check if max_a is in all on intervals?
+
+Wait, for each room i, the on intervals are [a_i, a_i +k), [a_i +k, a_i +2k), etc.
+
+So for a given room i, does max_a fall into any of these intervals?
+
+The first interval is [a_i, a_i +k). So if a_i <= max_a < a_i +k, then yes.
+
+The next interval is [a_i +k, a_i +2k), so if a_i +k <= max_a < a_i +2k, then yes.
+
+And so on.
+
+So for room i, max_a is in its on intervals if and only if there exists an m_i such that a_i + m_i *k <= max_a < a_i + (m_i +1)*k.
+
+So for each room, we can compute the earliest m_i such that a_i + m_i *k <= max_a, and see if max_a is within that interval.
+
+So for room i, m_i = floor( (max_a - a_i) /k )
+
+Wait, let's see.
+
+If a_i <= max_a < a_i +k, then m_i is 0.
+
+If a_i +k <= max_a < a_i +2k, then m_i is 1.
+
+So m_i = floor( (max_a - a_i) /k )
+
+Then, the interval is [a_i + m_i *k, a_i + (m_i +1)*k).
+
+So to check if max_a is in this interval, we need to see if max_a < a_i + (m_i +1)*k.
+
+Which it is because m_i is the maximum integer where a_i + m_i *k <= max_a.
+
+So for room i, if (max_a < a_i + (m_i +1)*k), then yes.
+
+So for each room i, compute m_i = floor( (max_a - a_i)/k )
+
+Then, check if max_a < a_i + (m_i +1)*k.
+
+If this is true for all i, then max_a is the answer.
+
+Otherwise, we need to find the next possible t.
+
+So the approach is:
+
+1. Compute max_a = max(a_i)
+
+2. For each i, compute m_i = floor( (max_a - a_i)/k )
+
+3. Check for each i if max_a < a_i + (m_i +1)*k.
+
+   If for any i, this is false, then max_a is not in all on intervals, so we need to find the next t.
+
+4. If all i satisfy the condition, then max_a is the answer.
+
+5. Else, find the smallest t > max_a such that t is in all on intervals of the rooms.
+
+So the problem reduces to, when the initial max_a is not sufficient, find the next t that satisfies the condition.
+
+How to find this t?
+
+Hmm. So for each room i, the earliest possible t that is >= a_i and in the on interval is a_i + m_i *k <= t < a_i + (m_i +1)*k.
+
+So for each i, the earliest possible t_i is a_i + m_i *k, but t must be >= a_i, and also >= a_i + m_i *k.
+
+Wait, no. Because the on interval for room i is [a_i + m_i *k, a_i + (m_i +1)*k). So the earliest t for room i is a_i + m_i *k.
+
+So for each i, the earliest t_i is a_i + m_i *k, but this t_i must be >= a_i (which it is) and also >= a_i + m_i *k.
+
+Wait, no, m_i is the maximum integer where a_i + m_i *k <= max_a. So for room i, m_i is the number of k intervals passed before max_a.
+
+So for each room, the earliest possible t_i is a_i + m_i *k, but this is the earliest t that is in the on interval of room i.
+
+So for all i, the earliest possible t_i is a_i + m_i *k.
+
+But t has to be >= all a_i, which is max_a.
+
+So the initial candidates are the t_i's for each i, but t has to be at least max_a.
+
+So perhaps the next possible t is the maximum of all t_i's, but that may not be in all on intervals.
+
+Alternatively, perhaps it's better to find the next possible t that is >= max_a, and for each i, t is in the on interval of i.
+
+So how to find the minimal such t?
+
+Hmm. Let's think about the intervals for each room.
+
+Each room i has on intervals that are [a_i + m_i *k, a_i + (m_i +1)k) for m_i >=0.
+
+So the earliest t_i for room i is a_i + m_i *k, and it's the earliest possible t for that room.
+
+So the earliest t that is >= max_a and is in all on intervals is the maximum among the earliest possible t_i's, but only if that t is in all on intervals.
+
+Wait, no. Because for each i, the earliest t_i is a_i + m_i *k, which is the earliest t for that room. So to be in all on intervals, t must be >= a_i + m_i *k and also within the on interval for i.
+
+So the earliest t that is in all on intervals is the maximum of all t_i's, but that t must be in all on intervals.
+
+Wait, perhaps not. Because the maximum of the t_i's is not necessarily in all on intervals.
+
+For example, suppose room 1 has on intervals [1, 3), [4, 6), etc. Room 2 has [2,4), [5,7), etc. So the earliest t for room 1 is 1, for room 2 is 2. The maximum is 2. But 2 is in both on intervals. So it's valid.
+
+Another example: room 1 has on intervals [1, 3), [4,6), etc. Room 2 has [2,4), [5,7), etc.
+
+So the earliest t for room 1 is 1, for room 2 is 2. So the maximum is 2.
+
+Is 2 in both on intervals? Room 1's on intervals start at 1, so 2 is in [2,4). So yes.
+
+Another example: room 1's on intervals are [1,3), [4,6), etc. Room 2's on intervals are [2,4), [5,7), etc.
+
+The earliest t_i's are 1 and 2. The maximum is 2.
+
+Is 2 in both intervals? Yes.
+
+Another example: room 1's on intervals are [1,3), [4,6), etc. Room 2's on intervals are [3,5), [6,8), etc.
+
+So for room 1, t_i is 1, 4, etc. For room 2, t_i is 3,6, etc.
+
+The maximum of t_i is 3.
+
+Is 3 in both on intervals? Room 1's on intervals at 3 are [3,5). So 3 is in room 1's on interval. Room 2's on interval at 3 is [3,5). So 3 is in both intervals.
+
+So the maximum t_i is 3, which is in all on intervals.
+
+Another example: room 1's on intervals are [1,3), [4,6), etc. Room 2's on intervals are [2,4), [5,7), etc.
+
+The earliest t_i's are 1 and 2. The maximum is 2.
+
+Is 2 in both intervals? Yes.
+
+So in all these cases, the maximum of t_i's is a candidate.
+
+Wait, but what if:
+
+room 1's on intervals are [1,3), [4,6), etc.
+
+room 2's on intervals are [3,5), [6,8), etc.
+
+The earliest t_i's are 1 and 3. The maximum is 3.
+
+Is 3 in both intervals? Room 1's on intervals at 3 are [3,5). So yes. Room 2's on intervals at 3 are [3,5). So yes.
+
+So the maximum is 3, which is in both intervals.
+
+Another example: room 1's on intervals are [1,3), [4,6), etc.
+
+room 2's on intervals are [2,4), [5,7), etc.
+
+So earliest t_i's are 1 and 2. Max is 2.
+
+Is 2 in both intervals? Room 1's on interval at 2 is [2,4), so yes. Room 2's on interval at 2 is [2,4), so yes. So yes.
+
+So maybe the maximum of all t_i's is the answer.
+
+Wait, but let's think of a case where the maximum of t_i's is not in all on intervals.
+
+Is that possible?
+
+Suppose room 1's on intervals are [1,3), [4,6), etc.
+
+room 2's on intervals are [2,4), [5,7), etc.
+
+earliest t_i's for room 1 is 1, room 2 is 2. Max is 2.
+
+Is 2 in both intervals? Yes.
+
+Another example: room 1's on intervals are [1,3), [4,6), etc.
+
+room 2's on intervals are [3,5), [6,8), etc.
+
+earliest t_i for room 1 is 1, room 2 is 3. Max is 3.
+
+Is 3 in both intervals? Room 1's on interval at 3 is [3,5), so yes. Room 2's on interval at 3 is [3,5), so yes.
+
+Another example: room 1's on intervals are [1,3), [4,6), etc.
+
+room 2's on intervals are [2,4), [5,7), etc.
+
+earliest t_i's are 1 and 2. Max is 2.
+
+Is 2 in both intervals? Yes.
+
+So it's looking like the maximum of all t_i's is the earliest t that is in all on intervals.
+
+So the approach is:
+
+1. Compute max_a = max(a_i).
+
+2. For each i, compute m_i = floor( (max_a - a_i) /k )
+
+   Then, compute t_i = a_i + m_i *k.
+
+3. Check if t_i is in the on interval of room i.
+
+   Which is, a_i + m_i *k <= max_a < a_i + (m_i +1)*k.
+
+   Which it is, because m_i is floor( (max_a - a_i)/k ), so (max_a - a_i) >= m_i *k, which means max_a >= a_i + m_i *k.
+
+   And (max_a - a_i) < (m_i +1)*k, because m_i is floor( ... ), so (max_a -a_i) < (m_i +1)*k.
+
+   So a_i + m_i *k <= max_a < a_i + (m_i +1)*k.
+
+   So t_i is in the on interval of room i.
+
+4. Therefore, the maximum of all t_i's is the earliest t that is in all on intervals.
+
+So the answer is the maximum of all t_i's.
+
+Wait, but wait. What about when some t_i is larger than max_a?
+
+No, because t_i is a_i + m_i *k, and m_i is chosen such that a_i + m_i *k <= max_a.
+
+So t_i is <= max_a.
+
+So the maximum of all t_i's is <= max_a.
+
+Wait, no. Because t_i is a_i + m_i *k. But for some i, a_i + m_i *k could be larger than max_a.
+
+Wait, no. Because m_i is chosen as the floor of (max_a -a_i)/k.
+
+So (max_a -a_i) = q *k + r, where 0 <= r <k.
+
+So m_i = q.
+
+So a_i + m_i *k = a_i + q*k.
+
+Which is equal to a_i + (max_a -a_i - r)/k *k.
+
+Wait, perhaps I'm getting stuck here.
+
+Wait, perhaps it's better to think that for each i, t_i is the earliest possible t for i, which is a_i + m_i *k, and t_i <= max_a.
+
+So the maximum of all t_i's is <= max_a.
+
+Wait, no. Because for i, t_i could be as small as a_i, but if a_i is larger than max_a, then that's a problem.
+
+Wait, no. Because max_a is the maximum of a_i's. So for any i, a_i <= max_a.
+
+So t_i = a_i + m_i *k.
+
+But m_i is chosen as the maximum integer where a_i + m_i *k <= max_a.
+
+So m_i is floor( (max_a - a_i) /k )
+
+So t_i = a_i + m_i *k.
+
+Which is <= max_a.
+
+Because (max_a -a_i) >= m_i *k.
+
+So a_i + m_i *k <= a_i + (max_a -a_i) = max_a.
+
+So t_i is <= max_a.
+
+So the maximum of all t_i's is <= max_a.
+
+But what about the earliest possible t? Because the maximum of t_i's is the earliest t that is >= all a_i and in all on intervals.
+
+Wait, no. Because for some i, t_i could be larger than max_a.
+
+Wait, no, because t_i is computed as a_i + m_i *k, where m_i is the maximum possible for that i.
+
+So for example, if a_i is 5, and max_a is 10, k=3.
+
+Then m_i is (10-5)/3 = 1.666, floor is 1.
+
+So t_i is 5 + 1*3 =8 <=10.
+
+So t_i is 8, which is <=10.
+
+So the maximum of all t_i's is 8, which is <=10.
+
+So the maximum of all t_i's is the earliest t that is in all on intervals.
+
+So the answer is the maximum of all t_i's.
+
+So the steps are:
+
+Compute max_a = max(a_i)
+
+For each i, compute t_i = a_i + m_i *k, where m_i = floor( (max_a -a_i)/k )
+
+The answer is the maximum of all t_i's.
+
+So, in code:
+
+For each test case:
+
+- Read n, k.
+
+- Read the array a.
+
+- Compute max_a = max(a).
+
+- For each ai in a:
+
+   if ai is greater than max_a: continue (since max_a is the maximum, this can't happen)
+
+   compute t_i = ai + m_i *k, where m_i = floor( (max_a - ai) / k )
+
+   keep track of the maximum t_i.
+
+- The answer is the maximum t_i.
+
+So, let's test this logic with the sample inputs.
+
+Sample Input 1:
+
+n=2, k=2.
+
+a = [3, 5]
+
+max_a =5.
+
+For i=0, ai=3:
+
+m_i = (5-3)/2 = 1.
+
+t_i=3 +1*2=5.
+
+For i=1, ai=5:
+
+m_i = (5-5)/2=0.
+
+t_i=5+0=5.
+
+So the maximum t_i is5.
+
+So the answer is5.
+
+Which is correct because at t=5:
+
+Room 0's on intervals are [3,5), [5,7), etc. So 5 is included.
+
+Room1's on intervals are [5,7), etc. So 5 is included.
+
+So it's correct.
+
+Another test case:
+
+n=2, k=2.
+
+a = [2,4].
+
+max_a=4.
+
+i=0: ai=2.
+
+m_i = (4-2)/2=1.
+
+t_i=2+1*2=4.
+
+i=1: ai=4.
+
+m_i=(4-4)/2=0.
+
+t_i=4.
+
+So maximum is4.
+
+At t=4:
+
+Room0's on interval is [2,4), [4,6), etc. So 4 is included.
+
+Room1's on interval is [4,6), etc. So 4 is included.
+
+So correct.
+
+Another test case:
+
+n=3, k=3.
+
+a = [1,4,7].
+
+max_a=7.
+
+i=0: ai=1.
+
+m_i=(7-1)/3= 2.
+
+t_i=1 + 2*3=7.
+
+i=1: ai=4.
+
+m_i=(7-4)/3=1.
+
+t_i=4+1*3=7.
+
+i=2: ai=7.
+
+m_i=0.
+
+t_i=7.
+
+So maximum is7.
+
+At t=7:
+
+Room0's on interval is [1,4), [4,7), [7,10), etc. So 7 is included.
+
+Room1's on interval is [4,7), [7,10), etc. 7 is included.
+
+Room2's on interval is [7,10), etc. 7 is included.
+
+So correct.
+
+Another test case where the initial max_a is not in all on intervals.
+
+Wait, can that happen?
+
+Let me see.
+
+Suppose n=2, k=2.
+
+a = [3, 5].
+
+max_a=5.
+
+i=0: ai=3.
+
+m_i=(5-3)/2=1.
+
+t_i=3+2=5.
+
+i=1: ai=5.
+
+m_i=(5-5)/2=0.
+
+t_i=5.
+
+So maximum is5, which is in both intervals.
+
+Another example where initial max_a is not sufficient.
+
+Wait, is that possible?
+
+Suppose n=2, k=2.
+
+a = [1, 3].
+
+max_a=3.
+
+i=0: ai=1.
+
+m_i=(3-1)/2=1.
+
+t_i=1+2=3.
+
+i=1: ai=3.
+
+m_i=0.
+
+t_i=3.
+
+So maximum is3, which is in both intervals.
+
+Another example:
+
+n=2, k=2.
+
+a = [2,3].
+
+max_a=3.
+
+i=0: ai=2.
+
+m_i= (3-2)/2=0.5, floor is 0.
+
+t_i=2+0*2=2.
+
+i=1: ai=3.
+
+m_i=0.
+
+t_i=3.
+
+So maximum is3.
+
+At t=3:
+
+Room0's on intervals are [2,4), [4,6), etc. So 3 is in [2,4), yes.
+
+Room1's on intervals are [3,5), etc. So 3 is included.
+
+So correct.
+
+Another test case where the initial max_a is not sufficient.
+
+Wait, perhaps not possible.
+
+Because for each i, t_i is computed as a_i + m_i *k, which is <= max_a.
+
+So the maximum of all t_i's is <= max_a.
+
+So the answer is the maximum of all t_i's, which is <= max_a.
+
+So, for any test case, the answer is the maximum of t_i's.
+
+So the code can be written as:
+
+Read t test cases.
+
+For each test case:
+
+   Read n, k.
+
+   Read a array.
+
+   max_a = max(a).
+
+   max_t = 0
+
+   for ai in a:
+
+       m_i = (max_a - ai) // k
+
+       t_i = ai + m_i * k
+
+       if t_i > max_t:
+
+           max_t = t_i
+
+   print(max_t)
+
+Wait, but what if all t_i's are larger than max_a? No, because t_i is <= max_a.
+
+So in code, the maximum of all t_i's is the answer.
+
+So let's see the sample input:
+
+Sample Input 1:
+
+2 2
+
+3 5
+
+max_a=5.
+
+For each ai:
+
+3: (5-3)/2=1, t_i=3+2=5.
+
+5: (5-5)/2=0, t_i=5.
+
+So max_t is5.
+
+Sample Output is5.
+
+Which is correct.
+
+Another test case:
+
+n=3, k=3.
+
+a = [1,4,7]
+
+max_a=7.
+
+i=0: (7-1)/3=2, t_i=1+6=7.
+
+i=1: (7-4)/3=1, t_i=4+3=7.
+
+i=2: (7-7)/3=0, t_i=7.
+
+max_t is7.
+
+Sample Input 2:
+
+n=3, k=3.
+
+a = [1,4,7]
+
+max_a=7.
+
+So output is7.
+
+Another test case:
+
+n=2, k=3.
+
+a = [1,4].
+
+max_a=4.
+
+i=0: (4-1)/3=1, t_i=1+3=4.
+
+i=1: (4-4)/3=0, t_i=4.
+
+max_t is4.
+
+At t=4:
+
+Room0: on interval [1,4), [4,7), etc. So 4 is included.
+
+Room1: on interval [4,7), etc. So 4 is included.
+
+So correct.
+
+Another test case where some t_i is larger than max_a.
+
+Wait, no. Because for each i, t_i = a_i + m_i *k, and m_i is chosen as the maximum integer where a_i + m_i *k <= max_a.
+
+So t_i is <= max_a.
+
+So in all cases, the maximum of t_i's is <= max_a.
+
+So the code is correct.
+
+So the code will be:
+
+Read t.
+
+For each t:
+
+   Read n and k.
+
+   Read a list.
+
+   max_a = max(a).
+
+   max_t = 0
+
+   for ai in a:
+
+       m_i = (max_a - ai) // k
+
+       t_i = ai + m_i * k
+
+       if t_i > max_t:
+
+           max_t = t_i
+
+   print(max_t)
+
+Yes, that's the code.
+
+Testing the code on the sample input:
+
+Sample Input 1:
+
+1
+
+2 2
+
+3 5
+
+max_a=5.
+
+For ai=3: (5-3)/2=1 → t_i=3+2=5.
+
+For ai=5: 0 →5.
+
+So max_t=5.
+
+Sample Output is5.
+
+Another test case where the answer is not possible.
+
+n=2, k=2.
+
+a = [1,3].
+
+max_a=3.
+
+i=0: (3-1)/2=1 → t_i=1+2=3.
+
+i=1: (3-3)/2=0 →3.
+
+So max_t=3.
+
+At t=3:
+
+Room0: [1,3), [3,5), etc. 3 is included.
+
+Room1: [3,5), etc. 3 is included.
+
+So correct.
+
+So the code works.
+</think>
+
+To solve this problem, we need to determine the earliest moment when all rooms in an apartment have their lights turned on. Each room's lights are initially off and are installed at different times with a fixed period `k` after which they change their state.
+
+### Approach
+1. **Identify the Maximum Initial Time**: The first step is to find the maximum initial time `max_a` at which any room's chip is installed. This is because the earliest possible moment when all lights could be on is at or after this maximum time.
+2. **Calculate Earliest On Time for Each Room**: For each room, compute the earliest time `t_i` at which its lights will be on. This is done by determining how many full periods `k` fit into the time difference between `max_a` and the room's installation time `a_i`.
+3. **Determine the Earliest Common On Time**: The earliest time when all rooms' lights are on is the maximum of all `t_i` values computed in the previous step. This ensures that this time is within the on intervals of all rooms.
+
+### Solution Code
+```python
+import sys
+
+def main():
+    t = int(sys.stdin.readline())
+    for _ in range(t):
+        n, k = map(int, sys.stdin.readline().split())
+        a = list(map(int, sys.stdin.readline().split()))
+        max_a = max(a)
+        max_t = 0
+        for ai in a:
+            m_i = (max_a - ai) // k
+            t_i = ai + m_i * k
+            if t_i > max_t:
+                max_t = t_i
+        print(max_t)
+
+if __name__ == "__main__":
+    main()
+```
+
+### Explanation
+1. **Reading Input**: The code reads multiple test cases. For each test case, it reads the number of rooms `n`, the period `k`, and the list of times `a` when each room's chip was installed.
+2. **Finding Maximum Initial Time**: The maximum value in the list `a` is computed to determine the earliest possible time when all rooms could potentially have their lights on.
+3. **Calculating Earliest On Time for Each Room**: For each room, the code calculates the earliest time `t_i` at which the lights will be on by determining how many full periods `k` fit into the time difference between `max_a` and the room's installation time. This is done using integer division.
+4. **Determining the Earliest Common On Time**: The maximum of all `t_i` values is taken as the result for each test case, ensuring that this time is within the on intervals of all rooms.
+
+This approach efficiently determines the earliest moment all lights are on by leveraging the periodic nature of the light changes and ensures that the solution is both correct and optimal.<｜end▁of▁sentence｜>

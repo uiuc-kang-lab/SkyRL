@@ -1,0 +1,480 @@
+0
+Okay, let's tackle this problem. Hmm, the problem statement is a bit tricky. So, Turtle has a sequence where some elements are missing (marked as -1). We need to reconstruct the original sequence, ensuring that every consecutive pair in the original sequence satisfies either b_i is floor(b_{i+1}/2) or vice versa. Also, the reconstructed sequence must be valid.
+
+Wait, what's the key here? For each pair of consecutive elements in the original sequence, one must be double the other, floored, either way. So, for each step from i to i+1, the pair must have a relationship where one is exactly half of the other, rounded down.
+
+So, the problem is to find such a sequence b that fits the given a' where -1s represent missing points. The challenge is to reconstruct it correctly.
+
+Let's think about how to approach this. Since the sequence can have some -1s, it's a bit like a path where each step depends on the next. But how do we decide where to fill the -1s optimally?
+
+Wait, maybe we can process the sequence from left to right, filling in the -1s step by step, ensuring that each step adheres to the constraints.
+
+Let's consider the first element, b_1. It can be any positive integer. Then, for each subsequent element, we have to choose a value that satisfies the constraints with the previous element.
+
+But wait, the problem allows multiple possible sequences, and we need to output any one. So perhaps we can greedily fill the -1s as we go.
+
+Hmm, but how do we choose the values for the -1s? For example, if a_1 is fixed, but a_2 is -1, then a_2 can be either 2*a_1 or a_1*2 floored. But wait, no: the condition is that either a_i is floor(a_{i+1}/2) or a_{i+1} is floor(a_i / 2). So if a_i is known, a_{i+1} must be either 2*a_i (if it's even) or 2*a_i -1 (if it's odd, but wait, no: for example, if a_i is 3, then a_{i+1} could be 1 (3//2 is 1), or 1.5 floored to 1. So, a_{i+1} is 1.
+
+Wait, no: if a_i is x, then a_{i+1} can be either 2x (if it's even) or x's floor division by 2, which is either x//2 or x//2 rounded down. So, for example, if x is 5, a_{i+1} can be 2 (5//2) or 2 (since 5//2 is 2). So, both options are 2. So, the next element can be either way.
+
+Wait, no: for x=5, the next element can be 2 (if it's 5//2=2), or 2 again. So, the next element must be 2. So, in that case, a_{i+1} is fixed.
+
+But for x=6, a_{i+1} can be 3 (6//2=3) or 3 (since 6//2 is 3). So, same result.
+
+Hmm, but for x=7, a_{i+1} can be 3 (7//2=3) or 3, since 7//2 is 3 as well. So, same result.
+
+Wait, so for x being even, a_{i+1} can be x//2. But for x being odd, same as x//2. So in all cases, a_{i+1} is x//2.
+
+Wait, no. Wait, for x=5, a_{i+1} could be 2 (5//2=2) or 2 (since 5//2 is 2). So, same result.
+
+Wait, but if x is 5, then a_{i+1} can be 2 or 2, so it's fixed as 2.
+
+Wait, no. For x=5, a_{i+1} can be either 5//2=2, or 5//2=2 (since 5//2 is 2). So, it's same.
+
+So, perhaps the next element is fixed to x//2.
+
+But wait, what if x is 1? Then a_{i+1} can be 0, but since it has to be positive, that's impossible. So, if x is 1, then a_{i+1} must be 0, which is invalid. So, in that case, the sequence cannot be completed, perhaps.
+
+Wait, but the problem statement says that a'_i is a positive integer. So, in the original sequence, each element is positive. So, we have to ensure that all elements in the reconstructed sequence are positive.
+
+Hmm, so back to the approach. Let's process the sequence from left to right. For each position i, if a'_i is -1, we need to determine what value it should take such that it satisfies the constraints with a'_{i-1} and a'_{i+1} (if they exist).
+
+But how to decide the value of a'_i? Because it's a bit tricky.
+
+Wait, perhaps the key is to process the sequence in a way that for each position, we choose the minimal possible value or the maximal possible, but ensuring that the constraints are satisfied.
+
+Wait, but the problem allows any valid sequence, so perhaps the approach is to greedily fill the -1s, choosing the smallest possible value each time, ensuring that the constraints are met.
+
+Alternatively, perhaps it's better to reconstruct the sequence from right to left, but I'm not sure.
+
+Wait, let's think about when we have a pair of known elements. For example, suppose we have a_i = x, a_{i+1} = y. Then, either y = floor(x/2), or x = floor(y/2). So, for a pair (x, y), we can determine which is which.
+
+Wait, but in the problem, the original sequence is such that for each consecutive pair, exactly one of the two conditions is true. So, for the pair, it's a binary choice: which one is the next element.
+
+But in the given a', some elements are -1. So, during reconstruction, the -1s must be filled in a way that for each pair (a, b) in a consecutive pair, exactly one of a = floor(b/2) or b = floor(a/2) holds.
+
+So, perhaps the reconstruction is similar to a tree, where each node can have two possible children (if we can determine them), and we choose one path through the tree.
+
+But for a sequence of length n, this could be computationally expensive, especially since n can be up to 2e5.
+
+Wait, but maybe we can process the sequence from left to right, and for each position, fill in the -1s with the minimal possible value that satisfies the constraints.
+
+Wait, but how? Let's think.
+
+Suppose we have a sequence that starts with some known values, and we are to fill in the -1s as we go. For each i, if a_i is known, then a_{i+1} must be either 2*a_i (if it's even) or a_i's floor division by 2 (which is the same as a_i//2).
+
+So, for example, if a_i is 3, then a_{i+1} must be 1 (since 3//2 is 1). So, the next element is fixed.
+
+Similarly, if a_i is 4, a_{i+1} can be 2, which is fixed.
+
+But if a_i is 5, then a_{i+1} can be 2 (5//2=2), and that's fixed.
+
+Wait, but what if a_i is 1? Then a_{i+1} must be 0, which is invalid. So, in that case, the sequence can't be completed, unless a_{i+1} is 0, but the problem states that all elements must be positive, so this is impossible. So, any such situation where a_i is 1 and a_{i+1} is -1 is invalid.
+
+So, the first step is for each test case, check if the initial known elements form a valid sequence. For example, if a_1 is 1 and a_2 is -1, that's impossible, because a_2 must be 0, which is invalid.
+
+Wait, but if a_1 is 1, a_2 must be 0, which is not allowed. So, in such a case, the sequence can't be completed.
+
+So, perhaps the first step is to check the initial conditions. For example, for each known a_i, the next a_{i+1} must be either 2*a_i or a_i//2.
+
+If any a_i is 1, then a_{i+1} must be 0, which is invalid. So, the entire sequence can't be completed. So, in such cases, output -1.
+
+Wait, but what if the initial a_i is 0? No, the problem says that a'_i is either -1 or a positive integer. So, a_i can't be 0. So, the initial a_i's must be positive.
+
+So, the first thing to check is: for any i, if a_i is 1, then a_{i+1} must be 0, which is invalid. So, in that case, the entire sequence is impossible.
+
+So, for any test case, if a_1 is 1 and the next element is -1, it's impossible. Or if a_1 is 1 and the next element is also 1, which would require 1 = floor(1/2) or floor(1/2) =1. But 1//2 is 0, so 1 can't be 0, so it's invalid.
+
+Hmm, so in the initial processing, we can have some constraints. For example, the first element must satisfy certain conditions based on a_2.
+
+Wait, perhaps the approach is to process the sequence from left to right, ensuring that each step is valid. So, for the first element, if it's known, the second element must be either 2*a_1 or a_1//2. If not, then it's invalid.
+
+But wait, what if a_1 is -1? Then, the first element can be any positive integer. But then, the second element must satisfy the condition with a_1.
+
+Wait, but that's a problem because the first element can be any value, which would make the problem too flexible. But then, how do we fill the -1s in the sequence?
+
+Alternatively, perhaps the first element can be determined based on the minimal possible value, but I'm not sure.
+
+Wait, maybe we can process the sequence in a way similar to dynamic programming, where for each position, we track possible values that can be taken, given the previous constraints.
+
+But for n up to 2e5, that approach is not feasible. So, perhaps we need a greedy approach.
+
+Wait, perhaps the way to reconstruct the sequence is to process each element, choosing the smallest possible value for each -1, ensuring that the constraints are satisfied with the previous and next elements.
+
+Wait, but that's not necessarily correct because choosing the smallest value might cause problems later.
+
+Alternatively, perhaps the way to reconstruct the sequence is to process it from left to right, filling each -1 with the smallest possible value that satisfies the constraints with the previous element, and also with the next element (if any).
+
+Wait, but for that, perhaps we can propagate the constraints backwards. For example, if a_{i+1} is known, then a_i must be either 2*a_{i+1} or a_{i+1} * 2 (but wait, no: a_i must be either floor(a_{i+1}/2) or floor(a_i/2). So, a_{i+1} must be either floor(a_i/2) or floor(a_{i+1}/2)). Wait, no: the condition is for each pair, exactly one of the two holds.
+
+Wait, for each pair (a, b), either a = floor(b/2) or b = floor(a/2). So, for a known b, a can be either 2*b or b*2 (wait, no: 2*b is larger than b, so a can be 2*b or b.
+
+Wait, for example, if b is 5, then a can be 2 (5//2=2) or 2 (since 5//2 is 2). So, a must be 2.
+
+Similarly, if b is 3, a can be 1 (floor(3/2) is 1) or 1.
+
+Wait, so for each pair, the next element is forced to be a certain value, unless it's impossible because the next element is -1.
+
+So, perhaps the approach is to process the sequence from left to right, and for each -1, compute the possible previous value.
+
+Wait, but processing from left to right may not be sufficient, as the next element could be -1 and require a previous value that depends on the next.
+
+Alternatively, perhaps processing from right to left, because each step depends on the next.
+
+Wait, let's think about the example.
+
+Suppose the sequence is [-1, 1, -1, -1].
+
+We start from the right. The last element is -1. The previous element is 1, which is known. So, the previous element (the one before 1) must satisfy that 1 is either floor(prev/2) or floor(prev/2).
+
+Wait, for the last element being x, and previous being y, then either y = floor(x/2) or x = floor(y/2).
+
+Wait, but when processing from right to left, we can determine the possible values.
+
+Wait, for example, if the last element is x, and the previous is y, then x can be either 2*y or y's floor division by 2.
+
+But wait, no: for the pair (y, x), either y = floor(x/2) or x = floor(y/2).
+
+So, for each pair (y, x), we have two possibilities:
+
+1. y = floor(x/2)
+OR
+2. x = floor(y/2)
+
+Which one is possible depends on the values.
+
+So, for example, if y is 3 and x is 5:
+
+y is 3, x is 5.
+
+Option 1: 3 = floor(5/2) → 3 = 2.5? No.
+
+Option 2: 5 = floor(3/2) → 5 = 1.5? No.
+
+So, neither condition is satisfied. So, this pair is invalid, and the entire sequence can't be completed.
+
+But if y is 5, x is 3:
+
+Option 1: 5 = floor(3/2) → 5=1.5, no.
+
+Option 2: 3 = floor(5/2) → 3=2, no.
+
+Again, invalid.
+
+Wait, so for (y, x) to be valid, either y is exactly half of x, or x is exactly half of y, rounded down.
+
+So, for example, y=2, x=5:
+
+Option 1: 2 = floor(5/2) → 2=2.5? No.
+
+Option 2: 5 = floor(2/2) → 5=1, no.
+
+So, invalid.
+
+Wait, but what if x is 4, y is 2:
+
+Option 1: 2 = 4/2 → yes.
+
+So, valid.
+
+So, the pair (2,4) is valid.
+
+Similarly, (4,2) is valid because 4 is 4/2.
+
+So, when processing from right to left, perhaps for each pair (y, x), we can compute possible options, and choose the option that allows the previous elements to be filled correctly.
+
+But how to choose the correct option.
+
+Hmm, perhaps for each pair, we can compute both possibilities and see which one leads to a valid sequence.
+
+Wait, but this could get complicated. So, perhaps a greedy approach is better.
+
+Wait, perhaps for each position i, if a_i is known, then a_{i+1} is fixed, as per the constraints.
+
+But if a_{i+1} is unknown, then we can compute the possible a_{i+1} values based on a_i, and choose the minimal one that allows the rest to be filled.
+
+Wait, but how to choose the minimal a_{i+1}? Or perhaps the maximal.
+
+Alternatively, perhaps for each position, if a_i is known, a_{i+1} must be a certain value. Otherwise, a_{i+1} can be either 2*a_i or a_i//2. But wait, no—because for the pair (a_i, a_{i+1}), the condition is that exactly one of the two must hold.
+
+So, for a known a_i, a_{i+1} can be either 2*a_i (if it's even) or a_i//2 (if it's odd). So, for example, if a_i is 5, a_{i+1} can be 2 (5//2=2) or 2 (since 5//2 is 2).
+
+Wait, no: 5//2 is 2, so a_{i+1} can be 2, because both options are 2. So, the next element is fixed.
+
+Wait, but how does that work when a_{i+1} is also unknown.
+
+Wait, perhaps the approach is to process the sequence from left to right. For each position i, if a_i is known, then a_{i+1} must be either 2*a_i or a_i//2. If it's not possible (because a_i is 1 and a_{i+1} is unknown, or a_i is 2 and a_{i+1} is 1, but in that case, 2//2 is 1, so a_{i+1} is 1.
+
+Wait, but if a_i is 1 and a_{i+1} is unknown, then a_{i+1} must be 0, which is invalid. So, the sequence can't be completed.
+
+Wait, but if a_i is 1 and a_{i+1} is 1, then 1 = floor(1/2) is 0, which is not equal to 1. So, that's invalid.
+
+So, perhaps the initial steps are to check if the given sequence is possible. For example, if any a_i is 1 and a_{i+1} is -1, it's impossible.
+
+Wait, but the problem allows filling in the -1s, so perhaps the initial sequence can have a 1, but the next element is -1, which is impossible.
+
+So, perhaps the first thing to do is to verify that any a_i is 1 and the next element is -1. If so, it's impossible.
+
+So, for each pair where a_i is 1 and a_{i+1} is -1, the sequence can't be completed.
+
+Similarly, if a_i is 2 and a_{i+1} is 1, then 2 = floor(1/2) is 0, which is not 2. So, that's invalid.
+
+So, perhaps the first step is to process the initial sequence and see if any such invalid pairs exist.
+
+Once that's done, perhaps the approach is to process the sequence from left to right, filling in the -1s as we go.
+
+So, for example, when a_i is known, a_{i+1} is determined as 2*a_i or a_i//2. If a_{i+1} is -1, then we can compute it based on a_i.
+
+But wait, no: a_{i+1} can be either 2*a_i or a_i//2.
+
+Wait, no: for a_i = x, a_{i+1} is either 2x or x//2. But wait, no—because for any x, if a_{i+1} is determined, it must be equal to either 2x or x//2.
+
+Wait, but that's not correct. Because for x=5, a_{i+1} can be either 2 (since 5//2 is 2) or 2 again. So, in that case, a_{i+1} must be 2.
+
+So, for each known a_i, a_{i+1} is determined uniquely.
+
+So, perhaps processing from left to right, for each i, if a_i is known, then a_{i+1} is known. Otherwise, a_{i+1} is determined based on a_i.
+
+Wait, but what if a_i is unknown? Then, a_{i+1} can be either 2*a_i or a_i//2.
+
+But that's a choice, and we have to make it such that the sequence can be completed.
+
+Hmm, but perhaps we can choose the minimal possible value for a_{i+1}, ensuring that it's valid.
+
+Wait, but that's not necessarily correct because choosing the minimal a_{i+1} may lead to a dead end later.
+
+Alternatively, perhaps the approach is to process the sequence from left to right, and for each a_i, if it's known, the next a_{i+1} is fixed. Otherwise, it's determined by the previous a_{i-1}.
+
+Wait, but how?
+
+Wait, perhaps we can model this as a graph, where each position is a node, and each possible transition is an edge. Then, we can perform a BFS to find a valid path.
+
+But for n up to 2e5, this is not feasible.
+
+Hmm, so perhaps a greedy approach is needed.
+
+Let me think: for each i from 1 to n-1:
+
+If a_i is known, then a_{i+1} is determined based on a_i. So, process a_i and a_{i+1} accordingly.
+
+If a_i is unknown, then a_{i+1} can be either 2*a_i or a_i//2. But which one to choose?
+
+Wait, but for a_{i+1} to be valid, it must satisfy the condition with a_i.
+
+Wait, but when a_{i+1} is unknown, it's determined by a_i. So, perhaps for a_i being -1, we can choose the smallest possible value, ensuring that it's valid.
+
+Wait, but how do we choose the value?
+
+Alternatively, perhaps for a_i = -1, a_{i+1} can be any value such that either a_i = floor(a_{i+1}/2) or a_{i+1} = floor(a_i/2).
+
+But a_i is -1, so a_i = -1, so a_{i+1} must satisfy either -1 = floor(a_{i+1}/2) → which is impossible because -1 is less than 0, and floor(a_{i+1}/2) is non-negative. Or, a_{i+1} = floor(-1/2) → -1, but floor(-1/2) is -1. So, a_{i+1} must be -1, but that's invalid because all elements must be positive.
+
+Wait, no. Because a_i is -1, and a_{i+1} is also -1, that's invalid. So, in that case, the sequence is impossible.
+
+So, when a_i is -1, a_{i+1} must be determined. But a_{i+1} can be either 2*a_i (but a_i is -1, so 2*a_i is -2, which is invalid) or a_i//2, which is -1 (since floor(-1/2) is -1). So, in this case, a_{i+1} must be -1, which is invalid. So, the entire sequence is impossible.
+
+So, for any a_i = -1, and a_{i+1} is also -1, it's impossible.
+
+But what if a_{i+1} is known? Then, a_i can be either 2*a_{i+1} or a_{i+1}*(2?), wait, no.
+
+Wait, for a_i = x, a_{i+1} = y.
+
+Either x = floor(y/2) or y = floor(x/2).
+
+So, for x = a_i, y = a_{i+1}, the condition must be satisfied.
+
+But when a_i is -1, then x is -1, y is either 2*(-1) = -2 or (-1)//2 = -1.
+
+So, y can be either -2 or -1.
+
+But y must be positive. So, y can't be -1 or -2.
+
+So, if a_i is -1 and a_{i+1} is -1, it's invalid.
+
+If a_i is -1 and a_{i+1} is 2, then x = -1, y = 2.
+
+So, x = -1, y = 2.
+
+Check the condition: does either -1 = floor(2/2) → -1=1? No. Or 2 = floor(-1/2) → 2 = -1? No. So, this pair is invalid.
+
+Wait, so when a_i is -1 and a_{i+1} is known, it's impossible.
+
+So, perhaps whenever a_i is -1, and a_{i+1} is not -1, then a_{i+1} must be 2*a_i or a_i//2. But since a_i is -1, 2*a_i is -2, which is invalid, and a_i//2 is -1, which is also invalid.
+
+So, the only possible way is that a_{i+1} is -1, which is invalid. So, the sequence is impossible.
+
+Wait, but that's not the case. Because the problem allows us to fill in the -1s, but perhaps the -1s can be filled in a way that the previous and next elements are not both -1.
+
+Wait, no. Because the problem says that any -1 can be filled with a positive integer. So, perhaps when a_i is -1, a_{i+1} can be 2, but then the previous element a_{i-1} (if any) must satisfy the condition.
+
+Wait, perhaps the approach is to process the sequence from right to left, filling in the -1s.
+
+So, for each position i, starting from the end, if a_i is known, then a_{i-1} is determined.
+
+Wait, let's think: process from right to left.
+
+So, for i from n-2 down to 0:
+
+if a_{i+1} is known, then a_i can be either 2*a_{i+1} or a_{i+1} // 2.
+
+Wait, but no: for each pair (a_i, a_{i+1}), either a_i is floor(a_{i+1}/2) or a_{i+1} is floor(a_i/2).
+
+So, for a_i and a_{i+1}, a_i can be either 2*a_{i+1} (if a_{i+1} is even) or a_{i+1} // 2.
+
+Wait, no: because 2*a_{i+1} is larger than a_{i+1}, so a_i can be either 2*a_{i+1} or a_{i+1} // 2.
+
+But in the case when a_{i+1} is known, a_i can be either 2*a_{i+1} or a_{i+1} // 2.
+
+But how to choose which one to pick.
+
+Wait, perhaps the way to proceed is to choose the smallest possible a_i, ensuring that the sequence can be completed.
+
+But I'm not sure.
+
+Alternatively, perhaps the way is to process the sequence from right to left, ensuring that each a_i is determined by a_{i+1}.
+
+So, for each i from n-2 down to 0:
+
+If a_{i+1} is known, then a_i can be either 2*a_{i+1} or a_{i+1} // 2.
+
+If a_{i+1} is -1, then a_i can be 2*(-1) = -2 (invalid) or (-1) // 2 = -1 (invalid). So, a_i can only be -1, which is invalid.
+
+Wait, that's a problem. So, when a_{i+1} is -1, a_i must also be -1, which is invalid.
+
+So, in that case, the entire sequence is impossible.
+
+Wait, but the problem allows us to fill in the -1s, as long as the original sequence can be filled in a way that the conditions are met.
+
+Hmm, perhaps when a_{i+1} is -1, a_i can be determined based on a_{i-1} (if any). But how?
+
+Wait, perhaps the approach is to process the sequence from left to right, and for each a_i known, process a_{i+1} as either 2*a_i or a_i//2.
+
+Wait, but if a_{i+1} is unknown, then it's determined by a_i.
+
+Wait, but how to choose the correct value when a_i is unknown.
+
+This is getting complicated.
+
+Alternative approach: model the problem as a graph, where each node is a possible value of -1, and edges represent possible transitions based on the constraints.
+
+But for n up to 2e5, this is not feasible.
+
+Wait, perhaps it's possible to precompute the minimal or maximal possible value for each position.
+
+Wait, perhaps for each position i, if a_i is known, then a_{i+1} is fixed.
+
+Otherwise, a_{i+1} can be either 2*a_i or a_i//2.
+
+But how to choose.
+
+Wait, perhaps when a_i is unknown, a_{i+1} can be either 2*a_i or a_i//2. So, for each possible choice, we can proceed.
+
+But since this could be a lot of possibilities, perhaps we can model it as a BFS, keeping track of possible values for each position.
+
+But again, for n up to 2e5, this is not feasible.
+
+Hmm, perhaps the key is to realize that for a known a_i, the a_{i+1} is fixed, and for an unknown a_i, the a_{i+1} can be either 2*a_i or a_i//2. So, for the unknown a_i, we have two choices, and we need to choose the one that leads to a valid sequence.
+
+But to choose, perhaps we can choose the minimal possible value for a_{i+1}.
+
+Wait, perhaps for each i, when a_i is unknown, a_{i+1} can be either 2*a_i or a_i//2, so the minimal possible value is a_i//2.
+
+But wait, a_i//2 could be smaller than 2*a_i.
+
+Wait, for example, if a_i is 5, a_i//2 is 2, which is smaller than 10. So, choosing 2 would allow the previous elements to be filled in a certain way.
+
+But perhaps this is not sufficient.
+
+Alternatively, perhaps the way to fill is to always choose the minimal possible value, which is a_i//2.
+
+But how to proceed.
+
+Wait, perhaps when a_i is unknown, we can choose a_{i+1} as the minimal possible value between 2*a_i and a_i//2. But if a_i is 1, then a_i//2 is 0, which is invalid. So, in that case, the sequence is impossible.
+
+Wait, but in that case, a_i must be 1, and a_{i+1} must be 0, which is impossible.
+
+So, perhaps in such cases, the sequence is impossible.
+
+Alternatively, perhaps the problem can be solved by choosing for each i from left to right, if a_i is known, assign a_{i+1} as 2*a_i or a_i//2. If a_i is unknown, assign a_{i+1} as the minimal possible value, ensuring that the previous elements can be filled correctly.
+
+But I'm not sure.
+
+Alternatively, perhaps the correct approach is to process the sequence from left to right, and for each a_i, if it's known, then a_{i+1} is fixed. Otherwise, a_{i+1} can be either 2*a_i or a_i//2. But when a_i is -1, a_{i+1} can't be determined unless the previous a_{i-1} is known.
+
+Wait, but this would require a lot of computation.
+
+Alternatively, perhaps the way to fill is to process from right to left, ensuring that each a_i is forced into a certain value.
+
+Wait, perhaps for each i from n-2 downto 0:
+
+if a_{i+1} is known, then a_i can be either 2*a_{i+1} or a_{i+1} // 2.
+
+Wait, but in that case, we have to choose which one to assign.
+
+This approach would require for each i, to choose between two options, which may or may not lead to a valid sequence.
+
+But how to choose.
+
+Hmm, perhaps the way is to always choose the smallest possible value for a_i, ensuring that it's positive and allows the rest of the sequence to be filled.
+
+Alternatively, perhaps the way is to fill each a_i to the smallest possible value given a_{i+1}.
+
+Wait, but in the case where a_i is -1 and a_{i+1} is known, it's impossible because the next element is known but the previous one is unknown.
+
+Wait, but if a_{i+1} is known as 2, then a_i can be either 4 or 1.
+
+Wait, but then a_{i-1} must be 2*a_i or a_i//2.
+
+Wait, but this could get complicated.
+
+Maybe the correct approach is to process the sequence from left to right, and for each a_i, if it's known, set a_{i+1} to 2*a_i or a_i//2. If it's unknown, then a_{i+1} can be either 2*a_i or a_i//2.
+
+But in such cases, how to choose the correct value.
+
+Wait, perhaps the correct way is to process the sequence in a way that for each a_i, if it's known, the next a_{i+1} is determined. If a_i is unknown, then a_{i+1} can be either 2*a_i or a_i//2. But in this case, we have to choose the option that allows the entire sequence to be filled correctly.
+
+But how?
+
+Maybe the problem can be solved by choosing, for each a_i, the minimal possible value for a_{i+1}.
+
+So, when a_i is known, a_{i+1} is fixed.
+
+When a_i is unknown, a_{i+1} can be 2*a_i or a_i//2. We choose the minimal between 2*a_i and a_i//2.
+
+But wait, 2*a_i is larger than a_i//2, except when a_i is 0, which is not possible.
+
+So, for a_i=5, 2*a_i=10, a_i//2=2. So, choosing 2 is the minimal possible.
+
+But what about when a_i is 1?
+
+Then, 2*a_i=2, a_i//2=0. So, 0 is invalid. So, a_{i+1} must be 2.
+
+But that's impossible because a_i=1, a_{i+1}=2: 1 = 2//2 → 1=1, so the condition is satisfied.
+
+So, in this case, a_{i+1} is 2.
+
+So, perhaps the correct way is to choose the minimal possible value, which is a_i//2.
+
+But when a_i=1, a_i//2=0 is invalid, so a_{i+1} must be 2.
+
+So, perhaps in the case of a_i=1, we have to set a_{i+1} to 2.
+
+Wait, that seems to be a problem.
+
+Hmm, perhaps the way is to proceed as follows:
+
+- For each a_i in the sequence:
+
+   - If a_i is known, then a_{i+1} is determined as either 2*a_i or a_i//2. We choose the minimal possible value.
+
+   - If a_i is unknown, then a_{i+1} can be either 2*a_i or a_i//2. We choose the minimal possible value.
+
+But, when a_i is 1, then a_i//2 is 0, which is invalid. So, in that case, a_{i+1} must be 2.
+
+So, perhaps when a_i is 1, a_{i+1} is fixed to 2.
+
+Similarly, when a_i is 2, a_{i+1} can be 4 or 1. But which one to choose?
+
+Wait, this is getting complicated. Maybe the only way is to process the sequence from left to right, and for each a_i, if it's known, set a_{i+1} to 2*a_i or a_i//2. If a_i is unknown, then a_{i+1} can be either 2*a_i or a_i//2. But in that case, how to choose.
+
+Alternatively, perhaps the way is to process the sequence from left to right, and for each known a_i, set a_{i+1} to 2*a_i or a_i//2. But when a_i is unknown, a

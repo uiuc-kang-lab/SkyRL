@@ -1,0 +1,38 @@
+<｜begin▁of▁sentence｜><｜User｜>
+[DJ Genki vs Gram - Einherjar Joker](https://soundcloud.com/leon- hwang-368077289/einherjar-joker-dj-genki-vs-gram)
+
+⠀
+
+You have some cards. An integer between $1$ and $n$ is written on each card: specifically, for each $i$ from $1$ to $n$, you have $a_i$ cards which have the number $i$ written on them.
+
+There is also a shop which contains unlimited cards of each type. You have $k$ coins, so you can buy at most $k$ new cards in total, and the cards you buy can contain any integer between $\mathbf{1}$ and $\mathbf{n}$, inclusive.
+
+After buying the new cards, you must partition all your cards into decks, according to the following rules:
+
+  * all the decks must have the same size;    * there are no pairs of cards with the same value in the same deck. 
+
+Find the maximum possible size of a deck after buying cards and partitioning them optimally.
+
+Input Format:
+Each test contains multiple test cases. The first line contains the number of test cases $t$ ($1 \le t \le 10^4$). The description of the test cases follows.
+
+The first line of each test case contains two integers $n$, $k$ ($1 \leq n \leq 2 \cdot 10^5$, $0 \leq k \leq 10^{16}$) — the number of distinct types of cards and the number of coins.
+
+The second line of each test case contains $n$ integers $a_1, a_2, \ldots, a_n$ ($0 \leq a_i \leq 10^{10}$, $\sum a_i \geq 1$) — the number of cards of type $i$ you have at the beginning, for each $1 \leq i \leq n$.
+
+It is guaranteed that the sum of $n$ over all test cases does not exceed $2 \cdot 10^5$.
+
+Output Format:
+For each test case, output a single integer: the maximum possible size of a deck if you operate optimally.
+
+Tags:
+['2-sat', 'brute force', 'greedy', 'implementation', 'math']
+
+Time Limit: 2000 ms
+Memory Limit: 256 MB
+
+Write Python code to solve the problem. Present the code in
+```python
+Your code
+```
+at the end.<｜Assistant｜><think>

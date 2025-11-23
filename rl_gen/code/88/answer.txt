@@ -1,0 +1,282 @@
+0
+Okay, I need to solve this problem where I have to find an array of positive nonzero integers for a given n, such that for every k from 1 to n, the sum of the elements at indices that are multiples of k is divisible by k. And each element in the array should be less than or equal to 1e5.
+
+Hmm, let's think about this. The constraints are that for every k, the sum of a_j where j is a multiple of k must be divisible by k. So for each k, the sum is a multiple of k.
+
+Wait, what's the best way to construct such an array? Maybe I can find a pattern or a formula that ensures this condition is satisfied for all k.
+
+Let me start with small n to see if I can find a pattern.
+
+For example, when n=1:
+We need an array of length 1. The only k is 1. So the sum of a_1 must be divisible by 1, which it always is. So the array could be [1].
+
+For n=2:
+We need to have a1 and a2 such that:
+- For k=1: a1 is divisible by 1 (which it is)
+- For k=2: a2 must be divisible by 2.
+
+So a possible array is [2, 2]. But wait, let's see. The sum for k=2 is a2, which is 2, which is divisible by 2. So that's good. So [2,2] works.
+
+Wait, but what about k=1, the sum is a1, which is 2, which is divisible by 1. So yes.
+
+Another example: n=3.
+
+We need:
+- k=1: sum is a1, which must be divisible by 1.
+- k=2: a2 must be divisible by 2.
+- k=3: a3 must be divisible by 3.
+
+So the array could be [3, 2, 3]. Let's check:
+k=1: 3 → yes.
+k=2: 2 → yes.
+k=3: 3 → yes.
+
+Another example: n=4.
+
+Do I need to have a1, a2, a3, a4 such that:
+k=1: a1 is any number.
+k=2: a2 is even.
+k=3: a3 is a multiple of 3.
+k=4: a4 is a multiple of 4.
+
+So, perhaps I can set all a_i to 4. Let's see:
+For k=1: 4 → yes.
+k=2: 4 → yes, since 4/2=2.
+k=3: 4 → 4 mod 3 is 1, which is not 0. So that's no good.
+
+Hmm, so setting all a_i to 4 doesn't work for k=3.
+
+Wait, so maybe I need a better approach.
+
+Another idea: Maybe set a_i to be the least common multiple (LCM) of all numbers up to n. But that might be too big, and also, for some k, the sum might not be a multiple.
+
+Alternatively, perhaps for each k, set a_k to be a multiple of k, but also ensure that for other multiples, the sum is also a multiple.
+
+Wait, perhaps the simplest approach is to set a_i to be equal to k for each i. Or maybe set a_i to be a multiple of i, but that might not be sufficient for all k.
+
+Wait, let's think differently. For each k, the sum of a_j where j is a multiple of k must be a multiple of k. So perhaps for each k, we can set a_k to be a multiple of k, and for other multiples, ensure that their contributions add up correctly.
+
+Wait, perhaps a way is to set a_i = i. Let's test this.
+
+For n=2:
+a = [1,2]
+Check k=1: sum is 1 → yes.
+k=2: sum is 2 → yes.
+
+Yes, that works.
+
+For n=3:
+a = [1,2,3]
+Check k=1: sum 6 → yes.
+k=2: sum 2 → yes.
+k=3: sum 3 → yes.
+
+Hmm, that works as well.
+
+Wait, for n=4:
+a = [1,2,3,4]
+Check k=1: sum is 10 → yes.
+k=2: sum is 2+4=6 → yes, since 6/2=3.
+k=3: sum is 3 → yes.
+k=4: sum is 4 → yes.
+
+Yes, that works.
+
+Wait, that seems promising. So for each n, if I set the array to be [1, 2, 3, ..., n], then for each k, the sum of the elements at multiples of k is the sum of the first n/k multiples of k. Wait, no. Wait, for k, the multiples are k, 2k, 3k, ..., up to nk. So the sum is k*(1 + 2 + ... + n/k) = k * (n/k)(n/k +1)/2) = n (n/k +1)/2.
+
+Wait, the sum is k*(sum from i=1 to m of i), where m is n/k.
+
+So sum = k*(m*(m+1)/2) = k*( (n/k)( (n/k) +1 ) / 2 ) = (n/k)( (n/k +1 ) / 2 )
+
+Wait, but n/k is an integer only if k divides n. So for k not dividing n, m is not integer, but how?
+
+Wait, no, in the array, the elements are 1, 2, 3, ..., n. So for a given k, the elements that are multiples of k are k, 2k, 3k, ..., mk, where mk = nk (since m = n/k).
+
+So the sum is the sum of k, 2k, ..., mk. So sum = k*(1 + 2 + ... + m) = k*(m(m+1)/2) = k*( (n/k) ( (n/k) +1 ) / 2 ).
+
+Simplify: sum = (n/k) * (n/k + 1) / 2 * k = (n/k) * (n/k + 1) * k / 2 = (n (n/k +1 )) / 2.
+
+So for each k, the sum is (n (n/k +1 )) / 2.
+
+We need this sum to be divisible by k.
+
+So the condition is: (n (n/k + 1 )) / 2 must be divisible by k.
+
+Which means: (n (n/k + 1 )) must be divisible by 2k.
+
+So for each k, 2k must divide n (n/k +1).
+
+Hmm, can this be satisfied for all k from 1 to n?
+
+Wait, let's take n=4 and see.
+
+For k=1: sum is 10 → 10 /1 is 10, which is divisible by 1. So yes.
+
+For k=2: sum is (4*(4/2 +1 )) / 2 = (4*3)/2 = 6 → 6/2=3, which is divisible by 2? Wait no, 6 is divisible by 2, so yes.
+
+Wait, wait, the sum is 6, and we need 6 to be divisible by 2. Yes.
+
+For k=3: sum is (4*(4/3 +1 )) / 2 → 4*(7/3) / 2 → 28/3 → which is not an integer. Wait, that's a problem because 28/3 is not an integer. But that can't be right because earlier I thought the array [1,2,3,4] works.
+
+Wait, perhaps I made a mistake in the calculation.
+
+Wait, for n=4 and k=3, the sum is 3 + 4* (3 is a multiple of 3? Wait no, 3 is a multiple of 3 only if 3 <=n, yes. So 3 is included. So the sum is 3 + 4 =7? Wait, wait, no, for k=3, the elements are 3, 6, 9, etc. But n=4, so only 3 is included. So sum is 3.
+
+So sum is 3.
+
+Now, 3 must be divisible by 3 → yes.
+
+Ah, right. So the sum is 3, which is divisible by 3.
+
+So for k=3, sum is 3, which is divisible by 3.
+
+Similarly, for k=4, sum is 4 → 4 is divisible by 4.
+
+So in this case, [1,2,3,4] works.
+
+Wait, but in my earlier calculation, I thought the sum was (4*(4/3 +1 )) / 2, which is (4*(7/3))/2 = 28/3, which is not correct because in reality, the sum is 3.
+
+So perhaps my formula is wrong.
+
+Wait, let's re-express the sum for k:
+
+sum = sum_{m=1 to m_max} a_{mk} = sum_{m=1 to n/k} (mk).
+
+So sum = k*(1 + 2 + ... + m_max) = k * m_max(m_max +1)/2.
+
+Which is k*( (n/k) ( (n/k) +1 ) ) / 2.
+
+Which simplifies to (n (n/k +1 )) / 2.
+
+So that's the formula.
+
+So for k=3, sum is (4*(4/3 +1 )) / 2 → 4*(7/3)/2 = (28/3)/2 = 14/3 → which is not integer, but that's a problem.
+
+But in reality, for k=3, the sum is 3. So 3 must be divisible by 3, which is true. So why does the formula give a non-integer?
+
+Ah, because n is 4, and 4/3 is 1.333, which is not integer. So my formula is wrong for this case.
+
+So the formula is correct only when k divides n.
+
+Wait, because when k does not divide n, then n/k is not integer. So the sum formula is incorrect.
+
+So my approach of setting a_i = i for all i might not work because for some k that doesn't divide n, the sum might not be an integer, which is a problem.
+
+So that approach is not correct.
+
+Hmm, so I need a different approach.
+
+Let me think again.
+
+What's the condition for the array a to be beautiful for all k from 1 to n?
+
+For each k, the sum of a_j where j is a multiple of k must be divisible by k.
+
+So for each k, sum_{j is multiple of k} a_j ≡ 0 mod k.
+
+Now, the array can have any positive integers, not necessarily k.
+
+So perhaps, for each k, the sum S_k is a multiple of k.
+
+One idea is to set S_k to be a multiple of k, and then distribute the sum in a way that satisfies the conditions for all k.
+
+But how?
+
+Another approach is to note that for each k, the sum S_k must be a multiple of k, but for all k from 1 to n.
+
+One way to ensure this is to make S_k = k * m_k, where m_k is some integer.
+
+So perhaps, for each k, we can set a_j for j multiples of k to be such that their sum is a multiple of k.
+
+But how?
+
+Wait, perhaps the simplest way is to set each a_j to be a multiple of j. Then, for each k, the sum of a_j's where j is a multiple of k would be the sum of multiples of k, each of which is a multiple of k. So the sum would be a multiple of k.
+
+Yes! That makes sense.
+
+So, if for each j, a_j is a multiple of j, then for any k, the sum of a_j's where j is a multiple of k would be a sum of multiples of k, hence divisible by k.
+
+So, the array can be constructed by setting a_j = j for all j.
+
+Wait, let's test this.
+
+For n=2:
+a = [1,2]
+For k=1: sum is 3 → 3%1=0.
+For k=2: sum is 2 → 2%2=0.
+Yes.
+
+For n=3:
+a = [1,2,3]
+k=1: sum 6 → 6%1=0.
+k=2: sum 2+4=6? Wait no, j is a multiple of 2. So j=2, 4, etc. But for n=3, j=2 is the only one. So sum is 2 → 2%2=0.
+k=3: sum 3 → 0 mod3=0.
+Yes.
+
+n=4:
+a = [1,2,3,4]
+k=1: sum 10 → 0 mod1.
+k=2: sum 2+4=6 → 0 mod2.
+k=3: sum 3 → 0 mod3.
+k=4: sum 4 → 0 mod4.
+Yes.
+
+So this approach seems to work.
+
+So the array can be constructed by setting a_j = j for all j from 1 to n.
+
+So the solution is to output the array [1, 2, 3, ..., n].
+
+But wait, let's see for n=4 and k=3:
+
+sum is 3 → which is divisible by 3. So yes.
+
+Another example: n=5.
+
+a = [1,2,3,4,5]
+k=1: sum 15 → 0 mod1.
+k=2: sum 2+4=6 → 0 mod2.
+k=3: sum 3+6=9 → 0 mod3.
+k=4: sum 4 → 0 mod4.
+k=5: sum5 → 0 mod5.
+Yes.
+
+So this approach works.
+
+So the algorithm is: for each test case, output the array [1,2,3,...,n].
+
+So I can write a Python code that, given n, outputs this array.
+
+But wait, the problem says that the array elements must be <=1e5. Since n is up to 100, the maximum element is 100, which is way less than 1e5. So no problem.
+
+So the code is straightforward.
+
+Read t test cases. For each, read n, then print the array from 1 to n.
+
+So for example, if n=1, output is [1].
+
+n=2: [1,2], etc.
+
+Yes, this should solve the problem.
+</think>
+
+To solve this problem, we need to construct an array of positive nonzero integers such that for every integer \( k \) from 1 to \( n \), the sum of the elements at indices that are multiples of \( k \) is divisible by \( k \). Each element in the array must be less than or equal to \( 10^5 \).
+
+### Approach
+The key insight to solve this problem is to recognize that if each element \( a_j \) in the array is set to \( j \) (where \( j \) is the index), then for any \( k \), the sum of elements at indices that are multiples of \( k \) will be a multiple of \( k \). This is because each element at a multiple of \( k \) is a multiple of \( k \), and thus their sum will also be a multiple of \( k \).
+
+### Solution Code
+```python
+t = int(input())
+for _ in range(t):
+    n = int(input())
+    arr = list(range(1, n + 1))
+    print(' '.join(map(str, arr)))
+```
+
+### Explanation
+1. **Input Reading**: We first read the number of test cases \( t \).
+2. **Array Construction**: For each test case, we read the integer \( n \) and construct an array where each element \( a_j \) is set to \( j \) (from 1 to \( n \)).
+3. **Output**: We print the constructed array for each test case.
+
+This approach ensures that the array meets the required conditions efficiently, with each element being a positive integer and ensuring the sum of elements at multiples of any \( k \) is divisible by \( k \).<｜end▁of▁sentence｜>

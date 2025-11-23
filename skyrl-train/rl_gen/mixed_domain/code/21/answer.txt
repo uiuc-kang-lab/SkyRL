@@ -1,0 +1,536 @@
+Okay, I have to solve this problem where I need to determine if the Major Oak tree has an even number of leaves in year n. Let's see the problem statement again.
+
+So, the Major Oak starts with 1 leaf in year 1. Each year i, it grows i^i new leaves. But leaves last for k years. So, the leaves from year i will last from year i to i+k-1. So, for each year, I need to add i^i to the total, but only if that year is within the k-year window.
+
+Wait, no. Wait, the leaves from year i are added to the tree, and they last for k years. So, in year n, if n is between i and i+k-1, then the i^i is counted towards the total.
+
+So, the total number of leaves in year n is the sum of i^i for all i where i <= n <= i + k -1.
+
+Wait, no. Wait, the tree grows i^i leaves in the i-th year. So, the first year (i=1) adds 1^1=1 leaf. Then, the second year (i=2) adds 2^2=4 leaves, and so on.
+
+But each of these leaves lasts for k years. So, the leaves from year i are present in years i, i+1, ..., i+k-1.
+
+So, for year n, we need to check all i's such that i <= n <= i + k -1. For each such i, we add i^i to the total.
+
+Wait, no. Because the tree starts with 1 leaf in year 1. So, for i=1, the leaf is added in year 1 and lasts for k years, so it's present in years 1 to k.
+
+Then, for i=2, the leaves are added in year 2 and last for k years, so they're present in 2 to 2+k-1.
+
+So, for a given n, we need to find all i's such that i <= n <= i + k -1. Because that means the i-th year's leaves are still on the tree in year n.
+
+So, the problem reduces to: in year n, is the sum of i^i for all i where i <=n <=i +k-1 equal to an even number?
+
+Wait, no. Because the sum is the total number of leaves in year n. So, if that sum is even, output YES, else NO.
+
+So, the key is to find whether the sum of i^i for i in the range [n -k +1, n] is even.
+
+Wait, because i must satisfy i <=n <=i +k-1. Rearranging that, i >= n -k +1 and i <=n.
+
+So, the i's that contribute to the sum are from max(1, n -k +1) to n.
+
+Wait, but n can be as small as 1. So, for n=1, k can be 1, which means i=1 is the only i that contributes. So, 1^1=1, which is odd. So, output NO.
+
+Hmm.
+
+So, the approach is:
+
+For each test case with n and k, compute the sum of i^i for i from (n -k +1) to n, inclusive. Then, check if this sum is even.
+
+But wait, n can be up to 1e9, and t up to 1e4. So, computing this naively for each i is impossible. We need a smarter way.
+
+So, the problem is to find whether the sum of i^i from i = a to i = b is even, where a = max(1, n -k +1), b =n.
+
+So, let's think about the parity of each term i^i.
+
+Because the sum's parity is the sum of the parities of each term.
+
+So, if the sum is even, the total is even.
+
+So, for each i in [a, b], compute whether i^i is even or odd, and sum their parities. If the sum is even, output YES.
+
+So, the key is to find the number of terms in [a, b] where i^i is even. Because if the count is even, then the sum is even.
+
+Wait, no. Because each even term contributes 0 to the sum mod 2, and each odd term contributes 1. So, the sum mod 2 is equal to the number of odd terms in [a, b] mod 2.
+
+So, the sum is even if and only if the number of odd terms in [a, b] is even.
+
+So, the problem reduces to: count the number of integers i in [a, b] such that i^i is odd. If this count is even, then the sum is even, output YES; else, NO.
+
+So, the next step is to find a condition on i such that i^i is odd.
+
+i^i is odd if and only if i is odd. Because any even number raised to any power is even. So, for i even, i^i is even. For i odd, i^i is odd.
+
+So, the number of odd terms in [a, b] is equal to the number of odd i's in that range.
+
+So, the problem becomes: find the number of odd i's in [a, b]. If this count is even, then output YES; else, NO.
+
+Wait, that's a crucial insight.
+
+So, the sum's parity is equal to the number of i's in [a, b] that are odd. So, if that count is even, the sum is even.
+
+Thus, the solution is to compute the number of odd integers between a and b, inclusive. If this number is even, output YES; else, NO.
+
+So, the problem reduces to: for given a and b, count the number of odd numbers in [a, b], and check if it's even.
+
+Thus, the steps are:
+
+1. Compute a = max(1, n -k +1)
+2. Compute b = n
+3. Find the count of odd numbers in [a, b]
+4. If count is even, output YES; else, NO.
+
+Now, the question is how to compute the count of odd numbers in [a, b].
+
+Let me think about how to compute the number of odd numbers between a and b.
+
+The formula is:
+
+if a > b: 0
+else:
+   count = (b - a +1) // 2
+   if a is even:
+       count += (a % 2 == 0) ? 0 : 1
+   else:
+       count += 1
+   but wait, perhaps a better way.
+
+Another approach: the number of odds between a and b is equal to:
+
+((b + 1) // 2) - (a // 2)
+
+Because for numbers up to b, the number of odd is (b + 1) // 2. For numbers up to a, it's a//2. So, subtracting gives the count between a+1 and b, but wait, no.
+
+Wait, wait. Let's think of the count of numbers from a to b is (b - a +1). The number of odds in this range is equal to (count + 1) // 2 if a is odd, else count // 2.
+
+Wait, perhaps a better formula: the number of odd numbers between a and b is:
+
+number_of_odds = ( (b + 1) // 2 ) - ( (a -1) // 2 )
+
+Yes, that makes sense. Because for any number x, the number of odd numbers <= x is (x +1)//2. So, the number of odds between a and b is the number of odds up to b minus the number of odds up to a-1.
+
+So, the formula is:
+
+count = (b +1) // 2 - (a -1) // 2
+
+Yes, that should work.
+
+So, putting it all together:
+
+Compute a = max(1, n - k +1)
+b = n
+if a > b:
+    count = 0
+else:
+    count = (b +1) // 2 - (a -1) // 2
+if count % 2 == 0:
+    print("YES")
+else:
+    print("NO")
+
+Wait, let's test this with some examples.
+
+Example 1:
+
+Test case 1:
+n=1, k=1
+a = max(1, 1-1+1) = 1
+b=1
+count = (1+1)//2 - (0)//2 = 1 - 0 =1
+count is 1, which is odd. So, output is NO.
+
+Which is correct, since in year 1, the tree has 1 leaf, which is odd.
+
+Another test case:
+
+Test case 2:
+n=2, k=2
+a = max(1, 2-2+1)=1
+b=2
+count = (2+1)//2 - (0)//2 = 1 -0=1
+count is 1, which is odd. So, output NO.
+
+In year 2, the tree has i=1 and i=2. i=1 contributes 1 (odd), i=2 contributes 4 (even). So, sum is 5, which is odd. So, output is NO.
+
+Another test case:
+
+Test case 3:
+n=3, k=2
+a = max(1, 3-2+1)=2
+b=3
+count = (3+1)//2 - (1)//2 = 2 -0=2
+count is 2, even. So, output YES.
+
+In year 3, i=2 contributes 2^2=4 (even), i=3 contributes 3^3=27 (odd). So, sum is 4+27=31, which is odd. Wait, wait, that's not matching.
+
+Wait, wait, wait. Hmm, maybe I made a mistake in the reasoning.
+
+Wait, for n=3, k=2.
+
+a = max(1, 3-2+1) = 2.
+
+So, i runs from 2 to 3.
+
+i=2: 2^2=4 (even)
+i=3: 3^3=27 (odd)
+sum is 4+27=31, which is odd. So, the count of odds is 1 (i=3), which is odd. So, the sum is 4 (even) +27 (odd) = 31 (odd). So, the sum is odd, so output is NO.
+
+Wait, but according to the code's count, the count is 1, which is odd, so output is NO, which is correct.
+
+Hmm, so in this case, the code would output NO, which is correct.
+
+Wait, but according to the code, the count is 1 (odd), so output is NO.
+
+Wait, but in the code, the count is the number of odd i's in [a, b], which is 1, so code outputs NO.
+
+Yes.
+
+Another test case:
+
+Test case 4:
+n=4, k=3
+a = max(1, 4-3+1)=2
+b=4
+i=2,3,4.
+
+i=2: even
+i=3: odd
+i=4: even
+count is 1 (i=3)
+so, count is 1, which is odd. So, output is NO.
+
+In year 4, the leaves added are 2^2=4, 3^3=27, 4^4=256.
+
+Sum is 4+27=31 +256= 287, which is odd. So, output is NO. Which is correct.
+
+Another test case:
+
+n=5, k=3
+a = max(1,5-3+1)=3
+b=5
+i=3,4,5.
+
+i=3: odd
+i=4: even
+i=5: odd
+count is 2, even. So, output is YES.
+
+Sum is 3^3=27, 4^4=256, 5^5=3125. Sum is 27+256=283 +3125= 3408. So, even.
+
+So, code would output YES, which is correct.
+
+So, the code seems to handle these cases.
+
+So, the plan is:
+
+For each test case, compute a = max(1, n -k +1), b =n.
+
+If a > b, then no i's contribute (sum is 0, even). So, output YES.
+
+Else, compute the count of odd i's between a and b using the formula (b+1)//2 - (a-1)//2.
+
+If this count is even, output YES; else, NO.
+
+So, the code can be written in Python as follows.
+
+Read t test cases.
+
+For each test case:
+
+Read n, k.
+
+Compute a = max(1, n -k +1)
+
+b =n
+
+if a >b: print YES.
+
+else:
+
+count = (b +1) //2 - (a -1) //2
+
+if count %2 ==0: print YES else NO.
+
+Wait, but what if a is 0? Because in the code, a is max(1, ...), so a can't be 0.
+
+So, no problem.
+
+Wait, n can be 1, and k can be 1.
+
+a = 1-1+1=1.
+
+Which is correct.
+
+Another case: n=2, k=2.
+
+a=2-2+1=1.
+
+b=2.
+
+count is (2+1)//2 - (0)//2 = 1 -0=1, which is odd. So, output is NO.
+
+Which is correct, as in year 2, leaves are 1^1=1 and 2^2=4. Sum is 5, which is odd.
+
+So, code seems correct.
+
+Now, let's write the code.
+
+Read t.
+
+For each t:
+
+n, k = map(int, input().split())
+
+a = max(1, n -k +1)
+
+b =n
+
+if a >b:
+
+    print("YES")
+
+else:
+
+    count = (b +1) // 2 - (a -1) //2
+
+    if count %2 ==0:
+
+        print("YES")
+
+    else:
+
+        print("NO")
+
+Wait, but wait, let's test the case where n=3, k=2.
+
+a=2, b=3.
+
+count is (3+1)//2 - (1)//2 = 2 -0=2.
+
+Which is even, so output is YES.
+
+Which is correct, because in year 3, i=2 (even) contributes 4, i=3 (odd) contributes 27. Sum is 31, which is odd. Wait, no, that's a contradiction.
+
+Wait, wait, no. Wait, a is 2 and b is3.
+
+i runs from 2 to 3.
+
+So, the i's are 2,3.
+
+i=2: 2^2=4 (even)
+i=3:3^3=27 (odd)
+sum is 4 +27 =31, which is odd. So, the count of odds is 1, which is odd. So, the code's count is 1, which is odd, so output is NO.
+
+Wait, but according to the code, (3+1)//2 is 2, (2-1)=1//2=0. So, 2-0=2. So, count is 2, which is even. So, code outputs YES.
+
+Wait, wait, that's a problem.
+
+Wait, in this case, a is 2, b is3.
+
+count = (3+1)//2 - (2-1)//2 = 2 - 0 = 2.
+
+So, count is 2, which is even. So, code outputs YES.
+
+But in reality, the sum is 4 +27=31, which is odd. So, the code is wrong.
+
+Wait, wait, what's wrong here.
+
+Wait, the code's count is 2, which is even. So, according to the code, the sum is even, so output YES. But in reality, the sum is 4+27=31, which is odd.
+
+So, the code is incorrect.
+
+Hmm, this is a problem. So, what's wrong with the reasoning.
+
+Wait, the sum's parity is equal to the number of odd terms in the sum.
+
+So, in this case, i=2 contributes even, i=3 contributes odd. So, the count is 1 (only i=3 is odd). So, the sum's parity is 1, which is odd. So, the sum is 31, which is correct.
+
+So, the code's calculation of count is 2, which is wrong.
+
+So, why is the code's calculation wrong?
+
+Because the formula (b+1)//2 - (a-1)//2 is giving 2 in this case.
+
+Wait, let's compute a=2, b=3.
+
+(b+1)//2 =4//2=2.
+
+(a-1) is 1, 1//2=0.
+
+So, 2-0=2.
+
+Which is incorrect because only i=3 is odd.
+
+So, the formula is incorrect.
+
+What's the issue here?
+
+The formula (b+1)//2 - (a-1)//2 is counting the number of odds up to b minus the number up to a-1.
+
+So, for a=2, b=3:
+
+Number of odds up to 3 is 2 (1,3).
+
+Number of odds up to a-1=1 is 1 (1).
+
+So, 2-1=1, which is correct.
+
+But according to the formula, it's 2.
+
+So, the formula is wrong.
+
+So, the correct formula should be (b+1)//2 - (a-1)//2.
+
+Wait, no. Let's see:
+
+Number of odds up to b is (b +1) //2.
+
+Number of odds up to a-1 is (a) //2.
+
+Because a-1 is the last number before a.
+
+So, the count is (b+1)//2 - (a)//2.
+
+Yes, that's correct.
+
+Because for a=2, a-1=1, number of odds up to 1 is 1.
+
+So, (3+1)//2 =2, (2)//2=1. So, 2-1=1, which is correct.
+
+In the previous example, a=2, b=3.
+
+(b+1)//2=4//2=2.
+
+a is 2, a//2 is 1.
+
+So, 2-1=1, which is correct.
+
+So, the formula should be (b+1)//2 - (a)//2.
+
+Ah, right. So, the earlier formula was incorrect. So, the correct count is (b+1)//2 - (a) // 2.
+
+So, in code, the count is:
+
+count = (b +1) // 2 - (a) // 2
+
+Yes.
+
+So, let's recalculate the test case.
+
+Test case where n=3, k=2.
+
+a=2, b=3.
+
+count = (3+1)//2 - 2//2 = 2 -1 =1.
+
+Which is correct, since only i=3 is odd.
+
+So, the code should be:
+
+count = (b +1) // 2 - (a) // 2
+
+Yes.
+
+So, the code's formula was wrong, but this correction should fix the problem.
+
+So, the correct code is:
+
+Read t.
+
+For each test case:
+
+n, k = map(int, input().split())
+
+a = max(1, n -k +1)
+
+b =n
+
+if a > b:
+
+    print("YES")
+
+else:
+
+    count = (b +1) // 2 - (a) // 2
+
+    if count %2 ==0:
+
+        print("YES")
+
+    else:
+
+        print("NO")
+
+Yes.
+
+Let's test this against the earlier problematic case.
+
+Test case:
+
+n=3, k=2.
+
+a=2, b=3.
+
+count = (3+1)//2 - 2//2 = 2 -1=1, which is odd.
+
+So, output is NO. Which is correct, since the sum is 4+27=31, which is odd.
+
+Another test case:
+
+n=4, k=3.
+
+a=4-3+1=2.
+
+b=4.
+
+count = (4+1)//2 - 2//2 = 2 -1=1. Odd. So, output is NO.
+
+Which is correct.
+
+Another test case:
+
+n=5, k=3.
+
+a=5-3+1=3.
+
+b=5.
+
+count = (5+1)//2 -3//2 =3 -1=2 (since 3//2 is 1).
+
+So, 2 is even. So, output is YES.
+
+Which is correct.
+
+So, the code is now correct.
+</think>
+
+To solve this problem, we need to determine if the Major Oak tree will have an even number of leaves in year \( n \). The tree starts with 1 leaf in year 1 and grows \( i^i \) new leaves in the \( i \)-th year. Leaves last for \( k \) years, so the leaves from year \( i \) are present in years \( i \) to \( i + k - 1 \).
+
+### Approach
+1. **Identify the Range of Years**: For each test case, determine the range of years \( i \) that contribute to the total number of leaves in year \( n \). This range is from \( a = \max(1, n - k + 1) \) to \( b = n \).
+2. **Count Odd Year Contributions**: The sum of leaves in year \( n \) is even if and only if the number of odd-numbered years \( i \) in the range \([a, b]\) is even. This is because an odd number of odd contributions will result in an odd total, while an even number will result in an even total.
+3. **Efficient Counting**: Use the formula to count the number of odd numbers in the range \([a, b]\) efficiently. The count of odd numbers between 1 and \( x \) is given by \( (x + 1) // 2 \). Adjust this formula to count the number of odd numbers between \( a \) and \( b \) by subtracting the count up to \( a-1 \) from the count up to \( b \).
+
+### Solution Code
+```python
+t = int(input())
+for _ in range(t):
+    n, k = map(int, input().split())
+    a = max(1, n - k + 1)
+    b = n
+    if a > b:
+        print("YES")
+        continue
+    count = (b + 1) // 2 - (a) // 2
+    if count % 2 == 0:
+        print("YES")
+    else:
+        print("NO")
+```
+
+### Explanation
+1. **Reading Input**: The code reads the number of test cases \( t \) and then processes each test case by reading \( n \) and \( k \).
+2. **Determine Range**: For each test case, compute the range \([a, b]\) where \( a = \max(1, n - k + 1) \) and \( b = n \).
+3. **Count Odd Contributions**: Calculate the number of odd contributions using the formula \((b + 1) // 2 - (a) // 2\).
+4. **Determine Result**: Check if the count of odd contributions is even. If it is, print "YES"; otherwise, print "NO".
+
+This approach efficiently determines the parity of the total number of leaves in year \( n \) without explicitly computing each contribution, making it suitable for large values of \( n \) and \( k \).<｜end▁of▁sentence｜>

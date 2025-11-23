@@ -1,0 +1,42 @@
+<｜begin▁of▁sentence｜><｜User｜>
+The differences between the easy and hard versions are the constraints on $n$ and the sum of $n$. In this version, $n \leq 3000$ and the sum of $n$ does not exceed $10^4$. You can only make hacks if both versions are solved.
+
+Well, well, well, let's see how Bessie is managing her finances. She seems to be in the trenches! Fortunately, she is applying for a job at Moogle to resolve this issue. Moogle interviews require intensive knowledge of obscure algorithms and complex data structures, but Bessie received a tip-off from an LGM on exactly what she has to go learn.
+
+Bessie wrote the following code to binary search for a certain element $k$ in a possibly unsorted array $[a_1, a_2,\ldots,a_n]$ with $n$ elements.
+
+              let l = 1     let h = n          while l < h:       let m = floor((l + h) / 2)            if a[m] < k:         l = m + 1       else:         h = m          return l     
+
+Bessie submitted her code to Farmer John's problem with $m$ ($1 \leq m \leq n$) tests. The $i$-th test is of the form $(x_i, k_i)$ ($1 \leq x, k \leq n$). It is guaranteed all the $x_i$ are distinct and all the $k_i$ are distinct.
+
+Test $i$ is correct if the following hold:
+
+  1. The $x_i$-th element in the array is $k_i$.    2. If Bessie calls the binary search as shown in the above code for $k_i$, it will return $x_i$. 
+
+It might not be possible for all $m$ tests to be correct on the same array, so Farmer John will remove some of them so Bessie can AC. Let $r$ be the minimum of tests removed so that there exists an array $[a_1, a_2,\ldots,a_n]$ with $1 \leq a_i \leq n$ so that all remaining tests are correct.
+
+In addition to finding $r$, Farmer John wants you to count the number of arrays $[a_1, a_2,\ldots,a_n]$ with $1 \leq a_i \leq n$ such that there exists a way to remove exactly $r$ tests so that all the remaining tests are correct. Since this number may be very large, please find it modulo $998\,244\,353$.
+
+Input Format:
+The first line contains a single integer $t$ ($1 \le t \le 10^4$) — the number of test cases.
+
+The first line of each test case contains two integers $n$ and $m$ ($1 \leq m \leq n \leq 3000$) denoting the number of the array and the number of tests.
+
+The following $m$ lines each contain two integers, describing the tests. The $i$-th line contains two integers $x_i$ and $k_i$ ($1 \leq x_i, k_i \leq n$) denoting the index and value of the test. It is guaranteed all $x_i$ are distinct and all $k_i$ are distinct.
+
+It is guaranteed the sum of $n$ across all test cases does not exceed $10^4$.
+
+Output Format:
+For each test case, output two integers, $r$ — the minimum of tests removed so that there exists an array so that all remaining tests are correct, and the number of arrays such that it is possible to remove $r$ tests to make all remaining tests correct modulo $998\,244\,353$.
+
+Tags:
+['dp', 'trees']
+
+Time Limit: 5000 ms
+Memory Limit: 256 MB
+
+Write Python code to solve the problem. Present the code in
+```python
+Your code
+```
+at the end.<｜Assistant｜><think>

@@ -1,0 +1,317 @@
+Okay, I need to solve this problem where I have to determine for each string whether it matches a given template. Let's see the problem statement again.
+
+So, the template is an array 'a' of 'n' integers. For each string 's_j', I have to check three conditions:
+
+1. The length of 's_j' is equal to 'n'. So, if the string's length is not equal to 'n', it's automatically a "NO".
+
+2. The same numbers in 'a' correspond to the same symbols in 's'. So, if two elements in 'a' are equal, the corresponding positions in 's' must also be equal. For example, if a_i = a_j, then s_i must equal s_j.
+
+3. The same symbols in 's' correspond to the same numbers in 'a'. So, if two symbols in 's' are the same, the corresponding numbers in 'a' must also be the same. Wait, no, that's already covered by the first condition. Because if s_i = s_j, then a_i must equal a_j. So condition 2 is sufficient for condition 3.
+
+Wait, no. Let me think. Condition 2 says that if a_i = a_j, then s_i = s_j. That ensures that the symbols in 's' are the same as the values in 'a'. Because if two a's are the same, their corresponding s's must be the same. So condition 2 ensures that the mapping is consistent both ways.
+
+So, the main task is to check two things:
+
+- The length of 's' is equal to 'n'.
+- The multiset of values in 'a' must match the multiset of values in 's'. Because for 's' to have the same mapping, the counts of each value in 'a' must match those in 's'. 
+
+Wait, no. Because condition 2 is that a_i = a_j implies s_i = s_j. So, the values in 'a' must be exactly the same as those in 's', except for the order. For example, if 'a' has two 3s and the string 's' has two 5s, that's a problem because condition 2 would require that the 3's in 'a' correspond to the 5's in 's', which is not the case. So, the multisets must be exactly the same.
+
+Wait, no. Let me think again. Let's say in 'a', the elements are [3,5,2,1,3]. So the multiset is {3:2, 5:1, 2:1, 1:1}. For 's' to match, when you process each element, each occurrence of a value in 'a' must correspond to the same value in 's'. So, in 's', the counts of each value must be exactly the same as in 'a'. So, for example, if 'a' has two 3s, 's' must have exactly two 3s, and same for other values.
+
+So, to check if 's' matches the template, I need to do two things:
+
+1. The length of 's' must be 'n'.
+2. The frequency of each value in 's' must be the same as in 'a'.
+
+So, the approach is:
+
+For each test case:
+
+- Read 'n', the array 'a'.
+- Read 'm' strings, each 's_j'.
+- For each 's_j', do the following:
+   a. If len(s_j) != n: output "NO".
+   b. Else, check if the frequency of each element in 's_j' is the same as in 'a'. If yes, output "YES", else "NO".
+
+So, the steps are:
+
+1. Preprocess the array 'a' into a frequency map, where each key is a value from 'a' and the value is the count of that key.
+2. For each string 's_j':
+   a. If len(s_j) != n: output NO.
+   b. Else, create a frequency map for 's_j'.
+   c. Compare the two frequency maps. If they are identical, output YES, else NO.
+
+Now, the challenge is to implement this efficiently, especially since n and m can be up to 2e5 per test case, but the sum across all test cases is manageable.
+
+In Python, using a dictionary to store the frequency maps is feasible.
+
+Let me think about how to implement this.
+
+For each test case:
+
+- Read 'n' and 'a'.
+- Create a frequency dictionary for 'a':
+   a_val_counts = {}
+   for num in a:
+       if num in a_val_counts:
+           a_val_counts[num] +=1
+       else:
+           a_val_counts[num] = 1
+
+- Then, read 'm' strings and process each:
+   For each s in the strings:
+       if len(s) != n: print "NO"
+       else:
+           s_val_counts = {}
+           for c in s:
+               if c in s_val_counts:
+                   s_val_counts[c] +=1
+               else:
+                   s_val_counts[c] = 1
+           # Now, compare s_val_counts with a_val_counts
+           # How? Well, since both are dictionaries, we can check if they are equal.
+           if s_val_counts == a_val_counts:
+               print("YES")
+           else:
+               print("NO")
+
+Wait, but in Python, comparing two dictionaries directly with '==' checks for equality, which is what we need. So this should work.
+
+But wait, what about case sensitivity? The problem says the strings consist of lowercase letters, and the array 'a' has integers. So no problem there.
+
+So, the plan is:
+
+- For each test case, read 'a' and compute its frequency counts.
+- For each string 's', check length, and then compare frequencies.
+
+Now, let's think about the time complexity.
+
+For each test case, the time to process the 'a' array is O(n), which is acceptable.
+
+For each string 's', processing its length is O(len(s)), and then comparing the frequency maps. The comparison can be O(k), where k is the number of unique characters in 's' or 'a'. Since the problem says that the sum of all string lengths is up to 2e5, and the sum of unique characters across all strings is also up to 2e5, this approach is feasible.
+
+So, the code structure is manageable.
+
+Now, let's think about some test cases.
+
+Sample Input 1:
+
+1
+3
+3 5 2 1 3
+2
+abfda
+afbfa
+
+In this case, 'a' is [3,5,2,1,3]. So the frequency counts are:
+3:2, 5:1, 2:1, 1:1.
+
+Now, the first string is 'abfda' which has length 5, which is larger than 3. So it's a "NO".
+
+The second string is 'afbfa', which has length 5. So, again, it's "NO".
+
+Wait, but wait, what about the first string? Wait, the sample input lists the first string as "abfda". But the length is 5, which is larger than 3. So the output is "NO".
+
+The second string is "afbfa", same length. So, we have to compare the frequency counts. Each character in 'a' is 3,5,2,1,3.
+
+In 's_j' 'afbfa', the characters are a, f, b, f, a. So, the frequency of 'a' is 2, 'f' is 2, 'b' is 1. But in 'a', the frequencies are 3:2, 5:1, 2:1, 1:1. So, the frequencies in 's_j' are different. So, the output is "NO".
+
+Another sample:
+
+Test case 2:
+
+n=2
+a=[1,2]
+m=2
+strings: "11" and "12"
+
+For '11', len is 2. Frequency counts are 1:2. Compare to a's which is 1:1, 2:1. So, different. So "NO".
+
+For '12', len is 2. Frequency counts are 1:1, 2:1. Same as a's. So "YES".
+
+So, output is:
+
+NO
+YES
+
+So, the code should handle that.
+
+Another test case:
+
+n=1
+a = [5]
+m=1
+s = "5" → "YES"
+s = "a" → "NO"
+
+So, the code seems to handle these cases.
+
+Now, let's think about the implementation.
+
+In Python, for each test case, we can process as follows.
+
+Read t.
+
+Loop for each test case:
+
+Read n.
+
+Read a as a list of integers.
+
+Compute a_val_counts: a dictionary where keys are the elements of a, and values are their counts.
+
+Read m.
+
+Read m strings, each as s.
+
+For each s:
+
+   if len(s) != n → print "NO"
+
+   else:
+
+       compute s_val_counts.
+
+       if s_val_counts == a_val_counts → print "YES"
+
+       else → print "NO"
+
+But wait, in Python, comparing dictionaries with '==' will handle this correctly.
+
+So, the code is straightforward.
+
+Now, let's write the code.
+
+We need to read t test cases.
+
+We can read the input using standard input methods.
+
+In Python, for each test case, we can do:
+
+import sys
+
+t = int(sys.stdin.readline())
+
+for _ in range(t):
+    n = int(sys.stdin.readline().strip())
+    a = list(map(int, sys.stdin.readline().split()))
+    m = int(sys.stdin.readline().strip())
+    a_val_counts = {}
+    for num in a:
+        a_val_counts[num] = a_val_counts.get(num, 0) + 1
+    # Now process m strings
+    for _ in range(m):
+        s = sys.stdin.readline().strip()
+        if len(s) != n:
+            print("NO")
+        else:
+            s_val_counts = {}
+            for c in s:
+                s_val_counts[c] = s_val_counts.get(c, 0) + 1
+            if s_val_counts == a_val_counts:
+                print("YES")
+            else:
+                print("NO")
+
+Wait, but in some cases, the strings can have uppercase letters or lowercase? No, the problem says the strings consist of lowercase letters, and the array a has integers. So, no case issues.
+
+Wait, but in the code, the strings are read as is. So, 'AbFda' would be treated as 'A', 'b', 'F', 'd', 'a'—but in the problem, all strings are lowercase. So, the code is fine.
+
+Testing the sample input:
+
+Sample Input 1:
+
+1
+3
+3 5 2 1 3
+2
+abfda
+afbfa
+
+a is [3,5,2,1,3]. a_val_counts is {3:2,5:1,2:1,1:1}.
+
+First string 'abfda' has len 5 → 'NO'.
+
+Second string 'afbfa' has len 5 → len(s) != 3 → 'NO'.
+
+So output is:
+
+NO
+NO
+
+Which matches the sample.
+
+Another test case:
+
+Test case 2:
+
+n=2, a = [1,2]
+m=2
+strings: "11", "12"
+
+a_val_counts: {1:1, 2:1}
+
+First string: "11" → len 2. s_val_counts is {1:2} → not equal to a_val_counts → 'NO'.
+
+Second string: "12" → s_val_counts {1:1, 2:1} → equal to a_val_counts → 'YES'.
+
+So output is:
+
+NO
+YES
+
+Which is correct.
+
+So, the code seems correct.
+
+I think this should handle all cases.
+</think>
+
+To solve this problem, we need to determine if each given string matches a given template. The template is defined by an array of integers, and a string matches the template if it meets three specific conditions.
+
+### Approach
+1. **Read Input:** We start by reading the number of test cases. For each test case, we read the array of integers and the strings to be checked against the template.
+2. **Frequency Count of Array:** For each test case, we compute the frequency count of each integer in the array. This helps us quickly compare the counts of integers in any string against the array.
+3. **Check Each String:** For each string, we first check if its length matches the length of the array. If not, it immediately fails. If the lengths match, we then compute the frequency count of the string and compare it with the frequency count of the array. If they match, the string matches the template.
+
+### Solution Code
+```python
+import sys
+
+def main():
+    t = int(sys.stdin.readline())
+    for _ in range(t):
+        n = int(sys.stdin.readline().strip())
+        a = list(map(int, sys.stdin.readline().split()))
+        m = int(sys.stdin.readline().strip())
+        
+        # Compute frequency of each element in 'a'
+        a_val_counts = {}
+        for num in a:
+            a_val_counts[num] = a_val_counts.get(num, 0) + 1
+        
+        # Process each string
+        for _ in range(m):
+            s = sys.stdin.readline().strip()
+            if len(s) != n:
+                print("NO")
+                continue
+            s_val_counts = {}
+            for c in s:
+                s_val_counts[c] = s_val_counts.get(c, 0) + 1
+            if s_val_counts == a_val_counts:
+                print("YES")
+            else:
+                print("NO")
+
+if __name__ == "__main__":
+    main()
+```
+
+### Explanation
+1. **Reading Input:** The input is read using standard input methods. The number of test cases is read first, followed by the array and strings for each test case.
+2. **Frequency Count:** For each array `a`, we create a dictionary to count the frequency of each integer. This allows us to quickly compare the structure of any string against the array.
+3. **String Check:** For each string, we first check if its length matches the length of the array. If not, it is immediately rejected. If the lengths match, we compute the frequency of each character in the string and compare it with the frequency count of the array. A match is confirmed if both frequency dictionaries are identical.
+
+This approach ensures that we efficiently check each string against the template using frequency counts, making the solution both optimal and easy to understand.<｜end▁of▁sentence｜>

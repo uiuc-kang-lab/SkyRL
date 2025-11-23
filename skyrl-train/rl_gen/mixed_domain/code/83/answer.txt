@@ -1,0 +1,439 @@
+Okay, so I have this problem where I need to process a bunch of queries on an array. The array starts with all zeros, and each query adds either +1 or -1 to an element. But after each query, every element in the array must be non-negative. My goal is to make the sum of the array as small as possible after all queries. I have to output for each query which element (x_i or y_i) to add or subtract.
+
+Hmm, let's think about this. Each query affects exactly one element, either adding or subtracting. Since the initial array is zero, all elements are zero. The constraints are that after each query, all elements are non-negative. So for each query, I have to choose p (either x_i or y_i) and d (±1) such that a_p + d is non-negative.
+
+Wait, but since a_p was zero before the query, adding d will make it d. So to keep a_p non-negative, d must be at least 0. But wait, d can be -1 or 1. So if I choose d=-1, then a_p becomes 0 + (-1) = -1, which is negative. That's not allowed. So in that case, I can't choose d=-1 for that query. So for each query, I have to choose d=1.
+
+Wait, that's an important point. Because if d is -1, and the current a_p is zero, then a_p becomes -1, which is negative. That's invalid. So for any query, I can only choose d=1. That simplifies things a bit.
+
+So each query must add 1 to either x_i or y_i. But wait, no, because d is either 1 or -1. But wait, the initial a_p is zero, so adding d=1 is allowed (a_p becomes 1) and d=-1 is not allowed (a_p becomes -1, which is invalid). So for each query, I have to choose p as x_i or y_i, and d as +1. Because choosing d=-1 would make the current a_p negative, which is not allowed.
+
+Wait, that's a crucial realization. Because the initial a_p is zero, adding -1 would make it -1, which is invalid. So for each query, I must choose d=1. So each query is adding 1 to either x_i or y_i.
+
+So the problem reduces to: for each query, choose between adding 1 to x_i or y_i, such that the sum of the array is minimized after all queries.
+
+But wait, each query adds 1 to either x_i or y_i. So the sum increases by 1 each time. So the total sum after q queries is q (since each query adds 1). But wait, no, because each query adds 1 to a single element, so the sum increases by 1 each time, so the final sum is q.
+
+Wait, but the problem says that after each query, all elements must be non-negative. So for any query, when you choose p, you must add 1 to a_p. Because d=-1 is invalid, as a_p would become -1. So the sum is fixed as q, but the problem is to choose which elements to add to minimize some other condition? Or wait, no. The problem is to choose the elements to add such that the sum is as small as possible. But wait, each query adds 1 to exactly one element. So the sum is exactly q. So why does the problem say "process all queries in such a way that the sum... is the minimum possible"? Because the sum is fixed as q, any choice of which elements to add to will result in the same sum. So how do we minimize the sum? It's already minimal, because it's q.
+
+Wait, maybe I'm misunderstanding the problem. Let me read it again.
+
+"Process all queries in such a way that the sum of all elements of a after the last query is the minimum possible."
+
+Yes, so the sum is fixed to q, because each query adds 1. So the sum is q, and since that's the case, any choices are fine as long as the sum is q. Wait, but in that case, why the problem is to choose which elements to add to? Because the sum is fixed, so it's the same for any choice. So perhaps the problem is not about the sum, but about the way the elements are chosen such that the sum is minimized. But that can't be, because the sum is fixed.
+
+Hmm, perhaps I'm missing something. Let me re-read the problem statement.
+
+Wait, the initial array is all zeros. Each query adds either +1 or -1 to a_p. But after each query, all elements must be non-negative. So for each query, when you add d, it's to a_p, which was 0 before. So:
+
+If d is -1, the a_p becomes -1, which is invalid. So for each query, the d must be 1. So each query adds 1 to exactly one element.
+
+So the sum is q, and this is fixed. So why is the problem asking for the minimal sum? Because it's fixed, any choice is acceptable as long as the sum is q. So perhaps the problem is not about the sum, but about the way the elements are chosen, such that the sum is minimized, but since it's fixed, maybe the problem is to choose the elements in a way that the maximum element is as small as possible, or something else?
+
+Wait, I think I might be misunderstanding the problem. Let me read it again.
+
+"process all queries in such a way that the sum of all elements of a after the last query is the minimum possible."
+
+Wait, but the sum is q. So any choice is acceptable as the sum is fixed. So the problem is to choose for each query which element to add to, but in such a way that the sum is q. But that's always the case, so perhaps the problem is to make the sum as small as possible, but since it's fixed, it's already minimal.
+
+So perhaps I'm misunderstanding the problem. Maybe the sum is not fixed, but each query can add either +1 or -1, but after each query, all elements are non-negative. So for a query, d can be -1 only if a_p was 0 before the query. So the choice is:
+
+If a_p is 0 before the query, then d can be +1. Because adding -1 would make a_p negative, which is invalid.
+
+If a_p is 1 before the query, then adding -1 is allowed, because 1 -1 = 0, which is non-negative.
+
+So for each query, I have to choose p and d, such that d is +1, unless a_p is 0 before the query. In that case, I can choose d=-1.
+
+So the problem is to choose, for each query, whether to add 1 to x_i, 1 to y_i, or -1 to the element that was 0 before the query.
+
+So the sum is q, because each query adds 1. So the sum is fixed. So the way to minimize the sum is to arrange the choices such that the maximum element is as small as possible. Or perhaps, the sum is fixed, but the problem is to choose which elements to add to, but the sum is fixed.
+
+Wait, but the problem says that after each query, all elements are non-negative. So for each query, if the element was 0, I can't choose d=-1. So for each query, I have to choose whether to add 1 to x_i or y_i, or add 1 to the element that was 0 and choose d=-1.
+
+So the problem is to choose, for each query, which element to add 1 to, such that the maximum element is minimized. Because the sum is fixed, but the maximum element could vary, and the problem may be to minimize the maximum.
+
+Wait, but the problem statement isn't clear on that. So let's think again.
+
+The problem says: after each query, every element is non-negative.
+
+So for each query, when you add d to a_p:
+
+If a_p was 0 before, then d must be +1. Because adding -1 would make it -1, which is invalid.
+
+If a_p was non-zero before, adding -1 is allowed, because a_p -1 is non-negative.
+
+So for each query, you can choose to add 1 to either x_i or y_i, or add 1 to the element that was 0 before the query, and add -1 to it.
+
+So for example, if x_i was 0 before the query, then in that case, you can choose to add 1 to x_i or add 1 to y_i. Because adding 1 to x_i would make it 1, which is non-negative, and adding 1 to y_i is allowed.
+
+Wait, no. Wait, in the case where x_i was 0 before the query, then adding 1 to x_i is allowed because a_p was 0, so d can be either +1 or -1. Because adding -1 would make a_p -1, which is negative. So wait, wait, no. Wait, the initial a_p is 0. So when you add d=1, a_p becomes 1, which is acceptable. When you add d=-1, a_p becomes -1, which is not acceptable. So for x_i that is 0 before the query, you can't choose d=-1. So you have to choose d=1, but you can choose either x_i or y_i.
+
+So in this case, for a query, if either x_i or y_i is 0, you can choose to add 1 to either, because adding -1 is not allowed for that element.
+
+So the problem is to choose, for each query, which element to add 1 to, such that the sum is q, and the maximum a_p is as small as possible. Because the sum is fixed, but the maximum could vary. So the problem is to choose which element to add to, such that the maximum element is minimized.
+
+Wait, no. The sum is fixed as q, because each query adds 1. So the maximum element is q, but that's the sum. Wait, no, the maximum is the largest element, which can be anything up to q, depending on the choices.
+
+So the problem is to arrange the choices so that the maximum element is as small as possible. Because the sum is fixed, but the maximum can vary.
+
+So the problem becomes: after all queries, what is the maximum a_p, and how to arrange the choices to minimize that.
+
+So the way to minimize the maximum is to distribute the additions as evenly as possible among the elements.
+
+So for example, if there are many queries and many elements, it's better to spread the additions as evenly as possible.
+
+So the strategy is to, for each query, choose to add 1 to the element that currently has the smallest value, so that we spread out the additions.
+
+So the approach is to maintain a priority queue (min-heap) of the elements, and for each query, choose the element with the smallest current value to add 1 to.
+
+But wait, in this case, since for each query, we have to choose between two elements (x_i and y_i), and also have the option of adding to the 0 element.
+
+Wait, but the 0 element is only available if either x_i or y_i is 0 before the query. So for each query, I have to choose between adding 1 to x_i, 1 to y_i, or 1 to the 0 element (if applicable).
+
+So the approach would be:
+
+- Keep track of the current values of all elements, but only track the non-zero ones, since the 0 element is only added when necessary.
+
+Wait, but for each query, after adding 1 to x_i or y_i, we need to ensure that all elements are non-negative.
+
+So the steps are:
+
+1. Initialize an array a of size n, all zeros.
+
+2. For each query, determine the choices.
+
+But to track the current values, perhaps we can maintain a min-heap of the current non-zero elements. Because whenever we add 1 to an element, it might increase the value, thus potentially becoming larger than the current maximum. But adding 1 to the smallest element is a good strategy to spread the additions.
+
+So, for each query, the process is:
+
+- Check if either x_i or y_i is 0 before the query. If so, we can choose to add 1 to that element (since adding 1 is allowed, as 0+1=1, which is non-negative). But wait, no: in that case, adding 1 is allowed. Because d is 1, regardless of the current value.
+
+Wait, no. Wait, for a query, when you add d=1, you can do that to any element, regardless of its current value. Because the current value is zero, adding 1 is allowed.
+
+So for a query, if either x_i or y_i is zero, we can choose to add 1 to it. But why would we? Because we have to choose between adding to x_i or y_i.
+
+Wait, no, because each query requires us to add 1 to exactly one element. So for each query, I have to choose p to be either x_i or y_i, and d is 1. So for each query, regardless of whether x_i or y_i are zero, I have to choose to add 1 to either x_i or y_i.
+
+Wait, no. Because the element that's zero before the query can't have d=-1, so the only option is to choose p as x_i or y_i, and d=1.
+
+Wait, that's correct. So for each query, I have to choose p to be x_i or y_i, and d=1. So for example, if x_i is 0, I can choose to add 1 to x_i, or add 1 to y_i. But which one?
+
+So the problem is to choose, for each query, whether to add 1 to x_i or y_i, in a way that the maximum a_p is minimized.
+
+So the strategy is to always add 1 to the element that is currently the smallest. Because that way, the additions are spread out, minimizing the maximum.
+
+So the steps are:
+
+- For each query, add 1 to the element (x_i or y_i) with the smallest current value.
+
+So, for example:
+
+Initially, all elements are 0.
+
+After the first query, say x_i is 1 and y_i is 2. We choose to add 1 to the smallest element (1), making it 1.
+
+Next query: suppose x_i is 1 and y_i is 3. The smallest is 1, so add 1 to it again, making it 2.
+
+And so on.
+
+So the algorithm is:
+
+- Keep track of the current values of all elements.
+
+- For each query, compute x and y.
+
+- Determine which of x or y is the smallest current value.
+
+- Add 1 to that element.
+
+- If the element was 0, and it's now non-zero, it's the new smallest.
+
+This way, the maximum element is minimized.
+
+But how to implement this efficiently, especially for large n and q (up to 3e5).
+
+We need an efficient way to find the minimum element each time.
+
+In Python, a priority queue (min-heap) can be used. But since the elements are being updated each time, we need to manage the heap accordingly.
+
+But wait, each time you add 1 to an element, that element's value increases by 1. So, to handle this efficiently, a min-heap can be used, but we have to be careful because adding 1 can affect the heap's structure.
+
+So the plan is:
+
+- Use a min-heap to keep track of the current elements. But since the heap is a data structure that only gives the minimum element, it's easy to extract it.
+
+- For each query, check if x_i or y_i is 0. If either is 0, then adding 1 to it is allowed, but we have to choose between x and y.
+
+Wait, no. For each query, regardless of whether x or y is zero, you have to choose to add 1 to one of them.
+
+Wait, no. For each query, you have to choose one of x or y as p, and add 1. So for the query, you can only choose to add 1 to x_i or y_i.
+
+So for each query, you have to add 1 to either x_i or y_i. So, for each query, you have to pick which of the two has the smaller current value.
+
+So, the algorithm steps are:
+
+1. Initialize a min-heap (priority queue) with all zeros.
+
+2. For each query (x, y):
+
+   a. Determine the current minimum element in the heap.
+
+   b. Add 1 to that element.
+
+   c. If the element was 0 before, and now it's non-zero, then we can update the heap.
+
+But wait, the heap can't directly tell us which element was the minimum and whether it's zero or not. So perhaps we need to track the current minimum, and whether it's zero.
+
+Alternatively, perhaps we can manage the heap in such a way that it always contains the current elements, but only the non-zero ones.
+
+Wait, but that's tricky because when you add 1 to a zero element, it becomes non-zero, and then you have to add it to the heap.
+
+So perhaps the heap can contain all the current elements, whether they are zero or not. Because when you add 1 to a zero, it becomes 1, which is non-zero. So the heap will always have all the current values, but the min-heap will always have the smallest value.
+
+So the steps are:
+
+- For each query, extract the minimum element from the heap.
+
+- Add 1 to it.
+
+- If the element was zero before, then after adding 1, it's 1, so it's now non-zero. So we don't need to add it back to the heap. Because the heap contains all the current values, including the new non-zero one.
+
+Wait, no, because when you extract the minimum, you add 1 to it, which may now be larger than other elements. So you don't need to add it back to the heap because the heap is a min-heap, and you've already extracted the minimum.
+
+So the steps are:
+
+For each query:
+
+- Get the current min value.
+
+- Add 1 to it.
+
+- If the min value was zero before, now it's 1, so it's non-zero. So no need to add it back to the heap.
+
+So the heap will always have the current values, including the new non-zero element.
+
+So the algorithm is correct.
+
+So now, the problem is to implement this in Python, using a heap.
+
+But what about the initial state: all zeros.
+
+So for each query, we extract the minimum, add 1, and then if the min was zero, we don't need to add it back.
+
+So the code can be structured as follows:
+
+- Read n and q.
+
+- Initialize a min-heap with n zeros.
+
+- For each query:
+
+   x, y = map(int, input().split())
+
+   min_val = heappop(heap)
+
+   new_val = min_val + 1
+
+   heappush(heap, new_val)
+
+   if min_val == 0:
+
+       heappush(heap, new_val)  # Because after adding 1, it's 1, which is non-zero.
+
+Wait, no. Because when min_val is zero, adding 1 makes it 1, which is non-zero. So we don't need to add it back to the heap, as the heap is a min-heap, and we've already extracted the min.
+
+So in code:
+
+from heapq import heappop, heappush
+
+n, q = map(int, input().split())
+
+heap = [0] * n
+
+heapq.heapify(heap)
+
+for _ in range(q):
+
+    x, y = map(int, input().split())
+
+    min_val = heappop(heap)
+
+    new_val = min_val + 1
+
+    heappush(heap, new_val)
+
+So wait, no. Because when min_val is zero, we add 1, which is 1, so it's non-zero. So we don't need to add it back to the heap. So the code should be:
+
+heap = [0] * n
+
+heapq.heapify(heap)
+
+for _ in range(q):
+
+    x, y = map(int, input().split())
+
+    min_val = heappop(heap)
+
+    new_val = min_val + 1
+
+    heappush(heap, new_val)
+
+Because when new_val is 1, the heap is a min-heap, and the next time we pop, it will be the next smallest.
+
+Wait, no. Because in the first step, we pop the min_val (0), add 1, making it 1. So the heap now contains 1.
+
+But in the next step, when we pop again, we get 1, add 1, making 2.
+
+So it works.
+
+Yes, this code will work.
+
+Wait, but let's test it with an example.
+
+Suppose n=2, q=2.
+
+Queries:
+
+1 2
+
+1 2
+
+Initial heap: [0,0]
+
+First query:
+
+x=1, y=2.
+
+min_val is 0.
+
+new_val is 1.
+
+heap becomes [0,1].
+
+Second query:
+
+x=1, y=2.
+
+min_val is 0.
+
+new_val is 1.
+
+heap becomes [1,1].
+
+So the output is 1 and 1.
+
+Which is correct.
+
+Another example:
+
+n=3, q=3.
+
+Queries:
+
+1 2
+
+2 3
+
+1 3
+
+Initial heap: [0,0,0]
+
+First query: add 1 to 0, making 1.
+
+Heap [0,1,0] → after heapify, becomes [0,0,1]
+
+Second query: add 1 to 0 → 1.
+
+Heap becomes [0,1,1].
+
+Third query: add 1 to 0 → 1.
+
+Heap is [1,1,1].
+
+So the outputs are 1, 1, 1.
+
+Which is correct.
+
+Another test case:
+
+n=2, q=1.
+
+Queries: 1 1.
+
+So in the first query, add 1 to 0. Now the heap is [0,1].
+
+So the output is '1' for the first element.
+
+So the sum is 1.
+
+Which is correct.
+
+Another test case:
+
+n=3, q=3.
+
+Queries:
+
+1 2 → add 1 to 1 → heap [0,1,0] → after heapify, [0,0,1]
+
+Wait no, the initial heap is [0,0,0]. After first query, we pop the 0, add 1 → heap becomes [0,0,1]. So when the next query comes, we have to choose between 0 and 0 (since y is 2, which is 0). So we add 1 to 0, making it 1.
+
+So heap becomes [0,1,1].
+
+Then the third query: we have to choose between 0 and 1. The current min is 0, so add 1 to it.
+
+So the outputs are 1,1,1.
+
+So the sum is 3, which is correct.
+
+So the code seems to be correct.
+
+Thus, the approach is to use a min-heap, which allows us to always add 1 to the smallest element, thus spreading out the additions as much as possible, minimizing the maximum element.
+
+So the code is as follows.
+</think>
+
+To solve this problem, we need to process a series of queries on an array where each query adds either +1 or -1 to an element. The goal is to ensure that every element remains non-negative and to minimize the sum of the array after all queries.
+
+### Approach
+1. **Initialization**: Start with an array of zeros, where each element is initially zero.
+2. **Min-Heap Usage**: Use a min-heap to efficiently track and manage the smallest element in the array. This allows us to always add 1 to the smallest element, which helps in spreading out the additions and minimizing the maximum value.
+3. **Processing Queries**: For each query, determine the current smallest element. Add 1 to this element and push the result back into the heap. This ensures that we are spreading the increments as evenly as possible across all elements.
+
+### Solution Code
+```python
+import heapq
+
+def main():
+    import sys
+    input = sys.stdin.read
+    data = input().split()
+    idx = 0
+    n = int(data[idx])
+    idx += 1
+    q = int(data[idx])
+    idx += 1
+    heap = [0] * n
+    heapq.heapify(heap)
+    output = []
+    for _ in range(q):
+        x = int(data[idx])
+        idx += 1
+        y = int(data[idx])
+        idx += 1
+        min_val = heapq.heappop(heap)
+        new_val = min_val + 1
+        heapq.heappush(heap, new_val)
+        output.append(str(new_val))
+    print('\n'.join(output))
+
+if __name__ == "__main__":
+    main()
+```
+
+### Explanation
+- **Min-Heap Usage**: The min-heap is used to efficiently get the smallest element in constant time. This is crucial for distributing the increments as evenly as possible.
+- **Query Processing**: Each query involves adding 1 to the smallest element. This ensures that the smallest element is incremented first, preventing any single element from becoming too large.
+- **Efficiency**: The use of a min-heap allows us to handle up to 300,000 queries efficiently, making the solution scalable even for large input sizes.
+
+This approach ensures that we maintain the smallest possible maximum value across all elements, thus minimizing the sum of the array while ensuring all elements remain non-negative.<｜end▁of▁sentence｜>

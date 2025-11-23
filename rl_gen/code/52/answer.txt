@@ -1,0 +1,833 @@
+0
+Okay, I have this problem to solve, and I need to think through it step by step. Let's try to understand what's being asked.
+
+So, the problem is about Bessie's binary search code and some tests that might not be correct. Farmer John wants to remove some tests so that the remaining ones can be correct for some array. We need to find the minimum number of tests to remove (r) and the number of such arrays, modulo 998244353.
+
+Let me break down the problem.
+
+First, the binary search code as given:
+
+- Initialize l=1, h=n.
+- While l < h:
+   - m = floor((l+h)/2)
+   - If a[m] < k: set l = m+1
+   - Else: set h = m
+- Return l.
+
+The code is supposed to find the position where a[k] is located. Wait, no: the code is looking for a certain k, but in the problem, each test is (x_i, k_i), and the code should return x_i when called with k_i.
+
+Wait, the problem says that the test is correct if two conditions hold:
+1. The x_i-th element in the array is k_i.
+2. When Bessie runs the binary search for k_i, it returns x_i.
+
+So, for each test (x_i, k_i), two things must be true:
+- a[x_i] = k_i.
+- The binary search, when run with k_i, returns x_i.
+
+Our goal is to find an array where as many tests as possible are correct, by possibly removing some. The remaining tests must be correct, and we want the minimal number of tests to remove (r). Also, we need to count the number of arrays where exactly r tests are removed, but wait, no: r is the minimal number of tests to remove so that there exists an array where all remaining tests are correct. So we can remove more than r, but we are to find the minimal r such that such an array exists.
+
+Wait, no. The problem says, for each test, it's correct if both conditions are met. We need to choose a subset of the tests such that for each test in the subset, the two conditions hold. Then, the remaining tests (those not in the subset) are removed. We need to find the minimal number of tests to remove (so that the remaining subset is correct for some array), and also count how many arrays allow for exactly r tests to be removed (so for each array, exactly r tests are removed, and all the remaining m - r are correct).
+
+Wait, no. The problem says that r is the minimal number of tests to remove so that there exists an array where all remaining tests are correct. So, r is the minimal number of tests to remove, meaning that after removing r tests, the remaining m - r tests are correct for some array. So, for each test, if it's not in the remaining subset, it's removed, but it's possible that some are kept as long as they are correct.
+
+But the problem is to find the minimal r such that there exists an array where all the kept tests are correct. So, the array has to be such that for each kept test (x_i, k_i), a[x_i] = k_i, and when the binary search is run with k_i, it returns x_i.
+
+So, the task is to find the minimal r, which is the number of tests removed, and then count the number of arrays where exactly r tests are removed, but wait no: the array can have any subset of the tests, as long as all the kept ones are correct. So, the minimal r is the minimal number of tests that must be removed so that there exists an array where all the kept tests (which are m - r in number) are correct.
+
+Wait, no. Let me rephrase. We can choose to keep some subset of the tests, and the array must satisfy that for each kept test, the two conditions are met. The number of tests kept is m - r, and r is the minimal number of tests to remove so that such an array exists. So, the minimal r is the smallest number for which there exists an array where exactly m - r tests are kept (and thus, r tests are removed), and all kept tests are correct.
+
+So, the first step is to find the minimal r, which is the smallest number of tests that must be removed so that there exists an array where all the remaining tests are correct.
+
+Once we have r, we need to find the number of arrays where exactly r tests are removed, but that might not be the case. Wait, no: the array can have any subset of the tests, as long as the kept ones are correct. So, for the minimal r, the number of arrays is the number of arrays where the kept tests are a subset of the m tests, with size m - r, and all kept tests are correct for some array.
+
+Wait, no. For a given test subset S (the kept tests), the array must satisfy that for each (x, k) in S, a[x] = k, and when the binary search is run on k, it returns x.
+
+So, the problem reduces to finding the minimal r such that there exists a subset S of the m tests with size m - r, where for each (x, k) in S, a[x] = k, and the binary search code for k returns x.
+
+Once we find the minimal r, we need to count the number of arrays where exactly r tests are removed, which is the same as the number of arrays where for some subset S of size m - r, all tests in S are correct.
+
+But how do we model this?
+
+Let me think about the constraints for a subset S of tests to be correct.
+
+Each test (x, k) in S must satisfy two conditions:
+1. a[x] = k.
+2. When running the binary search on k, it returns x.
+
+So, for each such test in S, the binary search must end up at x when searching for k.
+
+So, for each (x, k) in S, the binary search code, when run with k, must return x.
+
+So, the array a must be such that for each (x, k) in S, a[x] = k, and the binary search code for k returns x.
+
+We need to find such an array, and find the minimal r such that there exists such an array.
+
+So, the approach is:
+
+1. For a given test subset S, check if it's possible to have an array a where all (x, k) in S have a[x] = k, and the binary search code for k returns x.
+
+If such an array exists, then S is a valid subset, and the number of tests removed is |S|, since r = m - |S|.
+
+So, the problem is to find the minimal r (which is m - |S|, so to minimize r we need to maximize |S|). So, we need to find the largest possible |S|, which is m - r, such that there exists an array a where for each (x, k) in S, a[x] = k, and the binary search code for k returns x.
+
+So, the steps are:
+
+- For each test, model the constraints for a valid array.
+
+- Find the minimal r, which is the minimal number of tests to remove, which corresponds to the maximum possible size of S (the subset of tests kept).
+
+- Then, count the number of arrays a that allow S to be a valid subset, for the maximum possible size S.
+
+So, the problem is to find the maximal S such that the constraints for S can be satisfied by some array a.
+
+So, how do we model the constraints for S?
+
+For each (x, k) in S:
+
+- a[x] = k.
+
+- The binary search on k returns x.
+
+So, the binary search must end at x when searching for k.
+
+So, when the binary search is run on k, the code returns x.
+
+Let's model the conditions for the binary search to return x when searching for k.
+
+The binary search is:
+
+l = 1, h = n.
+
+While l < h:
+
+   m = floor( (l + h) / 2 )
+
+   if a[m] < k: l = m + 1
+
+   else: h = m
+
+The loop ends when l >= h.
+
+At that point, l is the returned value.
+
+So, for the binary search to return x when searching for k, the following must hold:
+
+After the binary search, the returned value is x.
+
+So, let's model the steps the binary search takes.
+
+We can think of the binary search process as a series of steps that narrow down the search space.
+
+At each step, the code compares a[m] with k and adjusts l or h accordingly.
+
+The binary search will eventually converge to a point where l == h, which is the returned value.
+
+So, for the binary search to return x when searching for k, x must be the correct position, and the binary search process must narrow down to x.
+
+So, the conditions are:
+
+1. a[x] = k.
+
+2. The binary search process, when run with k, must end up at x.
+
+So, to model this, we can simulate the binary search steps for k and see what constraints it imposes on the array a.
+
+Let me think about the binary search process for k.
+
+The binary search starts with l = 1, h = n.
+
+At each step, m is computed as floor( (l + h) / 2 ).
+
+If a[m] < k: then l is set to m + 1.
+
+Else: h is set to m.
+
+The loop continues until l >= h.
+
+At that point, the returned value is x.
+
+So, to have the returned value be x, the binary search process must have x as the last position where l < h.
+
+So, let's model the binary search steps.
+
+We can write a function that, given k, returns x, the value the binary search returns.
+
+So, for each (x, k) in S, the binary search must return x.
+
+So, for each (x, k) in S, a[x] must be k, and the binary search for k must return x.
+
+So, the constraints are:
+
+For each (x, k) in S:
+
+a[x] = k.
+
+binary_search(k) returns x.
+
+So, the problem is to find a subset S of tests such that all (x, k) in S satisfy these two conditions, and the subset S can be part of some array a.
+
+Our goal is to find the maximal |S|, which gives the minimal r = m - |S|.
+
+Once we have this, the number of arrays is the number of arrays a where S is a subset of the tests that are correct, and for each (x, k) in S, a[x] = k.
+
+So, the steps to solve the problem are:
+
+1. For each test, precompute the conditions that a[x] = k and that the binary search for k returns x.
+
+2. Find the largest subset S of tests such that there exists an array a where for every (x, k) in S, a[x] = k and the binary search for k returns x.
+
+3. The minimal r is m - |S|.
+
+4. The number of arrays is the number of array a that satisfy all the conditions for the tests in S, and possibly other tests that are not in S.
+
+Wait, no. The array a must satisfy a[x] = k for all (x, k) in S, and the binary search for k must return x for all (x, k) in S. For the other tests (not in S), they can be anything, as long as they don't affect the subset S's correctness.
+
+Wait, no. Because if we remove some tests, the remaining tests must be correct. So, the array a must satisfy that for all (x, k) not in S, they are not required to be correct. So, for those, a[x] can be anything, as long as the subset S is correct.
+
+So, the array a can have any values for the tests not in S, as long as for each (x, k) in S, a[x] = k and the binary search returns x.
+
+So, the problem is to find the maximal S, and then count the number of arrays a where a[x] = k for all (x, k) in S, and the binary search returns x for each (x, k) in S.
+
+So, the steps are:
+
+- For each test, precompute the conditions that a[x] = k and that the binary search on k returns x.
+
+- Find the largest subset S of these conditions such that all can be satisfied by some array a.
+
+- The minimal r is m - |S|.
+
+- The number of arrays is the number of arrays a where for all (x, k) in S, a[x] = k, and for all (x, k) not in S, a[x] can be any value, as long as the subset S is correct.
+
+Wait, no. The array a can have any values for the tests not in S, but for the subset S, all (x, k) must satisfy a[x] = k and the binary search returns x.
+
+So, the number of arrays is the product of the number of choices for the tests not in S, multiplied by the number of possible a arrays that satisfy the S conditions.
+
+But wait, the a array is determined by the S conditions. Because for the S conditions, a[x] is fixed as k for each (x, k) in S. So, the array a is determined by the S conditions, and the rest can be anything.
+
+So, the number of arrays is equal to the product of the number of choices for each test not in S, given that a[x] = k for the tests in S.
+
+But wait, no. Because for the tests not in S, a[x] can be any value, but they are not required to be correct. So, for each test not in S, a[x] can be any value between 1 and n.
+
+Wait, but the array a must satisfy that for all (x, k) in S, a[x] = k. So, the array a is determined for the tests in S. The other tests can be set to any value, including those that are not in S.
+
+So, the number of possible arrays is equal to the product of the number of choices for each test not in S, which is n^t, where t is the number of tests not in S.
+
+So, the steps are:
+
+1. For each test, precompute the condition for a[x] = k and whether the binary search on k returns x.
+
+2. Find the largest subset S of these conditions such that all can be satisfied by some array a.
+
+3. The minimal r is m - |S|.
+
+4. The number of arrays is the product of the number of choices for each test not in S. Since each such test can be set to any value from 1 to n, the total is n^t, where t is the number of tests not in S.
+
+Wait, but when we have a subset S, the array a is fixed for the tests in S, and the other tests can be any value. So, the number of arrays is the product of the number of choices for each test not in S. For each such test, a can be any of n values.
+
+So, the count is n^(m - |S|), but wait, no. Because |S| is the size of the subset, and m - |S| is the number of tests not in S. So, the number of arrays is n^{m - |S|}.
+
+Wait, but for the tests in S, a is fixed as k. So, the array is determined for the S tests. The other tests can be anything. So, for each test not in S, a can be any value from 1 to n. So, the number of possibilities is n^{number of tests not in S}.
+
+Yes.
+
+So, the problem reduces to finding the maximal |S|, which is the largest subset of tests such that all (x, k) in S can be satisfied by some array a.
+
+Once we have that, the minimal r is m - |S|, and the number of arrays is n^{m - |S|}.
+
+So, the first task is to find the largest possible |S|.
+
+Now, how to find the largest S.
+
+Each (x, k) in S imposes two constraints:
+
+1. a[x] = k.
+
+2. The binary search for k returns x.
+
+So, for each (x, k) in S, we can compute the binary search steps and see what constraints it imposes on the array a.
+
+If any of these constraints conflict with each other, then the subset S cannot be chosen, so we must exclude some tests.
+
+So, the approach is to model the constraints for each (x, k) and find the maximum subset where all constraints can be satisfied.
+
+This seems like a problem that can be modeled as a graph, where each edge represents a constraint that must be satisfied.
+
+Alternatively, it's similar to a problem where each (x, k) in S imposes certain relationships between the a values.
+
+So, let's think of each (x, k) in S as imposing that a[x] = k, and also that the binary search process returns x.
+
+So, for each (x, k) in S, the binary search process for k must end at x.
+
+So, for each (x, k) in S, the binary search process for k must result in x.
+
+So, to model this, for each (x, k) in S, we can simulate the binary search steps to see what other constraints are imposed on the array a.
+
+So, let's write a function that, given k, returns x, the value the binary search would return.
+
+We can represent this as a function that, for a given k, returns x.
+
+So, for each (x, k) in S, x is the binary_search(k).
+
+So, for each (x, k) in S, x must equal binary_search(k).
+
+So, the constraints are:
+
+For each (x, k) in S:
+
+a[x] = k.
+
+binary_search(k) = x.
+
+So, the problem is to find the largest subset S where all these constraints can be satisfied by some array a.
+
+So, the approach is to model these constraints and find the maximum size of S.
+
+This seems similar to a problem where each constraint is a pair (x, k), and we have to select a subset where the binary search for k returns x for each (x, k) in the subset.
+
+So, how can we model this?
+
+Let me think about the binary search process for a given k.
+
+The binary search starts with l = 1, h = n.
+
+At each step, m = floor( (l + h) / 2 ).
+
+If a[m] < k, set l = m + 1.
+
+Else, set h = m.
+
+The process continues until l >= h.
+
+The returned value is x.
+
+So, for a given k, the binary search process will proceed through several steps, narrowing down the search space.
+
+Each step depends on the a values.
+
+So, for each (x, k) in S, the binary search process for k must end at x.
+
+So, the constraints are:
+
+For each (x, k) in S:
+
+a[x] = k.
+
+binary_search(k) = x.
+
+So, the problem is to select the maximum subset S where all these constraints are satisfied.
+
+So, the way to model this is to find all possible subsets S where for every (x, k) in S, the binary search for k results in x, and a[x] = k.
+
+So, the plan is:
+
+For each test (x, k), precompute the binary search result for k.
+
+If for a pair (x, k), the binary search result is x, then this test can be included in S.
+
+But, including such a test may impose constraints on other tests in S.
+
+So, the problem is to select as many such tests as possible, ensuring that all their constraints are compatible.
+
+So, the approach is to model this as a graph where each test is a node, and edges represent conflicts between tests.
+
+But perhaps a better approach is to model this as a bipartite graph, but I'm not sure.
+
+Alternatively, for each (x, k) in S, the binary search for k must end at x.
+
+So, for each (x, k) in S, the binary search process for k must have x as the returned value.
+
+So, the constraints are:
+
+For (x, k) in S:
+
+a[x] = k.
+
+binary_search(k) = x.
+
+So, the problem is to select S such that all these constraints are satisfied.
+
+So, the first step is to precompute for each (x, k) whether a[x] = k and binary_search(k) = x.
+
+If this is true, then the test can be included in S.
+
+So, the initial step is to collect all the tests where a[x] = k and binary_search(k) = x.
+
+These are the tests that can be included in S.
+
+Now, the problem is to select as large a subset S as possible from these tests, such that all constraints are satisfied.
+
+So, how to model this?
+
+Each (x, k) in S imposes two constraints: a[x] = k, and binary_search(k) = x.
+
+So, the constraints are that for all (x, k) in S:
+
+- a[x] = k.
+
+- binary_search(k) = x.
+
+So, the problem is to select the largest subset S where all these constraints are satisfied.
+
+This is similar to a problem where each constraint is a pair (x, k), and we need to select the maximum subset where the constraints are compatible.
+
+So, how to model this?
+
+An approach is to model the constraints as a directed graph, where each node represents a test, and edges represent dependencies.
+
+But perhaps a better way is to model it as a bipartite graph, but I'm not sure.
+
+Alternatively, for each test (x, k) in S, we can represent the constraint that a[x] = k, and that the binary search for k returns x.
+
+So, for each such test, the binary search for k must result in x, which is the same as the x returned by the binary search.
+
+So, the problem is to find the maximum S where all (x, k) in S satisfy:
+
+a[x] = k.
+
+binary_search(k) = x.
+
+So, how to model the dependencies between these tests.
+
+Let me think of the constraints as:
+
+For each (x, k) in S, the binary search for k must return x.
+
+So, for each (x, k) in S, the binary search process for k must have x as the returned value.
+
+So, for each (x, k) in S, the binary search process for k is a series of steps that narrow down to x.
+
+So, for each such (x, k), the binary search process for k must result in x.
+
+So, the problem is to find the largest subset S where for each (x, k) in S, the binary search for k returns x.
+
+So, the approach is:
+
+1. For each test (x, k), precompute the binary_search_result(k).
+
+   If the binary_search_result(k) is not x, then this test cannot be included in S. So, we can't include it.
+
+   So, the initial step is to collect all (x, k) where binary_search_result(k) == x.
+
+2. Now, we have a subset of tests that are compatible in the sense that their binary_search_result is correct.
+
+3. Now, from this subset, we need to find the largest possible S where all (x, k) in S satisfy a[x] = k and binary_search_result(k) = x.
+
+So, the problem reduces to selecting the maximum subset S of the compatible tests, such that for all (x, k) in S, a[x] = k.
+
+So, the constraints are:
+
+a[x] = k for all (x, k) in S.
+
+So, for each (x, k) in S, a[x] must equal k.
+
+So, the problem is to select the largest subset S of the compatible tests where for all (x, k) in S, a[x] = k.
+
+So, the steps are:
+
+- Precompute for each (x, k) whether binary_search_result(k) == x.
+
+- Collect all such (x, k) as the initial candidate set.
+
+- Now, from this set, select the largest subset S where for all (x, k) in S, a[x] = k.
+
+So, how to model this.
+
+Each test can be represented as a pair (x, k). For each such test, if a[x] is not equal to k, then this test cannot be included in S.
+
+So, the compatible tests are those where a[x] = k.
+
+So, the problem is to select the largest subset S of the compatible tests, such that all (x, k) in S are compatible.
+
+So, for each test in the compatible set, we can include it in S only if a[x] = k.
+
+So, the maximum size of S is the number of tests in the compatible set where a[x] = k.
+
+But wait, the compatible set is the set of tests where a[x] = k and binary_search_result(k) = x.
+
+So, the compatible set is the subset of tests where a[x] = k.
+
+So, the size of S is the number of such tests.
+
+So, the problem reduces to finding the largest subset S of the compatible set, such that for all (x, k) in S, a[x] = k.
+
+Wait, but that's trivial, because S is a subset of the compatible set. So, the maximum size of S is the size of the compatible set.
+
+Wait, no. Because the compatible set is the set of (x, k) where a[x] = k. So, any subset S of this compatible set is already satisfying a[x] = k for all (x, k) in S.
+
+So, the maximum size of S is the size of the compatible set.
+
+So, in this case, the maximal |S| is the size of the compatible set.
+
+So, the steps are:
+
+1. For each test (x, k), compute binary_search_result(k).
+
+   If binary_search_result(k) != x, then this test cannot be included in S, so it's excluded.
+
+2. Collect all (x, k) where binary_search_result(k) == x.
+
+3. Now, for each test (x, k) in this set, check if a[x] == k.
+
+   Since a[x] is unknown, but the compatible set is the set of (x, k) where a[x] = k.
+
+   So, for each (x, k) in the compatible set, a[x] is k.
+
+   So, the compatible set is the set of (x, k) where a[x] = k.
+
+   So, the size of the compatible set is the number of (x, k) pairs where a[x] = k.
+
+   So, the size of S is the size of the compatible set.
+
+Wait, but that can't be right.
+
+Because, for each test (x, k), if a[x] = k, then it's compatible with S.
+
+So, the compatible set is all (x, k) where a[x] = k.
+
+So, the maximum size of S is the size of this compatible set.
+
+So, the problem is to find the size of the compatible set, which is the number of (x, k) where a[x] = k.
+
+So, the minimal r is m - size.
+
+The number of arrays is n^{(m - size)}.
+
+Wait, no.
+
+Because, the compatible set is the set of tests where a[x] = k.
+
+So, the array a must have a[x] = k for all (x, k) in the compatible set.
+
+So, the array a is determined for all these x's, and the rest can be any value.
+
+So, the number of possible arrays is n^{(m - size)}.
+
+So, the problem reduces to finding the size of the compatible set, which is the number of (x, k) pairs where a[x] = k.
+
+So, the steps are:
+
+1. For each test (x, k), compute binary_search_result(k).
+
+   If binary_search_result(k) != x, then this test cannot be included in the compatible set.
+
+2. The compatible set is the set of all (x, k) where binary_search_result(k) == x.
+
+3. The size of the compatible set is the maximum |S|.
+
+4. So, the minimal r is m - size.
+
+5. The number of arrays is n^{(m - size)}.
+
+So, now, the task is to compute for each test (x, k) whether binary_search_result(k) == x.
+
+So, we need to model the binary search process for each k, and see if it returns x.
+
+So, for each test (x, k), we need to simulate the binary search process for k, and see if it returns x.
+
+So, the plan is:
+
+For each test (x, k):
+
+   Simulate the binary search for k, and see if it returns x.
+
+   If yes, include this test in the compatible set.
+
+Once we have the compatible set, the size is the maximum |S|, which is the number of such tests.
+
+So, the minimal r is m - size.
+
+The number of arrays is n^{(m - size)}.
+
+So, the problem now is to implement this.
+
+So, now, the challenge is to implement the binary search simulation.
+
+Let me think about how to simulate the binary search for a given k.
+
+The binary search starts with l = 1, h = n.
+
+At each step, m = floor( (l + h) / 2 ).
+
+If a[m] < k: l = m + 1.
+
+Else: h = m.
+
+We continue until l >= h.
+
+The returned value is x.
+
+So, for a given k, the binary_search(k) function should return x.
+
+So, to implement this, for each k, we can simulate the binary search steps.
+
+So, let's write a function that, given k, returns the x where the binary search for k would end.
+
+So, for each test (x, k), we can call this function and see if it returns x.
+
+So, let's think about implementing this function.
+
+The function is:
+
+def binary_search(k, a, n):
+    l = 1
+    h = n
+    res = None
+    while l < h:
+        m = (l + h) // 2
+        if a[m] < k:
+            res = m
+            l = m + 1
+        else:
+            res = m
+            h = m
+    return res
+
+Wait, no. Because in the binary search, if a[m] < k, we shift l to m+1. Else, we shift h to m. The process continues until l >= h.
+
+At the end, res is the position where the binary search returned.
+
+Wait, but in the problem statement, the binary search function is as described.
+
+So, for each (x, k), we need to compute res = binary_search(k) and see if res == x.
+
+So, the function is:
+
+def get_binary_search_result(k, a, n):
+    l = 1
+    h = n
+    res = None
+    while l < h:
+        m = (l + h) // 2
+        if a[m] < k:
+            res = m
+            l = m + 1
+        else:
+            res = m
+            h = m
+    return res
+
+So, for each (x, k), we compute res = get_binary_search_result(k, a, n).
+
+If res == x, then this test is compatible.
+
+So, the steps are:
+
+1. Read t test cases.
+
+2. For each test case:
+
+   a. Read n and m.
+
+   b. Read m tests, storing them in a list.
+
+   c. For each test (x, k):
+
+      i. Simulate the binary search for k, get res.
+
+      ii. If res == x, include this test in the compatible set.
+
+3. The size of the compatible set is the maximum |S|.
+
+4. r = m - size.
+
+5. The number of arrays is n^{m - size}.
+
+So, now, the code can be written.
+
+But wait, the problem is that for each test (x, k), the array a is being considered, and the compatible set is the set of (x, k) where a[x] = k.
+
+But in the code, the a array is not known yet. So, the code can't directly compute this.
+
+Wait, no. The a array is the array that the tests are checked against. So, the a array is determined by the compatible set.
+
+So, the a array is determined by including all (x, k) in the compatible set. So, for each (x, k) in the compatible set, a[x] must be k.
+
+So, the a array is fixed for the compatible set, and the rest of the array can be anything.
+
+So, the code can be structured as follows:
+
+For each test case:
+
+   Read n, m.
+
+   Read the m tests, store as a list of tuples.
+
+   For each test (x, k):
+
+      Simulate the binary search for k, get res.
+
+      If res == x, include this test in the compatible set.
+
+   The size of the compatible set is s.
+
+   So, r = m - s.
+
+   The number of arrays is n^{m - s}.
+
+So, the code can be written.
+
+But wait, the a array is constructed by setting a[x] = k for all (x, k) in the compatible set.
+
+So, the code can proceed as follows.
+
+Now, in terms of code:
+
+We can precompute for each test (x, k) whether it's compatible.
+
+Then, the compatible set is the list of such tests.
+
+The size of the compatible set is s.
+
+The minimal r is m - s.
+
+The number of arrays is n^{m - s}.
+
+So, the code can be written as:
+
+Read t.
+
+For each test case:
+
+   Read n and m.
+
+   Read m tests, stored in a list.
+
+   compatible = []
+
+   for x, k in the tests:
+
+      # simulate binary search for k.
+
+      l = 1
+
+      h = n
+
+      res = None
+
+      while l < h:
+
+          m = (l + h) // 2
+
+          if a[m] < k:
+
+              res = m
+
+              l = m + 1
+
+          else:
+
+              res = m
+
+              h = m
+
+      # Now, res is the x returned by binary search for k.
+
+      if res == x:
+
+          compatible.append( (x, k) )
+
+   s = len(compatible)
+
+   r = m - s
+
+   # compute the number of arrays as n^(m - s)
+
+   # but since n can be up to 3000 and m up to 3000, the exponent can be up to 3000.
+
+   # compute pow(n, r, mod) where mod is 998244353.
+
+   mod = 998244353
+
+   if r < 0:
+
+      # impossible, since s <= m.
+
+      pass
+
+   else:
+
+      ans = pow(n, r, mod)
+
+   print(r, ans)
+
+Wait, but wait. The a array is not determined by the compatible set. The compatible set is the set of (x, k) where a[x] = k. So, the a array is fixed for the compatible set. So, the code as written is correct.
+
+So, the code is as follows.
+
+Now, let's test this with the sample input.
+
+Sample Input 1:
+
+1
+
+3000 3000
+
+1 3
+
+2 2
+
+3 1
+
+Wait, no. Wait, the first test case in the sample input is:
+
+n=3000, m=3000.
+
+Then, 3000 tests, each with x_i and k_i, each from 1 to 3000.
+
+So, the code will process each test (x, k), simulate the binary search, and see if res == x.
+
+So, for each (x, k), simulate the binary search.
+
+Let me think about each test.
+
+Test 1: x=1, k=3.
+
+Simulate binary search for k=3.
+
+The array a is initially all zeros.
+
+The binary search steps:
+
+l=1, h=3000.
+
+m = (1+3000)//2 = 1500.
+
+a[m] is 0 < 3, so res=1500, l=1501.
+
+Next step: l=1501, h=3000.
+
+m= (1501 + 3000)//2 = 2250.5 → 2250.
+
+a[2250] is 0 <3 → res=2250, l=2251.
+
+Next step: l=2251, h=3000.
+
+m= (2251+3000)//2 = 2625.5 → 2625.
+
+a[2625] is 0 <3 → res=2625, l=2626.
+
+Continue until l >=h.
+
+Wait, but what's the binary search result for k=3.
+
+Each time, a[m] is 0 <3, so l increases.
+
+Eventually, l will be 3000, h=3000.
+
+So, res will be 3000.
+
+So, res != x (x=1). So, this test is not compatible.
+
+Test 2: x=2, k=2.
+
+Simulate binary search for k=2.
+
+Initially, l=1, h=3000.
+
+m=1500.
+
+a[1500] is 0 <2 → res=1500, l=1501.
+
+m=2250.5 → 2250.
+
+a[2

@@ -1,0 +1,384 @@
+0
+Okay, so I've got this problem to solve, and I'm a bit stuck, but I'll try to think it through. Let's read the problem carefully.
+
+So, Eralim is a mafia boss managing a group of n fighters. Each fighter has a rating a_i. He wants to arrange a tournament with n-1 battles. In each battle, two fighters i and j are chosen. When they battle, i is eliminated, and j's rating is reduced by i's rating. Our goal is to find the maximum possible rating that the last remaining fighter can have after all battles.
+
+Hmm. So the key here is to choose the order of battles in such a way that the remaining fighter's rating is as high as possible. But how?
+
+Wait, what's the process here? Each battle reduces the rating of one fighter, which is the one eliminated, by the rating of the other. So the last fighter is the one who remains, and all others have been eliminated. The way the battles are arranged determines how much each of the eliminated fighters' ratings are reduced.
+
+Let me think about the structure of the tournament. Each battle is a step where one fighter is eliminated. So, for n-1 battles, we eliminate n-1 fighters. The last one is the winner.
+
+The question is, which order of elimination will leave the last fighter with the maximum possible rating.
+
+Wait, but the order of elimination could affect the total reduction. So, the strategy is to choose the order in which the eliminated fighters are fought in such a way that the sum of their removals is minimized, but I'm not sure.
+
+Wait, no. Because each battle is a fight between two fighters, and the fight reduces the other's rating by the one's. So, the order in which we eliminate the fighters affects the cumulative reduction.
+
+But what's the optimal way to arrange the elimination order to maximize the last fighter's rating? Let's think about it.
+
+Suppose we have a set of fighters. To maximize the last fighter's rating, we want to minimize the total amount of their initial ratings that are subtracted. So, the problem reduces to selecting which fighters to eliminate, and the order in which they are eliminated, such that the sum of the a_i's that are subtracted from the last fighter is minimized.
+
+Wait, but how are the a_i's arranged? Because each time a fighter is eliminated, the next battle's loser is someone else, and their rating is reduced by the current winner's rating.
+
+Wait, perhaps the optimal strategy is to eliminate the weakest fighters first. Because removing a weaker fighter early on reduces the impact of the stronger ones being eliminated later.
+
+Wait, let's think about an example. Suppose we have three fighters with ratings 1, 2, 3. The last fighter is 3. To maximize 3's rating, we should eliminate 1 and 2 first. So, in the first battle, 1 fights 2, and 1 is eliminated. So 2's rating becomes 2 -1=1. Then, 3 fights 1, so 3's rating is 3-1=2. So the last fighter has 2.
+
+Alternatively, if we eliminate 2 and 3 first. So first, 2 fights 3. 2 is eliminated. So 3's rating becomes 3-2=1. Then 1 fights 2, 1 is eliminated. So 3's rating is 1. That's worse.
+
+So in this case, eliminating the weakest first gives a better result.
+
+Wait, but in this case, the order of elimination was 1, then 2, then 3. So the last one is 3, which is the initial maximum. But wait, no— in the first step, 1 is eliminated, so 2's rating becomes 1. Then, 3 is eliminated by 1, so 3's rating is 3-1=2. So the last is 2.
+
+Hmm. So the initial idea is that to maximize the last fighter's rating, we should eliminate the fighters with the smallest initial ratings first. Because when you eliminate a fighter, you subtract their current rating from the next ones. So, the order in which you eliminate the fighters in such a way that the sum of their initial ratings is subtracted as little as possible.
+
+Wait, perhaps the minimal sum of the initial ratings of all eliminated fighters is the key. Because the last fighter's rating is a_n minus the sum of all a_i's that are eliminated in the battles.
+
+Wait, no. Because each time a fighter is eliminated, their rating is reduced by the winner's. So the sum of the initial a_i's of the eliminated fighters is not the same as the total subtracted.
+
+Wait, let's think about the process. The last fighter's rating is a_n minus the sum of all the a_i's of the fighters that were eliminated. Because each elimination step reduces the last fighter's rating by the a_i of the eliminated fighter.
+
+Wait, no. Because each time a fighter is eliminated, their rating is reduced by the winner. So the sum of the a_i's of the eliminated fighters is the total subtracted from the last fighter.
+
+So, the last fighter's final rating is a_n - sum of a_i's of all eliminated fighters.
+
+Wait, that's a crucial insight. Because each eliminated fighter's a_i is subtracted once from a_n.
+
+So, to maximize the last fighter's rating, we need to minimize the sum of a_i's of all eliminated fighters.
+
+So, the problem reduces to selecting n-1 fighters to eliminate, and sum their a_i's. The minimal possible sum is the one we need to find.
+
+Because the last fighter's rating is a_n minus this sum.
+
+So, the problem is: choose n-1 fighters to eliminate, such that their sum is as small as possible. The remaining fighter is the one with the highest possible a_i, and the sum is as small as possible.
+
+Wait, that makes sense. Because the sum of the a_i's of the eliminated fighters is subtracted from the last fighter's initial rating.
+
+So, the strategy is to eliminate the n-1 fighters with the smallest a_i's, so that their sum is minimized. Because that way, a_n minus this sum is as large as possible.
+
+Wait, but that's not entirely correct. For example, consider a case where the a_i's are [1, 2, 3, 4]. The last fighter is 4. We need to eliminate 3 fighters.
+
+If we eliminate 1,2,3: sum is 6. So 4-6 = -2, which is worse than if we eliminate 2,3,4: sum is 9, 4-9 = -5.
+
+Wait, but that's not possible because in order to eliminate 3 fighters, you have to eliminate all except one. So in the first case, the last fighter is 4- (1+2+3) = -2. But is that allowed?
+
+Wait, but in the process, the initial fighters are all alive. So the first battle will eliminate one, then another, etc. So the elimination order is such that we have to eliminate n-1 fighters, each step eliminating one.
+
+Wait, but the point is, the sum of the a_i's of the n-1 fighters that are eliminated is the total that's subtracted from the last fighter. So to maximize the last fighter's rating, we need to minimize this sum.
+
+So, the approach is to choose the n-1 fighters with the smallest a_i's to eliminate. Because that way, their sum is as small as possible, which when subtracted from a_n gives the maximum possible.
+
+Wait, but what if a_i's are all the same? Like all a_i are 5, n is 3. Then, sum of two 5s is 10. So the last fighter is 5 -10 = -5.
+
+But wait, what's the correct way to model this? Because when you eliminate two fighters, each time the a_i of the eliminated one is subtracted from the current a_j.
+
+So, in the first battle, the two fighters are 1 and 2. Say they have a_i=5 each. Suppose 1 is eliminated, so 2's a_i becomes 0. Then, the last fighter is 3. 3's a_i is 5, and no subtraction occurs because 3 wasn't eliminated. So 3's rating is 5.
+
+Wait, but according to the previous approach, the sum of the two eliminated is 5+5=10. So 5 -10 = -5, which is worse than the actual result of 5.
+
+Hmm, that's a problem. So the previous approach is incorrect. So the initial idea that the sum is the sum of the a_i's of the eliminated fighters is not correct. Because when you eliminate a fighter, their a_i is subtracted from the next eliminated fighter, which in turn may have their a_i reduced.
+
+So, the sum is not just the sum of the a_i's of the eliminated, but a more complicated value.
+
+So, the initial approach was wrong. So, I need to re-examine.
+
+Alternative approach: Let's think about the order in which the fighters are eliminated.
+
+Each elimination step involves fighting one other fighter. The winner's a_i remains, and the loser's a_i is reduced by the winner's a_i. So, the order in which you eliminate the fighters affects the sum.
+
+Wait, but the process is that each time, you pick any two fighters, fight them, and the one eliminated is removed, the other's a_i is reduced by the winner's a_i.
+
+So, the order of elimination is critical.
+
+Let me think of the last fighter as being the one who is not eliminated. So, the sum is the total that the last fighter's a_i is reduced by during each battle that the last fighter participates in.
+
+Each time the last fighter is involved in a battle, their a_i is reduced by the a_i of the fighter they are fighting.
+
+So, the total sum to subtract from the last fighter is the sum of the a_i of the eliminated fighters that are defeated by the last fighter.
+
+Wait, but the last fighter is the one that stays, so the battles that include the last fighter can be any number of times.
+
+Wait, no. Because in each battle, the winner is someone else, and the loser is eliminated. So, the last fighter may be eliminated in any step, but once eliminated, they are not considered again.
+
+So, the battle sequence is such that the last fighter is eliminated only once, and in the step before that, another fighter is eliminated, and so on.
+
+Wait, perhaps the last fighter is the one not eliminated. So, the process is that in each step, the last fighter can be eliminated only when it's not yet eliminated.
+
+Wait, this is getting a bit confusing. Let me think with an example.
+
+Suppose n=4, a = [1,2,3,4]. The last fighter is 4.
+
+We need to eliminate 3 fighters.
+
+How to choose which ones to eliminate to minimize the sum subtracted from 4.
+
+Wait, but the sum subtracted from 4 is the sum of the a_i's of the eliminated fighters, but not exactly, because when a fighter is eliminated, their a_i is subtracted by the a_i of the current winner. So, the order of elimination affects which a_i's are subtracted.
+
+Wait, for example, suppose the last fighter is 4. So in the first step, we have to choose two fighters to eliminate. Suppose we eliminate 1 and 2 first. Then, the last fighter is 4. Then, in the next step, we have to eliminate 3 and 4. If we eliminate 3 first, then 4's a_i is reduced by 3's a_i (3). So 4's a_i becomes 4-3=1. Then, 1 is eliminated, so 3's a_i is reduced by 1, becoming 2. So the last fighter is 2. So the sum subtracted is 1+2+3=6. So 4-6=-2.
+
+But wait, is that the only way? Or is there a better way.
+
+Alternatively, what if in the first step, 1 is eliminated, so 2's a_i becomes 1. Then, in the next step, eliminate 2 and 3. Suppose 2 is eliminated, so 3's a_i becomes 3-1=2. Then, in the third step, eliminate 2 and 4. 4's a_i is 4-2=2. So the last is 2. So again, 4-6= -2.
+
+Hmm.
+
+Wait, what if we eliminate 2 and 3 first. Then 2 is eliminated: 3's a_i becomes 1. Then, 4 is eliminated, 1 is eliminated. So 4's a_i is 4-1=3. Then, 1 is eliminated: 3's a_i is 3-3=0. So the last is 0. So 4- (2+3+1) = 0.
+
+Wait, but in this case, the sum is 2+3+1=6, which is the same as before.
+
+Wait, maybe the sum is the same regardless of the order, but perhaps that's not the case.
+
+Wait, perhaps the sum is the sum of the a_i of the eliminated fighters, regardless of the order. So, why? Because each elimination step subtracts the a_i of the fighter being eliminated from the winner's a_i, but the order in which the fighters are eliminated affects which a_i's are being subtracted.
+
+Wait, let me think again. Each time a fighter is eliminated, their a_i is subtracted by the a_i of the winner. So the order in which the fighters are eliminated affects which a_i's are subtracted.
+
+Wait, for example:
+
+Case 1: eliminate 1, then 2, then 3.
+
+1 is eliminated: 2's a_i becomes 2-1=1.
+
+2 is eliminated: 3's a_i becomes 3-1=2.
+
+3 is eliminated: last is 4. So 3's a_i is 2. So sum is 1+2=3.
+
+Wait, but 3's a_i is 2, not 3. Because in the first step, 1 was eliminated, so 3's a_i was 3-1=2. Then, in the next step, 2 is eliminated, so 3's a_i is 2-1=1.
+
+Wait, but no. Because in the second step, 2 is eliminated, so 3's a_i is 3-1=2. Then, the third step, 3 is eliminated, so 1's a_i is 1-2= -1. So the last fighter is 4, which has a_i 4. So sum is 1+2+1=4, 4-4=0.
+
+Wait, no. Wait, the sum is 1 (from 1) +2 (from 2) +1 (from 3) =4.
+
+So 4-4=0.
+
+But earlier, when I eliminated 2 and 3 first, the sum was 2+3+1=6, so 4-6= -2.
+
+Wait, that's a problem. So, the sum is different depending on the order.
+
+So, the initial approach of summing the a_i's of the eliminated fighters is incorrect.
+
+Hmm, so how can I model this correctly?
+
+Let me think of the process as a series of steps where each step involves two fighters.
+
+Each step, the winner's a_i is added to the sum with the eliminated fighter's a_i. Because the winner's a_i is reduced by the eliminated fighter's a_i, and that's the amount subtracted from the winner's a_i.
+
+So, the total sum subtracted from the winner's a_i is the sum of all the eliminated fighters' a_i's that they fought.
+
+So, the sum subtracted from the winner's a_i is the sum of the a_i's of the fighters that the winner fought in each battle.
+
+So, the problem reduces to choosing a sequence of eliminations where each elimination step reduces the winner's a_i by the eliminated fighter's a_i, and the goal is to choose the sequence such that the sum of the a_i's of the eliminated fighters is as small as possible.
+
+But how do we model this?
+
+Wait, perhaps the minimal sum is achieved by eliminating the weakest fighters first. Because each time you eliminate a fighter, you subtract their a_i from the winner's a_i. So, eliminating the weakest first reduces the impact on the larger fighters.
+
+For example, if you have a large a_i and a small a_i, eliminating the small one first reduces the a_i of the large one by a small amount, which is better than eliminating the large one first, which would subtract a large amount from the small one.
+
+So, the optimal strategy is to eliminate the fighters in increasing order of a_i.
+
+Wait, but let me test this with the earlier example.
+
+Suppose a = [1,2,3,4]. So, the sum of the three smallest is 1+2+3=6. So, 4-6 =-2.
+
+But in the earlier scenario where we eliminated 2,3,4, the sum is 2+3+4=9. 4-9=-5.
+
+But the sum in the second scenario (eliminating 1,2,3) is 1+2+3=6. So 4-6=-2, which is better than 4-9=-5.
+
+So, that seems to align with the idea.
+
+Another test case: a = [5,5,5,5]. The sum of the three smallest is 5+5+5=15. So 5-15=-10.
+
+But what if we eliminate 5,5,5: same sum.
+
+Another example: n=4, a = [1,3,5,7]. The sum of the three smallest is 1+3+5=9. So 7-9=-2.
+
+But what if we eliminate 3,5,7: sum is 3+5+7=15. 7-15=-8. So worse.
+
+So, the sum of the three smallest is better.
+
+Another test: a = [2,1,3,4]. The three smallest are 1,2,3. Sum is 6. 4-6=-2. Alternatively, if we eliminate 2,3,4: sum is 2+3+4=9. 4-9=-5.
+
+So, the sum of the three smallest is better.
+
+So, the conclusion is that the minimal sum is achieved by eliminating the fighters in increasing order of a_i, and the sum is the sum of the first n-1 smallest a_i's.
+
+Wait, but wait. Let's think about another example. Suppose a = [1, 2, 100, 101]. The sum of the top three is 2+100+101=203. 101 -203= -102.
+
+But what if we eliminate 1,2,100: sum is 1+2+100=103. 101-103=-2. Which is better.
+
+So, in this case, eliminating the smallest first gives a better result.
+
+So, the strategy is to eliminate the n-1 smallest fighters.
+
+Wait, but wait. Let's think about what happens when we eliminate a fighter with a_i=100, then 101, then 2.
+
+So, first, 100 is eliminated. 101's a_i is reduced by 100: 101-100=1.
+
+Then, 101 is eliminated: 2's a_i is reduced by 101: 2-1=1.
+
+Then, 2 is eliminated: last is 1. So sum is 100 + 101 + 2 = 203. 101 - 203= -102.
+
+But the sum of the three smallest is 1+2+100=103, which is less than 203. So, the sum is smaller, which is better.
+
+So, the initial approach of selecting the n-1 smallest a_i's and summing them is correct.
+
+So, the problem reduces to selecting the n-1 smallest a_i's and summing them. The maximum possible last fighter's rating is a_n minus this sum.
+
+Wait, but what about when a_n is not the largest a_i? For example, in the earlier case, n=3, a=[3,2,1]. The three fighters are 3,2,1. We need to eliminate two fighters. So, sum is 1+2=3. 3-3=0. So the last fighter is 0.
+
+But what if we eliminate 2 and 3 first. Then, 3 is eliminated, 2 is eliminated. So, a_1's a_i is reduced by 3, becoming 0. Then, 0 is the last, so 1's a_i is 1. So the last is 1, which is worse than 0.
+
+So, the initial approach is correct.
+
+So, the steps are:
+
+1. For each test case, sort the a_i in non-decreasing order.
+
+2. Sum the first (n-1) elements. Let's call this sum S.
+
+3. The maximum possible last fighter's rating is a_n - S.
+
+Because the sum S is the sum of the n-1 smallest a_i's, which are the ones to be eliminated. So, the last fighter's a_i is a_n minus this sum.
+
+So, the code can be written as:
+
+For each test case:
+
+- Read n and a.
+
+- Sort a in non-decreasing order.
+
+- Compute the sum of the first (n-1) elements.
+
+- The result is a[-1] - sum.
+
+Wait, but wait: the a array is sorted in non-decreasing order. So, the first n-1 elements are the smallest, and a[-1] is the largest.
+
+So, the sum is sum of the first n-1 elements.
+
+So, the code is straightforward.
+
+Testing this with earlier examples:
+
+Test case 1:
+
+n=4, a = [1,2,3,4]. Sum of first 3 is 6. 4-6= -2.
+
+Which is correct, as per earlier example.
+
+Another test case:
+
+n=3, a = [3,2,1]. sum is 1+2=3. 3-3=0.
+
+Which is correct.
+
+Another test case:
+
+n=5, a = [10,20,30,40,50]. sum is 10+20+30+40=100. 50-100= -50.
+
+Yes.
+
+So, this approach seems correct.
+
+So, the code is to sort a, sum the first n-1 elements, subtract from last element.
+
+But, wait, what if n=2?
+
+n=2, the sum is 1 element. So, the last element is a[1] - a[0]. Which is correct because the first is eliminated, last remains.
+
+Yes.
+
+So, the code will handle that.
+
+So, the code is:
+
+Read t test cases.
+
+For each test case:
+
+Read n.
+
+Read a as list.
+
+Sort a.
+
+sum_first = sum(a[0 : n-1])
+
+result = a[-1] - sum_first.
+
+Print result.
+
+But wait, in the sample input, for example:
+
+Sample Input 1:
+
+1
+
+3
+
+1 2 3
+
+Sample Output: 0.
+
+Which is correct, because 3- (1+2) =0.
+
+Another test case:
+
+n=2, a=[5,10]. The sum is 5. 10-5=5.
+
+Which is correct, because the first is eliminated, last remains.
+
+Another test case:
+
+n=4, a = [5, 10, 15, 20]. sum is 5+10+15=30. 20-30= -10.
+
+Yes.
+
+So, the code seems correct.
+
+So, the code is as follows.
+</think>
+
+To solve this problem, we need to determine the maximum possible rating that the last remaining fighter can preserve in a tournament where each battle reduces the rating of the eliminated fighter by the rating of the remaining fighter.
+
+### Approach
+The key insight is to minimize the total reduction in the rating of the last remaining fighter. This can be achieved by eliminating the fighters with the smallest initial ratings first. The reasoning is that eliminating the weakest fighters early on reduces the impact on the stronger fighters, thus preserving the higher ratings for the last remaining fighter.
+
+The approach involves the following steps:
+1. For each test case, read the number of fighters and their respective ratings.
+2. Sort the ratings in non-decreasing order.
+3. Sum the ratings of the first `n-1` fighters (the weakest ones).
+4. Subtract this sum from the rating of the strongest fighter (last element in the sorted list).
+5. The result is the maximum possible rating of the last remaining fighter.
+
+### Solution Code
+```python
+import sys
+
+def main():
+    input = sys.stdin.read
+    data = input().split()
+    idx = 0
+    t = int(data[idx])
+    idx += 1
+    for _ in range(t):
+        n = int(data[idx])
+        idx += 1
+        a = list(map(int, data[idx:idx + n]))
+        idx += n
+        a.sort()
+        sum_first = sum(a[:n-1])
+        print(a[-1] - sum_first)
+
+if __name__ == "__main__":
+    main()
+```
+
+### Explanation
+- **Reading Input:** The input is read in one go for efficiency, especially given the constraints.
+- **Sorting:** The ratings are sorted to easily access the smallest and largest values.
+- **Summing Smallest Ratings:** The sum of the smallest `n-1` ratings is computed to determine the total reduction in the last remaining fighter's rating.
+- **Calculating Result:** The result is obtained by subtracting the sum of the smallest `n-1` ratings from the largest rating, which gives the maximum possible rating for the last fighter.
+
+This approach ensures that we efficiently determine the optimal order of eliminations to preserve the highest possible rating for the last fighter.<｜end▁of▁sentence｜>

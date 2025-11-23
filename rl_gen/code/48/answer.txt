@@ -1,0 +1,1062 @@
+0
+Okay, so I've got this problem to solve, and I'm a bit stuck, but I'll try to work through it step by step. Let's read the problem carefully.
+
+The problem is about Zhan blending fruits using a blender. He has n fruits. The blender can mix up to x fruits per second. But each second, he can add up to y fruits into the blender. After blending, the blended fruits are removed. We need to find the minimum time required to blend all fruits.
+
+Hmm, so the key points are:
+- Each second, he can add y fruits.
+- But the blender can only blend min(x, c) fruits, where c is the current number of fruits in the blender.
+- So, each second, the net change is adding y fruits, but then the blender blends some of them.
+
+Wait, so let's think about it in terms of steps. Each second, he adds y fruits. Then, the blender blends as much as possible, up to min(x, current count). So, the process is: add y, then blend, which reduces the count.
+
+Wait, no. Wait, the process is: each second, add up to y fruits into the blender. Then, the blender blends min(x, c) fruits, where c is the current number of fruits. So, after blending, the count is c - blended, which is min(x, c) subtracted.
+
+So, for example, if the current count is 5, and x is 3, then the blender will blend 3, bringing the count to 2.
+
+So, the process is: each second, add y, then blend as much as possible up to x.
+
+So, the problem is to find the minimum time to get from n fruits down to 0.
+
+Let me think about some examples.
+
+Example 1:
+n = 0. Then, no time is needed. So, output is 0.
+
+Example 2:
+n = 5, x=3, y=2.
+In each second, he adds 2 fruits. Let's see what happens.
+
+Wait, wait. Wait, per second, he can add up to y. So, in each second, he can add y fruits, but not more than that. So, in the first second, he adds 2 fruits. Now the count is 2. Then, the blender blends min(3, 2) = 2, so the count becomes 0. So, total time is 1 second.
+
+Wait, but n is 5, but in this case, he adds 2, then blends 2. So, total fruits used after that is 2, so the remaining is 3. Wait, no, wait. Wait, no, because after blending, the count is 0. So, all 5 are used in 1 second.
+
+Wait, that's not right. Wait, in the first second, he adds 2 fruits (total 2), then blends min(3, 2) = 2, so now the count is 0. So, all 2 fruits are used. So, to get 5, he needs to add 5 fruits, but each second he can add up to y=2. So, perhaps this approach isn't the best.
+
+Wait, maybe I'm misunderstanding the process. Let's re-examine the problem statement.
+
+Wait, in each second, Zhan can put up to y fruits into the blender. Then, after blending, the blended fruits are removed. So, the process is: add y fruits, then blend as much as possible, which is min(x, current count). So, the count after each second is (current count + y) minus min(x, current count + y).
+
+Wait, no. Because after adding y, the count becomes (current + y). Then, the blender blends min(x, current + y), so the new count is current + y - min(x, current + y).
+
+So, if current + y <= x, then the count after blending is 0. So, it's done in one second.
+
+If current + y > x, then after blending, the count is (current + y) - x. So, the process is: add y, then blend x, if possible.
+
+So, let's model this.
+
+Let me think about the general case.
+
+Suppose in each second, he adds y fruits. Then, the count becomes c = current + y.
+
+If c <= x: then the blender will blend c, so the new count is 0. So, time increases by 1.
+
+If c > x: then the blender blends x, so the new count is c - x.
+
+So, the process repeats.
+
+So, the question is, given n, x, y, find the minimal time to reach 0.
+
+So, let's think about the steps:
+
+- Each step consists of adding y, then blending x if possible.
+
+So, if in a step, current count is s.
+
+After adding y, it's s + y.
+
+If s + y <= x: then the count becomes 0. So, it's done in that step.
+
+Else: the count becomes s + y - x.
+
+So, the process is to find the minimal number of steps.
+
+Let's think about the cases:
+
+Case 1: y >= x.
+
+In this case, in each step, adding y is more than x. So, each step adds y, but then the count is reduced by x.
+
+Wait, no. Wait, each step starts by adding y, then the count is s + y.
+
+If s + y > x: then after blending, it's s + y - x.
+
+So, in each step, the count decreases by x - y (since s + y - x = s - (x - y)).
+
+Wait, no. Let me see: s is the count before the step.
+
+After adding y: s + y.
+
+If s + y > x: then after blending, it's s + y - x.
+
+So, the change is (s + y - x) = s + (y - x).
+
+But y - x is negative, so the change is s - (x - y).
+
+So, the count reduces by (x - y) each step.
+
+So, in this case, if y >= x, then each step reduces the count by (x - y) fruits.
+
+But wait, x - y is positive, so the count is decreasing.
+
+Wait, no. Because if y >= x, then s + y >= s + x. So, in each step, the count increases before blending.
+
+Wait, no. Wait, in each step, s is the current count.
+
+We add y, so it's s + y.
+
+If s + y > x: then the count becomes s + y - x.
+
+So, the change is (s + y - x) - s = y - x.
+
+Since y >= x, y -x is >=0. So, the count is increasing by (y -x).
+
+So, in this case, each step adds (y -x) to the count.
+
+So, for example, if current count is s, and y >=x, then:
+
+s is the current count.
+
+After adding y, it's s + y.
+
+If s + y >x: then count becomes s + y -x.
+
+So, the count increases by (y -x).
+
+So, in this case, the count is s + (y -x) after each step.
+
+Wait, no. Because after adding y, if s + y >x, then the count becomes s + y -x.
+
+So, the count increases by (y -x) only if s + y >x.
+
+Wait, let's think numerically.
+
+Suppose x=3, y=5.
+
+So, each step:
+
+s is the current count.
+
+Add 5, then if s+5 >3, which it is, so count becomes s+5-3 = s+2.
+
+So, each step increases the count by 2.
+
+So, in this case, the count grows by 2 each step.
+
+So, the initial count is n.
+
+Each step, count increases by 2.
+
+So, to reach 0, but wait, that's not possible because each step adds 2, and n is positive. So, perhaps this case is only when n is 0.
+
+Wait, no. Wait, the problem says n can be 0. So, if n is 0, time is 0.
+
+Otherwise, let's think about the case when y >=x.
+
+In this scenario, each step, the count increases by (y -x).
+
+So, the count after each step is s + (y -x).
+
+We need to reach 0.
+
+Wait, that's not possible because adding (y-x) each step increases the count. So, the count will only get larger, not smaller.
+
+So, that can't happen unless the initial count is 0.
+
+So, this suggests that in the case where y >=x, the only way to get all fruits is if n is 0.
+
+Wait, but that's not right. Because if n is positive, and y >=x, then in each step, the count increases, so eventually, the count will be larger than x, and the blending will reduce it by x, but the count will keep increasing.
+
+Wait, no, because after blending, the count is reduced by x, but the initial s was s + y.
+
+Wait, perhaps I'm misunderstanding the process.
+
+Let me take an example where x=3, y=5, n=5.
+
+Each step:
+
+s=5.
+
+Add 5: 10.
+
+Blend min(3, 10) =3. So, count becomes 7.
+
+So, after first step: count is 7.
+
+Second step:
+
+Add5: 12.
+
+Blend3: 9.
+
+So, after second step:9.
+
+Third step: add5 to 14, blend3:11.
+
+So, each step increases the count by 2.
+
+So, the count is 5 →7→9→11→... etc.
+
+So, the count increases each step, but n is 5. So, it's impossible to reach 0 in this case.
+
+So, that suggests that when y >=x, the only way to get all fruits is if n is 0.
+
+Wait, but that's not right. Because in that example, n is 5, but with y=5, x=3, the count increases each step, so n can't be reduced to 0.
+
+So, perhaps the case where y >=x is only possible if n is 0.
+
+So, that's a key insight.
+
+So, when y >=x, the process can only reduce the count if n is 0.
+
+So, the time is 0 if n is 0, else, if y <x, then we can proceed.
+
+So, the other case is when y <x.
+
+So, in this case, each step, adding y, then blending x.
+
+So, let's see:
+
+Each step:
+
+s is the current count.
+
+Add y → s + y.
+
+If s + y <=x: then the count becomes 0. So, done in 1 step.
+
+Else: the count becomes s + y -x.
+
+So, to minimize time, perhaps we can find when adding y brings the count down to 0 in a step.
+
+So, the process is:
+
+Each step, s increases by y, but if it's more than x, then it's reduced by (x - y).
+
+So, the net change per step is y - (x - y) if s + y >x.
+
+Wait, no. Let's model it.
+
+If s + y >x, then after blending, the count is s + y -x.
+
+So, the change is (s + y -x) - s = y -x.
+
+So, the count decreases by (x - y) each step.
+
+So, in this case, each step reduces the count by (x - y).
+
+So, the number of steps is roughly the initial count divided by (x - y), rounded up.
+
+Wait, but let's think about it.
+
+So, if s is the current count.
+
+In each step, if s + y >x → count becomes s + y -x.
+
+So, the change is s + y -x - s = y -x.
+
+So, the count decreases by (x - y) each step.
+
+So, the number of steps needed is the ceiling of s / (x - y).
+
+Wait, but let's test with an example.
+
+Example: x=5, y=2, n=7.
+
+Each step:
+
+s=7.
+
+Add 2 →9.
+
+Since 9>5, so count becomes 9-5=4.
+
+So, after first step, count is4.
+
+Next step: add2→6>5. count becomes1.
+
+Step3: add2→3 <=5. So, count becomes0.
+
+So, total steps:3.
+
+Wait, but according to the formula, (7)/(5-2) =3. So, 3 steps. Which matches.
+
+Another example: x=4, y=2, n=6.
+
+Step1: s=6.
+
+Add2→8>4. count becomes4.
+
+Step2: add2→6>4. count becomes2.
+
+Step3: add2→4>4? No, 4 is equal to x. So, count becomes0.
+
+So, 3 steps.
+
+Which is 6/(4-2) =3 steps.
+
+Yes, that works.
+
+So, the formula seems to be: when y <x, the time is (n + (x - y) -1) // (x - y) → because it's ceiling division.
+
+Wait, no, wait. Let me think about the formula.
+
+In each step, the count is reduced by (x - y).
+
+So, the number of steps is the ceiling of (n) / (x - y).
+
+Wait, no, because in the first example, n=7, (7)/(5-2)=3. So, 3 steps.
+
+But what if n is 5?
+
+x=5, y=2.
+
+n=5.
+
+Step1: add2 →7>5. count becomes2.
+
+Step2: add2 →4>5? No. So, count becomes4-5 is negative? Wait, wait.
+
+Wait, no, the condition is s + y >x.
+
+So, s is 5.
+
+s + y =7>5 → yes.
+
+So, count becomes7-5=2.
+
+So, step1: count is2.
+
+Step2: add2 →4>5? No. So, count remains4-5? No, wait, no.
+
+Wait, s is 2.
+
+Add2 →4.
+
+Which is equal to x=5? No. 4<5.
+
+So, count becomes4-5? No, because 4 is less than x.
+
+Wait, no, because x is 5, s is4.
+
+So, s + y=4+2=6>5.
+
+So, count becomes6-5=1.
+
+So, step2: count is1.
+
+Step3: add2 →3>5? No. So, count remains3-5? No, because 3<5.
+
+So, 3 is less than x, so count remains3.
+
+Wait, no, because the condition is s + y >x.
+
+s is1.
+
+s + y=3>5? No. So, count remains1.
+
+So, step3: count is1.
+
+Step4: add2 →3>5? No. So, count remains3.
+
+Step5: add2 →5>5? No. So, count remains5.
+
+Step6: add2 →7>5. count becomes2.
+
+So, this is going on and on. So, perhaps the initial approach is wrong.
+
+Wait, perhaps the model is that in each step, the count increases by (y - (x - y)) if s + y >x.
+
+Wait, I'm getting a bit stuck.
+
+Alternative approach: think about when y <x.
+
+In each step, the net change is:
+
+If s + y <=x: then count becomes0.
+
+Else: count becomes s + y -x.
+
+So, the count after each step is:
+
+if s + y >x: s becomes s + y -x.
+
+So, the change is (s + y -x) - s = y -x.
+
+So, the count decreases by (x - y) each step.
+
+So, the number of steps is the number of times we can subtract (x - y) from n until it's zero.
+
+Wait, but what if n is less than (x - y)?
+
+Like, n=2, x=5, y=3.
+
+So, x > y.
+
+Each step:
+
+s=2.
+
+Add3 →5.
+
+Since 5 <=5: count becomes0.
+
+So, one step.
+
+Yes.
+
+Another example: n=3, x=5, y=3.
+
+s=3.
+
+Add3→6>5: count becomes1.
+
+So, after one step, count is1.
+
+Next step: add3→4>5? No. So, count remains4.
+
+Wait, no.
+
+Wait, s is1.
+
+Add3→4>5? No. So, count remains4.
+
+Wait, no. 1+3=4>5? No.
+
+So, count remains4.
+
+So, step3: add3→7>5: count becomes2.
+
+So, steps:
+
+Step1:3→6→1.
+
+Step2:1→4.
+
+Step3:4→7→2.
+
+Step4:2→5→0.
+
+So, total steps:4.
+
+Hmm, so the formula (n + (x - y) -1) // (x - y) would be (3 +2 -1)/2=4/2=2 steps. But actual steps are 4.
+
+So, that formula is incorrect.
+
+Hmm, so my initial approach is wrong.
+
+So, I need to think differently.
+
+Let me try to model the process.
+
+Each step:
+
+1. Add y fruits.
+
+2. If the current count s + y <=x: then the count becomes 0.
+
+3. Else: count becomes s + y -x.
+
+So, the process continues until s becomes 0.
+
+So, the steps are:
+
+Compute how many steps it takes to bring s down to 0.
+
+Each step, s increases by y, but if s + y >x, then s is reduced by (x - y).
+
+So, the process will stop when s becomes 0.
+
+So, the minimal time is the minimal steps needed to reduce s from n to 0.
+
+So, let's model this.
+
+Let me see.
+
+The process is as follows.
+
+Initially, s = n.
+
+In each step:
+
+if s + y >x:
+
+   s = s + y -x.
+
+else:
+
+   s becomes 0.
+
+So, the steps are:
+
+1. s = n.
+
+2. while s >0:
+
+   a. if s + y >x → s = s + y -x.
+
+   b. else → s=0.
+
+So, the steps are until s becomes 0.
+
+So, to find the number of steps, we can model it as:
+
+We start with s =n.
+
+Each step, we check if s + y >x.
+
+If yes, subtract (x - y) from s.
+
+Else, set s=0.
+
+So, the number of steps is the number of times s is reduced by (x - y) until s becomes 0.
+
+Wait, but that's not exactly right.
+
+Because in each step, even if s + y >x, s is reduced by (x - y). So, each such step reduces s by (x - y).
+
+So, the number of steps is the number of times s can be reduced by (x - y) until it's 0.
+
+But wait, if s is 0, we stop.
+
+So, the initial s is n.
+
+Each step, if s + y >x, s is reduced by (x - y).
+
+So, the number of steps is the ceiling of (n) / (x - y).
+
+Wait, no, because each step reduces s by (x - y), but only if s + y >x.
+
+Wait, let's think of it in terms of the number of times we can perform this reduction.
+
+So, the initial s is n.
+
+Each time, if s + y >x, s is reduced by (x - y).
+
+So, the number of steps is the number of times we can subtract (x - y) from s until s becomes 0.
+
+But wait, no. Because each step, whether the condition is met or not.
+
+Wait, in each step, we check s + y >x.
+
+If yes, then s is reduced by (x - y).
+
+Else, s becomes 0.
+
+So, for example, if n is 5, x=3, y=2.
+
+x - y is 1.
+
+So, each step, if s + 2 >3 → s>1.
+
+So, if s is 2, then 2+2=4>3 → s becomes 2-1=1.
+
+If s is 1, then 1+2=3, which is not >3. So, s becomes 0.
+
+So, initial s=5.
+
+Step 1: s is5>1 → yes.
+
+s becomes5-1=4.
+
+Step2:4>1 → yes.
+
+s becomes3.
+
+Step3:3>1 → yes.
+
+s becomes2.
+
+Step4:2>1 → yes.
+
+s becomes1.
+
+Step5:1>1? No. So, s becomes0.
+
+So, total steps:5.
+
+So, the formula is (n + (x - y) -1) // (x - y).
+
+n=5, x-y=1.
+
+(5+1-1)/1 =5 steps.
+
+Which matches.
+
+Another example: n=7, x=5, y=2.
+
+x-y=3.
+
+n=7.
+
+Steps:
+
+s=7>3? yes.
+
+s=7-3=4.
+
+Step2:4>3 → yes.
+
+s=4-3=1.
+
+Step3:1>3? No. So, s=0.
+
+Total steps:3.
+
+Which is (7+3-1)/3=9/3=3.
+
+Yes.
+
+Another example: n=3, x=5, y=3.
+
+x-y=2.
+
+n=3.
+
+s=3>2 → yes.
+
+s=3-2=1.
+
+s=1>2? No. So, s=0.
+
+So, steps:1.
+
+Which is (3+2-1)/2=4/2=2. Wait, that's 2 steps, but actual steps are 1.
+
+Wait, this suggests the formula is incorrect.
+
+Wait, n=3, x=5, y=3.
+
+x-y=2.
+
+So, according to the formula, (3+2-1)/2=4/2=2 steps.
+
+But in reality, s=3:
+
+Step1: add3 →6>5 →s=6-5=1.
+
+Step2: add3 →4>5? No. So, s=4.
+
+Step3: add3 →7>5 →s=2.
+
+Step4: add3 →5 →s=0.
+
+So, that's 4 steps.
+
+Wait, that's different from the formula.
+
+Hmm, so perhaps the formula is not correct.
+
+So, perhaps the approach is to model the steps as follows:
+
+Each time, the s is reduced by (x - y) until s + y <=x.
+
+Wait, no.
+
+Wait, let's think differently.
+
+Each step, in the case where s + y >x, s is reduced by (x - y).
+
+So, the number of steps is the number of times s can be reduced by (x - y) before s + y <=x.
+
+Wait, no.
+
+Alternatively, perhaps the minimal time is the maximum between:
+
+- The time it takes to reduce s to 0 by adding y each step, without considering the x limit.
+
+Which is s / y (ceiling).
+
+And
+
+- The time it takes to reach a point where adding y would bring s + y <=x, so that each step after that reduces s by (x - y).
+
+So, the minimal time is the minimum between these two options.
+
+Wait, perhaps that's the way to go.
+
+So, let's break it down.
+
+Case 1: y >=x.
+
+In this case, as discussed earlier, each step can't reduce the count further. So, all steps must be done by adding y and then blending x.
+
+Wait, no. Because y >=x, so in each step, adding y will bring s to s + y.
+
+If s + y >x, then the count is s + y -x.
+
+Else, count is 0.
+
+So, for example, x=3, y=4.
+
+n=5.
+
+Step1: add4 →9>3 →count becomes6.
+
+Step2: add4 →10>3 →count becomes7.
+
+Wait, but that's not helpful.
+
+Wait, perhaps in this case, the only way to reduce the count is to have s + y >x, which allows the count to decrease.
+
+Wait, but with y >x, the count increases each step.
+
+So, the only way to get to 0 is if n=0.
+
+So, in this case, the minimal time is 0 if n=0, else it's impossible.
+
+So, for y >=x, if n>0, the time is impossible, so we have to output infinity. But since the problem allows for n=0, and others, perhaps the problem expects us to return 0 when n=0, and otherwise, when y >=x, it's impossible to reduce to 0, so the time is infinity.
+
+But that's not practical, so perhaps in this case, the minimal time is 0 if n=0, else, if y >=x, it's impossible.
+
+So, perhaps the code should handle this as follows:
+
+If y >=x:
+
+   if n ==0: time is 0.
+
+   else: time is infinity or impossible, but since the problem expects an integer, perhaps we should return 0 if n is 0, else, if y >=x, it's impossible to reduce to 0, so return -1 or something. But in the problem statement, the sample inputs have n=0, which is handled.
+
+But perhaps in the problem, when y >=x, the only way to get all fruits is if n is 0.
+
+So, in code, if y >=x:
+
+   if n ==0: time is 0.
+
+   else: return -1 or some indication, but the problem says to output the minimal time, so perhaps it's impossible.
+
+But according to the sample input, when n=0, it's 0.
+
+So, perhaps in the code, when y >=x and n>0, the time is impossible.
+
+So, in code:
+
+if y >=x:
+
+   if n ==0: return 0
+
+   else: return -1 (or some large number, but in the problem, it's not possible)
+
+But since the problem may not require handling this case, perhaps in the code, when y >=x, the time is infinity, but since the output is an integer, perhaps it's better to return 0 if n is 0, else, if y <x, proceed.
+
+So, moving on.
+
+Case 2: y <x.
+
+In this case, the process is:
+
+Each step, if s + y >x → s becomes s + y -x.
+
+Else → s becomes 0.
+
+So, the steps are as follows:
+
+We need to find the minimal number of steps to reduce s to 0.
+
+Each step, s is reduced by (x - y) if s + y >x.
+
+So, the number of steps is the number of times we can subtract (x - y) from s until s is 0.
+
+Wait, no. Because each step, the subtraction happens only if s + y >x.
+
+So, the number of steps is the number of times s can be reduced by (x - y) until s is 0.
+
+Wait, but that's not correct.
+
+Because, for example, s=5, x=5, y=2.
+
+x-y=3.
+
+s=5.
+
+Step1: s +2=7>5 →s=2.
+
+Step2: s=2.
+
+s +2=4 <=5 →s=0.
+
+So, total steps:2.
+
+Which is (5)/3 = 1.666 → ceiling is 2.
+
+So, formula (s + (x - y) -1) // (x - y) gives (5+3-1)/3=7/3=2.333 →2.
+
+Which is correct.
+
+Another example: s=7, x=5, y=2.
+
+x-y=3.
+
+7/3 is 2.333 → ceiling is3.
+
+Which is correct.
+
+So, the formula is correct.
+
+So, the number of steps is (s + (x - y) -1) // (x - y).
+
+Wait, no, because in the example above, s=5, x-y=3.
+
+(5 +3-1)/3=7/3=2.333 →2 steps.
+
+Which is correct.
+
+So, the formula is correct.
+
+So, in code, when y <x, the time is (s + (x - y) -1) // (x - y).
+
+So, putting it all together.
+
+The code should:
+
+For each test case:
+
+if n ==0: time is 0.
+
+else:
+
+   if y >=x:
+
+      if n ==0: time is 0.
+
+      else: impossible, return -1 or something.
+
+   else:
+
+      time = (n + (x - y) -1) // (x - y)
+
+So, but wait, let's test this with the earlier example where n=3, x=5, y=3.
+
+x-y=2.
+
+n=3.
+
+(3 +2 -1)/2 =4/2=2.
+
+Which is correct.
+
+Another example: n=7, x=5, y=2.
+
+(7+3-1)/3=9/3=3 steps.
+
+Which is correct.
+
+Another example: n=5, x=3, y=2.
+
+y <x.
+
+x-y=1.
+
+So, (5 +1-1)/1=5/1=5 steps.
+
+Which is correct.
+
+So, the code can be written as:
+
+for each test case:
+
+n = int(input())
+
+x = int(input())
+
+y = int(input())
+
+if n ==0:
+
+   print(0)
+
+else:
+
+   if y >=x:
+
+       # can't reduce n to 0.
+
+       print(-1)  # or handle accordingly.
+
+   else:
+
+       steps = (n + (x - y) -1) // (x - y)
+
+       print(steps)
+
+Wait, but in the case where y >=x, and n>0, the steps are impossible, so the code can return -1.
+
+But in the problem statement, the sample input has n=0, which outputs 0.
+
+So, that's correct.
+
+Wait, but in the problem statement, n can be 0. So, in code, if n is 0, output 0.
+
+Else, if y >=x, output -1.
+
+Else, compute steps as (n +x -y -1) // (x -y).
+
+So, that's the code.
+
+Wait, let's test another example.
+
+n=4, x=5, y=3.
+
+x-y=2.
+
+4/2=2.
+
+So, steps are 2.
+
+Let's see:
+
+s=4.
+
+Step1:4+3=7>5 →s=2.
+
+Step2:2+3=5 →s=0.
+
+So, 2 steps.
+
+Which is correct.
+
+Another example: n=2, x=5, y=3.
+
+x-y=2.
+
+(2 +2-1)/2=3/2=1.5 → ceil is 2.
+
+Wait, no. (2 +2-1)=3 →3//2=1. So, 1 step.
+
+Wait, let me compute:
+
+s=2.
+
+y=3 <x=5.
+
+So, x-y=2.
+
+2+3=5 ≤5 →s becomes 0.
+
+So, 1 step.
+
+So, (2 +2-1) //2 =3//2=1.
+
+Which is correct.
+
+So, the code is correct.
+
+So, putting it all together.
+
+The code will read t test cases.
+
+For each test case:
+
+read n.
+
+read x.
+
+read y.
+
+if n is 0: print 0.
+
+else:
+
+   if y >=x:
+
+       print -1.
+
+   else:
+
+       steps = (n + (x - y) -1) // (x - y)
+
+       print(steps)
+
+So, that's the code.
+
+Wait, but wait: in the case where y <x, and n is 0, we print 0.
+
+Which is handled.
+
+So, in code.
+
+Now, let's test with the examples.
+
+Sample Input 1:
+
+1
+
+0
+
+0 0 → n=0 → output 0.
+
+Sample Input 2:
+
+1
+
+5
+
+3 2 → y=2 <3.
+
+x-y=1.
+
+steps= (5 +1-1)/1=5 →5.
+
+Which matches the example.
+
+Another example: n=7, x=5, y=2.
+
+x-y=3.
+
+7+3-1=9 →9//3=3 steps.
+
+Which is correct.
+
+Another example: n=4, x=5, y=3.
+
+steps= (4+2-1)/2=5/2=2.5 →2 steps.
+
+Wait, no. (4 +2-1)=5 →5//2=2.
+
+Which is correct, as in 2 steps.
+
+So, the code seems to handle all cases correctly.
+
+So, the code is as follows.
+</think>
+
+To solve this problem, we need to determine the minimum time required for Zhan to blend all the fruits using a blender. The blender can blend up to `x` fruits per second, but can only blend the minimum of `x` or the number of fruits inside it per second. Zhan can add up to `y` fruits per second into the blender per second.
+
+### Approach
+1. **Problem Analysis**:
+   - Each second, Zhan can add up to `y` fruits into the blender.
+   - After each addition, the blender blends the minimum of `x` or the current number of fruits.
+   - The goal is to find the minimum time required to blend all `n` fruits.
+
+2. **Key Insights**:
+   - If `y` is greater than or equal to `x`, each addition of `y` fruits will not reduce the number of fruits in the blender, making it impossible to reduce the count further. Thus, if `y >= x` and `n > 0`, it is impossible to blend all fruits.
+   - If `y` is less than `x`, each addition of `y` fruits will cause the count to decrease after blending. The reduction in the count per step is `x - y`.
+
+3. **Algorithm**:
+   - For each test case, read the values of `n`, `x`, and `y`.
+   - If `n` is 0, the time is 0.
+   - If `y >= x`, it is impossible to blend all fruits, so the time is -1 (or some indication of impossibility).
+   - Otherwise, calculate the minimum time using the formula `(n + (x - y) - 1) // (x - y)` to determine the number of steps required.
+
+### Solution Code
+```python
+t = int(input())
+for _ in range(t):
+    n = int(input())
+    x = int(input())
+    y = int(input())
+    if n == 0:
+        print(0)
+    elif y >= x:
+        print(-1)
+    else:
+        steps = (n + (x - y) - 1) // (x - y)
+        print(steps)
+```
+
+### Explanation
+- **Reading Input**: The code reads multiple test cases.
+- **Handling Special Cases**: If `n` is 0, the time is 0. If `y` is greater than or equal to `x`, it is impossible to blend all fruits, so the result is -1.
+- **Calculating Steps**: For each valid case where `y < x`, the formula `(n + (x - y) - 1) // (x - y)` is used to determine the minimum time required to blend all fruits by considering the reduction in the count of fruits after each addition and blending step.
+
+This approach ensures that we efficiently determine the minimum time required for Zhan to blend all fruits using the given constraints.<｜end▁of▁sentence｜>

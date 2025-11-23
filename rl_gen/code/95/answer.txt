@@ -1,0 +1,866 @@
+0
+Okay, I have this problem where I need to find the maximum MEX of an array after performing some operations. The operations allow me to choose an index and add x to it any number of times. So, for each element a_i, I can make it a_i, a_i +x, a_i +2x, etc. The goal is to maximize the MEX after doing this optimally.
+
+Let me think about what MEX is. MEX is the smallest non-negative integer not present in the array. So, to maximize the MEX, I need as many consecutive numbers starting from 0 as possible.
+
+Hmm, so for each number starting from 0, I want to have it present in the array. But since I can add x to elements, I can only reach certain values. For example, if x is 2, then 0, 2, 4, etc., are possible. So, for 0, I can choose to add x to any element to make it 0. For 1, I can't reach it unless x is 1, but even then, I can have 1 by adding x once. Wait, no, because x could be larger than 1.
+
+Wait, maybe I should think in terms of the initial array and how adding x affects the possible values.
+
+Let me consider each possible value k. For k to be in the array after the operations, there must be at least one element a_i such that a_i + m*x = k, where m is a non-negative integer. So, the condition is that (k - a_i) must be divisible by x and also that k >= a_i (since m can't be negative). Wait, no, m can be any non-negative integer, so a_i + m*x can be >= a_i. So, for a given a_i, the possible k's are a_i, a_i +x, a_i +2x, etc.
+
+So, for each k, I can have it in the array if any a_i is <= k and (k - a_i) is a multiple of x.
+
+So, to find the MEX, I need to find the smallest k where no a_i can reach it, considering the possible steps.
+
+So, the approach is to find for each k, starting from 0, whether k is present in the array after the operations.
+
+The maximum possible MEX is the smallest k where none of the a_i can reach k, but for all smaller k, at least one a_i can reach them.
+
+So, how can I compute this efficiently?
+
+Let me think about it step by step.
+
+First, for the initial array, sort it. Then, for each possible k starting from 0, check if k is present in the array after the operations. The MEX is the smallest k where this is not possible.
+
+But how to compute this for all possible k efficiently.
+
+Wait, but k can be up to 1e9, so we can't check each k one by one. We need a smarter way.
+
+Let me think about the structure of the array after the operations.
+
+Each a_i can be written as a_i + m_i * x, where m_i is a non-negative integer.
+
+So, for a given k, for some a_i, k must be >= a_i, and (k - a_i) must be divisible by x.
+
+So, for each k, check if there's any a_i such that a_i <= k and (k - a_i) mod x == 0.
+
+Let me think about this:
+
+We can represent the array in terms of their residues modulo x. Because adding x doesn't change the residue. So, for each a_i, the residue is a_i mod x. Then, for any k, if (k mod x) is equal to a_i mod x, then there's a possibility that k can be achieved.
+
+Wait, but only if k is >= a_i. Because, for example, if a_i is 3 and x is 2, then k can be 3,5,7, etc. So, if k is 5, which is 1 mod 2, then a_i is 3 which is also 1 mod 2. So, yes, 3 can reach 5 by adding x once.
+
+So, the steps are:
+
+1. For each a_i, compute its residue r_i = a_i mod x.
+
+2. For each residue r, collect all a_i's that have this residue.
+
+3. Then, for each possible k, determine if k can be achieved by any a_i.
+
+But checking for each k is not feasible. So, perhaps, we can model the possible k's in a way that allows us to compute the MEX.
+
+Let me think about the numbers in the array after adding x. For each a_i, the possible values are a_i, a_i +x, a_i +2x, etc. So, the numbers in the array are all the residues r_i, plus all numbers that are r_i plus a multiple of x.
+
+So, for a given residue r, the possible numbers are r, r +x, r +2x, etc. But for a residue r, if any of the a_i's are less than r, then that a_i can reach r by adding x enough times. Wait, no. For example, if a_i is 5, x is 2, and r is 1 (since 5 mod 2 is 1). So, 5 can reach 1, 3, 5, etc. So, for a residue r, the numbers in the array for that residue are r, r +x, r +2x, etc., but each a_i can reach any number in their residue's sequence.
+
+So, for each residue r, the numbers that can be formed are r, r +x, r +2x, etc.
+
+So, the MEX is the smallest k such that for all k' < k, there's at least one a_i that can reach k', and k cannot be reached.
+
+So, to find the MEX, we need to find the smallest k where for all residues r, the maximum of (r + m_i * x) is less than k, but for k, at least one residue r has no a_i in that residue's sequence below k.
+
+Wait, perhaps it's better to model this as follows:
+
+For each residue r, the numbers that can be achieved are { r + m*x | m >=0 }, which is r, r+x, r+2x, etc.
+
+So, for the MEX, we need to find the smallest k where for each r in 0 to k-1, there's at least one a_i that can reach r, and k cannot be reached by any a_i.
+
+So, the MEX is the smallest k where for all r < k, r is present in the array after operations, and k is not present.
+
+So, the problem reduces to finding the smallest k where:
+
+- For all residues r in 0,1,...,k-1, there exists at least one a_i with a_i ≡ r mod x and a_i ≤ k.
+
+- For residue r =k, there are no a_i's that can reach r (i.e., for all a_i, a_i >k or a_i +m*x =k for some m>=0).
+
+Wait, no. Because for residue r =k, to have k in the array, there must be an a_i such that a_i <=k and a_i ≡k mod x. But since a_i is a positive integer, and k is a non-negative integer, this is only possible if a_i =k (since a_i can't be negative, and for a_i <k, a_i mod x is less than k, which would not equal k mod x, which is k if k <x).
+
+Wait, let me think. For a_i to be congruent to k mod x, a_i must be >=k, and (a_i -k) must be divisible by x.
+
+So, for k to be in the array, there must be an a_i >=k and a_i ≡k mod x.
+
+So, for example, if x is 2 and k is 1, then a_i must be 1 or 3 or 5, etc.
+
+So, to find the MEX, we need to find the smallest k such that:
+
+- For all r <k, there exists an a_i with a_i ≡r mod x and a_i <=k.
+
+- There's no a_i such that a_i ≡k mod x and a_i <=k.
+
+Wait, but how can we have no a_i reach k? Because for the MEX to be k, k must not be present in the array. So, for k to not be present, it's because either:
+
+1. All a_i are >k, and thus adding x any number of times won't reach k.
+
+OR
+
+2. For the residue r =k mod x, there's no a_i that can reach it (i.e., for all a_i, a_i >k or a_i +m*x =k is impossible).
+
+Wait, but if r is k mod x, then for k to be in the array, there must be an a_i that is congruent to r mod x and <=k.
+
+So, for k to be the MEX, it must not be present in the array, which can happen in two ways:
+
+Either:
+
+a) For all residues r <k, there's at least one a_i that can reach r. And,
+
+b) For residue r =k mod x, there's no a_i that can reach it, i.e., either a_i >k for all a_i, or a_i +m*x =k is impossible.
+
+So, the MEX is the smallest k where:
+
+- For all r <k, r is present in the array (i.e., there's an a_i ≡ r mod x and a_i <=r).
+
+- For r =k, there's no a_i that can reach it.
+
+So, how do I find this k?
+
+Hmm, perhaps I can model the problem by considering for each residue r, the minimal a_i that can be used to reach r.
+
+Wait, for a residue r, the minimal a_i that can be used to reach r is the smallest a_i such that a_i ≡ r mod x and a_i <=k.
+
+Wait, maybe I should think about the sorted array and for each a_i, determine the possible residues it can contribute to.
+
+Wait, here's an idea:
+
+1. Sort the array a in non-decreasing order.
+
+2. For each possible residue r (from 0 to x-1), collect all a_i's that have that residue. Let's say for residue r, the a_i's are a1, a2, ..., am.
+
+3. For each residue r, the minimal a_i is the first one in the sorted list. So, if I have a residue r, and the minimal a_i is a1, then for k to be >=a1, r can be part of the MEX's sequence.
+
+Wait, perhaps not. Let's think differently.
+
+The MEX is the smallest k where:
+
+- For all r <k, there's an a_i that can reach r (i.e., a_i ≡r mod x and a_i <=k).
+
+- For r=k, there's no a_i that can reach it.
+
+So, the MEX can be found by determining the smallest k where:
+
+- For each r <k, the minimal a_i in residue r is <=k.
+
+- The minimal a_i in residue r =k is >k.
+
+Wait, no, because for residue r =k, the a_i can be k, k +x, etc. So, if the minimal a_i in residue r is >=k, then no a_i can reach r.
+
+So, for residue r, the minimal a_i is the minimum a_i in that residue. So, if the minimal a_i is greater than k, then r can't be achieved by any a_i, including a_i <=k.
+
+So, the steps I can take are:
+
+- Sort the array a.
+
+- For each residue r (0 <= r <x), compute the minimal a_i in that residue.
+
+- For each r, the minimal a_i is the first element in the residue's sorted list.
+
+So, for each residue r, the minimal a_i is m[r], which is the smallest a_i with a_i ≡ r mod x.
+
+Then, for each residue r, if m[r] >k, then k cannot be achieved by any a_i in residue r.
+
+So, the MEX is the smallest k such that for all r <k, m[r] <=k, and for r=k, m[r] >k.
+
+So, how can we find this k?
+
+We can find k by considering the minimal possible values and see where the condition is satisfied.
+
+Let me think about the possible k's.
+
+The MEX can be as small as 0, but only if there are no a_i's that can reach 0. Otherwise, it's 1, and so on.
+
+So, the approach is:
+
+1. For each test case, sort the array a.
+
+2. For each residue r (0 to x-1), find the minimal a_i in that residue. Let's call this m[r]. If residue r is not present in the array, m[r] is infinity or some large value.
+
+3. Now, we need to find the smallest k such that:
+
+   a. For all r <k, m[r] <=k.
+
+   b. For r=k, m[r] >k.
+
+4. Additionally, for r=k, if m[r] is infinity (i.e., no a_i has residue k), then k is the MEX.
+
+So, let's model this.
+
+Let me think about the possible k's.
+
+The MEX is the smallest k where:
+
+- All residues 0,1,...,k-1 have m[r] <=k.
+
+- For residue k, m[k] >k.
+
+So, to find the MEX, I can:
+
+- For each residue r, compute m[r].
+
+- Then, find the smallest k where:
+
+   All r <k have m[r] <=k.
+
+   And for r=k, m[r] >k.
+
+So, how can I find this k?
+
+One approach is to:
+
+- Find the maximum possible k where all residues 0 to k-1 have m[r] <=k.
+
+- Then, check if for k, m[k] >k. If yes, then k is the MEX.
+
+- If not, then k+1 is the MEX, provided that for k+1, all residues 0 to k+1-1 (i.e., 0 to k) have m[r] <=k+1.
+
+Wait, but that's not necessarily the case.
+
+Wait, perhaps I can compute the minimal k that satisfies both conditions.
+
+Let me think about the steps:
+
+1. Sort the array a.
+
+2. For each residue r, compute m[r] as the minimal a_i in that residue.
+
+3. Let's find the maximum possible k such that for all r <k, m[r] <=k.
+
+   This can be done by finding the largest k where for all r <k, m[r] <=k.
+
+   This k is the minimal possible MEX. Alternatively, perhaps not, because for some r, even if m[r] <=k, but for r=k, m[r] >k, then the MEX would be k.
+
+So, perhaps:
+
+- Compute the maximum possible k1 where all residues r <k1 have m[r] <=k1.
+
+- Then, check if for k1, m[k1] >k1. If yes, then the MEX is k1.
+
+- Else, check if k1 +1 can be a MEX, i.e., whether for all r <k1+1, m[r] <=k1+1, and m[k1+1] >k1+1.
+
+- If yes, then the MEX is k1+1.
+
+- Else, perhaps it's even higher.
+
+Wait, but this approach might not capture all possibilities. For example, k1 could be zero, but m[0] is infinity, so the MEX would be 0 only if all residues are empty. Hmm, no, not exactly.
+
+Wait, let's think of it more carefully.
+
+The MEX is the smallest k where:
+
+- For all r <k, r is present in the array (i.e., m[r] <=k).
+
+- For r=k, r is not present in the array (i.e., m[k] >k).
+
+So, the MEX is the smallest k that satisfies both conditions.
+
+So, to find this k, perhaps we can find the minimal k where the second condition holds, and for all r <k, the first condition holds.
+
+So, how can we compute this?
+
+Let me think of the process:
+
+1. For each residue r, compute m[r] as the minimal a_i in that residue.
+
+2. Find all the possible k's where for all r <k, m[r] <=k.
+
+3. Among these k's, find the smallest k where m[k] >k.
+
+So, the MEX is the smallest such k.
+
+So, how can I find this k?
+
+Let me think of the residues in order. For each residue, I can find the minimal a_i in that residue.
+
+So, for example, if residue 0 has m[0] =5, residue 1 has m[1] =3, residue 2 has m[2]=0, etc.
+
+Then, the MEX is the smallest k where:
+
+- All residues 0,1,...,k-1 have m[r] <=k.
+
+- For residue k, m[k] >k.
+
+So, the steps are:
+
+- For all residues from 0 to x-1, compute m[r].
+
+- Find the minimal k where for all r <k, m[r] <=k, and for r=k, m[r] >k.
+
+- If no such k exists (i.e., for some r, m[r] is infinity), then the MEX is the minimal residue's m[r], but only if m[r] is not infinity.
+
+Wait, no. If for a residue r, m[r] is infinity, that means there are no a_i's with residue r, so MEX would be r, right? Because, for r, there are no a_i's that can reach r, since they are all larger.
+
+Wait, no. For example, if all a_i have residue 1, then for r=0, m[0] is infinity. So, the MEX is 0 only if there are no a_i's that can reach 0. Because, for r=0, any a_i >=0 can be modified to reach 0 by adding x enough times. But since all a_i are 1,3,5,..., adding x would make them 1,3+x,5+x, etc. So, 0 can't be achieved. So, the MEX is 0.
+
+Wait, but 0 is the smallest non-negative integer, so if all a_i's are >=1, then 0 is not present. So, the MEX is 0.
+
+So, in this case, the MEX is 0.
+
+So, the MEX is the smallest k such that for all r <k, m[r] <=k, and for r=k, m[r] >k.
+
+So, for residues, if any residue r has m[r] = infinity, then the MEX is the minimal residue r where m[r] is infinity.
+
+For example, if all a_i have residue 1, then the MEX is 0.
+
+So, in code:
+
+Compute for each residue r, m[r] = min a_i with a_i ≡r mod x.
+
+Then, for each r, if m[r] is infinity, then the MEX is the minimal such r.
+
+Else, find the minimal k where for all r <k, m[r] <=k, and m[k] >k.
+
+So, the plan is:
+
+For each test case:
+
+1. Read n, x, and the array a.
+
+2. Sort the array a.
+
+3. For each residue r in 0 to x-1:
+
+   a. Find the minimal a_i in a that has a_i mod x == r. Let's call this m[r].
+
+   b. If no such a_i exists, m[r] = infinity.
+
+4. Now, find the smallest k such that:
+
+   a. All residues 0,1,...,k-1 have m[r] <=k.
+
+   b. For residue k, m[k] >k.
+
+   c. Additionally, if any residue has m[r] = infinity, the MEX is the minimal such r.
+
+So, to compute this k, we can:
+
+- For each residue r, compute m[r].
+
+- Collect all residues where m[r] is not infinity. Let's call them valid residues.
+
+- If the valid residues are empty, then the MEX is the minimal r where m[r] is infinity.
+
+- Else, find the minimal k such that:
+
+   a. For all r <k, m[r] <=k.
+
+   b. m[k] >k.
+
+So, how to find this k?
+
+We can iterate through the valid residues, and for each, check if it satisfies the conditions.
+
+But perhaps a better approach is:
+
+- Find the maximum k where for all r <k, m[r] <=k.
+
+   Then, check if m[k] >k.
+
+   If yes, then k is the MEX.
+
+- If not, then perhaps k+1 is the MEX, but only if for all r <k+1, m[r] <=k+1 and m[k+1] >k+1.
+
+Wait, but this could be computationally expensive for large x.
+
+So, perhaps we can find the minimal k by considering the maximum of the minimal a_i's.
+
+Another idea: For each residue r, the minimal a_i is m[r]. So, for the MEX to be k, all residues 0 to k-1 must have m[r] <=k.
+
+The minimal k is the maximum of m[r] for r <k, but I'm not sure.
+
+Wait, perhaps it's better to iterate through the residues in order and find the minimal k that satisfies the condition.
+
+Let me think of an example.
+
+Suppose x=2, and a = [1,3,5,7].
+
+So, residues are:
+
+r=0: no a_i's, because 1,3,5,7 are 1 mod 2.
+
+r=1: a_i's are 1,3,5,7. The minimal m[1] is 1.
+
+So, for k=1:
+
+Check if all r <1 (i.e., r=0) have m[r] <=1. But m[0] is infinity, so 1 cannot be the MEX.
+
+So, proceed to k=2.
+
+For r <2 (r=0,1):
+
+m[0] is infinity, so condition fails.
+
+So, k=2 is not a solution.
+
+k=3:
+
+Check r <3, which are 0,1,2.
+
+m[0] is infinity, so condition fails.
+
+k=4:
+
+Same issue.
+
+So, the MEX is the minimal residue r where m[r] is infinity. So, in this case, the MEX is 0.
+
+Another example:
+
+a = [0, 2,4], x=2.
+
+m[0]=0, m[1]=2, m[2]=4.
+
+So, for k=0: check if all r <0 (none) have m[r] <=0. Well, since none, it's okay. Then, check if m[0] >0? No, m[0] is 0. So, condition fails.
+
+k=1: check if all r <1 (r=0) have m[r] <=1. m[0] is 0 <=1, which is true. Then, check if m[1] >1. m[1] is 2>1, so yes. So, k=1 is the MEX.
+
+So, the MEX is 1.
+
+So, the algorithm could be:
+
+1. For each test case, compute m[r] for each residue r.
+
+2. Find the minimal k such that:
+
+   a. For all r <k, m[r] <=k.
+
+   b. m[k] >k.
+
+3. If no such k exists (i.e., all m[r] are infinity), then the MEX is the minimal r where m[r] is infinity.
+
+So, how to find k.
+
+We can collect all the valid residues (r where m[r] is not infinity) and then find the minimal k that satisfies the conditions.
+
+But perhaps, an efficient way is to find the maximum of the minimal a_i's for each residue, and then find the minimal k that is larger than that.
+
+Wait, let's think about the maximum of m[r] for r from 0 to x-1.
+
+Let me denote this maximum as max_m.
+
+Then, for k to satisfy the condition, k must be at least max_m.
+
+Because, for all residues r <k, m[r] <=k. Since the maximum m[r] is max_m, if k is >= max_m, then all m[r] <= max_m <=k.
+
+So, the minimal k must be at least max_m.
+
+So, let's compute max_m as the maximum of m[r] for all r.
+
+Then, check if for k = max_m, m[k] >k.
+
+If yes, then k is the MEX.
+
+If no, then we have to look for a higher k.
+
+Wait, but what if there are residues larger than k that have m[r] >k.
+
+So, perhaps after k =max_m, we need to find the minimal k where m[k] >k.
+
+So, let's compute:
+
+max_m = maximum of m[r] for all r in 0..x-1.
+
+If max_m is such that m[max_m] > max_m, then k = max_m is the MEX.
+
+Else, we have to look for a higher k.
+
+But how?
+
+Let me consider another example.
+
+Case: x=3, a = [0, 1, 4, 5].
+
+Compute m[r]:
+
+r=0: m[0] =0.
+
+r=1: m[1] =1.
+
+r=2: m[2] =4.
+
+So, max_m is 4.
+
+Check m[4] >4? m[4] is infinity (since no a_i's are 4 mod 3, which is 1. So, m[4] is infinity.
+
+So, condition fails.
+
+So, we have to look for a higher k.
+
+What is the minimal k where m[k] >k.
+
+So, k must be >=4.
+
+m[4] is infinity, so for any k >=4, m[k] is infinity.
+
+So, condition is satisfied.
+
+So, the MEX is 4.
+
+Wait, but let's see:
+
+The MEX is the smallest k where all residues 0,1,2 have m[r] <=k, and m[k] >k.
+
+In this case, for k=4, m[4] is infinity>4.
+
+So, MEX is 4.
+
+Yes.
+
+Another example:
+
+x=3, a = [0, 3, 6, 9].
+
+m[r] for r=0:0, r=1:3, r=2:6.
+
+max_m is 6.
+
+Check m[6] is infinity, so condition fails.
+
+We need to look for higher k.
+
+What's the next possible k?
+
+k=7.
+
+Check if m[7] is infinity.
+
+Yes, since no a_i's are 7 mod 3.
+
+So, condition is satisfied.
+
+So, MEX is 7.
+
+Wait, but let's see:
+
+The array after operations can be 0,3,6,9.
+
+So, the MEX is 1, because 0 is present, 1 is not present.
+
+Wait, wait, that's not correct.
+
+Wait, in this case, the array after operations can be 0,3,6,9.
+
+So, 0 is present, 1 is not, so MEX is 1.
+
+But according to our earlier approach, the MEX would be 7, which is incorrect.
+
+Hmm, so I must have made a mistake in the approach.
+
+So, what's the problem here.
+
+In this case, the residues are:
+
+r=0: a_i=0,3,6,9. So, m[0] =0.
+
+r=1: a_i=3,6,9. m[1] =3.
+
+r=2: a_i=6,9. m[2]=6.
+
+So, for each residue:
+
+r=0: m[r] =0.
+
+r=1: m[r]=3.
+
+r=2: m[r]=6.
+
+max_m is 6.
+
+So, for k=6, m[6] is infinity.
+
+So, condition fails.
+
+So, we have to look for a higher k.
+
+So, k=7.
+
+m[7] is infinity.
+
+So, condition is satisfied.
+
+So, the MEX is 7.
+
+But in reality, the MEX is 1.
+
+So, this suggests that the approach is incorrect.
+
+So, the approach is not sufficient.
+
+Hmm, so I need to rethink.
+
+What's wrong with the approach.
+
+In this example, the MEX is 1 because 0 is present, 1 is missing.
+
+But according to the approach, the MEX is 7, which is incorrect.
+
+So, the approach is incorrect.
+
+So, the problem is that the approach considers the residues 0,1,2, and the MEX is determined based on those.
+
+But in reality, the MEX can be determined by the presence of 0, 1, etc.
+
+So, perhaps the approach is wrong.
+
+So, what's the correct way to compute the MEX.
+
+Alternative approach:
+
+The MEX is the smallest k such that:
+
+- For all r <k, there exists an a_i with a_i ≡r mod x and a_i <=k.
+
+- There is no a_i with a_i ≡k mod x and a_i <=k.
+
+Additionally, for r=k, m[r] >k.
+
+Wait, but in the earlier example, for k=6, m[6] is infinity, which is correct. So, the MEX should be 6.
+
+Wait, perhaps I made a mistake in the earlier analysis.
+
+So, let's re-examine the example.
+
+In the example where a is [0,3,6,9], x=3.
+
+The a array is [0,3,6,9].
+
+So, for k=0: is there any a_i <=0? Yes, 0. So, for r=0, m[0]=0.
+
+So, for k=0, check:
+
+- For r <0, none, so condition holds.
+
+- For r=0, m[0] =0>0? No, 0 is not greater than 0.
+
+So, condition fails.
+
+So, k=0 is not the MEX.
+
+For k=1:
+
+Check for all r <1 (r=0), m[0] =0 <=1.
+
+Then, for r=1, m[1] is 3, which is >1.
+
+So, condition holds.
+
+So, MEX is 1.
+
+So, the approach needs to find the minimal k where:
+
+- For all r <k, m[r] <=k.
+
+- For r=k, m[r] >k.
+
+So, that's the correct condition.
+
+So, in the earlier example, the MEX is 1.
+
+So, how to compute this.
+
+So, the correct approach is:
+
+For each possible k, starting from 0, check if all residues 0 to k-1 have m[r] <=k.
+
+And for residue k, m[k] >k.
+
+If such a k is found, return it.
+
+Else, return the minimal residue r where m[r] is infinity.
+
+So, the steps are:
+
+For each test case:
+
+1. Sort the array a.
+
+2. For each residue r in 0..x-1, compute m[r] as the minimal a_i in a where a_i ≡r mod x.
+
+3. Now, we need to find the minimal k where:
+
+   a. For all r <k, m[r] <=k.
+
+   b. m[k] >k.
+
+4. If no such k exists (i.e., all m[r] are infinity), then the MEX is the minimal r where m[r] is infinity.
+
+5. Else, find the minimal k that satisfies a and b.
+
+So, how to find this k.
+
+We can iterate k from 0 upwards.
+
+But for large x and large a, this could be time-consuming.
+
+So, perhaps, we can find the minimal k as follows:
+
+Compute all m[r], collect the maximum of m[r] for r <k, and check if the maximum is <=k.
+
+But this may not be efficient.
+
+Alternatively, find the minimal k such that k is >= the maximum of m[r] for r <k.
+
+Wait, not sure.
+
+Another approach is to find the minimal k where k >= m[r] for all r <k.
+
+So, for each k, if m[r] <=k for all r <k, then this k is a candidate.
+
+So, the minimal such k is the MEX.
+
+So, how to find this k.
+
+We can iterate k from 0 upwards, and for each k, check if for all r <k, m[r] <=k.
+
+Once such a k is found, the minimal k is the answer.
+
+But for large x, this could be O(x) per test case.
+
+Which is acceptable since x can be up to 1e9, but in practice, perhaps for each test case, x is up to 1e5, but even 1e5 per test case is manageable.
+
+Wait, no, in the problem statement, t can be up to 5e3, and n up to 2e5, so for each test case, x can be up to 1e9, but for each test case, the sorted array a is processed to compute m[r] for x residues.
+
+So, perhaps, the approach is manageable.
+
+So, let's outline the steps.
+
+Implement the following:
+
+For each test case:
+
+   Read n, x, a.
+
+   Sort a.
+
+   Compute m[r] for each r in 0..x-1.
+
+   If any m[r] is infinity, then the MEX is the minimal r where m[r] is infinity.
+
+   Else:
+
+      Iterate k from 0 to some upper limit (like the maximum m[r] +1, or until k reaches x*2, as beyond that, m[r] may not change).
+
+      For each k, check if for all r <k, m[r] <=k.
+
+      Once such a k is found, return it.
+
+      If no such k is found, return the minimal r with m[r] is infinity.
+
+So, how to implement this.
+
+In code:
+
+For each test case:
+
+n, x = map(int, input().split())
+
+a = list(map(int, input().split()))
+
+a.sort()
+
+m = [infinity] * x  # Initialize with a large number.
+
+for num in a:
+
+    r = num % x
+
+    if m[r] > num:
+
+        m[r] = num
+
+# Now, find the minimal k that satisfies:
+
+# All r <k have m[r] <=k.
+
+# m[k] >k.
+
+# Or, if no such k exists, return the minimal r with m[r] is infinity.
+
+min_k = None
+
+max_m = 0
+
+for r in range(x):
+
+    if m[r] < min_k:
+
+        min_k = m[r]
+
+# Now, the minimal k is the minimal k where k >= min_k and m[k] >k.
+
+# Wait, perhaps not. Because min_k is the minimal m[r] across residues.
+
+Wait, perhaps another approach: for each r, the minimal k must be at least m[r], so the minimal possible k is the maximum of m[r], but not necessarily. Because, for a given k, all m[r] must be <=k.
+
+So, the minimal possible k is the maximum of m[r] across all r.
+
+So, let's compute max_m = max(m[r] for r in 0..x-1).
+
+Then, for k = max_m, check if m[k] >k.
+
+If yes, then k is the MEX.
+
+Else, we have to look for a higher k.
+
+Wait, but in the earlier example where a is [0,3,6,9], x=3.
+
+m[r] is [0,3,6].
+
+max_m is 6.
+
+Check m[6] is infinity, so condition fails.
+
+So, we have to look for a higher k.
+
+So, we loop from k = max_m+1 up to, say, max_m + x.
+
+For each k in this range, check if for all r <k, m[r] <=k.
+
+The first k that satisfies this is the MEX.
+
+So, code:
+
+max_m = max(m)
+
+for k in range(max_m +1, max_m + x +1):
+
+    valid = True
+
+    for r in range(k):
+
+        if m[r] >k:
+
+            valid = False
+
+            break
+
+    if valid:
+
+        return k
+
+So, in this example, for k=7, check for r=0: m[0]=0 <=7.
+
+r=1: m[1]=3 <=7.
+
+r=2: m[2]=6 <=7.
+
+r=3: m[3] is infinity, so condition fails.
+
+Wait, but in the code, for k=7, the loop runs r from 0 to 6.
+
+So, for r=0: m[0] is 0 <=7.
+
+r=1: m[1] is 3 <=7.
+
+r=2: m[2] is 6 <=7.
+
+r=3: m[3] is infinity, which is >7.
+
+But wait, in the code, for k=7, the loop runs for r in 0 to 6.
+
+At r=3, m[r] is infinity, which is >7.
+
+So, valid becomes False.
+
+So, the code proceeds to k=8.
+
+For k=8

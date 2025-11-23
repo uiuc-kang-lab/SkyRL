@@ -1,0 +1,378 @@
+0
+Okay, let's try to figure out how to solve this problem. So, the problem is about a matrix representing mountains and lakes. Sakurako can use her magic to increase the heights on the main diagonal of a selected square submatrix by one. The goal is to make sure that there are no lakes, which are the areas where a[i][j] < 0.
+
+Hmm, so we need to find the minimum number of magic uses required to ensure all elements are >= 0.
+
+Let me think about the operations. Each time she selects a square submatrix, say from (i,j) to (p,q) where p-i = q-j. Then, for each k from 0 to (p-i), she increases a[i+k][j+k] by 1. So, each magic operation affects the main diagonal of some square, and each such operation can contribute to making some elements positive.
+
+The challenge is to find the minimal set of such operations that covers all the negative elements in the matrix.
+
+Wait, but how do these operations affect the elements? Each magic operation affects a diagonal. So, for example, if a square is from (x,y) to (x + m, y + m), then each operation adds 1 to a diagonal that starts at (x, y) and spans m elements.
+
+I think we need to model this in a way that allows us to determine which diagonals need to be incremented how many times.
+
+Let's consider the diagonals as lines where i-j is constant. Because each diagonal can be represented by i-j = d. So, the main diagonal of any square is a diagonal where all the elements on it have the same d = i-j.
+
+Wait, right. For a square starting at (i,j) and ending at (p,q), where p-i = q-j, each element on the main diagonal is (i + k, j + k) for k from 0 to p-i. So, the main diagonal is the line i-j = (i +k) - (j +k) = i -j. So, each operation affects exactly one diagonal, which is characterized by d = i-j.
+
+So, the problem reduces to: for each diagonal d, determine how many times we need to apply an operation to it so that all elements on that diagonal are >= 0.
+
+But wait, the diagonals can be of varying lengths. For example, a diagonal d can have a length of up to n, depending on the square size.
+
+So, for each element a[i][j], which is on diagonal d = i-j, we need to ensure that after all operations, a[i][j] + (number of times this diagonal was operated on) >= 0.
+
+Wait, no. Because each operation on a diagonal d affects all elements on that diagonal. So, for each element a[i][j], the total number of times it's been increased is equal to the number of operations that include (i,j) in their main diagonal.
+
+But each operation is a square, so for a diagonal d, the number of operations that include the cell (i,j) is equal to the number of squares that include (i,j) and have their main diagonal as d.
+
+Hmm, this seems a bit complicated. Maybe it's better to model the problem in terms of the diagonals and determine how many operations are needed for each diagonal to cover all the negative elements on it.
+
+Wait, for each diagonal d, let's count the number of cells that are negative. Let's say that for diagonal d, there are m negative cells. Each operation that affects this diagonal can add 1 to each of its cells. So, if we have m negative cells, we need to perform at least m operations on this diagonal, but each operation can cover more than one cell on the diagonal.
+
+Wait, no. Because each operation can only cover one diagonal, and each diagonal is processed independently. Wait, no, because each operation is a square, which can affect multiple diagonals. For example, a square starting at (i,j) and ending at (i+2, j+2) will affect the diagonals d = i-j, (i+1-j), and (i+2-j). So, each operation affects all the diagonals that are in the same square's diagonal line.
+
+Therefore, the problem is to cover all the negative cells with as few operations as possible, where each operation can cover multiple cells on various diagonals.
+
+Hmm, this is tricky. So, for each diagonal d, the number of operations that can cover it is the number of squares that include this diagonal. Wait, no, each operation is a square, so it's a rectangle that starts at (i,j) and ends at (p,q) with p-i = q-j. So, for each such square, the main diagonal is d = i-j, and the number of operations that include that diagonal is 1. So, each square operation can cover multiple diagonals, each of which may have their own negative cells.
+
+So, for example, if a diagonal d has m negative cells, and each operation that includes d can contribute 1 to each of its cells, then the minimal number of operations needed for diagonal d is the maximum number of times any cell in d needs to be covered. Because each operation can cover multiple cells in d.
+
+Wait, but the cells are arranged along the diagonal. So, for diagonal d, the cells are (i,j), (i+1,j+1), ..., (i+k, j+k) for some k. So, each operation that includes this diagonal can add 1 to each cell in this diagonal.
+
+So, the problem is, for each diagonal d, we have a sequence of cells along it, and we need to determine the minimal number of operations (each of which is a square that includes this diagonal) such that all cells in d are covered a certain number of times, and for each cell, the total number of operations covering it is >= the number of times it needs to be increased.
+
+Wait, but each operation on a square can cover multiple diagonals. So, the total number of operations is the sum of operations on each square, but each such square contributes to all the diagonals that are its main diagonal.
+
+So, the problem is to find a set of squares such that every cell with a[i][j] < 0 is covered by at least one square's main diagonal. And the sum of the number of times each square is used is minimized.
+
+But this seems quite complex. How can we model this?
+
+Alternative approach: Since each operation is a square, the main diagonal of the square is a certain line. So, for each diagonal d, the minimal number of operations needed to cover all the cells with a[i][j] < 0 on d is the minimal number of squares whose diagonals include all these cells.
+
+Wait, but how do we model the cells on each diagonal? Each diagonal d can have m cells, and each operation on a square that includes d can cover some of these cells.
+
+So, for each diagonal d, the cells on d are (d, 0), (d+1,1), ..., (d + (n-1), n-1). Wait, no, because for a diagonal d, the cells are (i, j) where i-j = d. So, for a given d, the cells are (d, 0), (d+1, 1), (d+2, 2), etc., up to (d + (n-1), n-1), assuming that the matrix is n x n.
+
+Wait, no. Because for a matrix of size n x n, the maximum i is n-1, j is n-1. So, for a diagonal d, the cells are (d, 0), (d+1, 1), (d+2, 2), ..., (d + (n-1 - k), k) where k can be up to min(n-1, d + (n-1 -k)).
+
+Wait, perhaps for a diagonal d, the number of cells is the minimum of (d + (n-1 -0)), 0) and something. Hmm, perhaps it's better to think of each diagonal as a line, and for each diagonal, we have a list of cells that are on it.
+
+But how does this help in solving the problem? Because each operation can affect multiple diagonals, and we need to cover all the negative cells in all the diagonals.
+
+Wait, perhaps we can model this as for each diagonal d, we need to cover all the cells with a[i][j] < 0 on d. And each operation on a square that includes d can contribute to covering some of these cells.
+
+So, for each diagonal d, the minimal number of operations needed is the minimal number of times we need to select squares that include d's diagonal, such that every cell on d has been covered at least as many times as needed.
+
+But since each operation on a square that includes d's diagonal can cover any number of cells on d, the minimal number of operations for d is the minimal number of squares that cover all the cells on d, with each cell being covered at least the required times.
+
+Wait, but each cell on d must be covered by at least k times, where k is the number of times it needs to be increased. So, for diagonal d, the problem is to cover all the cells on d with operations, each of which can add 1 to a subset of cells on d.
+
+The minimal number of such operations is equal to the maximum number of cells on d that are in the same column or row, but I'm not sure.
+
+Wait, no. Because each operation can cover any subset of the cells on d, as long as they are on the same main diagonal of the square. So, for example, if a diagonal d has three cells, each cell is on a different square's main diagonal.
+
+So, for diagonal d, the minimal number of operations needed is the minimal number of squares such that every cell on d is in at least one square's main diagonal (which is the diagonal d).
+
+Wait, but each square's main diagonal is a line d. So, for diagonal d, the cells on it are (d, 0), (d+1,1), ..., (d + (n-1), n-1). So, each operation can choose any square that includes this diagonal. So, for d, the cells on it can be covered by any square that starts at column j and row i where i - j = d, and the square's size is at least (d+ (n-1) - j) in both directions.
+
+Hmm, perhaps this is getting too complicated. Let's think of an alternative approach.
+
+Let me consider that each magic operation is equivalent to selecting a square and adding 1 to each cell on its main diagonal. So, for each square, the main diagonal is some d, and the number of operations on that square is one.
+
+So, for each diagonal d, the number of times it's been covered is equal to the number of squares selected whose main diagonal is d. Because each square's main diagonal is a different d.
+
+So, the problem is, for each diagonal d, how many squares have main diagonal d. Each of these squares contributes 1 to the coverage of all cells on d.
+
+But wait, no. Each square that has main diagonal d will contribute 1 to each cell on d. So, for diagonal d, the total coverage is equal to the number of squares whose main diagonal is d.
+
+So, the coverage for diagonal d is equal to the number of squares with main diagonal d, which is the number of squares that include that diagonal.
+
+So, for each diagonal d, we have a certain number of squares that have main diagonal d. Each of these squares contributes 1 to each cell on d. So, for each cell (i,j) on d, the number of times it's covered is equal to the number of squares with main diagonal d that include (i,j).
+
+But each cell (i,j) on d is part of the diagonal, which is d = i-j. So, for each cell (i,j) on d, the number of squares that include d and include (i,j) is equal to the number of squares whose main diagonal is d and whose row and column are within the square's boundaries.
+
+Wait, but for a given d, the possible squares that can have main diagonal d are those that start at row i and column j, where i-j = d, and the square is large enough.
+
+So, for each d, the number of squares with main diagonal d is equal to the number of possible squares that can have d as their main diagonal. So, for each d, the number of squares is the number of possible (i,j) such that i-j = d, and the square can be placed starting at (i,j) and of size at least (n - (i + j)), but I'm not sure.
+
+Alternatively, for each diagonal d, the number of squares that have main diagonal d is equal to the number of possible starting positions (i,j) where i-j = d, and the square can fit into the matrix.
+
+So, for example, for d = 0, the starting position can be any (i,j) where i - j = 0, and the square can have size up to n - 2i, etc. But perhaps for the purpose of this problem, we can model the number of squares for each d as the number of possible starting points that can have d as their main diagonal.
+
+Wait, but for each d, the number of squares with main diagonal d is equal to the number of possible (i,j) such that i - j = d, and the square can fit in the matrix. So, for each d, the number of such squares is (n - |d| + 1) if d is within the possible range, otherwise zero.
+
+Wait, perhaps not exactly. Let's think: For diagonal d, the starting column j can be from 0 to (n-1 - d), because i = j + d. So, i must be <= n-1, so j can be up to n-1 - d.
+
+So, the number of possible starting positions for diagonal d is (n - |d|) if d is >=0, else (n + d) if d is <= - (n-1). Wait, perhaps I'm getting this wrong.
+
+Alternatively, for each d, the number of starting positions is (n - |d|), because j can vary from 0 to (n-1) - d.
+
+So, for d = 0, j can be from 0 to n-1, which is n positions.
+
+For d = 1, j can be from 0 to n-2, which is n-1 positions.
+
+For d = 2, j can be from 0 to n-3, which is n-2 positions.
+
+And so on.
+
+So, for each diagonal d, the number of squares that can have main diagonal d is (n - |d|). Because for each d, there are (n - |d|) possible starting j (columns) that allow the square to fit.
+
+Wait, but that's the number of squares that can have main diagonal d. So, for each d, the number of squares is (n - |d|), but only if d is within [ - (n-1), n-1 ].
+
+So, for each diagonal d, the number of squares that can cover it is (n - |d|).
+
+But, each of these squares contributes 1 to the coverage of each cell on d.
+
+So, for each cell (i,j) on d, the number of squares that include it is equal to the number of squares with main diagonal d that include (i,j).
+
+But how can we calculate this?
+
+Hmm, perhaps for each cell (i,j) on d, the number of squares that include it and have main diagonal d is equal to the number of squares that start at (i', j') where i' <= i <= i' + k and j' <= j <= j' + k, for some k.
+
+But perhaps this is getting too detailed.
+
+Let me think differently. For each diagonal d, the cells on it are (d, 0), (d+1, 1), (d+2, 2), ..., (d + (n-1), n-1). So, for each cell (i,j) on d, j = i - d.
+
+So, for a cell (i,j) on d, the squares that include it and have main diagonal d are those squares where the starting row is i' <= i <= i' + k, and starting column is j' <= j <= j' +k, and i' - j' = d, and k >= (i - i') and (j - j').
+
+Wait, but for a square with main diagonal d, the starting row and column must satisfy i' - j' = d.
+
+So, for a cell (i,j) on d, the possible squares that can cover it are those that start at (i', j') where i' - j' = d, and the square's size is sufficient to include i and j.
+
+So, for a given cell (i,j), the squares that can cover it are those with i' <= i <= i' +k and j' <= j <= j' +k, where i' - j' = d, and k >= (i - i') and (j - j').
+
+Wait, but k can be as large as possible, as long as the square starts at (i', j') and ends at (i' +k, j' +k).
+
+So, for a cell (i,j) on d, how many squares can cover it? Each square is determined by its starting (i', j') where i' - j' = d, and the square can't go beyond the matrix.
+
+So, for (i,j) to be covered by a square, it must be that i' <= i <= i' +k, and j' <= j <= j' +k, where k is the size of the square.
+
+But since the square's main diagonal is d, i' - j' = d. So, for each possible i', j' such that i' - j' = d and j' >= 0, i' <= n-1, and the square can be placed starting at (i', j').
+
+The maximum k for a square starting at (i', j') is (n-1 - i').
+
+So, for (i,j) on d, the squares that can cover it are determined by all possible i' and j' such that i' - j' = d, j' >= 0, i' <= n-1, and j' +k >= j, where k = i' + (n-1 -i') -1? Wait, maybe not.
+
+Alternatively, for a square starting at (i', j'), it covers all cells from (i', j') to (i' +k, j' +k), for k >=0.
+
+So, for cell (i,j) to be in this square, it must satisfy i' <= i <= i' +k and j' <= j <= j' +k.
+
+Which implies that k must be >= (i - i') and (j - j').
+
+But the maximum k is such that i' +k <= n-1 and j' +k <= n-1.
+
+So, k can be as large as possible, but for a given (i', j'), the k can be up to min(n-1 - i', n-1 - j')).
+
+But for a given (i,j), how many such (i', j') exist where i' - j' = d, j' >=0, i' <=n-1, and j' + k >=j, k = i' + (n-1 -i') -1 ?
+
+Hmm, perhaps this is getting too complicated. Let's think of the problem differently.
+
+Each magic operation on a square with main diagonal d increases all cells on d by 1. So, for each diagonal d, the number of times it's covered is equal to the number of squares with main diagonal d that include any cell on d.
+
+But each cell on d is covered by all squares that include it and have main diagonal d.
+
+So, for each diagonal d, the number of squares that can have main diagonal d is (n - |d|) as discussed earlier. But each of these squares covers all cells on d.
+
+Wait, no. Each square that has main diagonal d can cover multiple cells on d. For example, a square starting at (0,0) with size 2 will cover (0,0) and (1,1) on d=0. So, each square for diagonal d covers (n - |d|) cells on d.
+
+So, for each diagonal d, the total number of cells is m_d = n.
+
+Each magic square that has main diagonal d can cover m_d cells on d, but each such square can cover multiple cells. So, the minimal number of squares needed to cover all m_d cells on d is ceil(m_d / s), where s is the maximum number of cells that can be covered per square. But what's s?
+
+Wait, no, because each square can cover as many cells as it has on the diagonal. For example, a square with main diagonal d can cover all m_d cells on d if it's the entire square. So, for a diagonal d, the minimal number of squares needed to cover all m_d cells is 1, as a single square can cover all cells on d.
+
+But wait, that's only true if the square can be placed in such a way to cover all cells on d. For example, if d = 0, the square can be from (0,0) to (n-1, n-1), which covers all cells on d=0.
+
+So, in that case, for diagonal d=0, one square is sufficient.
+
+But for other diagonals, like d=1, the minimal number of squares is not necessarily 1. Because a single square can't cover all cells on d=1.
+
+Wait, for example, for d=1, the cells are (1,0), (2,1), ..., (n-1, n-2). So, if we have a square starting at (1,0) with size 1, it covers (1,0). Another square starting at (2,1) covers (2,1), but the cell (3,2) is not covered. So, to cover all cells on d=1, we need at least two squares: one that covers (1,0) and another that covers (2,1), but then (3,2) is not covered. So, perhaps three squares are needed.
+
+Wait, but that's not the case. Because a square starting at (0,1) with size 2 would cover (0,1), (1,2), which are d= -1 and d=1, respectively. So, for d=1, the cells (2,1), (3,2), etc., would need additional squares.
+
+Hmm, this seems complicated. Maybe the minimal number of squares needed for diagonal d is equal to the maximum number of cells on d that are in the same row or column.
+
+Wait, perhaps not. Another approach: For each diagonal d, the number of squares that can cover it is (n - |d|), but each square can cover multiple cells on d. So, the minimal number of squares needed for d is the minimal number of squares such that all cells on d are included in at least one square.
+
+Each square can cover some subset of the cells on d. So, the problem is to find the minimum number of squares that can cover all cells on d, where each square is a line in the diagonal.
+
+So, for example, for d=0, all cells on d are covered by a single square. So, 1 square.
+
+For d=1, each cell is on a different square. So, you need (n-1) squares. But wait, that's not correct because a single square can cover multiple cells on d=1.
+
+Wait, no. For d=1, the cells are (1,0), (2,1), (3,2), ..., (n-1, n-2). So, a square starting at (1,0) with size 1 covers (1,0). A square starting at (2,1) with size 1 covers (2,1). And so on. So, for d=1, you need (n-1) squares.
+
+Wait, but that's not the case. Because if you have a square starting at (0,1) with size 2, it covers (0,1) and (1,2), which are on d= -1 and d=1, respectively. So, for d=1, the cell (2,1) is covered by a square starting at (2,1) with size 1.
+
+So, for d=1, the minimal number of squares is (n-1) because each cell is on a different square.
+
+Wait, but that's only possible if the squares can be placed in such a way that each cell is covered by exactly one square. So, each square is placed to cover exactly one cell on d=1.
+
+But that's not possible because a square has to cover a range of cells. For example, a square starting at (0,1) with size 2 covers (0,1) and (1,2) for d= -1 and d=1, respectively. So, to cover (2,1), another square starting at (2,1) with size 1 is needed.
+
+So, in this case, for d=1, the minimal number of squares is (n-1) because each cell is on a different square.
+
+So, for each diagonal d, the minimal number of squares needed is (n - |d|).
+
+Wait, but for d=0, n - |d| is n, but we can cover all cells on d=0 with a single square. So, that's a contradiction. So, my earlier assumption is incorrect.
+
+So, perhaps the number of squares needed for diagonal d is (n - |d|) only when d=0. For other d's, it's (n - |d|) as well, but each square can cover multiple cells on d.
+
+Wait, no. Because for d=0, the number of squares is (n), but each square can cover all cells on d=0, so only 1 square is needed.
+
+So, the previous approach is incorrect. So, perhaps the number of squares needed for diagonal d is (n - |d|) only if d=0, else, perhaps it's (n - |d|) as well.
+
+Wait, but for d=0, it's 1 square, but for d=1, it's n-1 squares. So, perhaps the minimal number of squares needed is (n - |d|) for each diagonal d.
+
+So, for each diagonal d, the minimal number of squares is (n - |d|).
+
+Wait, let's test that.
+
+For d=0: n - |d| = n, but we can cover all cells with a single square. So, this is wrong.
+
+For d=1: n-1 squares, which is correct.
+
+For d=2: n-2 squares, which is correct.
+
+So, the minimal number of squares for each diagonal d is (n - |d|). So, for d=0, it's (n) squares, but in reality, it can be covered with one square. So, that's a problem.
+
+Hmm, so this approach is incorrect. So, what's the correct way to model this?
+
+Alternative approach: For each diagonal d, the number of squares that can cover it is (n - |d|). But each square contributes to covering some subset of the cells on d.
+
+The minimal number of squares needed for d is the minimal number of squares such that all cells on d are covered by at least one square.
+
+Each square can be placed in any position as long as it's on d, and the square's diagonal is d.
+
+So, for d=0, the squares are all squares that start at (i, j) where i-j=0, and the square can fit into the matrix.
+
+So, for d=0, the number of squares is (n) because squares can be of size 1, 2, ..., n.
+
+Wait, no. For d=0, the squares can vary in size from 1x1 up to (n)x(n), but each square's diagonal is 0. So, for each possible square that starts at (i, j) where i=j, the square can be of size k x k, where k is from 1 to (n-2i +1). So, for d=0, the number of possible squares is n, because for i from 0 to n-1, j = i.
+
+So, for d=0, the number of squares is n, but each of these squares can cover all cells on d=0.
+
+So, to cover all cells on d=0, you can use a single square of size n x n.
+
+Thus, for d=0, the number of squares needed is 1, not n.
+
+So, this suggests that the initial assumption that the number of squares is (n - |d|) is incorrect. So, perhaps we need a different approach.
+
+Let me think differently. For each diagonal d, the cells on it are (d, 0), (d+1, 1), ..., (d + (n-1), n-1).
+
+Each magic square that has main diagonal d can cover some subset of these cells. So, for each diagonal d, we need to find the minimal number of squares that can cover all the cells on d.
+
+But the problem is to find the minimal number of squares that can cover all the cells on d, given that each square can be placed anywhere as long as it's on d.
+
+Wait, but each square is a square, so it's not just about the diagonal, but the entire square. So, for example, a square that starts at (i, j) with size k will cover cells (i, j), (i+1, j+1), ..., (i+k-1, j+k-1). So, each square's main diagonal is d = i - j.
+
+So, for diagonal d, each square contributes 1 to the coverage of all cells on d that are in that square.
+
+So, for diagonal d, the number of squares needed is the minimal number of squares (each with main diagonal d) such that every cell on d is included in at least one square.
+
+So, for each diagonal d, the problem reduces to finding the minimal number of squares with main diagonal d such that every cell on d is included in at least one of these squares.
+
+So, the minimal number of squares for d is the minimal number of squares with main diagonal d such that every cell (d + k, k) for k = 0 to n-1 is covered.
+
+So, for each d, we need to find the minimal number of squares on d that cover all these cells.
+
+So, how can we model this?
+
+Each square on d can cover a range of cells on d, but each square can be positioned anywhere on d.
+
+So, for example, for d=0, the cells are (0,0), (1,1), (2,2), ..., (n-1, n-1).
+
+A square on d=0 can be as small as 1x1, covering (0,0), or as large as n x n, covering all cells.
+
+So, to cover all cells on d=0, we can use a single square of size n x n.
+
+Thus, the minimal number of squares for d=0 is 1.
+
+For d=1, the cells are (1,0), (2,1), ..., (n-1, n-2).
+
+Each square on d=1 can cover some subset of these cells. For example, a square starting at (1,0) with size 1 covers (1,0). Another square starting at (2,1) with size 1 covers (2,1), etc. So, to cover all cells, you need (n-1) squares.
+
+Similarly, for d=2, the cells are (2,0), (3,1), ..., (n-2, n-4). So, each square can cover some of these, but you need (n-2) squares.
+
+So, for each d, the minimal number of squares needed is (n - |d|) if d is not zero, and 1 if d is zero.
+
+Wait, no. For d=1, (n - |d|) is (n-1). So, that's correct.
+
+So, the minimal number of squares for each diagonal d is (n - |d|) if d is not zero, and 1 if d is zero.
+
+So, for each diagonal d, the number of squares needed is (n - |d|) if d is not zero, else 1.
+
+So, the total number of magic squares needed is the sum of (n - |d|) for all d in the range of possible diagonals.
+
+But wait, that's not correct. Because for each diagonal d, the number of squares is (n - |d|), but each square can cover multiple cells on d. So, the sum of (n - |d|) for all d is the total number of squares needed.
+
+But wait, each square can contribute to multiple diagonals. For example, a square of size 2 with main diagonal d can contribute to two different diagonals, d and d+1, if d+1 is within the matrix.
+
+So, this approach counts the squares for each diagonal, but a single square can contribute to multiple diagonals. So, the sum of (n - |d|) for all d is not the correct way to calculate the total number of squares.
+
+Hmm, this is getting complicated. Let's think again.
+
+Each magic square can be used to increase the main diagonal of a square. So, for each square, it's associated with exactly one diagonal d, which is the main diagonal of the square.
+
+So, the total number of squares used is equal to the number of magic squares used, which is also equal to the number of diagonals d that have been operated on.
+
+So, for each diagonal d, the number of squares used is the number of times a square with main diagonal d is used.
+
+So, each magic square used corresponds to a diagonal d. So, the total number of magic squares is equal to the sum over all d of the number of squares used for d.
+
+So, the problem is to find, for each diagonal d, the number of squares used for d, such that every cell on d is covered by at least one square.
+
+Each square used for d covers all cells on d that are included in it.
+
+So, for diagonal d, the number of squares used is the minimal number of squares such that every cell on d is covered by at least one square.
+
+So, for each diagonal d, the minimal number of squares is (n - |d|), but only if d is not zero. For d=0, it's 1.
+
+Wait, no. For d=0, the minimal number is 1, as a single square can cover all cells on d=0. For d=1, the minimal number is (n-1), as each square can cover one cell on d=1. But in reality, each square can cover multiple cells on d=1. So, for d=1, the minimal number is 1, because a single square of size n can cover all cells on d=1.
+
+Wait, that's a contradiction. So, the earlier approach is incorrect.
+
+So, perhaps the minimal number of squares for each diagonal d is the maximum number of cells on d that are in the same row or column.
+
+Wait, for example, for d=1, the cells are (1,0), (2,1), (3,2), etc.
+
+Each of these cells is in a different row and column. So, each cell is part of a different row and column. So, the minimal number of squares needed is (n-1), because each square can cover one cell.
+
+But wait, in this case, each square can cover multiple cells on d=1, but the problem is that each square can only cover a single row or a single column.
+
+No, that's not the case. Because a square can cover multiple rows and columns, but the main diagonal is fixed. So, for example, a square with main diagonal d=1 can cover cells (0,1), (1,2), (2,3), etc. So, this square covers multiple cells on d=1 and also multiple rows and columns.
+
+So, the key is that each square on diagonal d covers a contiguous subset of the diagonal. So, for d=1, the cells are (1,0), (2,1), (3,2), ..., (n-1, n-2).
+
+A square starting at (1,0) with size 1 covers (1,0).
+
+A square starting at (2,1) with size 1 covers (2,1).
+
+And so on.
+
+So, to cover all cells on d=1, you need (n-1) squares.
+
+Similarly, for d=2, you need (n-2) squares.
+
+So, for each diagonal d, the minimal number of squares needed is (n - |d|).
+
+But wait, for d=0, the minimal number is 1, because a single square of size n can cover all cells on d=0.
+
+So, the sum of (n - |d|) for all d is the total number of squares used.
+
+Thus, the approach is:
+
+1. For each diagonal d, compute the number of squares needed, which is (n - |d|) if d is not zero, else 1.
+
+2. Sum all these values for all possible diagonals d.
+
+So, the answer is the sum of (n - |d|) for all d in the range of possible diagonals.
+
+But wait, that's not correct. Because each square can be used to cover multiple diagonals. For example, a square starting at (0,0) with size 2 covers d=0 and d=1.
+
+So, the minimal number of squares for d=0 is 1, but a single square can also cover d=1.
+
+So, if a square is used for d=0, it can also be used for d=1.
+
+Wait, but

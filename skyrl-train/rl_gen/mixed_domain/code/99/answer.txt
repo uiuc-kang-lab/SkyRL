@@ -1,0 +1,817 @@
+Okay, so I've got this problem to solve, and I'm a bit stuck. Let me try to break it down and see how I can approach it.
+
+The problem is about selecting a subset of games to maximize the expected value of winnings. Each game can be played at most once, and if you lose any game, you get nothing. The expected value is calculated as the product of the probabilities of winning each selected game multiplied by the sum of their winnings.
+
+Hmm. So the key here is to find the subset of games where the product of their p_i/100 is as large as possible, but also multiplied by the sum of their w_i. But since the product can get really small, we need to find a balance between the sum and the product.
+
+Wait, but the product is multiplicative, and the sum is additive. So, for example, if I have two games, maybe one with a high p but low w, and another with a low p but high w. It's a trade-off.
+
+Let me think about the constraints. Each game has p_i up to 100, and w_i is such that p_i * w_i <= 2e5. So for a game, its p is at most 100, which means the maximum possible w is 2e5 / 100 = 2000. So each game's w can be up to 2000.
+
+The expected value is (prod p_i/100) * (sum w_i), where the product is over the selected games. Our goal is to maximize this value.
+
+Now, how do I approach this? It feels like a dynamic programming problem, but the state space might be too big. Let's think about possible approaches.
+
+If I consider each game as an option to include or exclude, but considering that including a game multiplies the probability and adds to the sum. So the state would be the current product of probabilities and the sum of winnings. But with n up to 2e5, that's impossible because the state space is way too big.
+
+Wait, but maybe there's a way to model this efficiently. Let's think about the possible products. Since each p_i is up to 100, the product of k games is (100)^k. For k up to, say, 20, that's 1e28, which is way too big to track. So that's not feasible.
+
+Hmm, so perhaps we need a different approach. Let's think about the expected value function. For any subset S, the expected value is (prod_{i in S} p_i / 100) * (sum_{i in S} w_i). So we need to maximize this.
+
+Wait, but what if we include a game that has a very high w_i but a low p_i? Including it might not be worth it because the product of probabilities could be too small, making the overall expected value small.
+
+So perhaps the optimal subset is a small one, maybe even just one game. Because including more than one game could make the product too small, leading to a lower expected value.
+
+So maybe the problem reduces to considering all possible subsets of size 1, 2, etc., but we need a way to efficiently find the best subset.
+
+Let me think: for each game, the expected value is (p_i / 100) * w_i. So the individual game's expected value is (p_i * w_i) / 100. Since the constraint is p_i * w_i <= 2e5, this is <= 2e5 / 100 = 2e3.
+
+So for each game, the individual expected value is at most 2000. So if we include multiple games, the expected value is the product of their individual probabilities multiplied by the sum of their w_i.
+
+Wait, so the total expected value is (prod p_i / 100) * (sum w_i). So the product is the probability of winning all selected games, and the sum is the sum of their w_i.
+
+So for a subset S, the expected value is (prod_{i in S} p_i / 100) * (sum_{i in S} w_i).
+
+We can rewrite this as (prod p_i / 100^k) * (sum w_i), where k is the size of S.
+
+So, for example, if S has two games, the expected value is (p1/100 * p2/100) * (w1 + w2).
+
+Hmm. So, the problem is to choose a subset S such that this value is maximized.
+
+Now, the question is, how do we model this? Because the size of n is up to 2e5, we can't try all subsets.
+
+Let me think about the structure of the optimal subset. Maybe there's a way to represent the best possible expected value for a certain product of p_i's.
+
+Wait, perhaps we can model this with dynamic programming. Let me think: for each possible product of p_i's (denominator 100^k for some k), we can track the maximum sum of w_i's that is achievable. Then, for each new game, we can update the DP by considering whether to include it or not.
+
+But even that seems challenging because the product can be up to (100)^2e5, which is way too big to track.
+
+Wait, but perhaps for any subset, the product of p_i's can be represented as a fraction, and we can track the maximum sum for each possible product.
+
+Wait, another idea: the product of p_i's is a multiplicative factor, and the sum is additive. So, perhaps for each possible product, we can track the maximum sum, and then for each new game, we can update the DP by multiplying the product and adding the sum.
+
+But even that seems tricky. Let's think about it more carefully.
+
+Let me consider that for each possible product 'prod_p', which is a value of the form (10.01 * 10.01 * ... 0.01) where each 0.01 is a p_i/100, the expected value is (prod_p) * (sum_w), where sum_w is the sum of w_i's of the selected games.
+
+So, the expected value is (prod_p) * (sum_w).
+
+So, for each possible product 'prod_p', we can track the maximum sum_w. Then, the expected value is the product multiplied by the sum, which is what we need to maximize.
+
+So, the problem reduces to finding the maximum (prod_p * sum_w) where prod_p is the product of some subset of p_i's, and sum_w is the sum of the corresponding w_i's.
+
+So, the question is: how can we model this efficiently?
+
+Another observation: the sum_w can be at most the sum of all w_i's where p_i is such that p_i * w_i <= 2e5. So, since p_i is up to 100, each w_i is up to 2e3.
+
+So, the sum of all w_i's is up to 2e5.
+
+Hmm. So, the sum_w is bounded, but the product_p can be very small if we include many games.
+
+So, perhaps the optimal subset is small. Like, maybe 0, 1, or 2 games. Because adding more games would multiply the product, which could reduce the overall expected value.
+
+So, perhaps the optimal solution is to choose a subset of size 0, 1, or 2 games.
+
+If that's the case, then the solution can be found by considering all possible single games and pairs of games, and choosing the one with the maximum expected value.
+
+Wait, that's an interesting approach. Let me see why this might be the case.
+
+Suppose I have three games A, B, C. The expected value of A is a, B is b, C is c. Now, the expected value of A and B is a*b, which is their individual product. The expected value of A, B, C is a*b*c. So, if a*b is larger than a*b*c, then adding C is worse. So, perhaps including more than two games is not optimal.
+
+So, maybe the optimal subset is of size 0, 1, or 2.
+
+If that's the case, then the solution can be found by checking all possible single games and all possible pairs of games, and taking the maximum expected value among all these.
+
+So, the approach would be:
+
+1. Compute the expected value for all single games (which is (p_i/100)*w_i).
+
+2. Compute the expected value for all pairs of games (S = {i,j}, expected value is (p_i/100)*(p_j/100)*(w_i + w_j)).
+
+3. Take the maximum among all these values, including the case where no games are played (which gives 0).
+
+So, the maximum expected value is the maximum of all these possibilities.
+
+Wait, but is this necessarily the case? Suppose there is a triplet of games that gives a higher expected value than any pair or single. Could that happen?
+
+For example, let's say game A has p=100, w=10. So, expected value is 10.
+
+Game B has p=10, w=20. So, expected value is 0.2*20 =4.
+
+Game C has p=5, w=40. So, expected value is 0.05 *40 =2.
+
+Now, what's the expected value of A and B: 10 * 0.2 * (10+20) = 10 * 0.2 *30 =60? Wait no, wait, the expected value is (0.1 * 0.1) * (10+20) = 0.01 *30=0.3. Hmm, that's much smaller than 10.
+
+Wait, perhaps I should take a different example.
+
+Let’s say we have three games:
+
+Game 1: p=100, w=5. Expected value is 5.
+
+Game 2: p=100, w=5. Expected value is 5.
+
+Game 3: p=10.5, w=100. Expected value is 0.005 * 100 = 0.5.
+
+Now, what is the expected value of all three games? It's (0.1 * 0.1 * 0.005) * (5+5+10.5) = (0.0005) *10.5=0.00525.
+
+Wait, that's worse than any individual game. So, the maximum is 5.
+
+So, in this case, the maximum comes from a single game.
+
+Another example: suppose we have two games.
+
+Game A: p=50, w=4. Expected value: 0.5*4=2.
+
+Game B: p=50, w=4. Expected value: 0.5*4=2.
+
+So, individual is 2 each.
+
+What about a pair: expected value is 0.5 *0.5 * 8= 2.
+
+Same as individual.
+
+So, in this case, the maximum is 2, achieved by either selecting A, B, or both.
+
+Hmm, so in this case, selecting both gives the same expected value as selecting either alone.
+
+So, the approach of considering all single games and all pairs might still capture the maximum.
+
+Another example: suppose there are three games.
+
+Game 1: p=100, w=5. Expected value 5.
+
+Game 2: p=50, w=10. Expected value 0.5*0=0.
+
+Game 3: p=50, w=10. Expected value 0.5*10=0.
+
+Now, if I take all three, the product is 0.0001 * (5+0+10) = 0.0001*15=0.0015.
+
+Which is worse than any pair.
+
+So, the maximum is 5.
+
+So, again, the maximum comes from a single game.
+
+So, perhaps the optimal solution is to consider all single games and all pairs, and take the maximum.
+
+So, the approach is to compute all possible single game expected values and all possible pair of games expected values, and then take the maximum among them.
+
+So, the steps are:
+
+1. For each game, compute its expected value (p_i * w_i) / 100. Because the individual expected value is (p_i/100)*w_i = p_i * w_i / 100.
+
+2. For all pairs of games (i, j), where i < j, compute the expected value as (p_i/100) * (p_j/100) * (w_i + w_j). So, that's (p_i * p_j) / (100^2) * (w_i + w_j).
+
+3. Find the maximum expected value among all single games, all pairs, and zero.
+
+Wait, but the problem allows choosing any subset, including the empty set. But the empty set gives 0, so it's better to just consider the maximum among all single and pair games.
+
+So, the plan is:
+
+- Compute the maximum expected value among all single games.
+
+- Compute the maximum expected value among all pairs of games.
+
+- The overall maximum is the maximum between these two and zero.
+
+Wait, but what about larger subsets? For example, a subset of three games. Could their expected value be larger than any pair or single?
+
+Let me think of a case where a triplet gives a higher value.
+
+Suppose:
+
+Game A: p=100, w=1 → 1.
+
+Game B: p=50, w=2 → 0.5*2=1.
+
+Game C: p=50, w=2 → 0.5*2=1.
+
+So, each of A, B, C has an expected value of 1.
+
+Now, what is the expected value for the triplet?
+
+It's (0.1 * 0.5 * 0.5) * (1 + 2 + 2) = (0.025) *5 = 0.125.
+
+Which is less than 1.
+
+So, the maximum is 1, achieved by each individual game.
+
+Another example:
+
+Game D: p=50, w=5 → 0.5*5=2.5.
+
+Game E: p=50, w=5 → 0.5*5=2.5.
+
+Game F: p=25, w=10 → 0.25 *10=2.5.
+
+So, each of D, E, F has an expected value of 2.5.
+
+Now, what about the triplet D, E, F?
+
+The product is 0.5 * 0.5 * 0.25 = 0.0625. The sum is 5+5+10=20. So 0.0625 * 20 = 1.25.
+
+Which is less than 2.5.
+
+So, the maximum is 2.5, achieved by any of the individual games.
+
+So, in all the examples I can think of, the maximum is achieved by either a single game or a pair.
+
+So, perhaps the optimal solution is indeed to consider all single games and all pairs.
+
+Thus, the approach is to:
+
+- Compute all single game expected values.
+
+- Compute all pair game expected values.
+
+- Take the maximum among all these and zero.
+
+So, how to implement this?
+
+First, for each game, compute the expected value as (p_i * w_i) / 100.
+
+Then, for all pairs, compute (p_i * p_j) / (100^2) * (w_i + w_j).
+
+Wait, but 100^2 is 10000, so (p_i * p_j) can be up to 100*100=1e4, and w_i +w_j is up to 2e5 (since each w_i is up to 2e3, so 2e3*2=4e3). So, (1e4) * (4e3) = 4e7, divided by 1e4 is 4e3. So, each pair's expected value is up to 4e3.
+
+So, the maximum between all single and pair is up to 4e3.
+
+So, in code, I can:
+
+- Read all the games.
+
+- Compute the maximum single game's expected value.
+
+- For all pairs, compute the expected value and track the maximum.
+
+- The overall maximum is the maximum between the single max, the pair max, and zero.
+
+Now, the question is, how to compute the pair expected value.
+
+Let's see. For each pair (i, j), i < j:
+
+expected = (p_i * p_j) / 10000 * (w_i + w_j).
+
+So, in code:
+
+max_single = max(p_i * w_i / 100 for all i)
+
+max_pair = 0
+
+for i in 0 to n-1:
+
+    for j in i+1 to n-1:
+
+        expected = (p_i * p_j) / 10000 * (w_i + w_j)
+
+        if expected > max_pair:
+
+            max_pair = expected
+
+So, the overall maximum is max(max_single, max_pair).
+
+Wait, but wait. What if n is 2e5, then the number of pairs is about 2e10, which is way too big to compute in a loop.
+
+Oh no, that's a problem. Because 2e5 choose 2 is about 2e1010, which is impossible to compute in a loop in Python.
+
+So, this approach is not feasible for n=2e5.
+
+So, the initial approach is not going to work.
+
+We need a better approach.
+
+Hmm. So, what can we do?
+
+We need a way to compute the maximum pair expected value without checking all pairs.
+
+So, the problem is that for n=2e5, the number of pairs is 2e5*(2e5-1)/2 ≈ 2e10, which is way too big to process in a loop.
+
+So, we need a smarter way.
+
+So, let's think: what is the condition for a pair (i,j) to have a higher expected value than any single game?
+
+We need (p_i * p_j / 10.01^2) * (w_i + w_j) / 100 > max_single.
+
+Wait, no. Let me re-express the expected value.
+
+The expected value for pair i,j is (p_i/100) * (p_j/100) * (w_i + w_j) = (p_i p_j) / 10000 * (w_i + w_j).
+
+We can rewrite this as (p_i p_j (w_i + w_j)) / 10000.
+
+Compare this to the maximum single game's expected value, which is (p_k w_k)/100.
+
+So, for a pair (i,j) to be better than any single game, (p_i p_j (w_i + w_j)) / 10000 > max_single.
+
+So, the question is: can we find two games i, j such that this inequality holds?
+
+If yes, then the pair will be better than any single game.
+
+So, the approach could be:
+
+1. Compute max_single.
+
+2. Find all pairs i,j where p_i p_j (w_i + w_j) > 100 * max_single.
+
+Because 100 * max_single is 100 * (p_k w_k)/10.01 = 1e4 p_k w_k.
+
+Wait, wait, let me re-calculate:
+
+max_single is (p_k w_k)/100.
+
+So, 100 * max_single = p_k w_k.
+
+So, the inequality is p_i p_j (w_i + w_j) > p_k w_k.
+
+So, for a pair (i,j) to be better than all single games, p_i p_j (w_i + w_j) > p_k w_k for some k.
+
+So, the problem reduces to finding any pair (i,j) where p_i p_j (w_i + w_j) is larger than the maximum p_k w_k.
+
+So, the maximum expected value is either the maximum single game, or a pair that has p_i p_j (w_i + w_j) > max_p_w.
+
+So, the algorithm can be:
+
+- Compute all single games' p_w = p_i * w_i.
+
+- Compute the maximum p_w, say max_pw.
+
+- For all pairs (i,j), if p_i p_j (w_i + w_j) > max_pw, then their expected value is higher than any single game.
+
+So, if such a pair exists, then the maximum is the maximum among all such pairs and the maximum single game.
+
+Otherwise, the maximum is the maximum single game.
+
+So, the plan is:
+
+1. Compute all p_i w_i for each game, find the maximum p_w (max_pw).
+
+2. Iterate through all pairs of games, and for each pair (i,j), compute p_i p_j (w_i + w_j). If it's greater than max_pw, then this pair is a candidate.
+
+3. Among all such candidates, find the maximum (p_i p_j (w_i + w_j) / 10000), which is the expected value for this pair.
+
+4. Compare this with the maximum single game's p_w / 100. Take the maximum of these.
+
+So, the steps are:
+
+- Compute max_pw as the maximum of p_i w_i.
+
+- Compute the maximum expected value for any pair (i,j) where p_i p_j (w_i + w_j) > max_pw.
+
+- The overall maximum is the maximum between the maximum single game's expected value and this pair's expected value.
+
+So, the code can be structured as:
+
+max_single = max( (p_i * w_i) / 100 for all i )
+
+max_pw = max( p_i * w_i for all i )
+
+max_pair = 0
+
+for i in 0 to n-1:
+
+    for j in i+1 to n-1:
+
+        if p_i * p_j * (w_i + w_j) > max_pw:
+
+            current = (p_i * p_j * (w_i + w_j)) / 10000
+
+            if current > max_pair:
+
+                max_pair = current
+
+if max_pair > max_single:
+
+    answer = max_pair
+
+else:
+
+    answer = max_single
+
+Wait, but the pair could have p_i p_j (w_i +w_j) > max_pw, but when we compute current, it's (p_i p_j (w_i +w_j)) / 10000.
+
+So, the condition is:
+
+if p_i p_j (w_i +w_j) > max_pw:
+
+    then current is (p_i p_j (w_i +w_j)) / 10000.
+
+So, in code, for each pair (i,j), if p_i * p_j * (w_i + w_j) > max_pw, then compute current and see if it's larger than the current max_pair.
+
+So, the steps are clear.
+
+Now, the question is: can this approach handle n=2e5?
+
+Well, for n=2e5, the number of pairs is about 2e10, which is way too big to process in a loop.
+
+So, this approach is not feasible for n=2e5.
+
+So, we need a smarter way to find if any pair (i,j) exists such that p_i p_j (w_i +w_j) > max_pw.
+
+How can we do that?
+
+We need to find if there exists i < j such that p_i p_j (w_i +w_j) > max_pw.
+
+What's the maximum possible p_i p_j (w_i +w_j)?
+
+Well, each p_i is up to 100, each w_i is up to 2e3.
+
+So, the maximum p_i p_j (w_i +w_j) is 100 * 100 * (2e3 + 2e3) = 4e7.
+
+So, the condition is p_i p_j (w_i +w_j) > max_pw.
+
+So, if max_pw is less than 4e7, then there might be such pairs.
+
+But for n=2e5, even if we can find all such pairs, it's impossible to process them all.
+
+So, we need an alternative approach.
+
+Alternative approach:
+
+We can try to find for each game i, whether there exists a game j such that p_j is >= some value and w_j is >= some value, such that p_i p_j (w_i +w_j) > max_pw.
+
+But I'm not sure.
+
+Wait, perhaps we can find for each game i, the minimum p_j and the minimum w_j that would make p_i p_j (w_i +w_j) > max_pw.
+
+But that's still not clear.
+
+Wait, but perhaps for each i, we can find the minimal j such that p_j (w_i +w_j) > max_pw / p_i.
+
+But again, not sure.
+
+Alternatively, perhaps the maximum p_i p_j (w_i +w_j) is achieved when both p_i and p_j are as large as possible, and w_i and w_j are also as large as possible.
+
+So, perhaps the pair (i,j) that is most likely to satisfy p_i p_j (w_i +w_j) > max_pw is the pair with the largest p_i and p_j, and largest (w_i +w_j).
+
+So, perhaps the optimal pair is among the top K games in terms of p_i and w_i.
+
+So, the approach is:
+
+- Sort all the games in descending order of p_i.
+
+- Then, take the top K games (say, K=200) and check all possible pairs among them. If any pair satisfies p_i p_j (w_i +w_j) > max_pw, then the maximum pair is among these.
+
+- Otherwise, the maximum is the max_single.
+
+So, this reduces the problem to checking a subset of games, which is manageable.
+
+What's the value of K? Well, K=200 would give 200 choose 2 = 19900 pairs, which is manageable.
+
+So, the steps are:
+
+1. Compute max_pw as before.
+
+2. Sort the games in descending order of p_i.
+
+3. Take the top K games (say, K=200) and check all possible pairs among them.
+
+4. For each pair, compute p_i p_j (w_i +w_j). If it's greater than max_pw, then compute the expected value and compare with the current max_pair.
+
+5. The maximum expected value among all such pairs is the candidate.
+
+6. The overall maximum is the maximum between the max_single and this candidate.
+
+So, this approach is feasible.
+
+So, the plan is:
+
+- Read all the games.
+
+- Compute max_pw, which is the maximum p_i * w_i.
+
+- Compute max_single as (max_pw) / 100.
+
+- Sort the games in descending order of p_i.
+
+- Take the top K games (say, K=200) and generate all possible pairs (i,j) where i < j.
+
+- For each pair, compute p_i * p_j * (w_i + w_j). If this is > max_pw, then compute the expected value (p_i p_j (w_i +w_j)) / 10000.
+
+- Keep track of the maximum expected value among these pairs.
+
+- The overall answer is the maximum between max_single and this maximum pair expected value.
+
+So, this approach reduces the problem to checking a manageable number of pairs, making it feasible for n=2e5.
+
+Now, the question is, what value of K is sufficient to capture all possible pairs that could give a higher expected value than any single game.
+
+Well, perhaps K=200 is sufficient because the top 200 games in terms of p_i and w_i are likely to form pairs that could satisfy p_i p_j (w_i +w_j) > max_pw.
+
+But how to choose K?
+
+Well, let's think: for a pair (i,j) to have p_i p_j (w_i +w_j) > max_pw.
+
+Assuming that max_pw is the maximum p_i w_i, perhaps the top 200 games in p_i will be sufficient to find such pairs.
+
+So, in code, we can set K=200.
+
+So, in Python, we can read all the games, sort them in descending order of p_i, take the top K, and then generate all possible pairs.
+
+Now, let's test this approach with some examples.
+
+Example 1:
+
+n=2
+
+Game 1: p=100, w=5 → p_w=500, max_pw=500.
+
+Game 2: p=50, w=10 → p_w=500, max_pw=500.
+
+max_single is 500/100=5.
+
+Now, when K=2, we have all the games. So, the pair is (1,2):
+
+p_i=100, p_j=50, w_i=5, w_j=10.
+
+p_i p_j (w_i +w_j) = 100*50*(5+10) = 50000.
+
+Which is > max_pw (500). So, current expected value is 50000/10000=5.
+
+Which is equal to max_single.
+
+So, in this case, the maximum is 5.
+
+Another example:
+
+n=3
+
+Game 1: p=100, w=5 → p_w=500.
+
+Game 2: p=100, w=5 → p_w=500.
+
+Game 3: p=50, w=10 → p_w=500.
+
+max_pw=500.
+
+max_single =5.
+
+Now, when K=2, we have all games.
+
+So, the pair (1,2) has p_i p_j (w_i +w_j) =100*100*10=100000>500.
+
+So, current expected value is 100000/10000=10.
+
+Which is higher than 5.
+
+So, the maximum is 10.
+
+So, the approach would correctly find this.
+
+So, the code can proceed with this approach.
+
+So, the steps in code:
+
+Read n.
+
+Read n lines, each with p_i and w_i.
+
+Compute max_pw as the maximum of p_i * w_i.
+
+Compute max_single as max_pw / 100.
+
+Sort the games in descending order of p_i.
+
+Take the top K games (say, K=200).
+
+If the number of top K games is less than 2, then no pairs. So the answer is max_single.
+
+Else, generate all pairs (i,j) where i < j in the top K games.
+
+For each pair, compute p_i * p_j * (w_i +w_j).
+
+If this is > max_pw, then compute the expected value as (p_i p_j (w_i +w_j)) / 10000.
+
+Keep track of the maximum such expected value.
+
+The answer is the maximum between max_single and this maximum pair expected value.
+
+So, now, let's write the code.
+
+But wait, what if K is 0? Well, in that case, there are no pairs, so the answer is max_single.
+
+So, the code can be structured as follows:
+
+Read n.
+
+games = list of (p, w) for each line.
+
+max_pw = max(p * w for p, w in games)
+
+max_single = max_pw / 100.0
+
+if n < 2:
+
+    print(max_single)
+
+else:
+
+    # sort in descending order of p
+
+    games_sorted = sorted(games, key=lambda x: (-x[0], -x[1]))
+
+    # take top K
+
+    K = 200
+
+    top = games_sorted[:K]
+
+    if len(top) < 2:
+
+        print(max_single)
+
+    else:
+
+        max_pair = 0.0
+
+        for i in range(len(top)):
+
+            for j in range(i+1, len(top)):
+
+                p_i, w_i = top[i]
+
+                p_j, w_j = top[j]
+
+                product = p_i * p_j * (w_i + w_j)
+
+                if product > max_pw:
+
+                    expected = product / 10000.0
+
+                    if expected > max_pair:
+
+                        max_pair = expected
+
+        print(max(max_single, max_pair))
+
+So, that's the code.
+
+Now, let's test this with some cases.
+
+Test case 1:
+
+n=2
+
+game1: p=100, w=5 → p_w=500
+
+game2: p=50, w=10 → p_w=500
+
+max_pw=500
+
+max_single=5.
+
+top 200 includes both.
+
+i=0, j=1:
+
+p_i=100, p_j=50, w_i=5, w_j=10.
+
+product=100*50*(5+10)=100*50*15=75000>500.
+
+expected=75000/10000=7.5.
+
+So, max_pair is 7.5.
+
+max_single is5.
+
+So, maximum is7.5.
+
+So, the code would output 7.5.
+
+Another test case:
+
+n=3.
+
+games:
+
+1: p=100, w=5 → 500
+
+2: p=100, w=5 →500
+
+3: p=50, w=10 →500
+
+max_pw=500.
+
+max_single=5.
+
+top 200 includes all.
+
+Now, when i=0,j=1:
+
+product=100*100*10=100000>500.
+
+expected=100000/10000=10.
+
+max_pair is10.
+
+So, the code would output 10.
+
+Another test case:
+
+n=3.
+
+games:
+
+1: p=100, w=5 →500
+
+2: p=50, w=10 →500
+
+3: p=50, w=10 →500
+
+max_pw=500.
+
+Now, if we take pair (1,2):
+
+product=100*50*(5+10)=25000>500.
+
+expected=25000/10000=2.5.
+
+Which is less than 10.
+
+So, the code would find the pair (0,1) as the best, giving 10.
+
+So, the code is correct.
+
+Now, let's see the code.
+
+Another test case:
+
+n=4.
+
+games:
+
+1: p=100, w=5 →500.
+
+2: p=100, w=5 →500.
+
+3: p=100, w=5 →500.
+
+4: p=50, w=10 →500.
+
+max_pw=500.
+
+max_single=5.
+
+Now, the top 200 includes all 4.
+
+Now, when i=0, j=1:
+
+product=100*100*10=100000>500.
+
+expected=100000/10000=10.
+
+So, the maximum is 10.
+
+So, the code would find that.
+
+Another test case:
+
+n=3.
+
+games:
+
+1: p=100, w=5 →500.
+
+2: p=10, w=100 →0.
+
+3: p=50, w=10 →500.
+
+max_pw=500.
+
+max_single=5.
+
+Now, top 200 includes all.
+
+Now, when i=0, j=2:
+
+p_i=100, p_j=50, w_i=5, w_j=10.
+
+product=100*50*15=75000>500.
+
+expected=75000/10000=7.5.
+
+Which is less than 10.
+
+So, the code will find the pair (0,1) as the best.
+
+So, the maximum is 10.
+
+So, the code is correct.
+
+Now, let's implement this in Python.
+
+I think the code is correct now.
+
+So, the code reads the n, then n lines, each with p and w.
+
+Then, computes max_pw, max_single.
+
+Then, sorts the games in descending order of p.
+
+Then, takes the top 200.
+
+If the top has less than 2, then no pairs, so the maximum is max_single.
+
+Else, for all pairs in the top, compute whether product > max_pw.
+
+If yes, compute the expected value and see if it's larger than current max_pair.
+
+Finally, the answer is the maximum

@@ -1,0 +1,459 @@
+1
+Okay, I need to solve this problem where I have to determine whether the Major Oak tree will have an even number of leaves in a given year n. The input is t test cases, each with n and k. 
+
+Let me understand the problem step by step. 
+
+The Major Oak starts with 1 leaf in year 1. Each year i, it grows i^i new leaves. But these leaves last for k years, so they contribute to the total for years i, i+1, ..., i+k-1.
+
+So, for each year i, the number of new leaves added is i^i. But these leaves are only present for the next k years. So, when considering year n, the leaves from year i = n - k + 1 to i = n will contribute to the total.
+
+Wait, no. Because the leaves from year i last for k years, so they start in i and end in i + k -1. So, for year n, the leaves added in i where i <= n <= i + k -1. That means i ranges from max(1, n - k + 1) to n.
+
+So, to find the total number of leaves in year n, I need to sum i^i for each i from max(1, n -k +1) to n, but only if i <= n and i >=1. 
+
+But wait, the problem is to determine if this sum is even. So, I don't need to compute the sum, just check if it's even.
+
+Hmm, but how can I compute the parity of the sum? Because adding even numbers doesn't change the parity, but adding odd numbers can.
+
+So, the sum is even if the number of odd terms in the sum is even. Because each odd term contributes 1 to the sum's parity, and even terms contribute 0. So, the sum's parity is equal to the number of terms with i^i being odd, modulo 2.
+
+So, I need to find how many i's in the range [max(1, n -k +1), n] have i^i being odd.
+
+Wait, when is i^i odd? Well, i^i is odd if and only if i is odd. Because any even number raised to any power is even; only odd numbers raised to any power are odd.
+
+So, for each i in the range, if i is odd, then i^i is odd, contributing 1 to the sum's parity. If i is even, then i^i is even, contributing 0.
+
+So, the sum's parity is equal to the count of odd i's in the range [a, b], where a = max(1, n -k +1) and b = n.
+
+If this count is even, then the sum is even; else, it's odd.
+
+So, the problem reduces to: for each test case, calculate the number of odd numbers between a and b (inclusive), and check if that count is even.
+
+So, the steps I need to perform for each test case are:
+
+1. Compute a = max(1, n -k + 1). Because if n -k + 1 is less than 1, then the starting point is 1.
+
+2. Compute b = n.
+
+3. Find the number of odd integers between a and b, inclusive.
+
+4. If this count is even, output YES; else, output NO.
+
+Wait, but what if a is greater than b? Because n-k+1 could be less than 1. For example, if n=1 and k=1, then a is 1. So, b is 1. So, a is 1, b is 1. The count is 1, which is odd.
+
+Another example: n=2, k=3. a = 2-3+1 = 0, so a is 1. b is 2. So, the range is 1 to 2. The odd numbers are 1. So count is 1, which is odd. So sum is odd.
+
+So, the formula is correct.
+
+So, the problem is now to compute the number of odd numbers between a and b, inclusive.
+
+How to compute that?
+
+The number of integers between a and b is b - a + 1.
+
+The number of odds is equal to the ceiling of (b - a + 1) / 2, but only if the starting and ending points are included.
+
+Wait, let me think.
+
+The count of odd numbers between a and b can be calculated as follows:
+
+If a and b are both even: count is (b - a) // 2.
+
+If a is even and b is odd: (b - a + 1) // 2.
+
+If a is odd and b is even: (b - a) // 2.
+
+If a is odd and b is odd: (b - a + 1) // 2.
+
+Alternatively, another way: the number of odds is ( (b - a + 1) + 1 ) // 2 if a is even and b is odd, but I'm not sure.
+
+Wait, perhaps a better way is to find the first odd >= a, last odd <=b, and compute the count.
+
+Let me think of it as:
+
+The first odd is a if a is odd. Else, a+1.
+
+The last odd is b if b is odd. Else, b-1.
+
+If the first_odd > last_odd, then count is 0.
+
+Otherwise, the count is ((last_odd - first_odd) // 2 ) + 1.
+
+Yes, that's a solid approach.
+
+So, for a given range a to b, the number of odds is:
+
+if a > b: 0
+
+else:
+
+first_odd = a if a % 2 == 1 else a + 1
+
+last_odd = b if b % 2 ==1 else b -1
+
+if first_odd > last_odd: count =0
+
+else: count = (last_odd - first_odd) // 2 +1
+
+So, for each test case, we calculate a and b, then compute the count of odds between a and b. If this count is even, output YES, else NO.
+
+So, let me outline the steps for each test case:
+
+1. Read n and k.
+
+2. Compute a = max(1, n -k +1)
+
+3. b = n
+
+4. If a > b: count =0
+
+5. Else:
+
+   a. Compute first_odd = a if a is odd else a+1
+
+   b. Compute last_odd = b if b is odd else b-1
+
+   c. If first_odd > last_odd: count =0
+
+   d. Else: count = (last_odd - first_odd) //2 +1
+
+6. If count is even: output YES
+
+   Else: output NO
+
+So, now, I need to implement this in Python.
+
+Now, thinking about the constraints: t can be up to 1e4, and n up to 1e9. So, the code must be efficient and not have any loops that would take too long.
+
+But the steps above are all O(1) per test case, so it's acceptable.
+
+Let me test this logic with some examples.
+
+Example 1:
+
+Test case: n=1, k=1.
+
+a = max(1, 1-1+1) =1.
+
+b=1.
+
+a <=b.
+
+first_odd =1 (since 1 is odd).
+
+last_odd=1.
+
+count= (1-1)/2 +1= 0 +1=1. Which is odd.
+
+So, output is NO.
+
+Which makes sense because in year 1, only 1^1=1 leaf is added. So, total is 1, which is odd. So, correct.
+
+Test case 2:
+
+n=2, k=3.
+
+a =2-3+1=0 → max(1,0)=1.
+
+b=2.
+
+a <=b.
+
+first_odd=1.
+
+last_odd=2 if even, so 1.
+
+So, first_odd=1, last_odd=1.
+
+count=1-1 /2 +1= 0 +1=1. Which is odd. So, output is NO.
+
+Which is correct because in year 2, the leaves are added in year 1 (i=1) and i=2.
+
+i=1: 1^1=1 (odd, contributes 1).
+
+i=2: 2^2=4 (even, contributes 0).
+
+So, total is 1, which is odd. So, output is NO.
+
+Another test case:
+
+n=3, k=2.
+
+a =3-2+1=2.
+
+b=3.
+
+So, a=2, b=3.
+
+first_odd: 3 is odd.
+
+last_odd:3 is odd.
+
+count= (3-3)/2 +1=0+1=1. Which is odd.
+
+So, output is NO.
+
+Wait, what's the sum?
+
+In year 3, the leaves added in i=2 (even, so 0) and i=3 (odd, 1).
+
+So, sum is 1, which is odd.
+
+Yes, correct.
+
+Another example:
+
+n=4, k=2.
+
+a=4-2+1=3.
+
+b=4.
+
+a=3, b=4.
+
+first_odd=3.
+
+last_odd=3 (since 4 is even).
+
+count is (3-3)/2 +1= 0+1=1 (odd).
+
+So, output is NO.
+
+What about n=5, k=2.
+
+a=5-2+1=4.
+
+b=5.
+
+a=4, b=5.
+
+first_odd:4 is even →5 is odd.
+
+last_odd:5 is odd.
+
+count: (5-5)/2 +1=1.
+
+Which is odd. So, output is NO.
+
+But wait, let's calculate the sum.
+
+In year 5:
+
+i runs from a=4 to 5.
+
+i=4: even → contributes 0.
+
+i=5: odd → contributes 1.
+
+So, sum is 1 → odd. So, output is NO. Correct.
+
+Another example:
+
+n=5, k=3.
+
+a=5-3+1=3.
+
+b=5.
+
+a=3, b=5.
+
+first_odd=3.
+
+last_odd=5.
+
+count: (5-3)/2 +1= (2/2) +1=1+1=2 → even. So, output is YES.
+
+Because the sum is even.
+
+Let's see:
+
+i=3: 3^3=27 → odd.
+
+i=4: even →0.
+
+i=5: odd →1.
+
+Total sum: 27 +1 =28 → even. Correct.
+
+So, the logic works.
+
+Another test case: n=6, k=3.
+
+a=6-3+1=4.
+
+b=6.
+
+So a=4, b=6.
+
+first_odd:4 is even →5 is odd.
+
+last_odd:6 is even →5 is the last.
+
+count: (5-5)/2 +1=1.
+
+Which is odd. So, output is NO.
+
+Sum:
+
+i=4: even →0.
+
+i=5: odd →1.
+
+i=6: even →0.
+
+Total is 1 → odd. Correct.
+
+So, the approach seems solid.
+
+Now, I'll code this.
+
+The code will read t test cases, each with n and k.
+
+For each test case:
+
+Compute a = max(1, n -k +1)
+
+b = n
+
+if a >b: count=0
+
+else:
+
+   compute first_odd.
+
+   compute last_odd.
+
+   if first_odd > last_odd: count=0.
+
+   else: count = (last_odd - first_odd) //2 +1.
+
+if count is even: print YES else NO.
+
+So, in code:
+
+t = int(input())
+
+for _ in range(t):
+
+    n, k = map(int, input().split())
+
+    a = max(1, n -k +1)
+
+    b = n
+
+    if a > b:
+
+        print("NO")
+
+    else:
+
+        # compute first_odd
+
+        first_odd = a if a %2 ==1 else a+1
+
+        last_odd = b if b %2 ==1 else b-1
+
+        if first_odd > last_odd:
+
+            count =0
+
+        else:
+
+            count = (last_odd - first_odd) //2 +1
+
+        if count %2 ==0:
+
+            print("YES")
+
+        else:
+
+            print("NO")
+
+Wait, but what if a is n -k +1, but n -k +1 could be less than 1, so a is set to 1.
+
+Yes, that's handled.
+
+Wait, but what if a is 1 and b is 1, like n=1, k=1. Then, a=1, b=1.
+
+first_odd=1, last_odd=1.
+
+count is 1 → odd, output NO.
+
+Which is correct.
+
+Another test case: n=2, k=2.
+
+a=2-2+1=1.
+
+b=2.
+
+So, a=1, b=2.
+
+first_odd=1.
+
+last_odd=1 (since 2 is even).
+
+count is 1 → odd. So, output is NO.
+
+Which is correct.
+
+Another test case: n=3, k=2.
+
+a=3-2+1=2.
+
+b=3.
+
+a=2, b=3.
+
+first_odd=3.
+
+last_odd=3.
+
+count=1 → odd. Output is NO.
+
+Which is correct.
+
+So, the code seems to handle all cases correctly.
+
+I think this should work.
+</think>
+
+To solve this problem, we need to determine whether the Major Oak tree will have an even number of leaves in a given year \( n \). The leaves grow each year and last for \( k \) years, so we need to check the parity of the sum of leaves added in the range from \( \max(1, n - k + 1) \) to \( n \).
+
+### Approach
+1. **Identify the Range**: For each year \( n \), the leaves added start from \( \max(1, n - k + 1) \) and end at \( n \).
+2. **Check Parity of Leaf Counts**: The leaves added in year \( i \) are \( i^i \). These leaves contribute to the total leaf count from year \( i \) to \( i + k - 1 \). Therefore, we need to determine if the sum of leaves in year \( n \) is even.
+3. **Count Odd Leaves**: The sum of leaves in year \( n \) is even if there is an even number of odd terms in the range from \( \max(1, n - k + 1) \) to \( n \). This is because each odd term contributes 1 to the sum's parity, while even terms contribute 0.
+4. **Efficient Calculation**: Instead of iterating through each year, we calculate the number of odd numbers in the range using mathematical properties. This allows us to determine the parity efficiently.
+
+### Solution Code
+```python
+t = int(input())
+for _ in range(t):
+    n, k = map(int, input().split())
+    a = max(1, n - k + 1)
+    b = n
+    if a > b:
+        print("NO")
+    else:
+        first_odd = a if a % 2 == 1 else a + 1
+        last_odd = b if b % 2 == 1 else b - 1
+        if first_odd > last_odd:
+            count = 0
+        else:
+            count = (last_odd - first_odd) // 2 + 1
+        if count % 2 == 0:
+            print("YES")
+        else:
+            print("NO")
+```
+
+### Explanation
+1. **Reading Input**: We start by reading the number of test cases \( t \).
+2. **Loop Through Test Cases**: For each test case, read \( n \) and \( k \).
+3. **Determine Range**: Calculate the starting year \( a \) as \( \max(1, n - k + 1) \) and the ending year \( b \) as \( n \).
+4. **Check Range Validity**: If \( a \) is greater than \( b \), the range is invalid, and we output "NO".
+5. **Find Odd Numbers**: Calculate the first and last odd numbers in the range. If the first odd is greater than the last odd, there are no odd numbers, so output "NO".
+6. **Count Odd Numbers**: If there are odd numbers, count them and check if the count is even. If even, output "YES"; otherwise, output "NO".
+
+This approach efficiently determines the parity of the leaf count without iterating through each year, making it suitable for large values of \( n \) and \( k \).<｜end▁of▁sentence｜>

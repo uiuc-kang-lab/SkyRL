@@ -1,0 +1,30 @@
+<｜begin▁of▁sentence｜><｜User｜>
+This is the hard version of the problem. The only difference is that in this version $n \leq 5 \cdot 10^5$ and the sum of $n$ for all sets of input data does not exceed $5 \cdot 10^5$.
+
+You are given a permutation $p$ of length $n$. Calculate the number of index pairs $1 \leq i < j \leq n$ such that $p_i \cdot p_j$ is divisible by $i \cdot j$ without remainder.
+
+A permutation is a sequence of $n$ integers, in which each integer from $1$ to $n$ occurs exactly once. For example, $[1]$, $[3,5,2,1,4]$, $[1,3,2]$ are permutations, while $[2,3,2]$, $[4,3,1]$, $[0]$ are not.
+
+Input Format:
+Each test consists of several sets of input data. The first line contains a single integer $t$ ($1 \leq t \leq 10^4$) — the number of sets of input data. Then follows their description.
+
+The first line of each set of input data contains a single integer $n$ ($1 \leq n \leq 5 \cdot 10^5$) — the length of the permutation $p$.
+
+The second line of each set of input data contains $n$ distinct integers $p_1, p_2, \ldots, p_n$ ($1 \leq p_i \leq n$) — the permutation $p$.
+
+It is guaranteed that the sum of $n$ for all sets of input data does not exceed $5 \cdot 10^5$.
+
+Output Format:
+For each set of input data, output the number of index pairs $1 \leq i < j \leq n$ such that $p_i \cdot p_j$ is divisible by $i \cdot j$ without remainder.
+
+Tags:
+['brute force', 'data structures', 'hashing', 'math', 'number theory']
+
+Time Limit: 3000 ms
+Memory Limit: 128 MB
+
+Write Python code to solve the problem. Present the code in
+```python
+Your code
+```
+at the end.<｜Assistant｜><think>

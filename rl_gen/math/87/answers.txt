@@ -1,0 +1,92 @@
+1
+\frac{5}{9}
+Okay, so I have this problem in triangle \( \triangle ABC \) where the sides are given as \( BC = a \), \( CA = b \), and \( AB = c \). The condition given is \( 9a^{2} + 9b^{2} - 19c^{2} = 0 \), and I need to find the value of \( \frac{\cot C}{\cot A + \cot B} \).
+
+First, I recall that in any triangle, the cotangent of an angle can be expressed in terms of the sides using the formula \( \cot A = \frac{b^2 + c^2 - a^2}{4Δ} \), where \( Δ \) is the area of the triangle. Similarly, \( \cot B = \frac{a^2 + c^2 - b^2}{4Δ} \) and \( \cot C = \frac{a^2 + b^2 - c^2}{4Δ} \).
+
+So, let me write down these expressions:
+
+\( \cot A = \frac{b^2 + c^2 - a^2}{4Δ} \)
+
+\( \cot B = \frac{a^2 + c^2 - b^2}{4Δ} \)
+
+\( \cot C = \frac{a^2 + b^2 - c^2}{4Δ} \)
+
+Now, I need to find \( \frac{\cot C}{\cot A + \cot B} \).
+
+Let me compute the denominator first: \( \cot A + \cot B \).
+
+ substituting the expressions:
+
+\( \frac{b^2 + c^2 - a^2}{4Δ} + \frac{a^2 + c^2 - b^2}{4Δ} \)
+
+Since the denominators are the same, I can add the numerators:
+
+\( \frac{b^2 + c^2 - a^2 + a^2 + c^2 - b^2}{4Δ} \)
+
+Simplifying the numerator:
+
+\( b^2 - b^2 + a^2 - a^2 + c^2 + c^2 = 2c^2 \)
+
+So, \( \cot A + \cot B = \frac{2c^2}{4Δ} = \frac{c^2}{2Δ} \)
+
+Now, the numerator of the main expression is \( \cot C = \frac{a^2 + b^2 - c^2}{4Δ} \)
+
+So, putting it all together:
+
+\( \frac{\cot C}{\cot A + \cot B} = \frac{\frac{a^2 + b^2 - c^2}{4Δ}}{\frac{c^2}{2Δ}} \)
+
+Simplifying this:
+
+The \( Δ \) terms cancel out, and we have:
+
+\( \frac{a^2 + b^2 - c^2}{4Δ} \times \frac{2Δ}{c^2} = \frac{a^2 + b^2 - c^2}{2c^2} \)
+
+So, \( \frac{\cot C}{\cot A + \cot B} = \frac{a^2 + b^2 - c^2}{2c^2} \)
+
+Now, the given condition is \( 9a^2 + 9b^2 - 19c^2 = 0 \), which can be rewritten as \( 9(a^2 + b^2) = 19c^2 \), so \( a^2 + b^2 = \frac{19}{9}c^2 \)
+
+Let me substitute this into the expression I derived:
+
+\( \frac{a^2 + b^2 - c^2}{2c^2} = \frac{\frac{19}{9}c^2 - c^2}{2c^2} = \frac{\frac{19}{9}c^2 - \frac99c^2}{2c^2} = \frac{\frac{10}{9}c^2}{2c^2} = \frac{10}{18} = \frac59 \)
+
+So, the value of \( \frac{\cot C}{\cot A + \cot B} \) is \( \frac59 \).
+
+Let me just check the steps to ensure I didn't mistake anywhere. Yeah, seems correct. I used the correct formulas for cotangents, simplified step by step, and substituted the given condition correctly. So, the answer should be \( \frac59 \).
+</think>
+
+To find the value of \( \frac{\cot C}{\cot A + \cot B} \) in triangle \( \triangle ABC \) with sides \( BC = a \), \( CA = b \), and \( AB = c \) given the condition \( 9a^{2} + 9b^{2} - 19c^{2} = 0 \), we start by expressing the cotangents in terms of the sides and the area \( \Delta \):
+
+\[
+\cot A = \frac{b^2 + c^2 - a^2}{4\Delta}, \quad \cot B = \frac{a^2 + c^2 - b^2}{4\Delta}, \quad \cot C = \frac{a^2 + b^2 - c^2}{4\Delta}
+\]
+
+Next, we compute the sum \( \cot A + \cot B \):
+
+\[
+\cot A + \cot B = \frac{b^2 + c^2 - a^2 + a^2 + c^2 - b^2}{4\Delta} = \frac{2c^2}{4\Delta} = \frac{c^2}{2\Delta}
+\]
+
+Now, we find the ratio \( \frac{\cot C}{\cot A + \cot B} \):
+
+\[
+\frac{\cot C}{\cot A + \cot B} = \frac{\frac{a^2 + b^2 - c^2}{4\Delta}}{\frac{c^2}{2\Delta}} = \frac{a^2 + b^2 - c^2}{2c^2}
+\]
+
+Using the given condition \( 9a^2 + 9b^2 - 19c^2 = 0 \), we simplify \( a^2 + b^2 \):
+
+\[
+9(a^2 + b^2) = 19c^2 \implies a^2 + b^2 = \frac{19}{9}c^2
+\]
+
+Substituting this into our expression:
+
+\[
+\frac{a^2 + b^2 - c^2}{2c^2} = \frac{\frac{19}{9}c^2 - c^2}{2c^2} = \frac{\frac{10}{9}c^2}{2c^2} = \frac{10}{18} = \frac{5}{9}
+\]
+
+Thus, the value of \( \frac{\cot C}{\cot A + \cot B} \) is \( \frac{5}{9} \).
+
+\[
+\boxed{\dfrac{5}{9}}
+\]<｜end▁of▁sentence｜>

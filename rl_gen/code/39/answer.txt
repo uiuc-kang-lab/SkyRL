@@ -1,0 +1,506 @@
+0
+Okay, let's see. I have to solve this problem where I'm given two arrays, a and p, and I need to compute the expected value of the square of the XOR of a randomly selected multiset S. Then, output this modulo 1e9+7 in a specific way.
+
+Hmm, so first, the problem says that for each element a_i, we insert it into S with probability p_i / 1e4. Each insertion is independent. Then, f(S) is the XOR of all elements in S. We need E[f(S)^2].
+
+Wait, but calculating f(S)^2 is the same as (f(S)) * (f(S)). So, the expectation is E[f(S)^2], which can be expanded as E[f(S) * f(S)].
+
+Let me think about the properties of XOR. XOR is a bitwise operation, and it's linear in some ways. Also, the square of a number is the sum of the squares of its bits plus twice the sum of the products of bits in pairs. Since XOR is bitwise, I think the expectation can be broken down per bit.
+
+But wait, the square of a sum can be expressed as the sum of squares plus twice the sum of all pairwise products. So, for each bit position, when we look at the square of f(S), it's the sum of (bit_i)^2 * 2^2i plus 2 * sum_{i < j} (bit_i * bit_j) * 2^{i+j}.
+
+Since the bits are independent in the XOR, the expectation of (bit_i)^2 is just the probability that bit_i is set, which is the probability that a_i was included in S. Because if a bit is set in f(S), then it's set in all bits of f(S), so (bit_i)^2 is 1 only if bit_i is set.
+
+Wait, no. Wait, f(S) is the XOR of all elements. So each bit in f(S) is the XOR of the corresponding bits in all elements. So for each bit position k, bit_k in f(S) is 1 if an odd number of a_i's have the k-th bit set. Otherwise, it's 0.
+
+So, when we square f(S), it's (sum_{k} bit_k * 2^k)^2. Expanding this, it's sum_{k} (bit_k)^2 * 2^{2k} + 2 * sum_{k < l} bit_k * bit_l * 2^{k + l}.
+
+The expectation is then sum of E[bit_k^2 * 2^{2k}] + 2 * sum_{k < l} E[bit_k * bit_l] * 2^{k+l}.
+
+But since bit_k is a Bernoulli variable (0 or 1), E[bit_k^2] is equal to E[bit_k], because 0^2=0 and 1^2=1. So E[bit_k] is the probability that bit_k is set in f(S).
+
+So, E[bit_k^2] = p_k / 1e4, because each a_i is inserted with probability p_i / 1e4, and for each bit k, the probability that it's set in f(S) is the probability that an odd number of a_i's have the k-th bit set.
+
+Wait, no. Because for each a_i, each bit is set independently in S. So, for each bit k, the probability that it's set in f(S) is equal to the product for all i of (1 - (probability that a_i doesn't have bit k set) * (probability that a_i is not selected) + (probability that a_i has bit k set) * (probability that a_i is selected)).
+
+Wait, no. Let me think differently. The bit_k in f(S) is 1 if an odd number of a_i's have bit_k set and are selected. So, for each a_i, the bit_k is set in a_i with some probability q_i, which is p_i / 1e4. Then, for each a_i, the bit_k contributes to f(S) as 1 with probability q_i. So, the probability that it's set in f(S) is the product over all a_i of (1 - (1 - q_i) * (1 - r_i)), where r_i is the probability that a_i is selected (but wait, no, because each a_i is selected with probability p_i / 1e4, but whether bit_k is set in a_i is independent of whether a_i is selected.
+
+Wait, maybe I'm getting confused. Let me clarify: For each a_i, bit_k is set in a_i with probability q_i, where q_i is the probability that a_i has bit_k set. Because the selection of a_i is independent of whether the bit is set. So, for each a_i, the contribution to bit_k in f(S) is q_i, and the selection of a_i is independent.
+
+So, the bit_k in f(S) is 1 if an odd number of a_i's have bit_k set and are selected. So, how do we compute the probability that this happens?
+
+Ah, but since each a_i is independent, the overall probability that bit_k is 1 in f(S) is the product for each a_i of (1 - (1 - q_i) * (1 - r_i)) where r_i is the probability that a_i is selected. Because for each a_i, the event that it doesn't contribute to bit_k in f(S) is when it's not selected AND it doesn't have bit_k set. So, the probability that bit_k is set is 1 minus the product of (prob that a_i is not selected and a_i doesn't have bit_k set) for all a_i.
+
+So, let me model this. For each bit k, let q_i be the probability that a_i has bit k set (this is a_i >> k & 1). Then, the probability that bit_k is set in f(S) is:
+
+p_k = 1 - product_{i=1 to n} [ (1 - q_i) * (1 - r_i) ]
+
+where r_i is the probability that a_i is selected (which is p_i / 1e4).
+
+So, for each bit k, p_k is this product. Then, the expectation E[bit_k] is p_k, because bit_k is 0 or 1. So, E[bit_k^2] = p_k.
+
+So, the first part of the expectation is sum_k (p_k) * 2^{2k}.
+
+The second part is 2 * sum_{k < l} E[bit_k * bit_l] * 2^{k + l}.
+
+Now, E[bit_k * bit_l] is the probability that both bit_k and bit_l are set in f(S). Because XOR is bitwise, the product of two bits in f(S) is 1 only if both are 1, else 0.
+
+So, E[bit_k * bit_l] is the probability that both bit_k and bit_l are set in f(S). How to compute this?
+
+Well, this is the probability that an odd number of a_i's have bit_k and bit_l set and are selected. So, for each a_i, the events are:
+
+- It has bit_k and bit_l set.
+
+- It is selected.
+
+- The total number of such a_i's is odd.
+
+So, the probability is equal to the product for each a_i of ( (1 - (prob a_i doesn't have k and l) * (1 - prob a_i is selected) ) ) multiplied by the term that accounts for the parity.
+
+Hmm, this seems complicated. Maybe there's a smarter way.
+
+Another approach: For two bits k and l, let's compute the probability that both bit_k and bit_l are set in f(S). Let's denote this as q_kl.
+
+How can I compute q_kl?
+
+Well, for each a_i, the events are:
+
+- a_i has both bits k and l set.
+
+- a_i is selected.
+
+- The number of such a_i's selected is odd.
+
+So, the probability that a_i contributes to both bits is:
+
+prob = (a_i has k and l set) * (selected) * (must contribute to both bits, so it's 1).
+
+So, for each a_i, the probability that it contributes to both bits is:
+
+s_i = (a_i & mask) ? (2^k + 2^l) : 0. Wait, no. Wait, a_i has bits k and l set. So, the value is at least 2^k + 2^l.
+
+So, s_i is the probability that a_i is selected (p_i / 1e4) and has both bits set. So s_i = ( (a_i & mask) ) * (p_i / 1e4 ), where mask is (1 << k) | (1 << l).
+
+Wait, no. Because a_i has bits k and l set, which is (1 << k) | (1 << l). But the probability that a_i is selected is p_i / 1e4, regardless of whether it has bits k and l set.
+
+So, for each a_i, the probability that it contributes to both bits k and l is ( (a_i's k and l bits set) ) * (p_i / 1e4).
+
+So, for each a_i, the probability that it contributes to both bits is s_i = ( (a_i & mask) ) * (p_i / 1e4 ), where mask is (1 << k) | (1 << l).
+
+Then, the probability that a_i contributes to both bits is s_i.
+
+So, the probability that a_i does not contribute to both is (1 - s_i).
+
+So, for all a_i, the probability that the total number of a_i's that contribute to both bits is odd is equal to the product of (1 - s_i) for each a_i, multiplied by (1 - product(1 - s_i)) ), but wait that's not it.
+
+Wait, no. Let me think about it as follows: the probability that exactly an odd number of a_i's contribute to both bits is equal to the product over all a_i of (1 - s_i) plus the product over all a_i of (1 - s_i) multiplied by the sum of s_i for all a_i's. Wait, not sure.
+
+Alternatively, we can model this as a generating function. For each a_i, the contribution to both bits is s_i, so the probability that it contributes to both is s_i, and contributes to neither is (1 - s_i). The probability that an odd number of a_i's contribute to both is the sum over t odd of product_{a_i} (1 - s_i)^{x_i} * s_i^{t}, where x_i is 1 if a_i contributes to both, else 0.
+
+But this is getting complicated. Maybe we can find a formula for this.
+
+I recall that for a set of independent events, the probability that an odd number of them occur is equal to (1 - product (1 - s_i )) / 2.
+
+Wait, let me think. Let's say we have a collection of events, and for each, the probability of the event is s_i. The probability that an odd number of events occur is (1 - product(1 - s_i )) / 2. Because, the sum over k odd of (product (1 - s_i) )^k * s_i^{k-1} / (k-1)! ) is equal to (1 - product(1 - s_i )) / 2.
+
+Yes, that's right. Because the sum for all k of (product (1 - s_i) )^k * s_i^{k} is (product (1 - s_i) + s_i )^n, but for odd k, it's (1 - product(1 - s_i )) / 2.
+
+Wait, more accurately, the generating function is product (1 + (1 - 2 s_i) * x_i ), and the sum of the coefficients for odd powers is (1 - product(1 - 2 s_i )) / 2. But in this case, the s_i is the probability of success for each event.
+
+Wait, perhaps I'm overcomplicating. Let me check for small cases.
+
+Suppose there are two events, each with success probability s1 and s2.
+
+The probability that exactly one is successful is s1(1 - s2) + (1 - s1)s2.
+
+The product for each event is (1 - (1 - s1)(1 - s2)) = (1 - (1 - s1 - s2 + s1 s2 )) = s1 + s2 - s1 s2.
+
+So, (1 - product) / 2 is (s1 + s2 - s1 s2)/2. Which matches the sum of exactly one.
+
+Yes, so the formula is correct.
+
+So, for our problem, the probability that an odd number of a_i's contribute to both bits k and l is (1 - product(1 - s_i )) / 2, where s_i is the probability that a_i contributes to both bits.
+
+So, putting it all together:
+
+E[bit_k * bit_l] = (1 - product(1 - s_i )) / 2, where s_i is the probability that a_i contributes to both bits.
+
+So, for each pair of bits k and l, we need to compute this product.
+
+So, the plan is:
+
+1. For each test case, for each a_i, compute the bits k and l and compute s_i for all pairs (k, l).
+
+2. For each pair (k, l), compute the product over all a_i of (1 - s_i), then compute (1 - product) / 2, which is q_kl.
+
+3. Then, the second part of the expectation is 2 * sum_{k < l} q_kl * 2^{k + l}.
+
+So, the overall expectation is:
+
+sum_k (p_k * 2^{2k}) + 2 * sum_{k < l} (q_kl * 2^{k + l})
+
+Wait, no. Wait, the second part is 2 * sum_{k < l} E[bit_k * bit_l] * 2^{k + l}.
+
+Because for each pair (k, l), k < l, the term is q_kl * 2^{k + l} multiplied by 2.
+
+So, for each pair, it's 2 * q_kl * 2^{k + l} = q_kl * 2^{k + l + 1}.
+
+Wait, no, the term is 2 * q_kl * 2^{k + l}.
+
+Wait, no. Let me see: The second part is 2 * sum_{k < l} E[bit_k * bit_l] * 2^{k + l}.
+
+So, each term is 2 * E * 2^{k + l}.
+
+Yes.
+
+So, to compute this, for each pair (k, l), compute q_kl, multiply by 2 * 2^{k + l}, then sum all these for k < l.
+
+Now, the challenge is to compute this for all pairs (k, l) efficiently.
+
+But n can be up to 2e5, so the number of pairs is up to (2e5)^2, which is 4e10. That's way too big.
+
+Wait, that's a problem. So, this approach is not feasible because it's O(n^2), which is way too slow.
+
+So, I need a smarter way.
+
+Hmm, perhaps the bits are not all independent. So, perhaps there's a way to compute the sum for all pairs without explicitly checking each pair.
+
+Wait, wait. Let's think about the sum over all pairs (k, l) of q_kl * 2^{k + l}.
+
+Wait, 2^{k + l} is 2^k * 2^l. So, for each pair (k, l), the term is q_kl * 2^k * 2^l.
+
+So, the sum is sum_{k} sum_{l > k} (q_kl * 2^k * 2^l).
+
+We can factor this as sum_{k} 2^k * sum_{l > k} q_kl * 2^l.
+
+So, for each k, we can compute sum_{l > k} q_kl * 2^l, multiply by 2^k, and add all such terms.
+
+But again, this approach requires O(n^2) time, which is not feasible.
+
+Hmm, so perhaps there's a way to find a way to compute this sum efficiently.
+
+Wait, perhaps for each a_i, we can precompute certain values that allow us to compute the sum for all pairs (k, l) involving a_i.
+
+Alternatively, perhaps we can find a way to represent the sum as a product or a generating function.
+
+Wait, another approach: Let's model each a_i as contributing to certain pairs (k, l), and for each a_i, the contribution to the sum is q_kl * 2^k * 2^l for all k, l. But again, this is O(n^2), which is not feasible.
+
+Wait, perhaps we can find a way to represent the sum as something involving the sum of 2^k multiplied by the sum over l of q_kl * 2^l, but then subtract the diagonal terms (where l = k).
+
+Wait, let me think. Let's consider S = sum_{k, l} q_kl * 2^k * 2^l.
+
+This can be written as (sum_k 2^k) * (sum_l 2^l) ), but that's not correct because q_kl is not necessarily symmetric.
+
+Wait, no, because q_kl is the probability for a particular pair (k, l), which is the probability that both bits are set.
+
+So, for each a_i, s_i is the probability that it contributes to both bits.
+
+So, for each a_i, the contribution to the sum is q_kl * 2^k * 2^l, where k and l are the bits of a_i.
+
+So, the total sum for all pairs is sum_{i=1 to n} sum_{k, l} (s_i_contribution if a_i contributes to (k, l)).
+
+Wait, no, not exactly. Because for each a_i, s_i is the probability that it contributes to both bits k and l. So, for each a_i, the term in S is s_i multiplied by 2^k * 2^l.
+
+So, the total sum is sum_{i=1 to n} sum_{k, l} s_i * 2^k * 2^l.
+
+Which can be written as sum_{k, l} (sum_{i=1 to n} s_i) * 2^k * 2^l.
+
+Because for each i, the term s_i is multiplied by 2^k * 2^l for all k and l, so sum_{k, l} s_i * 2^k * 2^l is s_i * (sum_k 2^k) * (sum_l 2^l).
+
+So, the sum S is equal to (sum_{k=0}^{30} 2^k) )^2 * sum_{i=1 to n} s_i.
+
+Because sum_{i=1 to n} s_i is the sum over all a_i of their s_i, which is the sum over all a_i's contribution to the sum.
+
+Wait, no. Wait, the sum S is sum_{k, l} (sum_i s_i) * 2^k * 2^l.
+
+Which is equal to (sum_i s_i) * (sum_k 2^k) * (sum_l 2^l).
+
+Because when you multiply (sum_i s_i) by (sum_k 2^k * sum_l 2^l), you get sum_i s_i * sum_k sum_l 2^k 2^l.
+
+So, yes, this is correct.
+
+So, the sum is (sum_i s_i) * (sum_{k} 2^k)^2.
+
+So, the sum for all pairs (k, l) is S_total = (sum_i s_i) * (sum_{k} 2^k)^2.
+
+But wait, why?
+
+Because for each a_i, s_i is the probability that both bits are set. So, the sum over all a_i's s_i is the total sum of s_i across all a_i. Then, each a_i contributes to all (k, l) pairs, and for each such pair, the term is s_i * 2^k * 2^l. So, the total sum is sum_i s_i * sum_k sum_l 2^k 2^l = (sum_i s_i) * (sum_k 2^k) * (sum_l 2^l).
+
+So, the sum over all pairs (k, l) is equal to (sum_i s_i) multiplied by (sum_2^k) squared, where sum_2^k is the sum of 2^k for all k.
+
+But wait, what is sum_2^k? It's the sum of 2^k for all bits k. Since a_i can have up to 30 bits (since a_i <= 1023, which is 10 bits), sum_2^k is 2^0 + 2^1 + ... + 2^30 = 2^31 - 1.
+
+So, sum_2^k = 2^31 - 1.
+
+So, the sum over all pairs (k, l) is (sum_i s_i) * (2^31 - 1)^2.
+
+But wait, in the earlier problem statement, the sum is over all pairs (k, l) of q_kl * 2^{k + l}.
+
+So, in this case, q_kl is the probability that both bits are set in f(S). So, the sum we're trying to compute is sum_{k < l} q_kl * 2^{k + l}.
+
+But according to the previous approach, this sum is equal to (sum_i s_i) * (2^31 -1)^2 - sum_i s_i^2 * 2^{2i} ) / 2.
+
+Wait, because in the sum S_total, each q_kl is included for all k and l, including k=l. So, when we subtract the terms where k=l, we get sum_{k < l} q_kl * 2^{k + l}.
+
+So, how?
+
+Let me think:
+
+sum_{k, l} q_kl * 2^{k + l} = (sum_i s_i) * (sum_2^k)^2.
+
+Because q_kl is the probability that a_i contributes to both bits k and l, which is s_i for (k, l) where k != l, and s_i for (k, k) is s_i as well, because for the a_i, the contribution is to both bits being set, which is the same for k and l when k=l.
+
+Wait, no. Because for a_i, s_i is the probability that a_i contributes to both bits k and l, regardless of whether k and l are the same.
+
+So, for each a_i, the term in the sum S_total is s_i multiplied by 2^k * 2^l for all k and l. So, for k=l, it's s_i * 2^{2k}.
+
+So, the sum S_total is sum_i s_i * (sum_k 2^k)^2.
+
+Thus, the sum over all k, l of q_kl * 2^{k + l} is equal to sum_i s_i * (sum_k 2^k)^2.
+
+Now, the sum we need is sum_{k < l} q_kl * 2^{k + l}.
+
+Which can be written as 0.5 * (sum_{k, l} q_kl * 2^{k + l} - sum_i q_ii * 2^{2i} ), since the sum_{k, l} includes all pairs, including k=l, which is q_ii * 2^{2i}.
+
+So, sum_{k < l} q_kl * 2^{k + l} = 0.5 * (S_total - sum_i q_ii * 2^{2i} ), where S_total is sum_i s_i * (sum_2^k)^2.
+
+So, putting it all together:
+
+The second part of the expectation is 2 * sum_{k < l} q_kl * 2^{k + l} = 2 * 0.5 * (S_total - sum_i q_ii * 2^{2i}) ) = (S_total - sum_i q_ii * 2^{2i}).
+
+So, the expectation is sum_k (p_k * 2^{2k}) + (S_total - sum_i q_ii * 2^{2i}).
+
+So, now, the problem reduces to computing:
+
+1. For each a_i, compute s_i = (a_i has bits k and l set) * (p_i / 1e4).
+
+2. Compute sum_i s_i.
+
+3. Compute sum_{k} q_ii * 2^{2i}, where q_ii is the probability that both bits i and i are set in f(S). Which is (1 - product(1 - s_i) for all a_i) / 2.
+
+4. Compute S_total = sum_i s_i * (sum_2^k)^2.
+
+5. The second part is (S_total - sum_i q_ii * 2^{2i}).
+
+6. The overall expectation is sum_k (p_k * 2^{2k}) + (S_total - sum_i q_ii * 2^{2i}).
+
+So, now, the plan is:
+
+For each test case:
+
+- Precompute all the bits for a_i. For each a_i, for each bit k (0 to 30), compute whether it is set.
+
+- For each pair (k, l), compute s_i for a_i if both bits are set, else 0.
+
+But again, the problem is to compute s_i for all (k, l) pairs, and for each a_i, s_i is the product of the probabilities that a_i has both bits set and is selected.
+
+Wait, no. For each a_i, s_i is (a_i has both bits set) * (p_i / 1e4).
+
+So, for each a_i, we can loop through all bits, compute if a_i has both bits set, and if so, s_i is (p_i / 1e4).
+
+But for n up to 2e5 and bits up to 30, this is 2e5 * 30 = 6e6 operations, which is manageable.
+
+So, step by step:
+
+1. Precompute for each a_i, for each bit k, whether a_i has it set. Let's call this bit_mask[k] = (a_i >> k) & 1.
+
+2. For each a_i, compute s_i = 0. For each bit k in 0..30:
+
+   if bit_mask[k] is True and bit_mask[l] is True, then s_i += (p_i / 1e4).
+
+   Wait, no, for each a_i, for each pair (k, l), if both are set, then s_i is (p_i / 1e4). But this would be O(n * 30^2) which is 2e5 * 900 = 1.8e8 operations. Hmm, that's manageable.
+
+Alternatively, for each a_i, compute s_i as the product of (bit_mask[k] and bit_mask[l]) multiplied by (p_i / 1e4) for each k < l, but that seems complicated.
+
+Wait, no. For each a_i, s_i is the probability that it contributes to both bits k and l. So, for each a_i, for each pair (k, l), if both are set, then s_i is (p_i / 1e4). So, for each a_i, we can loop through all 30 bits, and for each pair (k, l) where both are set, add (p_i / 1e4) to s_i.
+
+So, for each a_i, for each k in 0..29:
+
+   if bit_mask[k] is True:
+
+      for each l in k+1 to 29:
+
+         if bit_mask[l] is True:
+
+             s_i += (p_i / 1e4)
+
+So, this is O(n * 30^2) = 2e5 * 900 = 1.8e8 operations, which is acceptable.
+
+So, the steps are:
+
+For each test case:
+
+   Read n, a, p.
+
+   Precompute bit_mask for each a_i.
+
+   For each a_i and each pair (k, l):
+
+      if bit_mask[k] and bit_mask[l] are both True:
+
+          s_i += (p_i / 1e4)
+
+   Compute sum_s = sum of all s_i.
+
+   Compute sum_2k = 2^0 + 2^1 + ... + 2^30 = 2^31 - 1.
+
+   Compute sum_2k_squared = sum_2k * sum_2k = (2^31 - 1)^2.
+
+   Compute S_total = sum_s * sum_2k_squared.
+
+   For each a_i:
+
+      compute q_ii = (1 - product(1 - s_i) for all a_j) / 2.
+
+      sum_qii = sum q_ii.
+
+   Compute part2 = S_total - sum_qii.
+
+   Compute part1 = sum_{k} p_k * (2^{2k}).
+
+   The expectation is (part1 + part2) mod MOD.
+
+Wait, but part2 is S_total minus sum_qii, which is (S_total - sum_qii). So, the expectation is part1 + part2.
+
+Wait, no, because 2 * sum_{k < l} q_kl * 2^{k + l} = (S_total - sum_qii).
+
+So, the expectation is part1 (sum_k p_k 2^{2k}) + (S_total - sum_qii).
+
+So, the steps are:
+
+Compute sum_k p_k * 2^{2k}.
+
+Compute sum_qii.
+
+Compute part2 = S_total - sum_qii.
+
+Expectation = sum_k p_k * 2^{2k} + (S_total - sum_qii).
+
+So, the overall formula is:
+
+expectation = (sum_p_2k) + (S_total - sum_qii) 
+
+Where sum_p_2k is sum_{k} p_k * 2^{2k}.
+
+So, now, the next step is to compute sum_p_2k and sum_qii.
+
+sum_p_2k is easy: for each a_i, if bit_mask[k] is set, add p_i * 2^{2k} to sum_p_2k.
+
+sum_qii is the sum for each a_i of q_ii, where q_ii is (1 - product(1 - s_j)) / 2 for each a_i.
+
+So, for each a_i, compute the product of (1 - s_j) for all j, then compute (1 - product) / 2, then sum all these.
+
+So, the steps are:
+
+For each test case:
+
+   Read n, a, p.
+
+   Precompute bit_mask for each a_i.
+
+   Compute s_i for each a_i and each pair (k, l).
+
+   Compute sum_s = sum of all s_i.
+
+   Compute sum_2k = 2^31 - 1.
+
+   Compute sum_2k_squared = sum_2k * sum_2k.
+
+   Compute S_total = sum_s * sum_2k_squared.
+
+   Compute sum_p_2k = 0.
+
+   For each a_i:
+
+      if bit_mask[k] is set:
+
+          sum_p_2k += p_i * (2 ** (2 * k))
+
+   Compute sum_qii = 0.
+
+   For each a_i:
+
+      product = 1.0
+
+      for each j in 0..n-1:
+
+          product *= (1.0 - s_j)
+
+      q_ii = (1.0 - product) / 2
+
+      sum_qii += q_ii
+
+   part2 = S_total - sum_qii.
+
+   expectation = (sum_p_2k + part2) mod MOD.
+
+But wait, since all values are fractions, we need to handle them carefully. Because when dealing with p_i and s_i, which are probabilities, they are fractions modulo MOD.
+
+So, the plan is to represent all values as fractions modulo MOD, using modular inverses.
+
+So, in code, we can represent all terms as numbers modulo MOD, using the fact that division is multiplication by the modular inverse.
+
+So, let's outline the steps:
+
+MOD = 1e9 + 7.
+
+For each test case:
+
+   Read n, a, p.
+
+   Compute bit_mask for each a_i.
+
+   Precompute for each a_i, for each k, whether it has bit k set.
+
+   Compute s_i for each a_i and each (k, l) pair where both are set.
+
+   Compute sum_s = sum of all s_i.
+
+   Compute sum_2k = (MOD-1) * (MOD-1) % MOD (since 2^30 is 1e9, 2^31 is 2e9, which mod MOD is 2e9 - 1e9 = 1e9, but 2^31 is 2147483648, so mod 1e9+7 is 2147483648 - (1e9+7) = 147483641.
+
+Wait, 2^30 is 1,073,741,824.
+
+2^31 is 2,147,483,648.
+
+MOD is 1e9 +7, which is 1000000007.
+
+So, 2^31 mod MOD is 2,147,483,648 mod 1,000,000,007.
+
+Let's compute that: 2,147,483,648 - 2 * 1e9+7 = 2,147,483,648 - 2,000,000,014 = 147,483,634.
+
+So, 2^31 mod MOD is 147,483,634.
+
+Similarly, 2^30 mod MOD is 1,073,741,824 mod 1e9+7 is 73,741,824.
+
+Wait, 1e9+7 is 1,000,000,007.
+
+So, 1,073,741,824 - 1,000,000,007 = 73,741,817.
+
+So, 2^30 mod MOD is 73,741,817.
+
+So, sum_2k = 2^0 + 2^1 + ... + 2^30 = 2^31 -1 = 2,147,483,647.
+
+So, sum_2k = 2,147,483,647 mod MOD is 2,147,483,647.
+
+Then, sum_2k_squared = (sum_2k) * (sum_2k) mod MOD.
+
+But sum_2k is 2,147,483,647. So, (2,147,483,647)^2 mod MOD.
+
+But 2,147,483,647 is equal to MOD-1, so (MOD-1)^2 = MOD^2 - 2 MOD + 1, mod MOD is 1.
+
+So, sum_2k_squared is 1 mod MOD.
+
+Wait, yes:
+
+sum_2k = (2^31 -1) mod MOD is (2,147,483,648 - 1) mod MOD? Wait, no.
+
+Wait, 2^30 is 1,073,741,824. Then 2^31 is 2,147,483,648.
+
+So, 2^31 -1 is 2,147,483,647, which is 1e9+7 + 1,073,741,824 + 1.
+
+Wait, 1e9+7 is 1,000,000,007.
+
+So, 2,147,483,647 mod 1e9+7 is 2,147,483,647 - 1e9+7 = 1,147,483,640. Wait, but that's larger than MOD.
+
+Wait, no. 2,147,483,647 is equal to 2^

@@ -1,0 +1,528 @@
+Okay, I need to solve this problem where Alice and Bob are playing a game with a binary string of booleans. The goal is to determine if Alice can win, assuming both play optimally. Let's break down the problem.
+
+So, the game is turn-based, starting with Alice. Each turn, a player inserts an 'and' or 'or' operator between two booleans. The players take n-1 turns because there are n booleans, and each turn reduces the number by one. The outcome depends on whether the final expression evaluates to true (Alice wins) or false (Bob wins).
+
+Hmm, the key is to model the outcome of the expression given the way the operators are placed. But since the game is turn-based and both play optimally, I need to find the optimal strategy for both.
+
+Wait, but with n up to 2e5, a brute-force approach is impossible. So I need an efficient way to compute the result without simulating all possible operator placements.
+
+Let me think about the structure of the problem. The expression is built from the booleans with operators inserted in a way that depends on the players' choices. Alice wants the final result to be true, Bob to be false.
+
+So, perhaps the problem can be reduced to a game where each operator choice affects the final result in a way that can be determined by some properties of the initial string, like the number of 0s or 1s, or some other pattern.
+
+Wait, maybe the outcome depends on the presence of 0s and 1s in the string and the order in which operators are placed. But since both players are trying to influence the outcome, it's tricky.
+
+An alternative approach is to model the problem as a game where each step the players make decisions, and we need to find the outcome based on the initial configuration.
+
+Let me consider some small examples to get a sense of the problem.
+
+For example, if n=2, the initial string is "01" or "10". Alice goes first. She can insert 'and' or 'or'. Let's see:
+
+Case 1: "0 or 1" evaluates to 1, so Alice wins.
+Case 2: "0 and 1" evaluates to 0, so Bob wins.
+
+So, Alice will choose the first option, making the result true. So for n=2, the outcome is Alice wins if the initial string can be arranged such that the first player can force a true outcome.
+
+Another example: n=3. Suppose the string is "0 1 0".
+
+The players will place operators in two turns. Let's see:
+
+Turn 1: Alice chooses an operator. She can put 'or' in the first two positions or 'and'.
+
+If she puts 'or' between 0 and 1, the expression becomes (0 or 1) and 0. The inner 'or' is 1, so the whole is 1 and 0, which is 0. So the result is false, which would make Bob win. But wait, no— Alice wants the final result to be true. So if she puts 'or' here, the result is 0, which is bad for her.
+
+Alternatively, if she puts 'and' between 0 and 1: (0 and 1) is 0, then the expression is 0 and 0, which is 0. So again, the result is 0, which is bad.
+
+Wait, that's not good for Alice. So in this case, Alice's first move could be bad. So perhaps she should choose a different operator.
+
+Wait, maybe she can choose 'or' in the first step, but that leads to 0. Hmm, maybe the best she can do is 0, but that's bad for her. So perhaps she can't force a true outcome, so Bob wins.
+
+Wait, but wait: perhaps Bob can make a move that changes the outcome. Let's think about the second step.
+
+If the first player puts 'or' between 0 and 1, the expression becomes (0 or 1) and 0. The inner or is 1, so it's 1 and 0, which is 0. Then, the second player can choose between the next two booleans. The second player's options are to put 'and' or 'or'. Let's see what the second player can do.
+
+The current expression is 0 and 0. So the second player can choose between the two 0s. If they put 'and', the result is 0 and 0 = 0. If they put 'or', it's 0 or 0 = 0. So the result is 0, which is bad for Alice. So Bob wins.
+
+But if the first player had put 'and' in the first step, the expression becomes 0 and 1, which is 0. Then the second player has to put 'or' between 0 and 0, which is 0. So again, the result is 0.
+
+So in this case, for n=3, the outcome is Bob wins.
+
+Hmm, so the outcome depends on the initial string and the players' choices.
+
+But how do I model this for larger n?
+
+I think the problem can be modeled as a game where each player's choice affects the possible outcomes, and we need to find whether Alice can force the final result to be true regardless of Bob's choices.
+
+But for n up to 2e5, we can't simulate all possibilities. So we need a pattern or a mathematical way to determine the outcome.
+
+An alternative approach: perhaps the outcome depends on the number of 0s and 1s in the initial string. Let's think about the minimal case.
+
+Wait, the game is built by placing operators in between. The order in which the operators are placed affects the result. But since both players are trying to influence the outcome, perhaps the outcome depends on whether there's a way for Alice to make the final expression evaluate to true, regardless of Bob's choices.
+
+Alternatively, perhaps the outcome can be determined by the initial string's structure, such as the presence of a 1 in the string, and the number of 0s.
+
+Wait, let's consider another example. Suppose the string is "1010". n=4.
+
+Alice's first move: she can choose to put 'and' or 'or' between two booleans.
+
+If she puts 'and' between the first two 1 and 0: 1 and 0 = 0. Then the expression becomes 0, 1, 0.
+
+The next player, Bob, can choose to put 'or' between 0 and 1, making it 0 or 1 = 1. Then the expression becomes 0 and 1, which is 0. So the final result is 0, which is bad for Alice. So Bob can win.
+
+Alternatively, if Alice puts 'or' between 1 and 0: 1 or 0 = 1. Then the expression is 1, 0, 1.
+
+Bob can choose to put 'and' between 1 and 0: 1 and 0 = 0. Then the expression is 1 and 0, which is 0. So again, the result is 0.
+
+So in this case, Alice can't force a true outcome. So Bob wins.
+
+Wait, but what if the initial string has a 1 in it. Maybe that's a necessary condition for Alice to win.
+
+Wait, in the first example, n=2, string "10": Alice can choose to put 'and' which gives 0, which is bad. So Bob would win. Wait, no, wait: if the string is "10", Alice can choose to put 'and' between 1 and 0, which gives 0, so the result is 0, which is bad. So Bob wins.
+
+Wait, but in the first example I thought earlier, when n=2 and the string is "01", Alice can put 'or' which gives 1, so she wins.
+
+So the presence of a 1 in the string is not sufficient. Wait, in the first example, n=2, string "01": Alice can choose to put 'or' which gives 1, so she wins.
+
+So the presence of a 1 is necessary but not sufficient.
+
+So perhaps the outcome depends on whether there's at least one '1' in the string, and the number of '1's.
+
+Wait, but in the first example I thought about, n=2, string "01": Alice can choose to put 'and' between 0 and 1, which gives 0. So Bob would win. So that's bad for Alice. So in that case, the result is 0, which is bad for her.
+
+Wait, I'm getting confused. Let me re-express the first example.
+
+Test case:
+
+n=2, string "01".
+
+Alice's move: she can insert 'or' between 0 and 1. The expression becomes 0 or 1, which is 1. So Alice wins.
+
+Alternatively, she can insert 'and' between 0 and 1, which is 0. So Bob wins.
+
+So Alice will choose the option that leads to her victory, which is putting 'or'. So the outcome is Alice wins.
+
+So the key is that Alice can choose the operator to make the final result true.
+
+So in the case where the string is "01", she can choose 'or' and win.
+
+So the presence of a 1 is crucial. But sometimes, she can't win because she has to choose a particular operator that leads to her victory.
+
+So, the problem is to determine whether the initial string allows Alice to create a situation where the final result is true, regardless of Bob's choices.
+
+Hmm, perhaps the outcome depends on whether the string contains at least one '1' and whether the number of '1's is such that Alice can arrange the expression to evaluate to true.
+
+Alternatively, perhaps the outcome can be determined by the following:
+
+If there is a 1 in the string, Alice can win if the number of 1s is odd or something like that. Or maybe it's more about the parity of the number of 1s.
+
+Wait, let's think about the initial string "1010".
+
+n=4, string "1010". Alice can choose to put 'or' between the first two, leading to 1 or 0 =1. Then the expression is 1, 0, 1, 0.
+
+Bob's turn: he can choose to put 'and' between 1 and 0, making it 1 and 0 =0. Then the expression is 1, 0, 0.
+
+Alice's turn: she can put 'or' between 0 and 0, making it 0 or 0=0. So the result is 0.
+
+Wait, but in this case, it's 0, so Alice can't win.
+
+So the presence of 1's is necessary, but sometimes not sufficient.
+
+Hmm, this is getting complicated.
+
+Let me think about the problem differently. Since the players are alternately placing operators, and Alice goes first, perhaps the outcome depends on whether the initial string can be turned into a true expression when all operators are placed optimally.
+
+But how?
+
+Another approach: perhaps the final result can be determined by the majority of the 1's. Or maybe by the number of 1's and 0's.
+
+Wait, let's consider the initial string. Let's count the number of 1's, say count_ones.
+
+If count_ones is 0, then all are 0. So the expression is 0. Alice can't win.
+
+If count_ones is 1, then the final expression must be 0, because all other terms are 0. So Bob wins.
+
+If count_ones is more than 1, then Alice can arrange the operators to create a 1.
+
+Wait, but is that the case?
+
+Wait, in the first example, n=2, string "01": count_ones is 1. Alice can choose 'or' and win.
+
+In the case of n=3, string "101": count_ones is 2. So Alice can arrange to get '1 and 1' if possible.
+
+Wait, let's see:
+
+Alice's first move: she can choose to put 'and' between the first two 1's, making it 1 and 0, which is 0. Then the expression is 0, 1, 1.
+
+Bob's move: he can put 'or' between 0 and 1, making 1 or 1 =1. Then the expression is 0 and 1, which is 0.
+
+So the final result is 0, which is bad for Alice.
+
+Hmm, so even with two 1's, sometimes Alice can't win.
+
+So the initial thought that count_ones > 0 is not sufficient.
+
+Hmm, this complicates things.
+
+Alternative approach: perhaps the outcome depends on whether the number of 1's is odd or even, but I'm not sure.
+
+Wait, let's think about the initial string's structure. The expression is built by placing operators between the booleans. The order of placement determines the evaluation.
+
+But since both players are trying to influence the outcome, perhaps the outcome is determined by whether the initial string has at least one 1 and whether the number of 1's is such that Alice can arrange the operators to create a true expression.
+
+But how to model this.
+
+Wait, perhaps the outcome can be determined by whether the initial string contains a 1, and that the number of 1's is non-zero.
+
+But in the earlier example, when count_ones is 2, Alice can't win. So that's a counterexample.
+
+So perhaps the initial approach is incorrect.
+
+Another idea: perhaps the outcome depends on the parity of the count of '1's. If the count is even, Alice can't win, else she can.
+
+Wait, in the first example with count_ones=1, which is odd, she wins.
+
+In the case where count_ones=2, which is even, she can't.
+
+But in the case where the string is '11', n=2, count_ones=2, which is even. Alice's first move: she can put 'or' between the two 1's, making 1 or 1 =1. So the result is 1, Alice wins.
+
+So that's a problem for my earlier idea.
+
+So that idea is incorrect.
+
+Hmm, so I'm stuck.
+
+Alternative approach: perhaps the outcome is determined by whether there's at least one '1' in the string, and whether the number of '1's is at least one.
+
+Wait, but that's not sufficient, as seen in the earlier example.
+
+Wait, perhaps the problem can be reduced to whether the initial string has a 1, and the number of 1s is at least one.
+
+But how?
+
+Another angle: the game is a series of moves where each operator is placed optimally. Since both players are acting to optimize their own outcomes, the final result depends on whether Alice can enforce a true outcome regardless of Bob's choices.
+
+So perhaps the key is to see whether the initial string can be arranged in such a way that the final expression is true.
+
+But how to model that.
+
+Wait, perhaps the outcome is determined by whether the initial string has a 1, and whether the number of 1s is at least one.
+
+Wait, let's think of the minimal case: n=2. If the string is "01", Alice can choose 'or' and win. If it's "10", Alice can choose 'or' and win. If it's "11", Alice can choose 'or' and win.
+
+So in all cases where count_ones >=1, she can win.
+
+Wait, what about n=3, string "101": count_ones is 2. So according to this, Alice can win.
+
+But earlier analysis showed that she can't. So this contradicts.
+
+Hmm, so this approach is incorrect.
+
+Alternatively, perhaps the outcome is determined by the parity of the count of 1's.
+
+Wait, in n=3, count_ones =2, which is even. So perhaps the result is false.
+
+But according to earlier analysis, that's not the case.
+
+Hmm.
+
+Another idea: perhaps the outcome is determined by whether the initial string has at least one 1 and whether the number of 1's is greater than or equal to the number of 0's.
+
+Wait, not sure.
+
+Alternatively, perhaps the outcome is determined by the first occurrence of a 1.
+
+Wait, but this also doesn't seem to hold.
+
+Hmm.
+
+Perhaps it's time to look for patterns or think about the game in terms of evaluating the possible expressions.
+
+Wait, the game is built by inserting operators, which can be either and or or.
+
+The outcome is determined by the order in which the operators are inserted. Both players are trying to influence whether the final result is true or false.
+
+So the outcome depends on the initial configuration of the booleans and the order in which the operators are placed.
+
+But with n up to 2e5, it's impossible to simulate all possibilities.
+
+So, I need a way to model this without simulation.
+
+Let me think about the structure of the game.
+
+Each turn, an operator is placed between two booleans. So, the initial string is like t_1 t_2 ... t_n.
+
+After k operators are placed, there are n - k +1 booleans.
+
+Wait, no. The initial string has n booleans. Each operator insertion reduces the count by 1.
+
+So, the number of operators inserted is n-1.
+
+Each step, a player inserts an operator between two booleans.
+
+The order of insertion depends on the players' choices.
+
+So, the final expression is a binary tree with n leaves, and n-1 internal nodes, each being and or or.
+
+The game is about filling in the internal nodes optimally.
+
+The question is to determine whether the final expression evaluates to true, given optimal play by both Alice and Bob.
+
+So, the problem reduces to: given a binary string of length n, can Alice force the final expression to evaluate to true, assuming Bob is trying to make it evaluate to false.
+
+Hmm, but how?
+
+Wait, the final expression is built as a binary expression tree, with the operators chosen by the players.
+
+But since the players alternate, and both play optimally, perhaps the outcome depends on certain properties of the initial string.
+
+But I'm not seeing it.
+
+Another approach: perhaps the outcome can be determined by the first occurrence of a 1. If there's a 1 in the string, then Alice can choose to place an 'and' between it and the next 1, and then arrange the rest to make the final result true.
+
+Wait, but in the earlier example where the string is '101', Alice can't win.
+
+Hmm.
+
+Alternatively, perhaps the outcome is determined by whether the initial string has a 1 in the first position. If so, Alice can choose to put 'and' between the first 1 and the next 0, making it 1 and 0 =0. Then the rest of the string is processed by Bob. But then Bob can choose to put 'or' between 0 and 1, making it 0 or 1=1, which could help Alice.
+
+But I'm not sure.
+
+Wait, perhaps the key is to look for the earliest 1 in the string. If there's any 1, then Alice can choose to place 'and' between the first 1 and the next 0, making it 1 and 0 =0. Then, the rest of the string is processed, and Bob may choose to place 'or' or 'and' to influence the outcome. But perhaps Alice can choose her moves to ensure that the final result is true.
+
+But I'm not sure.
+
+Another idea: perhaps the outcome is determined by whether the initial string contains at least one 1 and the count of 1's is greater than the count of 0's.
+
+Wait, in the first example, n=2, count_ones=1, which is greater than 0. So Alice wins.
+
+In the case of n=3, string "101" has count_ones=2, which is equal to 2 1's and 1 0's. So count_ones is greater than 0.
+
+But earlier analysis suggests that Alice can't win in that case.
+
+So this idea is also incorrect.
+
+Alternatively, perhaps the outcome is determined by whether the initial string has at least one 1, and whether the number of 1's is at least one.
+
+Wait, but in the case of n=3, count_ones=2, Alice can't win.
+
+So that approach is incorrect.
+
+Hmm.
+
+Another approach: perhaps the final expression's truth value can be determined based on the initial string's parity. For example, if there's an odd number of 1's, Alice wins; else, she loses. But that's not correct because in the first example with n=2, count_ones=1 (odd) and she wins. In the case where n=3, count_ones=2 (even), she can't.
+
+But in the case of n=3, count_ones=1, which is odd, but perhaps Alice can arrange to win.
+
+Wait, let's see. For example, string "100".
+
+n=3, string "100".
+
+Alice's first move: she can put 'and' between 1 and 0, making 1 and 0 =0. Then the expression is 0,0,0.
+
+Bob's move: he can put 'or' between 0 and 0, making 0 or 0=0. So the final result is 0, which is bad for Alice.
+
+So in this case, count_ones=1 (odd), but Alice can't win.
+
+So that approach is incorrect.
+
+Hmm.
+
+Perhaps the outcome depends on the initial string having at least one 1, and also the number of 1's being at least one. But the earlier example contradicts this.
+
+So, perhaps the problem is more about the structure of the initial string.
+
+Wait, perhaps the outcome is determined by whether the initial string has a 1, and that the number of 1's is at least one, but also that the first 1 is at a certain position.
+
+Alternatively, perhaps the outcome is determined by whether the initial string has a 1, and whether the number of 1's is positive.
+
+Wait, but the earlier example with n=3, count_ones=2, Alice can't win.
+
+So, that's a problem.
+
+Hmm.
+
+Alternative idea: perhaps the outcome is determined by whether the initial string contains a 1 in the leftmost position. If so, Alice can choose to place an 'and' operator between it and the next 1, making it true, and then arrange the rest to make the final result true.
+
+But in the case where the leftmost is 1, and the next 1 is not, perhaps she can't.
+
+Wait, in the first example, string "01". Alice can choose 'or' and win.
+
+In the case of n=3, string "101": Alice can choose between the first two 1's. If she puts 'or', the first operator is '1 or 0' =1. Then the next operator is between 1 and 1. Bob can choose to put 'or' or 'and'. If he puts 'or', the next part is 1 or 1 =1. So the final result is 1 and 1 =1. So Alice wins.
+
+Wait, but earlier analysis suggested that she can't. So I must have made a mistake in that analysis.
+
+Wait, let's re-examine that example.
+
+n=3, string "101".
+
+Alice's first move: she can choose to put 'or' between the first two 1's, making it 1 or 0 =1. Then, the expression is 1,0,1.
+
+Bob's turn: he can choose to put 'or' between 0 and 1, making it 0 or 1 =1. The expression becomes 1, 1, 1.
+
+Alice's turn: she can put 'and' between 1 and 1, making it 1 and 1 =1. So the final result is 1, which is true. So Alice wins.
+
+Ah, so in that case, she can win.
+
+Hmm, so my earlier analysis was wrong. So the initial example with "101" is a winning case for Alice.
+
+So in that case, the outcome depends on whether there's a 1, and whether the initial string has a 1 in the first position.
+
+Wait, in the case of n=3, string "101": Alice can choose to put 'or' between the first two 1's, making it true. Then, the rest of the string is processed, and Bob can't prevent the final result from being true.
+
+So, perhaps the outcome is determined by whether the initial string contains a 1, and whether the first 1 is in the first position.
+
+So, if the first character is '1', Alice can win.
+
+Wait, in the first example, n=2, string "01": the first character is 0. So why does Alice win?
+
+Because she can choose to put 'or' between 0 and 1, making it true.
+
+So the initial position is 0, but Alice can choose to put 'or' to make the result true.
+
+So, perhaps the outcome depends on whether there is at least one '1' in the string, and whether the first '1' is in the first position.
+
+Wait, that's not correct. Because in the case of n=3, string "100": the first character is 1, and she wins.
+
+In the case of n=2, string "01": first character is 0, but she can choose to put 'or' to make the result true.
+
+So the initial position of 0 doesn't matter if she can choose an operator that makes the result true.
+
+So, perhaps the outcome is determined by whether there's at least one '1' in the string, and that the first '1' is in the first position.
+
+Wait, no. Because in the case of n=3, string "011": first character is 0. Alice can choose to put 'or' between 0 and 1, making it 1, then the rest is processed.
+
+So, in that case, the first character being 0 doesn't matter since Alice can choose to place an 'or' operator to make the result true.
+
+So, perhaps the outcome is determined by whether there's at least one '1' in the string, and that the first '1' is not the first character.
+
+Wait, no. Because in the case of n=2, string "01": the first character is 0, but Alice can choose to put 'or' to make the result true.
+
+So, the outcome is determined by whether there's at least one '1' in the string, and that the first '1' is not the first character.
+
+No, that's not correct because in the case of n=2, string "10": the first character is 1, Alice can choose to put 'or' to make the result true.
+
+So, the initial position of a 1 doesn't matter. It's the presence of a 1 that matters.
+
+So, perhaps the outcome is determined by whether there's at least one '1' in the string.
+
+But wait, in the case where the first character is 0 and there's a 1 somewhere in the string, Alice can place 'or' between 0 and 1, making it true, and then the rest of the string is processed. So, regardless of the initial position, if there's a 1, Alice can win.
+
+So, perhaps the outcome is determined solely by whether the initial string contains at least one '1'.
+
+If the initial string has at least one '1', Alice can win, else she loses.
+
+Wait, let's test this hypothesis.
+
+Test case 1: n=2, string "01": Alice can place 'or' and win. So yes, since there's a 1.
+
+Test case 2: n=2, string "10": Alice can place 'or' and win. So yes.
+
+Test case 3: n=3, string "010": Alice can place 'or' between 0 and 1, making it 1, and then the rest is processed. So yes.
+
+Test case 4: n=3, string "001": Alice can place 'or' between 0 and 0, making it 0, then the rest is processed. Bob can then place 'or' between 0 and 1, making it 1. So final result is 0 and 1 =1. So Alice wins.
+
+Wait, but in this case, Alice placed 'or' between the first two 0's, making 0, then the rest is processed by Bob.
+
+Hmm, but according to the hypothesis, since there's a 1, Alice can win. So the hypothesis holds.
+
+Another test case: n=3, string "000". No 1's. Alice can't win. So hypothesis holds.
+
+Another test case: n=4, string "0011". Alice can place 'or' between the first 0 and 0, making it 0. Then the rest is processed, and Bob can place 'or' between 0 and 1, making it 1. Then the final result is 0 and 1 =1. So Alice wins.
+
+So, in all these cases, the outcome is determined by the presence of a '1' in the initial string.
+
+So, the hypothesis is that if there's at least one '1' in the initial string, Alice can win, else Bob wins.
+
+So, the solution is to check if the initial string contains at least one '1'. If yes, output YES; else, NO.
+
+Wait, but let's think about the case where the initial string is "1000". Alice can place 'or' between 1 and 0, making it 1. Then the rest is processed, and Bob can choose to place 'or' or 'and', but since the final result is 1, Alice wins.
+
+Yes.
+
+Another test case: n=3, string "001". Alice can place 'or' between the first two 0's, making it 0. Then the rest is processed, and Bob places 'or' between 0 and 1, making it 1. So final result is 0 and 1 =1. Alice wins.
+
+Yes.
+
+So, the solution becomes: if the initial string contains at least one '1', Alice can win, else Bob wins.
+
+So, the code is to check if the string has any '1's. If yes, output YES, else NO.
+
+Wait, but let's test another example.
+
+n=3, string "110". Alice's first move is to place 'or' between the first two 1's, making it 1. Then the expression is 1,1,0.
+
+Bob's turn: he can choose to place 'or' between 1 and 1, making it 1. Then the expression is 1, 0.
+
+Alice's turn: she can place 'or' between 1 and 0, making it 1. So the final result is 1. Alice wins.
+
+Yes.
+
+Another test case: n=3, string "011". Alice can place 'or' between 0 and 1, making it 1. Then the expression is 1,1,1. Bob's turn: he can choose to put 'and' between 1 and 1, making it 1. So the final result is 1 and 1 =1. Alice wins.
+
+Yes.
+
+So, the hypothesis seems to hold.
+
+So, the code is straightforward: for each test case, check if the string contains at least one '1'. If yes, output YES, else NO.
+
+So, the code can be written as follows:
+
+Read t test cases.
+
+For each test case:
+
+- Read n and the string s.
+
+- If '1' is present in s, print YES. Else, NO.
+
+Wait, but let's test the earlier example where n=3, string "101":
+
+Alice's first move is to place 'or' between 1 and 0, making it 1. Then the next operator is between 1 and 1. Bob can choose to place 'or' or 'and'. But since the final result is 1, Alice wins.
+
+Yes.
+
+So, the code is correct.
+
+So, the solution is to check if the initial string has any '1's. If yes, Alice can win, else Bob wins.
+
+So, the code is as follows.
+</think>
+
+To solve this problem, we need to determine if Alice can win a game where she and Bob take turns placing logical operators (AND or OR) between a list of boolean values. The goal is to evaluate the final expression to see if it results in true (Alice wins) or false (Bob wins).
+
+### Approach
+The key insight is that Alice wins if and only if there is at least one '1' in the initial boolean string. This is because Alice can always place an operator in such a way to ensure the final result is true, provided there is at least one '1' in the string. If there are no '1's, Bob can always win by placing operators to make the final result false.
+
+### Solution Code
+```python
+def main():
+    import sys
+    input = sys.stdin.read
+    data = input().split()
+    
+    t = int(data[0])
+    index = 1
+    
+    results = []
+    for _ in range(t):
+        n = int(data[index])
+        s = data[index + 1]
+        index += 2
+        if '1' in s:
+            results.append("YES")
+        else:
+            results.append("NO")
+    
+    print('\n'.join(results))
+
+if __name__ == "__main__":
+    main()
+```
+
+### Explanation
+1. **Reading Input**: The input is read in one go for efficiency, especially given the constraints.
+2. **Processing Each Test Case**: For each test case, we check if there is at least one '1' in the boolean string.
+3. **Determine Result**: If there is a '1', Alice can win, otherwise Bob wins.
+4. **Output Results**: Collect results for all test cases and print them at the end.
+
+This approach ensures that we efficiently determine the winner for each test case in linear time relative to the length of the boolean string, making it suitable for large inputs.<｜end▁of▁sentence｜>

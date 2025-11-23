@@ -1,0 +1,791 @@
+Okay, I have to solve this problem where I need to find the minimum number of acts of justice to make an array non-decreasing. Each act of justice squares an element. Hmm, let's think about this.
+
+So, the problem is: given an array, I can choose any index and square it. I need to make the array non-decreasing with as few operations as possible. If it's impossible, return -1.
+
+First, I need to understand what makes the array non-decreasing. Each element should be less than or equal to the next one. So, for each i from 1 to n-1, a[i] <= a[i+1].
+
+The approach is to find a way to adjust the array by squaring some elements so that the resulting array is non-decreasing. And I want to do this with the least number of squaring operations.
+
+Let me think about the process. Starting from the beginning, for each element, I need to make sure it's <= the next element. If it's not, I have to square one of them. But which one to choose?
+
+Wait, but the order matters. For example, if I square the current element, it might make it larger than the next one, which is not good. Or if I square the next element, it might make it smaller, which is also bad. So I need to find a way to adjust the elements in a way that keeps the array non-decreasing.
+
+This feels like a greedy problem. Maybe I can process the array from left to right, making the necessary adjustments as I go.
+
+Let me outline the steps:
+
+1. Iterate through the array from left to right.
+2. For each element a[i], decide whether to square it or leave it as is, based on the previous elements.
+3. The decision must ensure that a[i] <= a[i+1] in the end. But since we can only square, sometimes we might have to square a later element to make the previous one fit.
+
+Wait, but how do I decide which element to square? Because for each step, I have to make sure that the current element's squared value (if chosen) is <= the next element's value.
+
+Let me think about the process step by step.
+
+Suppose I'm at position i. I have a[i] and a[i+1]. If a[i] <= a[i+1], then nothing to do. But if a[i] > a[i+1], then I have to make a[i] <= a[i+1] by squaring either a[i] or a[i+1].
+
+But which one? Because squaring a[i] could make it even larger, which would be worse. So perhaps I should square a[i+1] if that's the cheaper option, or vice versa.
+
+Wait, let's think of it this way: For a[i], if I square it, it becomes a[i]^2. I need this to be <= a[i+1]. So, a[i]^2 <= a[i+1]. If that's true, then I can square a[i]. Otherwise, I have to leave a[i] as is, but then a[i] might be larger than a[i+1], which is bad.
+
+So, when a[i] > a[i+1], I have two options:
+
+1. Square a[i]. Then, check if a[i]^2 <= a[i+1]. If yes, then this is a valid option. The number of operations increases by 1.
+2. Square a[i+1]. Then, check if a[i] <= a[i+1]^2. If yes, then this is also a valid option. The number of operations increases by 1.
+
+But which option is better? Because sometimes one might require more operations than the other. So, I need to choose the option that requires the least number of operations.
+
+Wait, but in this case, since the array is processed from left to right, maybe I should always choose the option that requires the least steps. So, I can evaluate both options and choose the one that leads to a valid array with the least operations.
+
+But how do I know which option is better? Because sometimes, one option may require more steps than the other, so I have to choose the one that doesn't require more steps.
+
+Wait, but in this case, since I'm processing from left to right, I can't backtrack. So, I have to make a decision now and then proceed. So, for each step, I have to make an optimal choice that leads to the minimal total operations.
+
+So, the algorithm could be:
+
+Initialize count = 0.
+
+For i from 0 to n-2:
+
+    current = a[i]
+    next_val = a[i+1]
+
+    if current <= next_val:
+        continue
+    else:
+        # Need to decide whether to square current or next_val
+
+        # Option 1: square current
+        option1 = count + 1
+        if current_squared <= next_val:
+            # Can do this
+            current = current_squared
+            count += 1
+            continue
+
+        # Option 2: square next_val
+        option2 = count + 1
+        if current <= next_val_squared:
+            # Can do this
+            next_val = next_val_squared
+            count += 1
+            continue
+
+        # If neither option works, it's impossible
+        return -1
+
+Wait, but this approach might not work because sometimes, even if one option is better, the rest of the array might not be able to be processed correctly. So, perhaps, I need to choose the option that leads to the minimal count, but also ensures that the rest of the array can be processed correctly.
+
+But that's complicated because the array is processed in order, and each choice affects the next steps.
+
+So, perhaps, for each i, I need to try both options and see which one leads to a valid array and uses the least operations.
+
+Wait, but that's not efficient for large n. Because for each i, I have to consider two possibilities, which could lead to exponential time.
+
+So, perhaps, a greedy approach is needed, but I need to make the locally optimal choice at each step.
+
+So, for each i, when a[i] > a[i+1], I have two options:
+
+1. Square a[i] and see if it's <= a[i+1]. If yes, proceed.
+2. Square a[i+1] and see if a[i] <= a[i+1]^2. If yes, proceed.
+
+Choose the option that requires the least operations. If both options are possible, choose the one that allows the array to be processed correctly.
+
+But how do I know which option is better? Because sometimes, one option might require more operations, but the other might not be possible.
+
+So, for each i, when a[i] > a[i+1], I check both options:
+
+Option 1: Square a[i]. Check if a[i]^2 <= a[i+1]. If yes, proceed, count +=1.
+
+Option 2: Square a[i+1]. Check if a[i] <= (a[i+1])^2. If yes, proceed, count +=1.
+
+If both are possible, choose the one with the smaller count. If both are not possible, return -1.
+
+But what if only one option is possible? Choose that.
+
+But wait, what if one option is possible but leads to a situation where the next element can't be processed? So, perhaps, the greedy approach isn't sufficient.
+
+Hmm, this is tricky.
+
+Let me think about some examples.
+
+Example 1:
+a = [2,4,3,3,5,3]
+When i=2 (element 3), a[i] is 3, a[i+1] is 3. So no problem.
+
+But in the example given, the array becomes [2,4,3,9,5,3] after squaring index 4.
+
+Wait, the original array is [2,4,3,3,5,3], and after squaring index 4 (which is 3), it becomes 9. So the array becomes [2,4,3,9,5,3].
+
+Wait, but 9 is greater than 5, which is the next element. So that's not acceptable. So I must have made a mistake in the example.
+
+Wait, no, the example says that after squaring index 4, the array becomes [2,4,3,9,5,3], which is not non-decreasing. That can't be right. So perhaps I'm misunderstanding the example.
+
+Wait, the example says that the array becomes [2,4,3,9,5,3]. So, 9 is greater than 5, which is the next element. So that can't be a non-decreasing array. So perhaps the example is wrong, or perhaps I'm misunderstanding the act of justice.
+
+Wait, perhaps the act of justice is to replace a_i with a_i squared, but when you square a_i, it's the new value, regardless of the next element.
+
+So, in the example, the array after the act is [2,4,3,9,5,3]. But 9 is greater than 5, which is the next element. So that's not non-decreasing.
+
+Wait, that's confusing. So the example must have a different outcome. Maybe I'm misunderstanding the example.
+
+Wait, perhaps the example was wrong, or perhaps I'm misreading it. Let me recheck.
+
+The example says: a = [2,4,3,3,5,3], choosing index 4 (the third 3), which is at position 4 (0-based? Or 1-based?).
+
+Wait, the array is 1-based in the problem statement. So the array is [2,4,3,3,5,3]. So index 4 is the fourth element, which is 3.
+
+After squaring it, it becomes 9. So the array becomes [2,4,3,9,5,3].
+
+But 9 is greater than 5, so the array is not non-decreasing. So that's a problem. So the example is incorrect?
+
+Wait, perhaps I'm misunderstanding the problem statement. Oh, wait, no. The problem says that after squaring, the array becomes [2,4,3,9,5,3]. But 9 is greater than 5, which breaks the non-decreasing order.
+
+So that's a problem. So perhaps the example is wrong, or perhaps I'm misunderstanding the process.
+
+Alternatively, maybe the act of justice can be done in any order, but I'm supposed to find the minimal number of acts. So, perhaps the act of choosing which index to square is part of the problem.
+
+Wait, but in the example, the act is performed on index 4, which was 3, making it 9. So the array becomes [2,4,3,9,5,3].
+
+But this is not non-decreasing, because 3 < 9 >5. So that's a problem.
+
+So perhaps the example is incorrect, or perhaps I'm misunderstanding the problem.
+
+Alternatively, perhaps the act of justice can be done on any index, but the array is allowed to have any elements as long as it's non-decreasing, and the act of justice is optional.
+
+Wait, but the example shows that the act was done, so the array is not non-decreasing. So there must be a mistake in the example.
+
+Alternatively, perhaps I have to find a way to make the array non-decreasing with the minimal number of squares, but the example is not following that.
+
+Hmm, perhaps I should focus on the algorithm.
+
+So, the approach is to process the array from left to right, making the necessary changes with the minimal number of squares.
+
+At each step, for a[i], if it's larger than a[i+1], we have to decide whether to square a[i] or a[i+1].
+
+Let's formalize this:
+
+Initialize count = 0.
+
+For i from 0 to n-2:
+
+    current = a[i]
+    next_val = a[i+1]
+
+    if current <= next_val:
+        continue
+    else:
+        # Need to square current or next_val
+        option1 = current^2
+        if option1 <= next_val:
+            # Can choose to square current
+            count +=1
+            current = option1
+            continue
+        option2 = next_val^2
+        if current <= option2:
+            # Can choose to square next_val
+            count +=1
+            next_val = option2
+            continue
+        # If neither option works, it's impossible
+        return -1
+
+After processing all elements, return count.
+
+Wait, but this approach may not work because sometimes, even if one option is possible, the next elements might not be processed correctly.
+
+For example, suppose we have a sequence where a[i] is 5, a[i+1] is 5. Then, we proceed.
+
+But if a[i] is 5, a[i+1] is 6. We have to choose between squaring 5 (25) or 6 (36). 25 is less than 6? No, 25 is greater than 6. So option1 is not possible. Option2 is 36, which is greater than 5. So neither option is possible. So the array is invalid.
+
+So, the algorithm would return -1.
+
+But that's correct, because 5 >6 is not acceptable, and neither option can make it non-decreasing.
+
+So, in that case, the algorithm correctly returns -1.
+
+Another example:
+
+a = [3,1,2]
+
+Processing i=0:
+
+current =3, next_val=1. 3>1.
+
+Option1: 3^2=9>1: no.
+
+Option2:1^2=1 <=3: yes. So count +=1, next_val becomes 1.
+
+i=1:
+
+current=1, next_val=2.
+
+No problem.
+
+So total count is 1.
+
+Which is correct, because after squaring index 0, the array becomes [9,1,2], which is not non-decreasing. Wait, that's a problem.
+
+Wait, no. Because after i=0, we have count=1, next_val is 1. So the array becomes [9,1,2], which is not non-decreasing.
+
+Wait, that's a problem with the algorithm. So perhaps the approach is incorrect.
+
+Wait, perhaps the algorithm should not only check the next element but also consider the impact on future elements.
+
+So, the algorithm is not sufficient because choosing the option that fixes the current element may cause a problem in the next steps.
+
+So, perhaps the approach needs to be adjusted.
+
+So, perhaps, for each i, when a[i] > a[i+1], I have to choose between two options, but I also need to consider what the next elements will be.
+
+Hmm, this complicates things.
+
+Let me think again. The algorithm needs to process each element, and for each, decide whether to square it or the next element, ensuring that the array remains non-decreasing. But since the array is processed left to right, each decision affects the current and future elements.
+
+So, the algorithm is to choose the minimal number of squares, but the choice must respect the non-decreasing order.
+
+So, perhaps the correct approach is to process the array and at each step, make the decision that allows the minimal number of squares, but also ensures that the rest of the array can be processed correctly.
+
+This sounds like a greedy approach, but it's not obvious how to implement it, especially considering the possibility of multiple choices.
+
+An alternative approach is to model this as a dynamic programming problem, where for each position i, we track the minimal number of squares needed to make the array up to i non-decreasing, along with the current value of a[i].
+
+But with n up to 2e5, a DP approach with O(n) time is needed, not O(n^2).
+
+Hmm, perhaps that's the way to go.
+
+So, for each i, the state is the current value of a[i]. For each possible state, we track the minimal number of squares needed up to i.
+
+Wait, but since a[i] can be up to 1e6, this is not feasible.
+
+So, perhaps, we can model the state as the current value of a[i], but that's not feasible either.
+
+Wait, perhaps we can find that for each i, the minimal number of squares is determined by the previous a[i-1], and the choices are between a[i-1]^2 and a[i]^2.
+
+But I'm not sure.
+
+Alternatively, perhaps, for each i, the minimal number of squares is determined by whether a[i] is less than or equal to a[i-1], and if not, we have to choose to square a[i] or a[i-1], whichever leads to the minimal count.
+
+Wait, perhaps the algorithm can be:
+
+For each i, starting from 0:
+
+- If a[i] <= a[i+1], do nothing.
+
+- Else:
+
+   - Option 1: square a[i]. Check if a[i]^2 <= a[i+1]. If yes, count +=1, and set a[i] to a[i]^2.
+
+   - Option 2: square a[i+1]. Check if a[i] <= a[i+1]^2. If yes, count +=1, set a[i+1] to a[i+1]^2.
+
+   - Choose the option that is better (i.e., the one with the minimal count), and proceed.
+
+But this approach may not work because choosing one option may make the next step impossible.
+
+So, perhaps, the correct way is to always choose the option that allows the maximum possible future elements to be processed with minimal squares.
+
+Hmm.
+
+Alternatively, perhaps, for each i, the minimal number of squares is determined by whether a[i] is larger than a[i+1], and if so, whether squaring a[i] or a[i+1] is better.
+
+But I'm not sure.
+
+Let me think about a case where the array is [3, 2, 1]. The minimal number of squares needed is 2: square 3 (to 9) and 2 (to 4), resulting in [9,4,1], which is not non-decreasing. Wait, that's not correct. Wait, after squaring 3, it's 9, which is larger than 2. So that's not acceptable. So, perhaps, in this case, it's impossible.
+
+Wait, no. The array [3,2,1] can't be made non-decreasing with any squares. So the answer is -1.
+
+So, the algorithm would return -1.
+
+Another example: [2,3,1]. So, i=1, a[i]=3, a[i+1]=1. So, 3>1.
+
+Option 1: square 3 to 9. Then, a[i+1] is 1. 9>1, so the array becomes [2,9,1], which is not non-decreasing.
+
+Option 2: square a[i+1] to 1. Now, a[i] is 2, a[i+1] is 1. 2>1, still not non-decreasing.
+
+So, both options are invalid. So, the array is impossible to fix, so return -1.
+
+Another example: [4,3,2,1]. So, we need to make each element <= the next.
+
+So, for i=0, a[0]=4, a[1]=3. 4>3.
+
+Option 1: square 4 to 16. Now, a[0]=16, a[1]=3. 16>3, which is bad.
+
+Option 2: square a[1] to 9. Now, a[0]=4, a[1]=9. 4<9, so it's okay.
+
+So, count increases by 1, and a[1] is now 9.
+
+Next, i=1: a[1]=9, a[2]=2. 9>2.
+
+Option 1: square 9 to 81. Now, a[1]=81, a[2]=2. 81>2: bad.
+
+Option 2: square a[2] to 4. Now, a[1]=9, a[2]=4. 9>4: bad.
+
+So, both options are invalid. So, the array is impossible to fix.
+
+So, the algorithm would return -1.
+
+Hmm, so in this case, it's impossible.
+
+So, the algorithm needs to find for each i, whether it's possible to make the array non-decreasing by choosing between squaring a[i] or a[i+1], ensuring that the rest of the array can be processed.
+
+This suggests that for each i, after making a decision, the next elements must also be processed correctly.
+
+This seems like a problem that can be solved with dynamic programming.
+
+Let me model it.
+
+Define dp[i] as a dictionary where the keys are the possible values of a[i], and the value is the minimal number of squares needed up to i to make the array non-decreasing up to i.
+
+But since a[i] can be up to 1e6, this is not feasible.
+
+Wait, but perhaps, for each step, the only possible states are the current value of a[i], but that's not feasible for large n.
+
+So, perhaps, the state can be represented by the previous a[i-1], and the current a[i], but this is not feasible either.
+
+Alternatively, perhaps, for each i, we can track the minimal number of squares needed to make a[0..i] non-decreasing, along with the current a[i].
+
+But again, with n up to 2e5, this would be O(n^2), which is not feasible.
+
+So, perhaps, I need a different approach.
+
+Let me think about the problem again.
+
+Each time a[i] > a[i+1], I have to decide whether to square a[i] or a[i+1]. But perhaps, the choice is to square the smaller of the two.
+
+Wait, perhaps, the optimal choice is to square the smaller of the two, because that would leave the larger as is, which might be better for the next steps.
+
+So, for each i, if a[i] > a[i+1], I compare a[i] and a[i+1]. If a[i] is smaller, then square a[i], else square a[i+1].
+
+But is this always optimal?
+
+Let's test this with some examples.
+
+Example 1:
+
+a = [3, 1, 2]
+
+i=0: a[0] =3, a[1]=1. 3>1.
+
+a[0] is larger than a[1]. So, square a[0] to 9. Then, a[0] becomes 9, a[1] is 1. Now, 9>1, which is bad.
+
+So, this approach would fail.
+
+Another approach: perhaps, when a[i] > a[i+1], square the one that is smaller, but in this case, a[i] is larger, so square a[i+1] to 1^2=1. So, a[0] is 3, a[1] is 1. 3>1. So, same problem.
+
+Hmm, perhaps this approach is not sufficient.
+
+Alternatively, perhaps, when a[i] > a[i+1], the minimal squares is to square a[i+1] if a[i+1]^2 <= a[i], but that's not always possible.
+
+Wait, perhaps, the algorithm should choose to square a[i] if a[i]^2 <= a[i+1], and else square a[i+1] if a[i] <= a[i+1]^2. Otherwise, it's impossible.
+
+So, for each i, when a[i] > a[i+1], check:
+
+if a[i]^2 <= a[i+1], then square a[i], count +=1.
+
+else, check if a[i] <= a[i+1]^2. If yes, square a[i+1], count +=1.
+
+else, impossible.
+
+So, let's test this with the previous example.
+
+Example: a = [3, 1, 2]
+
+i=0: a[0] =3, a[1]=1. 3>1.
+
+Option1: 3^2=9 <=1? No.
+
+Option2: 1^2=1. Check if 3 <=1^2=1. No. So, option2 is not possible.
+
+So, return -1.
+
+Which is correct, because it's impossible.
+
+Another example: a = [4, 3, 2, 1]
+
+i=0: a[0]=4, a[1]=3. 4>3.
+
+Option1: 4^2=16 <=3? No.
+
+Option2:3^2=9. Check if 4<=9: yes. So, count +=1, a[1] becomes 9.
+
+Now, i=1: a[1]=9, a[2]=2. 9>2.
+
+Option1:9^2=81 <=2? No.
+
+Option2:2^2=4. Check if 9 <=4: No. So, option2 not possible.
+
+So, return -1.
+
+Which is correct, as the array can't be fixed.
+
+Another example: a = [2,4,3,3,5,3].
+
+Processing:
+
+i=0: 2 <=4: okay.
+
+i=1:4 <=3? No. So, a[1]=4, a[2]=3.
+
+Option1:4^2=16 <=3? No.
+
+Option2:3^2=9. Check 4 <=9: yes. So, count +=1, a[2]=9.
+
+i=2: a[2]=9, a[3]=3. 9>3.
+
+Option1:9^2=81 <=3? No.
+
+Option2:3^2=9. Check 9 <=9: yes. So, count +=1, a[3]=9.
+
+Now, i=3: a[3]=9, a[4]=5. 9>5.
+
+Option1:9^2=81<=5? No.
+
+Option2:5^2=25. Check 9<=25: yes. So, count +=1, a[4]=25.
+
+i=4: a[4]=25, a[5]=3. 25>3.
+
+Option1:25^2=625 <=3? No.
+
+Option2:3^2=9. Check 25 <=9: No.
+
+So, both options are invalid. So, return -1.
+
+Wait, but the example given in the problem statement says that performing an act of justice on i=4 (which is 3) makes the array [2,4,3,9,5,3], which is not non-decreasing. So, the example is wrong, but the algorithm correctly returns -1.
+
+So, this approach seems to work.
+
+Let me see another example.
+
+Example: a = [5, 4, 3, 2, 1]
+
+i=0:5>4.
+
+Option1:5^2=25 <=4? No.
+
+Option2:4^2=16. Check 5 <=16: yes. So, count +=1, a[1]=16.
+
+i=1:16>3.
+
+Option1:16^2=256 <=3? No.
+
+Option2:3^2=9. Check 16 <=9: No.
+
+So, both options are invalid. So, return -1.
+
+Which is correct, because the array can't be made non-decreasing.
+
+Another example: a = [3, 1, 2, 2]
+
+i=0:3>1.
+
+Option1:3^2=9 <=1? No.
+
+Option2:1^2=1. Check 3 <=1: No.
+
+So, both options are invalid. So, return -1.
+
+So, this approach works for these examples.
+
+So, the algorithm is:
+
+Initialize count =0.
+
+For each i from 0 to n-2:
+
+   if a[i] <= a[i+1]:
+
+       continue.
+
+   else:
+
+       option1: square a[i]. Check if a[i]^2 <= a[i+1]. If yes, count +=1, a[i] = a[i]^2.
+
+       option2: square a[i+1]. Check if a[i] <= (a[i+1])^2. If yes, count +=1, a[i+1] = (a[i+1])^2.
+
+       if neither option is possible, return -1.
+
+So, this seems to handle the cases correctly.
+
+Wait, but in the example where a[i] is 5 and a[i+1] is 4, the algorithm would choose to square a[i+1] if possible.
+
+Wait, in that case, a[i] is 5, a[i+1] is 4.
+
+Option1:5^2=25 <=4? No.
+
+Option2:4^2=16. Check if 5 <=16: yes. So, count +=1, a[i+1]=16.
+
+So, the array becomes [5,4,16, ...], which is [5,4,16, ...], which is not non-decreasing. So, the algorithm is correct.
+
+So, the algorithm seems to handle this correctly.
+
+Another example: a = [3, 2, 1].
+
+i=0:3>2.
+
+Option1:3^2=9 <=2? No.
+
+Option2:2^2=4. Check 3 <=4: yes. So, count +=1, a[i+1]=4.
+
+Now, array is [3,2,4].
+
+i=1:2 <=4: okay.
+
+So, count is 1.
+
+So, the array is [3,2,4], which is non-decreasing.
+
+So, the algorithm correctly returns 1.
+
+So, this approach seems to work.
+
+So, the steps are:
+
+Loop through each adjacent pair.
+
+For each pair where a[i] > a[i+1], try both options of squaring a[i] or a[i+1], and choose the one that allows the array to be processed correctly with minimal squares.
+
+If neither option is possible, return -1.
+
+So, the code can be written as follows.
+
+Read t test cases.
+
+For each test case:
+
+   read n.
+
+   read the array a.
+
+   count =0
+
+   possible = True
+
+   for i in range(n-1):
+
+       current = a[i]
+
+       next_val = a[i+1]
+
+       if current <= next_val:
+
+           continue
+
+       # Need to square current or next_val
+
+       # Option 1: square current
+
+       option1 = current * current
+
+       if option1 <= next_val:
+
+           count +=1
+
+           current = option1
+
+           continue
+
+       # Option2: square next_val
+
+       option2 = next_val * next_val
+
+       if current <= option2:
+
+           count +=1
+
+           next_val = option2
+
+           continue
+
+       # Neither option is possible.
+
+       possible = False
+
+       break
+
+   if possible:
+
+       print(count)
+
+   else:
+
+       print(-1)
+
+Wait, but this code is incorrect. Because in the code, if option1 is possible, we set current to option1, but in the next iteration, current is a[i], which may have been modified.
+
+Wait, no. Because in the code, for each i, we process it, and if option1 is possible, we set current = option1, and continue. So, the next i is i+1, which is the next pair.
+
+Wait, no. Because in the code, for i in range(n-1):
+
+   current = a[i]
+
+   next_val = a[i+1]
+
+   if current > next_val:
+
+       # process.
+
+So, after processing, current is set to option1 or option2, and the loop continues.
+
+So, the code should work.
+
+Wait, let's test it with the example a = [3, 1, 2].
+
+i=0: current=3, next_val=1.
+
+3>1.
+
+Option1: 3^2=9>1: no.
+
+Option2:1^2=1. Check 3 <=1: no.
+
+So, both options are invalid. So, possible remains false, and loop breaks.
+
+So, output is -1, which is correct.
+
+Another example: a = [2,4,3,3,5,3].
+
+i=0: 2<=4: okay.
+
+i=1:4>3.
+
+Option1:4^2=16>3: no.
+
+Option2:3^2=9. Check 4<=9: yes. So, count +=1, next_val=9.
+
+i=2:3<=9: okay.
+
+i=3:3<=5: okay.
+
+i=4:5>3.
+
+Option1:5^2=25>3: no.
+
+Option2:3^2=9. Check 5 <=9: yes. So, count +=1, a[i+1]=9.
+
+Now, i=5: no more elements.
+
+So, total count is 2.
+
+Which is correct.
+
+Another test case: a = [5,4,3,2,1].
+
+i=0:5>4.
+
+Option1:5^2=25>4: no.
+
+Option2:4^2=16. Check 5 <=16: yes. So, count +=1, a[i+1]=16.
+
+i=1:4>3.
+
+Option1:4^2=16>3: no.
+
+Option2:3^2=9. Check 4 <=9: yes. So, count +=1, a[i+1]=9.
+
+i=2:3>2.
+
+Option1:3^2=9>2: no.
+
+Option2:2^2=4. Check 3 <=4: yes. So, count +=1, a[i+1]=4.
+
+i=3:2<=4: okay.
+
+So, total count is 3.
+
+So, the array becomes [5,4,16,9,4, ... ] which is [5,4,16,9,4], which is not non-decreasing. Wait, but according to the algorithm, it's allowed because the algorithm only makes the array non-decreasing, but in this case, it's not.
+
+Wait, no. Because the algorithm ensures that each step is correct.
+
+Wait, after i=0: a[0]=5, a[1]=16.
+
+i=1: a[1]=16>3.
+
+Option1:16^2=256>3: no.
+
+Option2:3^2=9. Check 16 <=9: no.
+
+So, both options are invalid. So, the algorithm returns -1.
+
+Wait, this is a problem.
+
+So, the code as written would return -1 for this case, but the algorithm is supposed to return 3.
+
+Wait, what's wrong here.
+
+Let me re-examine the algorithm.
+
+In the case a = [5,4,3,2,1], the code processes as follows:
+
+i=0:5>4.
+
+Option1:5^2=25>4: no.
+
+Option2:4^2=16. Check if 5 <=16: yes. So, count +=1, next_val=16.
+
+i=1:4>3.
+
+Option1:4^2=16>3: no.
+
+Option2:3^2=9. Check if 4 <=9: yes. So, count +=1, next_val=9.
+
+i=2:3>2.
+
+Option1:3^2=9>2: no.
+
+Option2:2^2=4. Check if 3 <=4: yes. So, count +=1, next_val=4.
+
+i=3:2<=4: okay.
+
+So, after processing, count is 3.
+
+But according to the code, when i=2, option2 is chosen, but next_val becomes 4.
+
+So, when i=3, 2<=4: okay.
+
+So, the code would return count=3, but the array after processing is [5,16,9,4, ... ].
+
+Wait, no, after i=3, a[i] is 2, and a[i+1] is 1? No, because the array is [5,16,9,4, ... ].
+
+Wait, no. Let's see:
+
+After i=0, a[1] is set to 16.
+
+i=1: a[1]=16>3.
+
+Option2:3^2=9. 16>9. So, neither option is possible. So, the code would have possible=False, break, and output -1.
+
+Wait, that's a problem.
+
+So, the code as written is incorrect.
+
+Because in the case where a[i] is 5, a[i+1] is 4.
+
+Option1:5^2=25>4: no.
+
+Option2:4^2=16. Check 5 <=16: yes. So, count +=1, a[i+1] becomes 16.
+
+So, the array becomes [5,16, ... ].
+
+Then, i=1: a[1]=16, a[2]=3.
+
+16>3.
+
+Option1:16^2=256>3: no.
+
+Option2:3^2=9. Check 16 <=9: no.
+
+So, both options are invalid. So, the code returns -1, which is wrong because the array can be fixed.
+
+So, the problem is that the code chooses option2, but in the next step, it's not possible.
+
+So, the algorithm as written is incorrect.
+
+Thus, the approach needs to be revised.
+
+So, what's the correct approach?
+
+I think the problem is that the algorithm is making a greedy choice at each step, which may lead to a dead end in the future.
+
+So, the correct approach is to check both options at each step and see if either leads to a path that can be processed correctly.
+

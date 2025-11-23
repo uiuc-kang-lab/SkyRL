@@ -1,0 +1,584 @@
+0
+Okay, so I have this problem where Nikita wants to equalize the sum of heights of mountains with and without snowy caps on a map. The map is represented as a grid, and he can perform transformations on k x k submatrices by adding a constant c to all the cells in that submatrix. The goal is to determine if it's possible to make the sum of the '1's (snowy caps) equal to the sum of the '0's (without caps) using these operations.
+
+Hmm, let me think about this. So each transformation allows adding the same c to a k x k block. But c can be different for each block. The key is that the type of each mountain remains the same; only the height changes.
+
+First, I need to calculate the initial sum of '1's and '0's. Let's call sum_with and sum_without. The target is to have sum_with equal to sum_without. So, the difference between them is (sum_with - sum_without). We need to make this difference zero.
+
+Wait, but how? Because each operation affects a k x k submatrix. So, each operation adds c to a certain area. So, the total change in sum_with and sum_without depends on how the operations cover the areas.
+
+Let me think: for any submatrix, if it's a '1' area, adding c increases sum_with. If it's a '0' area, adding c increases sum_without. So, each operation affects both sums based on the type of the submatrix.
+
+So, the problem reduces to: can we choose a set of k x k submatrices such that the sum of (sum_with - sum_without) over all these submatrices is zero.
+
+Wait, more precisely: the total change in sum_with - sum_without is the sum over all operations of (delta), where delta is the change in sum_with minus the change in sum_without for that operation.
+
+So, each operation adds c to a submatrix. So, for a '1' submatrix, the change is +c (since sum_with increases by c, sum_without remains same, so delta is +c). For a '0' submatrix, the change is +c (sum_without increases by c, sum_with remains same, so delta is +c).
+
+Wait, no. Because the initial sum_with is S1, sum_without is S0. After an operation on a '1' submatrix, sum_with increases by c (since each cell is increased by c), and sum_without remains the same. So, sum_with becomes S1 + c, sum_without remains S0. So, the difference (S1 + c) - S0 = (S1 - S0) + c. So, the difference increases by c.
+
+On the other hand, if the operation is on a '0' submatrix, sum_without increases by c, sum_with remains same. So, the difference becomes (S1) - (S0 + c) = (S1 - S0) - c.
+
+So, each operation contributes either +c or -c to the total difference (sum_with - sum_without).
+
+Wait, no. Because the initial difference is D = sum_with - sum_without.
+
+Each operation adds a certain c to the submatrix, which affects D as follows:
+
+- For a '1' submatrix: D increases by c.
+- For a '0' submatrix: D increases by -c.
+
+Wait, no. Let me re-calculate.
+
+Wait, initial D is S1 - S0.
+
+After an operation on a '1' submatrix: S1 becomes S1 + sum(c over all cells in the submatrix), so the new D is (S1 + sum(c)) - S0 = D + sum(c) = D + c.
+
+Similarly, for a '0' submatrix: S0 becomes S0 + sum(c), so new D is S1 - (S0 + sum(c)) = D - sum(c) = D - c.
+
+So, each operation on a '1' submatrix adds c to D, and each on a '0' submatrix subtracts c.
+
+Wait, but in the problem statement, c can be any integer, positive or negative. So, the operations allow us to add or subtract any c to D, but each operation is done on a k x k submatrix. So, the question is: can we perform a series of operations such that the total change in D is zero?
+
+Wait, no. Because each operation can add any c, but each operation has to be applied to a k x k submatrix. So, the total change is the sum of all the c's added for each operation.
+
+Wait, no. Because each operation contributes a c (could be positive or negative) to D. So, the total change is the sum of all the c's applied.
+
+So, we need to find a set of operations (each on a k x k submatrix) such that the sum of their c's equals -D. Because the initial D is S1 - S0. We need to make D zero, which means the total change is -D.
+
+Wait, no. Wait, initial D is S1 - S0. After applying some operations, the new D should be zero. So, the total change is -D.
+
+So, the sum of all the added c's must equal -D.
+
+But each operation is a c added to a k x k submatrix. So, the problem reduces to: can we select a set of k x k submatrices such that the sum of the c's is equal to -D.
+
+But each operation can choose any k x k submatrix, and any c (including zero). So, the sum of all c's must be exactly -D.
+
+Wait, but c can be any integer. So, the sum can be any integer. So, the question is whether -D is in the set of possible sums of k x k submatrix contributions.
+
+Wait, no. Because each operation contributes a single c, which is added to D. So, the sum of all these c's is the total change to D. So, we need this sum to be equal to -D.
+
+So, the problem is: is there a way to select a set of k x k submatrices (maybe overlapping) such that the sum of all the c's applied (each c can be any integer) is equal to -D.
+
+But wait, each operation can choose any c. So, we can choose the c's as needed. So, the sum can be any integer, right? Because we can choose c's to reach any sum.
+
+Wait, but wait. Each operation is a choice of a submatrix and a c. So, the sum of all c's is the total change. So, we can choose each c as needed, and their sum must be equal to -D.
+
+So, the question is: is -D achievable as a sum of any number of k x k submatrix contributions (each can be any integer, including zero).
+
+Wait, but each operation adds a c to a submatrix. So, for example, if I have a sum of c's equal to S, then the total change is S. So, to reach D = 0, we need S = -D.
+
+So, the problem reduces to: can we find a set of k x k submatrices (possibly overlapping) such that the sum of their c's is equal to -D.
+
+But wait, each c can be any integer. So, the sum can be any integer. So, for any required sum S (which is -D), we can achieve it by choosing appropriate c's.
+
+Wait, that's not correct. Because each operation is a choice of a submatrix and a c. So, the sum of all c's is the total change. So, if we have S = -D, can we choose a set of operations (each with a c) such that the sum of all c's is S.
+
+Yes, because we can choose c's as follows: for example, pick a single operation that covers the entire grid (if possible) and set c = S. Or, pick multiple operations that sum up to S.
+
+Wait, but in that case, the answer would be "YES" unless D is zero (since then S is zero, and we don't need any operations).
+
+Wait, no. Let me think again.
+
+The initial D is S1 - S0. We need to make D zero. So, the required sum of c's is S = -D.
+
+If D is zero, then S is zero. So, we don't need to do anything. So, the answer is "YES".
+
+Otherwise, if D is not zero, then we need to find a way to get the sum S = -D.
+
+But how?
+
+Wait, each operation contributes a c to a submatrix. So, the sum of all c's is S. So, to get S, we can choose any number of operations, each with any c. So, for example, if S is 5, we can choose a single operation with c=5. If S is -3, we can choose a single operation with c=-3. So, in this case, the answer is always "YES" as long as S is an integer, which it is.
+
+Wait, but wait: the sum S can be any integer because each c is an integer. So, for any required S, we can find a set of operations that sum to S.
+
+So, the only case where it's impossible is when D is zero, in which case no operations are needed.
+
+Wait, but that can't be right. For example, suppose the grid is 2x2. Each cell is 1. So, initial sum_with is 4, sum_without is 0. So, D is 4. We need to make D zero, so the sum of c's must be -4.
+
+We can choose a single 2x2 operation, add c=-4, and D becomes 0. So, yes.
+
+Another example: grid is 1x1. The cell is 1. So, sum_with is 1, sum_without is 0. D is 1. So, we need sum c's to be -1. So, pick a 1x1 submatrix and add c=-1.
+
+So, in all cases, except when D is zero, the answer is "YES".
+
+But wait, is that really the case? Let's think of a case where D is zero.
+
+Wait, if the initial D is zero, then no operations are needed. So, the answer is "YES".
+
+So, the only case where it's impossible is when D is zero. Because in that case, we don't need to perform any operations.
+
+Wait, but no. Because D is S1 - S0. If D is zero, then we can do nothing and the answer is "YES".
+
+So, the answer is "YES" unless D is zero. Wait, no. Wait, if D is zero, then the answer is "YES" because we don't need to do anything.
+
+Wait, no. Because for D=0, the current sum is equal, so we already satisfy the condition. So, the answer is "YES".
+
+So, the only case where the answer is "NO" is when D is not zero. Because in that case, we need to perform operations to make D zero. But since we can perform any number of operations, each adding any integer c, the sum can be any integer, including -D.
+
+Wait, that makes sense. So, the problem reduces to: if D is zero, output "YES". Otherwise, output "YES" as well, because we can always find a way to make D zero.
+
+Wait, but wait. Let me think again. Suppose D is 5. So, we need to make D zero, which requires a sum of c's equal to -5. So, we can choose a single operation that covers any k x k submatrix and adds c=-5.
+
+Yes, that's possible.
+
+So, the conclusion is: the answer is "YES" if D is zero; otherwise, it's "YES" as well. Because regardless of the value of D, we can always choose a single operation to adjust D to zero.
+
+Wait, but wait. What if D is not zero, but the required c for a single operation is not possible? No, because for any D, we can choose a single operation with c = -D.
+
+So, the only case where the answer is "NO" is when D is zero.
+
+Wait, but that can't be. Because in some cases, it's impossible to cover the required submatrices. For example, if the grid is 1x2, and both cells are '1's. So, D is 2. We need to reduce it to zero. So, we can choose a 1x1 submatrix and add c=-2, or choose the entire 1x2 submatrix and add c=-2.
+
+So, in all cases, as long as D is not zero, it's possible.
+
+Wait, but wait another example. Suppose the grid is 2x2, and all cells are '0's. So, sum_with is zero, sum_without is zero. D is zero. So, no operations are needed. So, answer is "YES".
+
+Another example: grid is 1x2, both '1's. D is 2. So, we can choose a 1x1 submatrix and add c=-2. So, the answer is "YES".
+
+Wait, but what if the required c for a submatrix is not in the correct range? No, because c can be any integer. So, for any D, we can find a c that makes the sum zero.
+
+So, the conclusion is: the answer is "YES" if D is zero, else "YES" as well. Because we can always choose a single operation with c = -D to make the sum zero.
+
+Wait, but wait. What if D is negative? Like D = -3. So, we need to add c=3 to the sum. So, choose a submatrix and add c=3, which will make D zero.
+
+Yes.
+
+So, the only case when it's impossible is when D is zero. So, the answer is "YES" in all cases except when D is zero.
+
+Wait, but that can't be right. Because in some cases, perhaps the required operations cannot be applied due to the grid's constraints.
+
+Wait, no. Because each operation can be any k x k submatrix, regardless of its position. So, as long as D is not zero, we can find a submatrix that includes all the cells with a certain type, and add the required c to make D zero.
+
+Wait, perhaps not. Because the c is added to all cells in the submatrix. So, if D is not zero, we can choose a submatrix that is all '1's, and add c = -D to make D zero.
+
+Wait, for example, if D is 5, and there's a submatrix of all '1's, then adding c = -5 to it will make the sum_with decrease by 5, making D zero.
+
+Similarly, if D is -3, we can choose a submatrix of all '0's, but that's not helpful, because adding c to a '0' submatrix increases sum_without, which would increase D.
+
+Wait, no. Let's think: D is S1 - S0 = -3.
+
+We need to make D zero, so sum_with + sum of added c's = sum_without + sum of added c's.
+
+Wait, no. Wait, D is S1 - S0. So, after adding c to a submatrix, D becomes (S1 + sum(c in submatrix)) - (S0 + sum(c in submatrix)) = S1 - S0 + sum(c) - sum(c) = S1 - S0. So, the sum of c's in the submatrix cancels out.
+
+Wait, that's interesting. So, adding a c to a submatrix of any type (k x k) doesn't change D. Because the c is added to both sums, so their difference remains the same.
+
+Wait, that's a crucial insight. So, the operation doesn't change D. So, regardless of which submatrix we choose and what c we add, D remains the same.
+
+So, in that case, the answer is "YES" only if D is zero. Because otherwise, the sum of c's can't change D. So, if D is not zero, we can't make it zero.
+
+Wait, that's a big realization. So, the initial D is S1 - S0. To make D zero, we need to add a sum of c's that is equal to -D. But each operation adds some c's to a submatrix, but D doesn't change. So, the sum of c's added is irrelevant; D remains the same.
+
+So, to make D zero, we need to have S1 - S0 + sum(c's) = 0. But sum(c's) = - (S1 - S0) = D.
+
+But since each operation adds c's to a submatrix, the sum of c's across all operations must be exactly D.
+
+Wait, but each operation can add any c, so the sum can be any integer. So, as long as D is an integer, which it is, we can choose a set of operations whose sum is D.
+
+So, the problem reduces to: can we choose a set of k x k submatrices (possibly overlapping) such that the sum of all c's across these submatrices is equal to D.
+
+Wait, but each operation contributes a c, which can be any integer. So, the sum can be any integer. So, as long as D is an integer, which it is, we can choose a set of operations whose sum is D.
+
+So, the answer is "YES" if D is zero, else "NO".
+
+Wait, but that can't be right. Because in some cases, even if D is not zero, it's impossible to reach zero.
+
+Wait, perhaps I'm misunderstanding the problem. Let me re-read it.
+
+The problem says: perform transformations on submatrices of size k x k. Each transformation adds an integer c to all the cells in that submatrix. The type of mountain remains unchanged.
+
+So, each operation adds c to all cells in a submatrix. So, for a '1' cell, the sum_with increases by c. For a '0' cell, sum_without increases by c.
+
+So, the change in D is (sum_with + c) - (sum_without + c) = sum_with - sum_without = D.
+
+So, each operation doesn't change D. So, the sum of all operations' c's is irrelevant to D.
+
+So, D remains the same after each operation.
+
+So, to make D zero, the initial D must be zero.
+
+So, the answer is "YES" if and only if D is zero.
+
+Wait, that's a big conclusion. So, the problem reduces to checking whether the initial sum_with equals sum_without.
+
+Because if they are equal, D is zero, and no operations are needed.
+
+If they are not equal, D is not zero, and since each operation doesn't change D, it's impossible to make D zero.
+
+So, the solution is: for each test case, compute sum_with and sum_without. If they are equal, output "YES", else "NO".
+
+Wait, that's a surprising conclusion, but let's test it with some examples.
+
+Example 1:
+
+Test case 1:
+
+n=1, m=1.
+
+a_ij is 1.
+
+binary string is '1'.
+
+So, sum_with is 1, sum_without is 0. D is 1.
+
+So, output is "NO".
+
+Example 2:
+
+n=1, m=1.
+
+a_ij is 2.
+
+binary string is '0'.
+
+sum_with is 0, sum_without is 2. D is -2.
+
+So, output is "NO".
+
+Example 3:
+
+n=2, m=2.
+
+a_ij are:
+
+1 1
+
+1 1
+
+binary string is '1111'.
+
+sum_with is 4, sum_without 0. D=4.
+
+So, output is "NO".
+
+Another example:
+
+n=2, m=2.
+
+a_ij are:
+
+1 0
+
+0 1.
+
+binary string is '0000'.
+
+sum_with is 0, sum_without is 4. D is -4.
+
+So, output is "NO".
+
+Another example:
+
+n=2, m=2.
+
+a_ij are:
+
+1 1
+
+0 0.
+
+binary string is '1000'.
+
+sum_with is 2, sum_without 2. D=0.
+
+So, output is "YES".
+
+So, the conclusion is, the answer is "YES" only when the sum_with equals sum_without.
+
+So, the steps to solve the problem are:
+
+For each test case:
+
+1. Read n, m, k.
+
+2. Read n rows of a_ij.
+
+3. Read n binary strings of length m.
+
+4. For each cell (i,j), determine if it's '1' (add a_ij to sum_with) and '0' (add a_ij to sum_without).
+
+5. Compute sum_with and sum_without.
+
+6. If sum_with == sum_without, output "YES"; else, "NO".
+
+That's a very simple solution.
+
+So, the code can be written as follows.
+
+We'll read each test case, process each cell, accumulate sum_with and sum_without, and then compare.
+
+Now, considering the constraints:
+
+t can be up to 1e4, n and m up to 500, but the sum of n*m across all test cases is up to 250,000.
+
+So, the code can handle this.
+
+So, the code will:
+
+For each test case:
+
+- Read n, m, k.
+
+- Read n lines, each with m integers.
+
+- Read n binary strings.
+
+- Initialize sum_with and sum_without to 0.
+
+- For each i from 0 to n-1:
+
+   - For each j from 0 to m-1:
+
+      - a = a_ij.
+
+      - is_1 = (binary string for row i is '1' at j).
+
+      - if is_1: sum_with += a.
+
+      - else: sum_without += a.
+
+- If sum_with == sum_without: print "YES".
+
+- Else: print "NO".
+
+Yes, that's the code.
+
+So, let's write it.
+
+In Python, reading the inputs can be done with input(). But for large inputs, it's better to read via sys.stdin.
+
+But for the problem's constraints, it's manageable.
+
+So, the code:
+
+Read t.
+
+For each t:
+
+   Read n, m, k.
+
+   sum_with = 0
+
+   sum_without = 0
+
+   for _ in range(n):
+
+       row = list(map(int, input().split()))
+
+       for j in range(m):
+
+           if row[j] == 1:
+
+               sum_with += row[j]
+
+           else:
+
+               sum_without += row[j]
+
+   if sum_with == sum_without:
+
+       print("YES")
+
+   else:
+
+       print("NO")
+
+Wait, but wait: the binary strings are given as a string of length m for each row. So, for each row, we need to check if the j-th character is '1' or '0'.
+
+So, in the code, for each row, after reading the m integers, we can convert the row into a string, and check each character.
+
+Alternatively, for each row, we can read the binary string, and for each j, check if the character is '1' or '0'.
+
+Which approach is better?
+
+Well, in the current code, for each row, we read the m integers, but not the binary string. So, we need to read the binary string as well.
+
+Wait, in the code as I wrote it, after reading n integers for a row, I don't read the binary string. So, that's a mistake.
+
+So, the code needs to read the binary string after reading the row.
+
+So, the corrected code:
+
+for _ in range(n):
+
+    row = list(map(int, input().split()))
+
+    # read the binary string
+
+    s = input().strip()
+
+    for j in range(m):
+
+        if s[j] == '1':
+
+            sum_with += row[j]
+
+        else:
+
+            sum_without += row[j]
+
+Yes, that's better.
+
+So, the code should read both the row of integers and the binary string for each row.
+
+So, the code is:
+
+Read t.
+
+for each test case:
+
+   read n, m, k.
+
+   sum_with = 0
+
+   sum_without = 0
+
+   for _ in range(n):
+
+       row = list(map(int, input().split()))
+
+       s = input().strip()
+
+       for j in range(m):
+
+           if s[j] == '1':
+
+               sum_with += row[j]
+
+           else:
+
+               sum_without += row[j]
+
+   if sum_with == sum_without:
+
+       print("YES")
+
+   else:
+
+       print("NO")
+
+Yes.
+
+So, this should handle all cases correctly.
+
+Let me test the examples.
+
+Example 1:
+
+Input:
+
+1
+
+1 1 1
+
+1
+
+1
+
+sum_with is 1, sum_without is 0. So, output is NO.
+
+Another example:
+
+Input:
+
+1
+
+2 2 1
+
+1 1
+
+1 1
+
+0 0
+
+0 0
+
+sum_with is 2, sum_without is 0. So, output is NO.
+
+Another example:
+
+Input:
+
+1
+
+2 2 1
+
+1 0
+
+0 1
+
+1 1
+
+1 1
+
+sum_with is 2, sum_without is 0. Output is NO.
+
+Another example:
+
+Input:
+
+1
+
+2 2 1
+
+1 1
+
+0 0
+
+0 0
+
+1 1
+
+sum_with is 2, sum_without is 2. Output is YES.
+
+Yes.
+
+So, the code should work.
+</think>
+
+To solve this problem, we need to determine if it is possible to equalize the sum of heights of mountains with and without snow caps on a given map using specific transformations. The transformations allow us to add an integer constant to all elements within a k x k submatrix.
+
+### Approach
+1. **Problem Analysis**: The key insight is that each transformation affects all elements in a k x k submatrix by the same constant value. This means the difference between the sum of heights of mountains with snow caps (sum_with) and those without (sum_without) will remain unchanged after any number of transformations. Therefore, the only way to make these sums equal is if they were already equal to begin with.
+
+2. **Algorithm**: 
+   - For each test case, read the map and the binary strings indicating the type of each mountain.
+   - Calculate the sum of heights for mountains with snow caps (sum_with) and those without (sum_without).
+   - Check if these sums are equal. If they are, print "YES"; otherwise, print "NO".
+
+3. **Complexity**: The solution efficiently processes each test case in O(n * m) time, where n is the number of rows and m is the number of columns in the map. Given the constraints, this approach is optimal and feasible.
+
+### Solution Code
+```python
+import sys
+
+def main():
+    t = int(sys.stdin.readline())
+    for _ in range(t):
+        n, m, k = map(int, sys.stdin.readline().split())
+        sum_with = 0
+        sum_without = 0
+        for _ in range(n):
+            row = list(map(int, sys.stdin.readline().split()))
+            s = sys.stdin.readline().strip()
+            for j in range(m):
+                if s[j] == '1':
+                    sum_with += row[j]
+                else:
+                    sum_without += row[j]
+        if sum_with == sum_without:
+            print("YES")
+        else:
+            print("NO")
+
+if __name__ == "__main__":
+    main()
+```
+
+### Explanation
+- **Reading Input**: The code reads multiple test cases. For each test case, it reads the dimensions of the map and the size of the submatrix. It then reads the heights of the mountains and their respective binary strings indicating their type.
+- **Sum Calculation**: For each cell in the map, the code calculates the sum of heights for mountains with snow caps (sum_with) and those without (sum_without).
+- **Comparison**: Finally, the code checks if the sums are equal. If they are, it prints "YES"; otherwise, it prints "NO".
+
+This approach ensures that we efficiently determine if the transformation can make the sums equal, leveraging the insight that transformations do not change the relative difference between the sums.<｜end▁of▁sentence｜>

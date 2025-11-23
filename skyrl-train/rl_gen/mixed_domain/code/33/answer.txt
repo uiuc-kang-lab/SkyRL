@@ -1,0 +1,746 @@
+Okay, so I've got this problem to solve. Let's read through it carefully.
+
+The problem is about an array of positive integers. We can color some elements red, but with the condition that no two red elements are adjacent. The score is calculated as the maximum red element plus the minimum red element plus the number of red elements. I need to find the maximum possible score.
+
+Hmm. So, the goal is to choose a subset of elements to color red, adhering to the adjacency rule, such that when I compute max + min + count, this value is as large as possible.
+
+Let me think about how to approach this. 
+
+First, I need to consider all possible subsets of red elements that are non-adjacent. For each such subset, calculate the score and find the maximum.
+
+But with n up to 2e5, a brute-force approach is impossible. So I need an efficient way to compute this.
+
+Let me think about the properties of the optimal solution.
+
+The score is max + min + count. So, to maximize this, I probably want the max to be as large as possible, the min as large as possible, and the count to be as large as possible.
+
+But these are conflicting objectives. For example, maybe having a higher max but fewer elements could be worse than fewer maxes but more elements.
+
+Wait, perhaps the optimal solution will have a contiguous block of red elements, but I'm not sure.
+
+Wait, no, because the red elements can be any non-adjacent. So, perhaps the best approach is to select a set of red elements that includes either the maximum element or some elements around it, and similar for the min.
+
+I think a dynamic programming approach might work here. For each position i, I can keep track of whether it's red or not, and for each state, track the maximum and minimum in the red set, and the count.
+
+But that seems complicated, especially since the array can be up to 2e5 elements. We need a way that's O(n) time.
+
+Wait, perhaps the optimal solution is to select a set of red elements that includes either the maximum element or some elements around it, and similarly for the minimum.
+
+Alternatively, maybe the optimal solution is to select a consecutive block of elements, but I'm not sure.
+
+Wait, let's think about the structure of the optimal solution.
+
+Suppose I have a window of elements where I choose some red elements. The maximum in this window is a certain value, the minimum is another, and the count is the number of reds in this window.
+
+But I need to make sure that the maximum and minimum are as large as possible.
+
+Wait, another approach: the optimal solution will have the maximum element in the array as the maximum red element. Because if I don't include it, I can't get a higher max. Similarly, the minimum red element would be the minimum of the array if I include it, or perhaps some other element.
+
+Wait, no. Because if I can't include the maximum element, then the max red element would be the second maximum, which might be lower. So, including the maximum is better for the max part.
+
+So, perhaps the optimal solution includes the maximum element as a red element. Then, for the min, maybe it's better to include some elements from the lower end.
+
+Wait, but the min of the red elements would be the smallest red element in the set. So, to maximize the min, perhaps I should include the smallest possible element in the array as red, but only if it's possible to do so without conflicting with other red elements.
+
+Alternatively, perhaps the optimal solution is to select some subset of the array where the max is as large as possible, and the min is as large as possible, and the count is as large as possible.
+
+Another idea: the optimal solution is to select a subset of elements where all the red elements are from a certain range, such that the leftmost and rightmost elements in the subset are as large as possible.
+
+Wait, perhaps the optimal solution is to choose a consecutive block of elements where the first and last are the max and min of that block. But I'm not sure.
+
+Alternatively, maybe the optimal solution is to select a set of red elements that includes the maximum element, and the minimum element, and as many elements as possible in between, ensuring that they are not adjacent.
+
+But that's just a hypothesis.
+
+Let me think of some examples.
+
+Example 1:
+n = 5
+a = [3, 1, 4, 2, 5]
+
+The maximum is 5. To include it in red, the next element (4) can't be red. So, the optimal red elements could be 5 and 1, but wait, 1 is not adjacent to 5. So, 5 and 1 are two red elements, count is 2. Max is 5, min is 1, score is 5+1+2=8.
+
+Alternatively, if I include 5,4 is not red, but 2 is red. Then, 5,2, which is count 2, max 5, min 2. Score is 5+2+2=9.
+
+Hmm, that's better. So, maybe including more elements can help.
+
+Wait, another example:
+n=4, a = [2, 3, 1, 4]
+
+Including 4 and 1: count 2, max 4, min 1. Score is 4+1+2=7.
+
+Alternatively, include 4,3,1: but 3 and 1 are adjacent, so not allowed. So, can't do that.
+
+So, in this case, the optimal is to include 4 and 1, but wait, 3 is red and 1 is next to 3, so that's invalid. So, perhaps the best is to include 4 and 3 and 1 is not allowed. So, maybe include 4 and 1, but that's not possible since 4 is at index 4, and 1 is at index 3, which is adjacent. So, the only way is to select 4 and 1: but they are not adjacent, so count is 2, max 4, min 1. Score 7.
+
+Alternatively, include 4 and 3: but 3 is at index 2, 4 is at 0. So, they are not adjacent. So, count is 2, max 4, min 3. Score is 4+3+2=9.
+
+Hmm, that's better. So, in this case, including 4,3, and 1 is not allowed because 3 and 1 are adjacent. So, the maximum is 4, min is 3, count is 2: score is 9.
+
+So, that's better than the previous option.
+
+So, perhaps the optimal solution is to select the maximum and the second maximum, and arrange them in a way that they are not adjacent.
+
+So, the approach is to find the maximum element and the second maximum, and see if they can be selected as red, ensuring they are not adjacent. If yes, then the score is max + second_max + 2.
+
+If not, then perhaps select the maximum and some other elements.
+
+Wait, this is getting a bit complicated.
+
+Another approach is to precompute for each element, the earliest and latest positions where it can be included in the red set, considering the constraints.
+
+But I'm not sure.
+
+Wait, perhaps the optimal solution is to select all elements in a certain range, such that the first and last elements are the maximum and minimum of that range, and the count is as large as possible.
+
+So, perhaps the optimal solution is to find the largest possible range where the first and last elements are the maximum and minimum of the range, and the elements in between can be included as long as they are not adjacent to any already chosen red elements.
+
+Wait, but that's vague.
+
+Another idea: the optimal solution will have a set of red elements where the maximum is r_max, and the minimum is r_min, and the count is c. We need to maximize r_max + r_min + c.
+
+So, perhaps the strategy is to select the r_max as large as possible, and then select the r_min as large as possible, and then select as many elements as possible in between, ensuring they are not adjacent to any already selected red elements.
+
+Wait, but the r_min could be lower than r_max, so maybe it's better to select the r_max and some other elements.
+
+Alternatively, perhaps the best way is to find a window where the maximum is r_max, and the minimum is r_min, and the window is as large as possible, and then see if we can include as many elements as possible in that window, ensuring that the red elements are non-adjacent.
+
+Wait, perhaps for each possible pair of r_max and r_min, where r_max is the maximum in a window, and r_min is the minimum in that window, we can calculate the maximum possible count of red elements that can be taken within that window, ensuring no two are adjacent.
+
+Then, the score would be r_max + r_min + count.
+
+We can then choose the maximum of all such possibilities.
+
+This seems promising.
+
+So, the plan is:
+
+1. For each test case, process the array.
+
+2. For each possible window (i, j), compute the maximum and minimum in the window.
+
+3. For each such window, compute the maximum number of red elements that can be taken from the window, ensuring that no two are adjacent.
+
+4. The score is max + min + count.
+
+5. Keep track of the maximum score across all such windows.
+
+Wait, but considering all possible windows is O(n^2), which is not feasible for n up to 2e5.
+
+So, that's not going to work.
+
+Need a more efficient way.
+
+Alternative idea: the optimal window is a consecutive block of elements, and for each such block, the maximum is the first element, the minimum is the last element, and the count is the number of elements that can be selected in this block without being adjacent.
+
+Wait, but that may not be the case. For example, the maximum could be somewhere in the middle.
+
+Hmm.
+
+Wait, maybe the optimal solution is to select a single element as red, which gives a score of a[i] + a[i] + 1 = 2a[i] +1. But that's probably not the best.
+
+Alternatively, selecting two adjacent elements as red, but that's not allowed.
+
+So, perhaps the best is to select a set of red elements that are as far apart as possible, but including the maximum and some other elements.
+
+Wait, perhaps the optimal solution is to select a single maximum element and some minimal elements around it, ensuring that they are not adjacent.
+
+So, perhaps for each maximum element a[i], we can consider including it as red, and then select the minimal possible elements around it, ensuring that they are not adjacent.
+
+Wait, but the minimal elements could be a[i-1] and a[i+1], but if a[i-1] is red, then a[i] can't be red. So, perhaps for each maximum a[i], the best is to include a[i] and a[i-2] and a[i+2], but only if those are not red.
+
+Wait, this is getting a bit messy.
+
+Perhaps a better approach is to precompute for each index i, the maximum possible red elements in the array, given that i is red.
+
+Wait, but that might not directly help.
+
+Another idea: the optimal solution will have the maximum and the minimum as red elements, and the rest as red as possible, ensuring that they are not adjacent.
+
+So, perhaps the approach is:
+
+- Find the maximum element, a_max.
+
+- Find the earliest occurrence of a_max, say left.
+
+- Find the latest occurrence of a_max, say right.
+
+Then, the maximum red element is a_max.
+
+Then, for the minimum red element, find the earliest occurrence of the minimum element in the array, say min_left.
+
+Then, the minimum red element is min_left.
+
+Then, the count is the number of elements that can be selected between left and right, not including any that are adjacent to a_max or min_left.
+
+Wait, but this is just a hypothesis.
+
+Let me try to formalize this.
+
+Suppose I select a_max as red. Then, I cannot select a_max-1 or a_max+1.
+
+Then, in the remaining elements, I need to select the minimum red element, which is the smallest in the remaining array, and then as many as possible.
+
+But this seems too vague.
+
+Alternatively, perhaps the optimal solution is to select a sequence of elements where the first is a_max, and the last is the minimum in the array, and in between, we can include as many as possible non-adjacent elements.
+
+So, the plan is:
+
+1. Find the maximum element a_max.
+
+2. Find the earliest occurrence of a_max, left.
+
+3. Find the earliest occurrence of the minimum element in the array, min_left.
+
+Wait, no, because the min could be in a different part of the array.
+
+Wait, perhaps the optimal solution is to select a_max, then the min is the minimum of the array, but only if it's not adjacent to a_max.
+
+Wait, but the min could be in a position that's not adjacent to a_max.
+
+So, the steps could be:
+
+- Select a_max as red. Then, the next element a_max+1 cannot be red.
+
+- Then, in the remaining elements, find the minimum element, which could be any element except a_max+1.
+
+- Then, select as many elements as possible in the remaining array, ensuring no two are adjacent.
+
+But this is still vague.
+
+Another approach: the maximum possible score is achieved when the red elements consist of the maximum element, the minimum element, and as many other elements as possible in between, ensuring no two are adjacent.
+
+So, the steps could be:
+
+1. Select the maximum element as red.
+
+2. Then, select the minimum element as red, if possible (i.e., it's not adjacent to the maximum).
+
+3. Then, select as many elements as possible in the remaining array, ensuring no two are adjacent.
+
+So, the score would be max + min + count.
+
+But how to find the earliest occurrence of the min in the array, not adjacent to the max.
+
+Wait, perhaps the optimal solution is to include the maximum, the minimum (if it's not adjacent to the maximum), and as many as possible in between, ensuring that they are not adjacent.
+
+So, the problem reduces to finding the earliest occurrence of the maximum, then the earliest occurrence of the minimum that is not adjacent, and then including as many elements as possible in between, ensuring no two are adjacent.
+
+Hmm.
+
+Alternatively, perhaps the optimal solution is to select a window where the first element is the maximum, the last element is the minimum, and in between, we select as many elements as possible, ensuring no two are adjacent.
+
+But again, not sure.
+
+Let me try to think of the problem differently.
+
+The score is max + min + count.
+
+We need to maximize this.
+
+So, to maximize the score, we need to have a large max, a large min, and as many red elements as possible.
+
+So, perhaps the approach is to select a red element with the maximum possible value, and then select as many other red elements as possible, ensuring that the min is as large as possible, and that the count is as large as possible.
+
+So, perhaps the optimal solution is to pick the maximum element as red, and then select other red elements from the remaining elements, ensuring that the min is as large as possible, and the count is as large as possible.
+
+Wait, but the min could be smaller than the maximum, so perhaps including a higher min would be better.
+
+So, perhaps the optimal solution is to select a subset of elements where the max is a certain value, and the min is another certain value, and the count is as large as possible.
+
+So, maybe the approach is to find the maximum possible max, and then find the best min and count for that max.
+
+But that seems complicated.
+
+Another idea: the optimal solution is to select a set of red elements such that all are in a single block, and within that block, the max is the first element, the min is the last element, and in between, the elements are as small as possible.
+
+Wait, perhaps that's the case.
+
+So, the steps would be:
+
+For each possible block [i, j], compute the max and min in the block.
+
+Then, if the max is equal to a[i], and the min is equal to a[j], then the block is a candidate.
+
+Then, for this block, the score is a[i] + a[j] + (j - i + 1).
+
+Because we can include all elements from i to j, provided that a[i] is the max and a[j] is the min.
+
+Wait, but that's not necessarily true. For example, in a block [i, j], a[i] is the max, a[j] is the min. Then, all elements in between are >= a[i] and <= a[j], so a[i] is the max, a[j] is the min.
+
+So, in that case, the block is a candidate.
+
+So, the plan is:
+
+Loop through all possible blocks [i, j], where i <= j.
+
+For each block, compute the max and min.
+
+If the max is a[i] and the min is a[j], then the score is a[i] + a[j] + (j - i + 1).
+
+We can keep track of the maximum such score.
+
+But this approach is O(n^2), which is not feasible for n up to 2e5.
+
+So, we need a way to compute this efficiently.
+
+Hmm.
+
+Let me think about how to find such blocks efficiently.
+
+We can precompute for each position i, the maximum in the prefix up to i, and the maximum in the suffix starting at i.
+
+Similarly for the minimum.
+
+But I'm not sure.
+
+Wait, for a block [i, j], the max is the maximum of a[i..j], and the min is the minimum of a[i..j].
+
+We need the max to be a[i], and the min to be a[j].
+
+So, for a[i] to be the max in [i, j], all elements in [i, j] must be <= a[i].
+
+Similarly, for a[j] to be the min in [i, j], all elements in [i, j] must be >= a[j].
+
+So, for each i, we can find the largest j such that a[j] <= a[i], and in the range i to j, all elements are <= a[i].
+
+Wait, perhaps not.
+
+Alternatively, for each i, the maximum possible j where [i, j] is such that a[i] is the max, and a[j] is the min.
+
+But I'm not sure.
+
+Another approach: for each i, find the largest j where a[j] <= a[i], and in the range i to j, all elements are <= a[i]. Then, for this i, the block [i, j] is a candidate if a[j] is the min of [i, j].
+
+Wait, but a[j] could be less than a[i], but perhaps not the min.
+
+Wait, perhaps for each i, we can find the earliest j where a[j] is the min in [i, j], and a[i] is the max in [i, j].
+
+But again, not sure.
+
+This seems a bit stuck.
+
+Let me think about the sample inputs.
+
+Sample 1:
+n=5
+a = [3,1,4,2,5]
+
+The maximum is 5, at index 4.
+
+To include 5 as red, the next element (4) can't be red.
+
+So, the best is to include 5 and 1 (index 0), which are not adjacent.
+
+So, the block is [0,0], [4,4], but that's not adjacent.
+
+So, the count is 2, max 5, min 1. Score is 5+1+2=8.
+
+But perhaps there's a better block.
+
+Wait, the block [0,4] is [3,1,4,2,5]. The max is 5, which is a[4]. The min is 1, which is a[1]. So, the block [0,4] is not a candidate because the min is a[1], not a[4].
+
+So, the score is 5+1+3=9.
+
+Wait, because in the block [0,4], the min is 1, which is a[1], so it's not a[4]. So, the block is not a candidate.
+
+So, the optimal is to include 5 (index4) and 1 (index0) and maybe 2 (index3)? No, because 0 and 3 are adjacent.
+
+Wait, no, so in the block [0,4], the red elements can't be 0 and 4 (since they are adjacent), so the maximum count is 2 (0 and 4 are not allowed, but 0 and 3 are not allowed, 1 and 4 are not allowed, etc.). So, the best is to pick 4 and 0, but that's not possible because 0 and 4 are not adjacent? Wait, 0 is index 0, 4 is index4: they are not adjacent, so they can both be red.
+
+So, in the block [0,4], we can select 0 and 4, but also include 3, but that's not possible because 3 is adjacent to 4.
+
+Wait, no, 3 is index3, which is adjacent to 4. So, can't include both.
+
+So, in the block [0,4], the red elements can be 0 and4, which are non-adjacent. So, count is 2, max is 5, min is 3. Wait, no, a[0] is 3. So, min is 3.
+
+So, score is 5+3+2=10.
+
+Wait, that's better than 8.
+
+So, perhaps the optimal is 5,3,2.
+
+Wait, that's 5+3+2=10.
+
+Wait, but in the block [0,4], the min is 3 (a[0]).
+
+So, the score is 5+3+2=10.
+
+Hmm, that's better than the previous 8.
+
+So, that's an example where the optimal is to include the maximum and the minimum, and as many as possible.
+
+So, perhaps the approach is to find a block where the first element is the maximum, the last is the minimum, and all elements in between are >= the first and <= the last.
+
+So, the maximum is the first element, the minimum is the last element.
+
+So, in the block, the max is a[i], the min is a[j], and all elements are between a[i] and a[j].
+
+So, the score is a[i] + a[j] + (j - i + 1).
+
+So, the problem reduces to finding such a block where this is maximized.
+
+So, the plan is:
+
+- For each i from 0 to n-1:
+
+   - Find the largest j >=i such that a[j] <= a[i], and for all k in i to j, a[k] >= a[i].
+
+   - Then, for this i, the block [i, j] is a candidate if a[j] is the min in [i, j].
+
+   - Compute the score as a[i] + a[j] + (j-i+1).
+
+   - Keep track of the maximum score.
+
+So, this approach would find, for each i, the largest possible j where a[j] is <= a[i], and all elements in between are <= a[i]. Then, check if a[j] is the minimum in the block.
+
+If so, compute the score.
+
+This way, we can process each i in O(1) or O(log n) time, leading to O(n log n) time overall.
+
+So, how do we find j for each i?
+
+We can precompute for each i, the farthest j where a[j] <= a[i], and all elements in between are <= a[i].
+
+This is similar to the problem of finding the maximum j for each i such that a[j] is the minimum in the range [i, j].
+
+Wait, but that's not exactly correct. Because the block [i, j] must have a[j] as the minimum, which is a[i]. So, a[j] must be the minimum in [i, j].
+
+So, for each i, we can find the maximum j where a[j] <= a[i], and a[j] is the minimum in [i, j].
+
+Hmm.
+
+Wait, perhaps for each i, we can find the farthest j where a[j] is the minimum in [i, j], and a[j] <= a[i].
+
+So, the approach is:
+
+For each i:
+
+   Initialize j = i.
+
+   While j < n:
+
+      If a[j] >= a[i], break.
+
+      Else:
+
+         j +=1.
+
+   So, j is the farthest index where a[j] is less than a[i].
+
+   Then, check if a[j] is the minimum in [i, j].
+
+   If yes, then the block is [i, j].
+
+   Else, find the next j where a[j] is the minimum.
+
+Wait, but this is O(n^2) in the worst case.
+
+So, perhaps a better approach is needed.
+
+Another idea: for each i, find the maximum j where a[j] <= a[i], and a[j] is the minimum in [i, j].
+
+We can precompute for each i the earliest j where a[j] is the minimum in [i, j], and a[j] <= a[i].
+
+Wait, not sure.
+
+Alternatively, we can precompute for each i the earliest j where a[j] is the minimum in [i, j], which is the same as the first occurrence of a minimum in the subarray starting at i.
+
+But I'm not sure.
+
+Another approach: for each i, find the earliest j >=i where a[j] is the minimum in [i, j], and a[j] <= a[i].
+
+So, for example, in the sample [3,1,4,2,5], for i=0, a[i] is 3.
+
+The earliest j where a[j] is the minimum in [0, j] is j=1 (a[j]=1).
+
+So, a[j] is 1, which is <= a[i]=3.
+
+So, the block is [0,1], score is 3+1+2=4.
+
+But this is worse than the optimal 5+3+2=10.
+
+So, not the best.
+
+Hmm.
+
+Wait, perhaps the correct approach is to find for each i, the maximum j where a[j] <= a[i], and a[j] is the minimum in [i, j].
+
+So, for each i, find the maximum j where a[j] is the minimum in [i, j], and a[j] <= a[i].
+
+So, this would ensure that the min is a[i], which is <= a[j], but wait, a[j] is the min, so a[j] <= a[i].
+
+Wait, no: a[j] is the minimum of the block, which includes a[i].
+
+So, a[j] <= a[i].
+
+So, the condition is a[j] <= a[i].
+
+So, for each i, find the farthest j where a[j] <= a[i], and a[j] is the minimum in [i, j].
+
+So, the block is [i, j], which has max a[i], min a[j], and count j-i+1.
+
+So, the score is a[i] + a[j] + (j -i +1).
+
+So, the problem reduces to finding all such blocks and selecting the maximum score.
+
+So, the algorithm is:
+
+Initialize max_score to 0.
+
+For each i in 0..n-1:
+
+   Find the maximum j >=i such that a[j] <= a[i], and a[j] is the minimum in [i, j].
+
+   If such j exists:
+
+      score = a[i] + a[j] + (j -i +1)
+
+      if score > max_score:
+
+         max_score = score
+
+Return max_score.
+
+So, the key is to find for each i, the farthest j where a[j] is the minimum in [i, j], and a[j] <= a[i].
+
+How to find j for each i efficiently?
+
+Hmm.
+
+We can precompute for each i the earliest j where a[j] is the minimum in [i, j], which is trivially j=i.
+
+Then, we can look for the farthest j where a[j] is the minimum in [i, j], and a[j] <= a[i].
+
+Wait, but a[j] is the minimum in [i, j], so a[j] <= a[k] for all k in [i, j].
+
+So, a[j] <= a[i], because a[i] is in [i, j].
+
+So, the condition a[j] <= a[i] is automatically satisfied.
+
+So, for each i, find the maximum j where a[j] is the minimum in [i, j], and j is as far as possible.
+
+Wait, no, because a[j] is the minimum in [i, j], so a[j] <= a[i] is automatically true.
+
+So, for each i, the maximum j is the last occurrence of the minimum in the array starting at i.
+
+So, for each i, we can precompute the last index j where a[j] is the minimum in [i, j].
+
+So, for example, in the sample:
+
+i=0: the minimum is 1 at j=1.
+
+i=1: the minimum is 1 at j=1.
+
+i=2: the minimum is 4 at j=2.
+
+i=3: the minimum is 2 at j=3.
+
+i=4: the minimum is 5 at j=4.
+
+So, for i=0, j=1.
+
+So, the block is [0,1], score 3+1+2=4.
+
+i=1: j=1. Block [1,1], score 1+1+1=2.
+
+i=2: j=2. Score 4+4+1=9.
+
+i=3: j=3. Score 2+2+1=5.
+
+i=4: j=4. Score 5+5+1=11.
+
+Wait, but for i=4, a[i]=5, j=4 is the only option, so score is 5+5+1=11.
+
+But wait, can we include 5 as red, and any other elements? Because in the array, the next element is 5 at j=4, which is adjacent. So, we can't include both.
+
+So, for i=4, j=4 is the only option, so score is 5+5+1=11.
+
+But in the sample, the optimal is 5+3+2=10.
+
+Wait, so this approach is not capturing that.
+
+Hmm, because in the sample, the optimal is to select i=0 and j=4, but the min is 1, not 5.
+
+So, that approach is not considering the case where the min is not the last element.
+
+So, this approach is not sufficient.
+
+So, this suggests that the initial idea is flawed.
+
+Hmm.
+
+So, perhaps the correct approach is to find for each i, the earliest j where a[j] is the minimum in [i, j], and then see if including j allows us to include as many elements as possible, but ensuring that the min is a[j], which is the earliest, not the last.
+
+Wait, but I'm getting stuck.
+
+Perhaps I should look for similar problems or think of another approach.
+
+Another idea: since the score is max + min + count, perhaps the maximum score is achieved by including the maximum and the minimum, and as many elements as possible in between, which are not adjacent to either.
+
+So, perhaps the optimal solution is to select a block where the first element is the maximum, the last is the minimum, and all elements in between are not adjacent to either.
+
+So, the block is [i, j], where a[i] is the maximum, a[j] is the minimum, and for all k in i+1 to j-1, a[k] is not equal to a[i] or a[j].
+
+Then, the score is a[i] + a[j] + (j -i +1).
+
+So, the problem is to find such a block.
+
+So, the steps are:
+
+1. Find the maximum element a_max.
+
+2. Find the earliest occurrence of a_max, i.
+
+3. Find the latest occurrence of a_max, j.
+
+Wait, no, because the earliest and latest would be the same.
+
+Alternatively, find the first occurrence of a_max, i.
+
+Then, find j, which is the last occurrence of a_min in the array, but ensuring that j is not adjacent to i.
+
+Wait, but the min could be anywhere.
+
+Alternatively, perhaps the optimal is to find a window where a[i] is the maximum, a[j] is the minimum, and j > i+1 and i >=1.
+
+So, for each i, find the earliest j where a[j] is the minimum in [i, j], and j > i+1.
+
+So, the block is [i, j], where a[j] is the min, and j is not adjacent to i.
+
+So, for each i, find the earliest j where a[j] is the min in [i, j], j > i+1.
+
+Then, the block is [i, j], and the score is a[i] + a[j] + (j-i+1).
+
+So, this approach would capture the cases where the min is not the last element.
+
+So, let's see.
+
+In the sample:
+
+i=0, a[i]=3.
+
+Find the earliest j where a[j] is the min in [0, j], j>1.
+
+In the array, the min is 1 at j=1, which is adjacent to i=0. So, j must be >=2.
+
+The min in [0, 2] is 1 at j=1, which is not in [0,2]. So, the min in [0,2] is 2 at j=3.
+
+So, j=3.
+
+So, the block is [0,3], a[i]=3, a[j]=2.
+
+So, the score is 3+2+4=9.
+
+That's better than the previous 8.
+
+So, in this case, the optimal is 9.
+
+So, this approach seems to capture the correct scenario.
+
+So, the steps are:
+
+For each i, find the earliest j where a[j] is the minimum in [i, j], and j > i+1.
+
+Then, compute the score as a[i] + a[j] + (j -i +1).
+
+So, the plan is:
+
+1. For each test case, process the array.
+
+2. Precompute for each i, the earliest j where a[j] is the minimum in [i, j], j > i+1.
+
+3. For each such i, compute the score, and track the maximum.
+
+Additionally, we need to consider the case where the min is the first element.
+
+Wait, for example, if the array is [5,4,3,2,1], then the best is to include 5 and 1, with count 2, score 5+1+2=8.
+
+But according to the approach, for i=0, j=4 (since a[j] is 1, which is the min in [0,4], and j>0+1=1.
+
+So, the score is 5+1+5=11, which is better.
+
+So, that's correct.
+
+So, the approach seems to work.
+
+So, the steps are:
+
+For each i in 0 to n-1:
+
+   Find the earliest j >=i+1 where a[j] is the minimum in [i, j].
+
+   If such j exists:
+
+      score = a[i] + a[j] + (j -i +1)
+
+      keep track of the maximum score.
+
+So, the question is, how to efficiently find, for each i, the earliest j >=i+1 where a[j] is the minimum in [i, j].
+
+This can be done with a pre-processing step.
+
+Idea:
+
+We can precompute for each position i, the next occurrence of the minimum in the array, starting from i+1.
+
+So, for each i, we can find j as the first position >=i+1 where a[j] is the minimum in [i, j].
+
+This can be done by, for each i, finding the next minimum to the right.
+
+We can precompute this using a stack or by traversing the array once.
+
+Let me think about how to do this.
+
+We can create an array 'next_min' where next_min[i] is the earliest j >=i where a[j] is the minimum in [i, j].
+
+So, for each i, next_min[i] is the first j >=i where a[j] is the minimum in [i, j].
+
+We can compute this by traversing the array from right to left.
+
+Initialize next_min[n-1] = n-1.
+
+For i from n-2 downto 0:
+
+   if a[i] < a[next_min[i+1]]:
+
+      next_min[i] = next_min[i+1]
+
+   else:
+
+      next_min[i] = i
+
+So, this way, for each i, next_min[i] is the earliest j >=i where a[j] is the minimum in [i, j].
+
+Yes, this seems correct.
+
+Let me test this logic.
+
+Sample array [3,1,4,2,5].
+
+n=5.
+
+Compute next_min from right to left.
+
+i=4: next_min[4]=4.
+
+i=3:
+
+a[3]=2 < a[4]=5 → next_min[3]=4.
+
+i=2:
+
+a[2]=4. a[3]=2 <4 → next_min[2]=3.
+
+i=1:
+
+a[1]=1 < a[3]=2 → next_min[1]=3.
+
+i=0:
+
+a[0]=3 < a[3]=2? No. So, next_min[0]=0.
+
+So, next_min array is [0,3,3,4,4].
+
+So

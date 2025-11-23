@@ -1,0 +1,745 @@
+Okay, I need to solve this problem where I have to find the maximum possible MEX of a set S which is built by inserting edge values as we traverse a grid. The grid is n x n, and we start at (1,1) and end at (n,n). The edges can be either right or down, and each has a value. Every time we traverse an edge, we add its value to S. The goal is to find the maximum possible MEX of S when we reach (n,n).
+
+Hmm, so the MEX is the smallest non-negative integer not present in S. So to maximize the MEX, I need to ensure that all smaller integers are present, and then the MEX is the smallest missing one.
+
+But how? Because the path can vary, and for each path, the set S can vary. So I need to find the maximum possible MEX across all possible paths.
+
+Wait, but n can be up to 20, which makes n^3 up to 8000, which is manageable for some methods, but perhaps I need a smarter way.
+
+Let me think about the problem. What's the maximum possible MEX? Well, the MEX is the smallest missing non-negative integer. So for the MEX to be m, all numbers from 0 to m-1 must be present in S, and m is missing. So to maximize m, we need to ensure that 0,1,2,...,m-1 are all present, and m is not.
+
+The challenge is to find the maximum m such that there exists a path that includes edges with values 0,1,...,m-1. Because if m is the MEX, then all lower numbers must be present, and at least one of m must be missing.
+
+So the problem reduces to: what's the largest m such that all values 0,1,...,m-1 can be collected on some path, but m is not collected.
+
+Wait, but the MEX is the smallest missing. So if m is the MEX, then all lower integers are present. So to maximize the MEX, I need to include all possible 0,1,2,...,k-1, and have k not present. So the maximum possible MEX is the smallest k where it's impossible to have a path that includes all 0..k-1.
+
+So, how can I model this?
+
+This feels like a problem where I need to find the maximum m such that all values from 0 to m-1 can be collected on some path, and m is not. So the approach is to find the maximum m where such a path exists.
+
+But how do I compute this? One way is to model it as a BFS, keeping track of the values collected so far, but that's not feasible for n=20, as the state space would be too large.
+
+Alternatively, perhaps I can think of the problem as trying to collect all possible integers from 0 up to some maximum possible, and for each possible m, check if there's a path that includes all values 0 to m-1. Once I find the largest m where this is possible, that's the MEX.
+
+But the MEX is the smallest missing, so the maximum MEX would be the first missing value.
+
+So the plan is:
+
+1. For each possible m, determine if there's a path from (1,1) to (n,n) that includes edges with values 0, 1, ..., m-1.
+
+2. The maximum m where this is possible is the MEX.
+
+Wait, no. Because the MEX is the smallest missing. So if the path includes all 0,1,...,m-1, then the MEX is at least m. But if it's possible to have a path that includes all 0,1,...,m-1, but not m, then the MEX could be higher.
+
+Wait, perhaps I'm getting confused. Let me think again.
+
+The MEX is the smallest non-negative integer not in S. So to maximize MEX, I need the S to have all the numbers from 0 up to m-1, and m is not in S. Because that would make the MEX m.
+
+So, the maximum possible MEX is the smallest m for which it's impossible to collect all 0,1,...,m-1 on any path.
+
+So, the approach is to find the largest m where it's possible to collect 0,1,...,m-1.
+
+Wait, but how? Because the MEX is the smallest missing, so if I can find a path that includes all 0 to m-1, then the MEX is at least m. But perhaps there's a path that includes all 0 to m-1 and also includes m, so the MEX would be higher.
+
+Wait no: the MEX is the smallest number not in S. So if all numbers 0 to m-1 are present, but m is not, then MEX is m. But if there's a path that includes all 0 to m, then the MEX is m+1, and so on.
+
+Wait, no. Let's think about an example.
+
+Suppose S is {0,1,2}. Then MEX is 3. If a path also includes 3, then S becomes {0,1,2,3}, so MEX is 4. So, the MEX is determined by the smallest missing in S.
+
+So, to find the maximum MEX, I need to find the smallest m such that it's impossible to collect all 0,1,...,m-1 on any path.
+
+Wait, no. Because the MEX is the smallest missing. So, for example, if a path has all 0,1,2,3, then MEX is 4. Because 0,1,2,3 are all present, 4 is the first missing.
+
+So, to find the maximum possible MEX, it's the smallest m where it's impossible to collect all 0,1,...,m-1. Then, the MEX would be m.
+
+Wait, no. Because if I can collect 0,1,2, but not 3, then the MEX is 3. So the maximum MEX is 3.
+
+Wait, but the MEX is the smallest missing. So in this case, the MEX is 3, because 0,1,2 are present, and 3 is missing.
+
+So the maximum MEX is 3, which is the smallest missing.
+
+So, the problem is to find the maximum MEX, which is the smallest missing integer in the set S.
+
+So, to maximize the MEX, we need to have S include all integers 0,1,...,m-1, and not include m.
+
+So, the approach is to find the largest m such that there exists a path that includes all integers 0,1,...,m-1, and does not include m.
+
+Wait, no, that's not necessarily correct. Because if a path includes 0,1,...,m-1 but also includes m, then the MEX would be m+1, but that's only if m+1 is missing.
+
+Wait, perhaps a better way to think is:
+
+The MEX is the smallest integer not present in S. So, to maximize it, we need to have as many small integers as possible in S, and leave out the smallest possible integer that's missing.
+
+So, the maximum MEX is the first integer that is missing in the S set.
+
+So, the strategy is to find the smallest integer m such that m is not present in S, and all integers less than m are present.
+
+So, the MEX is m.
+
+Thus, the problem reduces to finding the smallest m where:
+
+- There exists a path from (1,1) to (n,n) that includes all integers 0,1,...,m-1.
+
+- There is no path that includes all integers 0,1,...,m.
+
+If I can find such an m, then the MEX is m.
+
+So, now, the problem is to find the maximum possible m where this holds.
+
+But how?
+
+Hmm, perhaps the approach is to compute for each m, whether it's possible to have a path that includes all 0 to m-1.
+
+The maximum possible m is the largest such that all 0..m-1 are included in some path, but m is not.
+
+So, for each possible m, we can check if such a path exists.
+
+But how do we compute this?
+
+Wait, perhaps for each test case, we can perform a BFS for each possible m, but that's not feasible. Alternatively, we can model the problem as a state that includes the collected numbers and the current position.
+
+Wait, but for small n, perhaps we can model the problem as a BFS where each state is the current position and a bitmask of the numbers collected so far.
+
+But the numbers can be up to 2n-2, which is 38 when n=20. So the bitmask would be 38 bits, which is 2^38 possible values. That's way too big.
+
+So, that approach is not feasible.
+
+Alternative idea: For each cell (x,y), track the set of collected numbers from 0 up to the maximum possible. But that's still unmanageable.
+
+Hmm.
+
+Wait, another angle: the MEX is the smallest missing. So, for each possible m, we need to know if it's possible to collect 0,1,...,m-1 on some path.
+
+So, perhaps the maximum possible MEX is the smallest m such that there's no path that includes all 0,1,...,m-1.
+
+Wait, no. Because the MEX is the smallest missing, which can be higher than m if all numbers from 0 to m are present.
+
+Wait, perhaps the MEX is the smallest integer that is not present in the S set. So, if all integers less than m are present, but m is missing, then the MEX is m.
+
+So, to find the maximum MEX, we need the smallest m for which m is not present in S, but all smaller integers are present.
+
+So, the problem is to find the smallest m where:
+
+- There exists a path that includes all integers 0, 1, ..., m-1.
+
+- There is no path that includes all integers 0, 1, ..., m.
+
+So, the maximum MEX is m.
+
+Thus, the approach is:
+
+We need to find the smallest m such that:
+
+1. There exists a path that includes all 0,1,...,m-1.
+
+2. There is no path that includes all 0,1,...,m.
+
+So, for each m starting from 0 upwards, we can check these two conditions.
+
+The maximum MEX is the first m where these two conditions are true.
+
+But how do we compute this for each m?
+
+This seems computationally intensive, but perhaps manageable for small n.
+
+So, the steps would be:
+
+For m starting from 0:
+
+1. Check if it's possible to collect all 0,1,...,m-1 on some path.
+
+2. Check if it's impossible to collect all 0,1,...,m on some path.
+
+If both conditions are satisfied, then the MEX is m.
+
+So, the plan is:
+
+- For each test case:
+
+   a. Precompute all possible edges (d and r) and their values.
+
+   b. For m from 0 upwards:
+
+      i. Check if all 0,1,...,m-1 are present in some path.
+
+      ii. Check if m is not present in any path.
+
+      iii. If both are true, then the MEX is m.
+
+      iv. Else, proceed to m+1.
+
+But how do we check if all 0..m-1 are present on some path?
+
+That's the tricky part.
+
+So, for each m, we need to determine whether there's a path from (1,1) to (n,n) that includes edges with values 0,1,...,m-1.
+
+But how?
+
+Hmm, perhaps for each m, we can model this as a problem where the path must include all the required edges. But it's not clear how to model this.
+
+Another idea: the path must have at least one edge with value 0, one with 1, ..., up to m-1. So, the problem is to find a path that includes all these edges.
+
+But even then, it's unclear how to model this efficiently.
+
+Wait, perhaps for each m, the required is that all 0,1,...,m-1 are present on some path. So, for m=0, we need a path that includes at least one edge with value 0.
+
+But if n=2, the grid is 2x2. The only path is right then down, or down then right. So, for m=0, at least one of the edges must have 0.
+
+But for larger m, it's more complex.
+
+Wait, perhaps the maximum MEX is equal to the maximum number of distinct non-negative integers (0,1,...) that can be collected on some path. So, for each m, if it's possible to collect all 0,1,...,m-1 on some path, but not collect m, then the MEX is m.
+
+So, the maximum MEX is the smallest m for which the above is true.
+
+Thus, the plan is:
+
+Compute the maximum m such that there exists a path that includes all 0,1,...,m-1, but does not include m.
+
+So, how to compute this m?
+
+An alternative approach is to consider all possible m from 0 up to the maximum possible, and for each m, determine if it's possible.
+
+But how to compute this for each m?
+
+Hmm, perhaps a BFS approach where each state is the current position and a bitmask of the values collected so far.
+
+But for n=20, the bitmask can be up to 2^38, which is way too big.
+
+So that's not feasible.
+
+Alternative idea: since the path is a tree, perhaps we can represent the collected values as a set, and for each step, add the current edge's value if it's not in the set. Then, for each state, track the set of collected values.
+
+But even this is not feasible for n=20, because the number of possible states is 20*20 * 2^38, which is way too big.
+
+So, perhaps this is not the way to go.
+
+Alternative approach: think about the problem as a BFS where each state is the current position and a set of collected values. But for each test case, this is manageable only if the maximum m is small.
+
+But for n=20, it's unclear.
+
+Wait, perhaps for small n, like n=20, it's impossible to process all m's in a reasonable time.
+
+Hmm, maybe we can model this as a bitmask and track the minimal m for each cell.
+
+Wait, perhaps another angle: the MEX is the smallest missing in the S set. So, to maximize MEX, we need the smallest missing to be as large as possible.
+
+Thus, for each m, the maximum MEX is m, but only if there's a path that includes all 0,1,...,m-1 but not m.
+
+So, the problem is to find the maximum m where both conditions are true.
+
+So, perhaps the way to approach this is to compute for each possible m, whether such a path exists.
+
+But how?
+
+Wait, perhaps for each m, we can precompute whether all 0,1,...,m-1 are present on some path. But this seems computationally expensive.
+
+Another idea is to note that the MEX is the smallest integer not present in S. So, if S contains all integers from 0 up to m-1, but not m, then the MEX is m.
+
+Thus, the maximum MEX is the first m where this is true.
+
+So, the problem is to find the maximum m where:
+
+1. There exists a path with all 0,1,...,m-1.
+
+2. There is no path with all 0,1,...,m.
+
+So, the maximum MEX is m.
+
+So, the plan is:
+
+For each test case:
+
+- For m starting from 0 upwards, check whether all 0,1,...,m-1 are present on some path.
+
+- For each such m, check whether m is present on any path.
+
+- The maximum m for which both conditions are true is the MEX.
+
+But how do we check these conditions efficiently?
+
+Wait, perhaps the problem can be rephrased as:
+
+Find the smallest m such that:
+
+a. There exists a path that includes all 0,1,...,m-1.
+
+b. There is no path that includes all 0,1,...,m.
+
+Then, the MEX is m.
+
+So, the steps are:
+
+1. Determine the maximum m for which condition a holds.
+
+2. Then, check if condition b holds for m+1.
+
+Wait, no. Because the MEX is the smallest m where a and b are true.
+
+So, the approach is to find the smallest m where condition a is true and condition b is false.
+
+So, for each m, we need to check if condition a is true and condition b is false.
+
+But how?
+
+Let me think about the steps for a specific test case.
+
+Take the first sample input:
+
+n=2.
+
+d matrix:
+
+1 0
+
+3 1
+
+r matrix:
+
+2 4
+
+1 3
+
+Wait, perhaps I should look at the sample.
+
+Wait, the sample input isn't given, but the output is 4.
+
+So, for n=2, the maximum MEX is 4.
+
+Wait, how? Because the path must include edges with values 0,1,2,3. But perhaps in this case, it's not possible to collect all 0,1,2,3.
+
+Wait, perhaps in the sample, the path can collect 0,1,2, but not 3. So the MEX is 3.
+
+But the output is 4. That's confusing.
+
+Hmm, perhaps I'm misunderstanding the problem.
+
+Wait, perhaps the MEX is the smallest non-present integer, not the largest. So, if 0,1,2,3 are present, MEX is 4.
+
+So, perhaps the sample has a path that includes 0,1,2,3 but not 4, so MEX is 4.
+
+Wait, but if n=2, the maximum possible edge value is up to 2n-2=2.
+
+Wait, perhaps the problem allows edges with value 0,1,2.
+
+So, MEX is 3 in that case.
+
+But the sample output is 4.
+
+Hmm, perhaps I made a mistake in the sample's description.
+
+Alternatively, perhaps the sample's output is 4 because all numbers 0,1,2,3 are present, so MEX is 4.
+
+So, the path includes edges with 0,1,2,3, and no 4. So MEX is 4.
+
+But how is that possible for n=2?
+
+Wait, perhaps the grid is 2x2, so the grid has 3 rows and 3 columns of edges (since for 2 rows, there are 1 row of down edges, and for 2 columns, 1 column of right edges).
+
+Wait, perhaps the path for n=2 is (1,1) → (1,2) → (2,2). So, the edges are d[1][1] (top row, first column) and r[1][1] (first row, second column). Or perhaps the path is (1,1) → (2,1) → (2,2). So, in any case, the path is a single column or a single row.
+
+So, in this case, the two edges are either [d11, r11] or [d11, r21], etc.
+
+Wait, perhaps the sample's n=2 has a path that includes all 0,1,2.
+
+So, perhaps the edges have values 0,1,2, making MEX 3.
+
+But the sample output is 4. So I must be misunderstanding something.
+
+Alternatively, perhaps the grid is 3x3, but in the problem statement, it's n x n, so for n=2, it's 2x2, which has 3x3 edges.
+
+Wait, perhaps the grid is (n-1) x (n-1) for edges, but I'm not sure.
+
+Hmm, perhaps the sample has a different setup.
+
+Alternatively, perhaps the MEX is the number of distinct integers collected, not the smallest missing. But no, because MEX is the smallest missing.
+
+Wait, perhaps I should find a better approach.
+
+Another idea: the MEX is the smallest non-negative integer not present in S. So, the maximum MEX is the largest m such that all 0..m-1 are present in S, and m is not present.
+
+So, to find the maximum m, we can find the smallest m where m is not present, and all 0..m-1 are present.
+
+So, perhaps the approach is:
+
+- For each possible m, check if all 0..m-1 are present in some path.
+
+- Then, check if m is not present in any path.
+
+- The maximum m where both are true is the MEX.
+
+So, the key is to find the maximum m where:
+
+- There exists a path that includes all 0,1,...,m-1.
+
+- There is no path that includes all 0,1,...,m.
+
+So, the steps for the code:
+
+For each test case:
+
+1. Read n, the d matrix, and the r matrix.
+
+   - d is (n-1) x n, so n rows, each with n elements.
+
+   - r is n x (n-1), so n columns, each with n-1 elements.
+
+2. For m starting from 0 upwards, do:
+
+   a. Check if there's a path from (1,1) to (n,n) that includes all 0,1,...,m-1.
+
+   b. Check if there's no such path that includes all 0,1,...,m.
+
+   c. The maximum m for which both a and b are true is the answer.
+
+3. The maximum possible MEX is m.
+
+But how to implement a and b.
+
+The problem is, for each m, how to check if such a path exists.
+
+But for n=20, and m up to, say, 20, this could be manageable.
+
+But for higher m, it's impossible.
+
+Wait, but for m up to 20, perhaps it's manageable.
+
+So, perhaps for each m, we can model the path as a BFS, tracking the collected values, and see if all 0..m-1 are collected.
+
+But for each m, the BFS would have a state that includes the current position and a bitmask of the collected values.
+
+But for m=20, the bitmask is 20 bits, which is 1 million. For 20x20=400 positions, each with a 1 million state, it's 400 million states, which is impossible.
+
+So, this approach is not feasible.
+
+Alternative idea: since the MEX is the smallest missing integer, perhaps we can find the MEX by considering the maximum number of distinct values that can be collected, and see up to which m the MEX increases.
+
+But I'm not sure.
+
+Wait, another approach. Let's think about the problem as a bitmask, but with a limit on the values.
+
+But perhaps we can model it as a BFS, where each state is the current position and a bitmask of the collected values. But for small m, this is manageable.
+
+Wait, but for the sample input where the output is 4, perhaps it's because the path includes 0,1,2,3, but not 4. So, the MEX is 4.
+
+So, the code needs to find that.
+
+But how to model this.
+
+Another idea: since the MEX is the smallest missing, perhaps we can find the maximum possible m as the maximum m where all 0..m-1 are present in some path, but m is not present in any path.
+
+So, perhaps the approach is to find the maximum m where all 0..m-1 are present in at least one path, and m is present in at least one path.
+
+Wait, no, because if a path includes 0..m-1 but not m, then the MEX is m.
+
+So, the code needs to find the smallest m where the path includes all 0..m-1, but not m.
+
+So, perhaps the approach is to find the maximum m for which all 0..m-1 are present in some path.
+
+Then, check whether m is present in any path.
+
+If m is not present in any path, then the MEX is m.
+
+If m is present in some path, then the MEX is the next m.
+
+So, the steps are:
+
+- Find the maximum m where all 0..m-1 are present in some path.
+
+- Then, check whether m is present in any path.
+
+- If m is not present, then MEX is m.
+
+- Else, MEX is the next m.
+
+Wait, but how to find the maximum m.
+
+Alternatively, perhaps for each m, the condition is that all 0..m-1 are present in some path, and m is not present in any path.
+
+So, perhaps the code can proceed as follows:
+
+For each test case:
+
+   Read the d and r matrices.
+
+   For m in 0, 1, 2, ...:
+
+      Check if all 0..m-1 are present in some path.
+
+      Check if m is not present in any path.
+
+      If both are true, then the MEX is m.
+
+      Else, proceed.
+
+But the problem is how to perform these checks efficiently.
+
+So, perhaps the way to proceed is to model for each m, the required path.
+
+But for n=20, this is computationally intensive.
+
+Hmm, perhaps the key is to realize that the MEX is determined by the presence of certain values in some path.
+
+So, perhaps the maximum MEX is the maximum possible m where for each value from 0 to m-1, there's a path that includes it, and for m, there's no path that includes it.
+
+So, to find the maximum m where:
+
+- All values 0 to m-1 are present in some path.
+
+- There exists no path that includes all values 0 to m.
+
+So, the code can proceed as follows:
+
+For each test case:
+
+   precompute all the edge values in the d and r matrices.
+
+   for m in 0, 1, 2, ...:
+
+      check if all 0, 1, ..., m-1 are present in the edge values.
+
+      if not, break.
+
+      else, check if there's a path from (1,1) to (n,n) that includes all 0,1,...,m-1.
+
+      and also check if there's no path that includes all 0,1,...,m.
+
+      if both are true, then m is the MEX.
+
+      else, break.
+
+So, the problem is how to perform the checks.
+
+But for each m, the first check is easy: if any of the values 0,1,...,m-1 is not present in the edge values, then the MEX can't be m, since it's impossible to collect all m-1 required values.
+
+So, the code can first precompute the set of all edge values.
+
+For each m, if the set of 0..m-1 is a subset of the edge values, then proceed.
+
+Otherwise, MEX is m-1.
+
+So, for m starting from 0, the code can:
+
+1. For m=0: check if 0 is present.
+
+   If yes, proceed.
+
+2. For m=1: check if 0 is present.
+
+   If yes, proceed.
+
+3. And so on.
+
+But how to compute the maximum m where all 0..m-1 are present in the edge values.
+
+Well, this can be done by finding the maximum m such that the set {0,1,...,m-1} is a subset of the edge values.
+
+Once that's determined, the code can check for the existence of a path that includes all 0..m-1 and for the existence of a path that includes all 0..m.
+
+So, the code's steps are:
+
+Compute the set S of all edge values.
+
+Compute the maximum m such that 0,1,...,m-1 are all in S.
+
+Then, check if there's a path that includes all 0..m-1.
+
+And also, check if there's a path that includes all 0..m.
+
+If both are true, then the MEX is m.
+
+Else, MEX is m+1.
+
+Wait, no: if m+1 is the first integer not present, then the MEX is m+1.
+
+So, the code can proceed as:
+
+Compute the maximum m where {0,1,...,m-1} is a subset of S.
+
+Then:
+
+Check if all 0..m are present in some path.
+
+If yes, then the MEX is m+1.
+
+Else, check if all 0..m+1 are present.
+
+And so on.
+
+Wait, but how do I find the MEX?
+
+Alternatively, perhaps the MEX is the first m where the set {0,1,...,m} is not a subset of S, but {0,1,...,m-1} is.
+
+So, the steps are:
+
+- Find the maximum m where {0,1,...,m-1} is a subset of S.
+
+- Then, check if {0,1,...,m} is a subset of S.
+
+   a. If yes, then the MEX is m+1.
+
+   b. If no, then the MEX is m.
+
+Because if {0,1,...,m} is not a subset, then the MEX is m.
+
+But wait, the MEX is the smallest missing integer. So, if the set {0,1,...,m} is a subset, but {0,1,...,m+1} is not, then MEX is m+1.
+
+So, the code can proceed as:
+
+Compute the maximum m where {0,1,...,m-1} is a subset of S.
+
+If {0,1,...,m} is a subset of S, then the MEX is m+1.
+
+Else, the MEX is m.
+
+So, the code needs to:
+
+For each test case:
+
+1. Read n, d, r.
+
+2. Collect all edge values into a set S.
+
+3. Compute the maximum m such that all 0..m-1 are in S.
+
+   This can be done by finding the maximum m where m is the maximum such that m-1 is in S, and all smaller integers are present.
+
+   But how? For example, if S contains 0,1,2,3,4, but not 5, then the maximum m is 5, because {0,1,2,3,4} is a subset.
+
+   Wait, no. For m=5, {0,1,2,3,4} must be a subset, which it is, but for m=6, {0,1,2,3,4,5} must also be a subset. So, the maximum m is the maximum integer such that 0<=k <m, and k is in S.
+
+So, the maximum m is the maximum k+1 where all 0<=k <m are in S.
+
+So, the maximum m is the maximum k where {0,1,...,k} is a subset of S, and k+1 is also present in S.
+
+Wait, perhaps not. Let me think.
+
+Wait, for example, if S contains 0,1,2,3,4, but not 5. Then, the maximum m is 5, because {0,1,2,3,4} is a subset of S.
+
+Because m=5 requires that 0,1,2,3,4 are present, which they are.
+
+So, the maximum m is the maximum k where all 0..k are present, and k+1 is not present, but for m=k+1, {0..k} is a subset.
+
+Wait, no. For example, if S contains 0,1,2,3,4,5, then the maximum m is 6, because {0..5} is a subset.
+
+So, the maximum m is the largest integer such that S contains all 0,1,...,m-1.
+
+So, the maximum m is the maximum of (k+1) where k is the maximum integer such that {0,1,...,k} is a subset.
+
+So, the code can compute this as follows:
+
+Compute the maximum m such that {0,1,...,m-1} is a subset of S.
+
+So, for example, if S contains 0,1,3,4,5, then the maximum m is 4.
+
+Because {0,1,2,3} is a subset (if 2 is present), but 2 is not in S, so m can't be 4.
+
+Wait, no. No, in this case, S has 0,1,3,4,5. So, for m=4, we need 0,1,2,3. But 2 is missing, so m can't be 4. So, the maximum m is 3, because {0,1,2} is a subset, but 3 is in S.
+
+Wait, but that's not correct. Because the maximum m is the largest m where all 0..m-1 are in S. So, in this case, the largest m is 3, because for m=3, 0,1,2 must be in S, which is not the case. So, the maximum m is 3.
+
+Wait, I'm getting confused.
+
+Another approach: for a given m, the condition is that all 0,1,...,m-1 are in S.
+
+So, the maximum m is the largest integer for which all 0,1,...,m-1 are in S.
+
+So, for example:
+
+If S contains 0,1,2,3,4,5,6, then m is 7.
+
+So, the maximum m is the maximum k where all 0..k are in S.
+
+So, the code can compute this as the maximum possible m, which is the maximum k where k is in S and all 0..k are present.
+
+Wait, perhaps not. For example, if S contains 0,1,2, but not 3, then the maximum m is 3, because 0,1,2 are present. But for m=4, 0,1,2,3 must be present, which they are not. So, the maximum m is 3.
+
+So, the code can compute this as follows:
+
+m_max = 0
+
+for k in 0,1,2,...:
+
+   if k is in S, and all 0..k are present.
+
+   m_max +=1
+
+Wait, no. Because for m_max, it's the maximum m such that {0,1,...,m-1} is a subset.
+
+So, for each k, if {0,1,...,k} is a subset of S, then m can be k+1.
+
+So, the maximum m is the largest k+1 where {0,1,...,k} is a subset of S.
+
+So, the code can compute m_max as follows:
+
+m = 0
+
+while (m+1) is in S and all 0..m are in S:
+
+   m +=1
+
+So, for example, if S has 0,1,2,3,4,5, then m is 5, because 0..5 is a subset.
+
+Wait, no. Because m is the maximum m where all 0..m-1 are in S. So, for m=5, {0,1,2,3,4} must be a subset.
+
+But in this case, if S has 0,1,2,3,4,5, then {0,1,2,3,4} is a subset, so m can be 5.
+
+So, the code can compute m_max by starting from 0 and checking whether all 0..m are present in S.
+
+So, the code can be:
+
+m = 0
+
+while True:
+
+   if m+1 is in S and all 0..m are in S:
+
+       m +=1
+
+   else:
+
+       break
+
+So, for example, if S includes 0,1,2,3,4,5, then m can be 5.
+
+Because for m=5, 0..4 are present, and m+1=6 is also present. So, m becomes 5, and then the loop continues to see m+1=6. Now, since 0..5 are present, 6 is present, so m becomes 6, and so on.
+
+Wait, but this would loop forever if S contains all non-negative integers.
+
+So, this approach is not feasible.
+
+Alternative idea: the maximum m is the maximum integer k such that 0..k are all present in S.
+
+So, the code can find the maximum k where 0..k are in S.
+
+This can be done by checking for each k whether all 0..k are present.
+
+So, for each k, check whether S contains all numbers from 0 to k.
+
+The maximum k for which this is true is the maximum m.
+
+So, the code can compute this as:
+
+max_m = 0
+
+for k in range(0, n_max):
+
+   if all(x in S for x in range(0, k+1)):
+
+       max_m = k
+
+   else:
+
+       break
+
+So, this is O(n_max * n), which for n=20 is manageable.
+
+But what about when n is up to 20? For each test case, n can be up to 20, so for each test case, this loop could run up to 20 times.
+
+So, the code can proceed as such.
+
+Once max_m is determined, the next step is to check whether all 0..max_m are present in some path.
+
+And

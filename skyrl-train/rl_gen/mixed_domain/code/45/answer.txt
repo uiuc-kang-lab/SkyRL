@@ -1,0 +1,376 @@
+Okay, I've got this problem to solve. Let's read through it carefully.
+
+So, the problem is about Penacony, which has n houses connected in a circle, forming a ring. There are n roads, each connecting consecutive houses, and also a road connecting house n to house 1. All roads are bidirectional, so it's a cycle.
+
+Now, the overseeing family is going to go into debt and may not be able to maintain all roads. There are m pairs of friendships. The key condition is that if two residents are friends, there must be a path between their houses through maintained roads. So, the friendships must be connected through the maintained roads.
+
+Our task is to find the minimum number of roads that must be maintained to satisfy all the friendship conditions.
+
+Hmm. So, the problem is about finding a minimum edge cover that connects all the required friendships. Wait, no. Because the friendships are already given, and we need to ensure that the maintained roads form a graph that includes all the required friendships. So, the maintained roads must form a graph where all the friendship edges are present, and they must be connected into a single connected component.
+
+Wait, no. Because the friendships are already given as pairs. So, the maintained roads must form a graph that includes all these m edges, and the graph must be connected. Because if there are multiple connected components in the maintained roads, then some friends are not connected, violating the condition.
+
+So, the problem reduces to finding the minimum number of edges to add to a graph so that it becomes connected, but also considering that some edges are already present. Wait, no. Because the existing roads (the cycle) are part of the graph. So, the existing graph is a cycle, which is connected. But if some of the friendship edges are present, then the maintained roads must cover those edges. So, perhaps we need to find the minimal number of edges to add to the existing cycle such that all the required friendships are covered.
+
+Wait, no. Because the roads are maintained, so the maintained roads form a graph. The friendships must have a path in this graph. So, the graph must include all the friendship edges, but also, the graph must be connected.
+
+Wait, but the initial graph (the cycle) is connected. So, if all the required edges are already present in the cycle, then we don't need to maintain any roads. But if some edges are missing, then we need to maintain them.
+
+Wait, perhaps not. Let me think again.
+
+The roads are either maintained or not. The maintained roads form a graph. The friendships are the edges that must be present in this graph. So, the friendship pairs are the edges that must be in the graph. So, the graph must include all these edges, and also be connected.
+
+So, the problem is to find a spanning tree that includes all the required edges, and the minimal number of edges to add to the existing graph (the cycle) to form such a spanning tree.
+
+Wait, but the existing graph is a cycle. So, the minimal edges to add would be the number of edges in the spanning tree minus the number of edges already present in the cycle.
+
+Wait, no. Because the initial graph is a cycle, which is a connected graph with n edges. So, to make it connected, we don't need to add any edges, because it's already connected. But that's only if all the required edges are already in the cycle.
+
+So, perhaps the problem is to find the number of connected components in the friendship graph, and then the minimal number of edges to add is (number of connected components - 1). Because each connected component can be connected by adding one edge.
+
+Wait, that makes sense. Because if the friendship graph is split into k connected components, then we need to add k-1 edges to connect them all into one component.
+
+So, the minimal number of roads to maintain is equal to the number of connected components in the friendship graph minus one.
+
+Wait, but the existing roads are a cycle. So, the initial graph is a single connected component. So, if all the required edges are already present, the connected components are 1. So, we don't need to add any edges.
+
+But if some edges are missing, then the connected components increase, and we need to add edges to connect them.
+
+So, the minimal number of roads to maintain is the number of connected components in the friendship graph minus one.
+
+Wait, but how do we compute the connected components? Because the friendship graph is a graph of n nodes, and m edges. So, we can model it as a graph and find its connected components.
+
+But wait, the initial graph is a cycle. So, each node is connected to its next and previous. So, in the initial graph, all nodes are connected. So, adding some edges (friendships) may split the graph into multiple connected components.
+
+So, the problem reduces to finding the number of connected components in the friendship graph, and then the answer is (number of connected components - 1).
+
+So, the approach is:
+
+1. For each test case, read n and m.
+2. Read m pairs of a and b, representing friendships.
+3. Build a graph where each friendship is an edge.
+4. Find the number of connected components in this graph.
+5. The answer is (number of connected components - 1).
+
+Wait, but this can't be right. Because the initial graph is a cycle, which is connected. So, the connected components in the friendship graph could be 1, 2, etc. So, the answer is (connected_components - 1).
+
+Yes, that's correct.
+
+So, for example, if all m edges are present, the connected components are 1, so the answer is 0. If m is 0, then the connected components are n, so the answer is n-1.
+
+So, the problem is to compute the number of connected components in the friendship graph, and subtract 1.
+
+So, the algorithm is:
+
+For each test case:
+- Read n and m.
+- Read m edges.
+- Build a graph (using adjacency lists or something).
+- Find the number of connected components in this graph.
+- The answer is (number of connected components - 1).
+
+But wait, what about the initial cycle? The initial cycle is a graph where each node is connected to its next and previous. So, in the case where m is 0, the friendship graph is empty, so each node is a connected component. So, the number of connected components is n, so the answer is n-1, which is correct because all roads must be maintained.
+
+Another test case: if all edges form a single connected component, answer is 0.
+
+Yes, that makes sense.
+
+So, the approach is to model the friendships as a graph and find the number of connected components.
+
+So, the steps are:
+
+For each test case:
+
+- Read n and m.
+- Read m edges, build an adjacency list.
+- Find the number of connected components in the graph.
+- The answer is (connected_components - 1).
+
+But wait, what about the initial cycle? Because the initial roads are a cycle, but the friendship edges could form a subset. So, the friendship graph is the subset of the initial cycle's edges. So, the connected components are determined by the friendship edges.
+
+So, the initial cycle is not part of the problem. The problem is to find the minimal number of roads to maintain, which is the minimal number of edges to add to the friendship graph to make it connected.
+
+Wait, no. Because the roads that are maintained form a graph. The friendships are the edges that must be present in this graph. So, the graph must include all the friendship edges, and be connected.
+
+So, the initial graph is a cycle, which is connected. So, the minimal connected graph that includes all the friendship edges is the friendship graph itself. So, if the friendship graph is connected, then the answer is 0. Otherwise, it's the number of connected components minus one.
+
+So, yes, the approach is to model the friendship graph and count the connected components.
+
+So, the plan is:
+
+For each test case:
+
+- Read n and m.
+- Read m edges, build an adjacency list.
+- Find the number of connected components in this graph.
+- The answer is (number of connected components - 1).
+
+Now, how to implement this efficiently.
+
+Given that n can be up to 2e5 and m up to 2e5, we need an efficient way to compute connected components.
+
+The standard way is to use BFS or DFS for each connected component. But for large n and m, this can be time-consuming if not done efficiently.
+
+But with the constraints, we can manage.
+
+So, in Python, for each test case, we can:
+
+- Create an adjacency list, which is a list of sets or lists. Each node has a set of adjacent nodes.
+- Then, iterate through each node, and for each unvisited node, perform a BFS or DFS to find all connected nodes, marking them as visited. Each BFS/DFS represents one connected component.
+- Count the number of connected components.
+- Subtract 1 to get the answer.
+
+So, the code structure would be:
+
+Read t.
+
+For each test case:
+
+    Read n, m.
+    Initialize adj as a list of empty sets for each node.
+    For m lines:
+        Read a and b.
+        Add b to adj[a].
+        Add a to adj[b].
+    Initialize visited as a list of False, size n+1 (since houses are 1-based).
+    count = 0
+    for i from 1 to n:
+        if not visited[i]:
+            count += 1
+            perform BFS/DFS starting at i to mark all connected nodes.
+    answer = count - 1
+    print(answer)
+
+Wait, but wait. The initial graph is a cycle, which is connected. So, in the code, the initial graph's connected components are 1. So, for m=0, the friendship graph is empty, so each node is a component. So, the answer is n-1, which is correct.
+
+Yes, that seems right.
+
+So, this approach should work.
+
+Now, let's think about some test cases.
+
+Test case 1:
+
+n=3, m=3.
+
+Edges are 1-2, 2-3, 3-1. So, the friendship graph is a triangle, which is connected. So, connected_components = 1. Answer is 0.
+
+Test case 2:
+
+n=4, m=2.
+
+Edges are 1-2, 3-4.
+
+So, the friendship graph has two connected components: {1,2} and {3,4}. So, connected_components = 2. Answer is 1.
+
+So, the minimal roads to maintain is 1.
+
+Another test case:
+
+n=5, m=4.
+
+Friendships are 1-2, 2-3, 3-4, 4-5. So, connected_components = 1. Answer is 0.
+
+Yes.
+
+Another test case:
+
+n=5, m=3.
+
+Friendships are 1-2, 3-4, 4-5.
+
+So, the connected components are {1,2}, {3,4,5}. So, connected_components = 2. Answer is 1.
+
+Yes.
+
+So, the code should handle these cases correctly.
+
+Now, in Python, implementing this.
+
+But wait, for n up to 2e5, using adjacency lists with sets can be efficient. But in Python, using a list of sets is manageable.
+
+So, the code can be structured as:
+
+Read t.
+
+For each test case:
+
+    Read n, m.
+
+    adj = [[] for _ in range(n+1)]
+
+    for _ in range(m):
+
+        a, b = map(int, input().split())
+
+        adj[a].append(b)
+
+        adj[b].append(a)
+
+    visited = [False] * (n + 1)
+
+    count = 0
+
+    for i in range(1, n+1):
+
+        if not visited[i]:
+
+            count += 1
+
+            # BFS
+
+            queue = [i]
+
+            visited[i] = True
+
+            while queue:
+
+                u = queue.pop(0)
+
+                for v in adj[u]:
+
+                    if not visited[v]:
+
+                        visited[v] = True
+
+                        queue.append(v)
+
+    print(count - 1)
+
+Wait, but wait. The code above is creating an adjacency list where each a is connected to b, and vice versa. So, the code correctly builds the graph.
+
+Yes.
+
+So, this should work.
+
+Let me test this with the first test case:
+
+Test case 1:
+
+n=3, m=3.
+
+Edges: 1-2, 2-3, 3-1.
+
+adj[1] = [2,3]
+
+adj[2] = [1,3]
+
+adj[3] = [2,1]
+
+The code will process i=1, which is unvisited. BFS starts. It will visit 2, then 3. So, count becomes 1. So, answer is 0.
+
+Yes.
+
+Another test case:
+
+n=4, m=2.
+
+Edges: 1-2, 3-4.
+
+adj[1] = [2]
+
+adj[2] = [1]
+
+adj[3] = [4]
+
+adj[4] = [3]
+
+Processing i=1: unvisited. BFS finds 1 and 2. count becomes 1.
+
+Then i=3: unvisited. BFS finds 3 and 4. count becomes 2.
+
+So, answer is 1.
+
+Yes.
+
+Another test case:
+
+n=5, m=3.
+
+Edges 1-2, 3-4, 4-5.
+
+adj[1] = [2]
+
+adj[2] = [1]
+
+adj[3] = [4]
+
+adj[4] = [3,5]
+
+adj[5] = [4]
+
+Processing i=1: count becomes 1, BFS finds 1 and 2.
+
+i=3: unvisited. BFS finds 3,4,5. count becomes 2.
+
+So, answer is 1.
+
+Yes.
+
+So, the code seems correct.
+
+Now, let's think about the time constraints.
+
+For each test case, the code does a BFS for each connected component. The time complexity is O(n + m), which is acceptable since the sum of n and m across all test cases is 4e5.
+
+So, the code should handle the constraints efficiently.
+
+Thus, the final code is as written.
+</think>
+
+To solve this problem, we need to determine the minimum number of roads that must be maintained to ensure that all friendships between residents of Penacony are connected through maintained roads. The houses are arranged in a cycle, and we need to ensure that all given friendships are present in the maintained roads.
+
+### Approach
+1. **Graph Representation**: Represent the problem using a graph where each house is a node and each road is an edge. The initial setup is a cycle, ensuring all nodes are connected.
+2. **Friendship Graph**: Construct a graph where each friendship is an edge. This graph may have multiple connected components.
+3. **Connected Components**: The goal is to find the number of connected components in the friendship graph. Each connected component can be connected by maintaining one additional road.
+4. **Minimum Roads to Maintain**: The minimum number of roads to maintain is the number of connected components minus one. This is because each connected component can be connected with one road, and we need to connect all components into a single connected graph.
+
+### Solution Code
+```python
+import sys
+from collections import deque
+
+def main():
+    input = sys.stdin.read
+    data = input().split()
+    idx = 0
+    t = int(data[idx])
+    idx += 1
+    for _ in range(t):
+        n = int(data[idx])
+        m = int(data[idx + 1])
+        idx += 2
+        adj = [[] for _ in range(n + 1)]
+        for _ in range(m):
+            a = int(data[idx])
+            b = int(data[idx + 1])
+            idx += 2
+            adj[a].append(b)
+            adj[b].append(a)
+        visited = [False] * (n + 1)
+        count = 0
+        for i in range(1, n + 1):
+            if not visited[i]:
+                count += 1
+                queue = deque([i])
+                visited[i] = True
+                while queue:
+                    u = queue.pop(0)
+                    for v in adj[u]:
+                        if not visited[v]:
+                            visited[v] = True
+                            queue.append(v)
+        print(count - 1)
+
+if __name__ == '__main__':
+    main()
+```
+
+### Explanation
+1. **Reading Input**: The input is read in one go for efficiency, especially given the constraints.
+2. **Graph Construction**: For each test case, an adjacency list is built to represent the graph of houses and roads.
+3. **BFS for Connected Components**: Using BFS, we traverse each unvisited node to find all connected components. Each BFS operation marks nodes as visited.
+4. **Counting Components**: The number of connected components is counted, and the result is the number of components minus one, which is the minimum number of roads to maintain.
+
+This approach ensures that we efficiently determine the minimum number of roads to maintain by leveraging graph traversal techniques to find connected components.<｜end▁of▁sentence｜>

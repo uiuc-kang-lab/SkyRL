@@ -1,0 +1,62 @@
+\frac{1}{4}
+Okay, so I need to find the analytical expression of the function f(x) on the interval (0, +∞). I know that f(x) is an odd function, and on the interval (-∞, 0), it's given by f(x) = x(1 + x). 
+
+First, let me recall what an odd function is. An odd function satisfies the property f(-x) = -f(x) for all x in its domain. This means that if I know the function's expression on one side of the y-axis, I can determine it on the other side by using this property.
+
+Given that f(x) is odd and defined on (-∞, 0) as f(x) = x(1 + x), I can use this to find the expression on (0, +∞).
+
+Let me denote the function on (0, +∞) as g(x). So, for x > 0, f(x) = g(x). 
+
+Since f is odd, we have f(-x) = -f(x). Let's substitute x with a positive value. Suppose x > 0, then -x < 0, so f(-x) is given by the expression on the negative side. Therefore, f(-x) = (-x)(1 + (-x)) = (-x)(1 - x). 
+
+But according to the odd function property, f(-x) should also be equal to -f(x). So, f(-x) = -f(x) = -g(x). 
+
+Putting it together: (-x)(1 - x) = -g(x). 
+
+Let me compute the left side: (-x)(1 - x) = -x + x². So, -x + x² = -g(x). 
+
+To solve for g(x), I can multiply both sides by -1: g(x) = x - x². 
+
+Therefore, on the interval (0, +∞), the function f(x) is given by g(x) = x - x².
+
+I should double-check this result to ensure it's correct. Let's pick a specific value, say x = 1. 
+
+On the negative side, f(-1) = (-1)(1 + (-1)) = (-1)(0) = 0. 
+
+On the positive side, f(1) = 1 - (1)² = 1 - 1 = 0. 
+
+So, f(-1) = f(1) = 0, which satisfies the odd function property.
+
+Let me try another value, like x = 2. 
+
+On the negative side, f(-2) = (-2)(1 + (-2)) = (-2)(-1) = 2. 
+
+On the positive side, f(2) = 2 - (2)² = 2 - 4 = -2. 
+
+Wait, that's interesting. f(-2) = 2 and f(2) = -2, which is consistent with f(-x) = -f(x). Because f(-2) = -f(2) = -(-2) = 2, which matches. So, that seems correct.
+
+Another check: take x = 0.5. 
+
+f(-0.5) = (-0.5)(1 + (-0.5)) = (-0.5)(0.5) = -0.25. 
+
+f(0.5) = 0.5 - (0.5)² = 0.5 - 0.25 = 0.25. 
+
+Again, f(-0.5) = -f(0.5) = -0.25, which is correct.
+
+So, all these checks confirm that the expression g(x) = x - x² is correct for f(x) on (0, +∞).
+</think>
+
+To find the analytical expression of \( f(x) \) on \( (0, +\infty) \), we use the property of odd functions. Given that \( f(x) = x(1 + x) \) for \( x \in (-\infty, 0) \), we can find \( f(x) \) on \( (0, +\infty) \) by applying the odd function property \( f(-x) = -f(x) \).
+
+Let \( g(x) = f(x) \) for \( x > 0 \). Then, for \( x > 0 \), we have:
+\[
+f(-x) = -f(x) \implies (-x)(1 - x) = -g(x)
+\]
+Solving for \( g(x) \):
+\[
+-x(1 - x) = -g(x) \implies g(x) = x - x^2
+\]
+Therefore, the analytical expression of \( f(x) \) on \( (0, +\infty) \) is:
+\[
+\boxed{x - x^2}
+\]<｜end▁of▁sentence｜>

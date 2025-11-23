@@ -1,0 +1,1052 @@
+0
+Okay, I have this problem to solve. Let me read it carefully.
+
+So, the problem is about a grid with two rows and n columns. Each cell is either free (.) or blocked (x). I need to find the number of free cells such that if I block that cell, the number of connected regions in the grid becomes exactly 3.
+
+Hmm, connected regions are maximal sets of free cells where each is reachable from the others. So, initially, the grid might have 1, 2, or maybe even more regions, but according to the input constraints, it's at most 1.
+
+The task is for each test case, count the number of cells that, when blocked, split the grid into exactly 3 regions.
+
+Let me think about how to approach this.
+
+First, I need to model the grid and find the connected regions. But since the grid is only two rows, maybe I can find some patterns or properties that will help me compute the answer without having to simulate everything each time.
+
+Wait, but for each test case, the grid is given, and I have to process it. So, for each test case, I need to process the grid and determine which cells, when blocked, will split the regions into exactly three.
+
+Let me think about the initial state. Suppose the grid has C connected regions. The problem states that the grid has at most one region, so C is either 1 or 2.
+
+Wait, no, the problem says the grid contains at most 1 connected region. So the initial C is 1 or 2. But the problem is asking for cells that, when blocked, make C become 3. So, initially, C can be 1 or 2.
+
+Wait, no, the problem says the grid can have at most one connected region. So, if the initial C is 1, then we need to find cells that, when blocked, split it into 3 regions. Or if the initial C is 2, then we need to find cells that, when blocked, split it into 3 regions.
+
+So, the initial C can be 1 or 2. In each case, we need to find the cells that, when blocked, split the regions into 3.
+
+Let me think about the initial state.
+
+Case 1: Initial C is 1.
+
+So, all the free cells form a single connected region. If I block a cell, perhaps this splits the region into two parts. But wait, maybe not. For example, if the grid is a single line of connected cells, blocking one cell could split it into two regions if that cell is a bridge.
+
+Wait, for a 2xN grid, if it's a single connected region, then it's a straight line of cells. For example, in a 2x3 grid, all three cells are connected.
+
+So, if I block one cell, let's say the middle one, then the two cells on either side become separate regions. So, the total regions would be 3.
+
+Wait, that's exactly what the problem is asking. So, in such a case, any cell that is not on the end of the line would, when blocked, split the line into two parts. Each part is a region, but since the initial was one, blocking the middle cell would create two regions, totaling three.
+
+Wait, no. If the initial region is a line of three cells, and you block the middle one, then you have two separate regions. So, the total regions would be 2, not 3.
+
+Wait, that's a problem. So, in this case, blocking a middle cell would split the line into two parts, but the initial C was 1, so the total regions would be 2, not 3.
+
+Hmm, so how can blocking a cell cause the total regions to increase from 1 to 3?
+
+Wait, maybe the initial C is 2. So, the grid is split into two regions. Then, blocking a cell in one of the regions could split that into two, adding to the total.
+
+Wait, let's see. Suppose the grid is two separate regions, and I block a cell in one of them. Depending on where I block it, it could split that region into two, adding one more region, making the total 3.
+
+So, in this case, the initial C is 2, and the cell to be blocked is in one of the regions, such that it splits that region into two.
+
+So, for the problem, the initial C is either 1 or 2. We need to find cells that, when blocked, make the total regions 3.
+
+So, let's think about each case.
+
+Case 1: Initial C is 1.
+
+In this case, the grid is a single connected region. So, any cell that, when blocked, splits this into two regions, would not help because the total would remain 2. So, in this case, to reach 3 regions, the initial C must have been 2, and we need to find cells in one of the two regions that, when blocked, split it into two, thus adding one region, making the total 3.
+
+So, the logic is: if the initial C is 2, then the answer is the number of cells in one of the two regions that, when blocked, split that region into two.
+
+So, the approach is:
+
+- For each test case, determine the initial C.
+
+- If C is 1: then the answer is the number of cells that, when blocked, split the region into two. But as discussed, this is not sufficient because the initial C is 1, so the total regions after blocking would be 2, not 3. So, in this case, we can't have any answer.
+
+- If C is 2: then, the answer is the number of cells in one of the two regions that, when blocked, split that region into two, thus adding one more region, making the total 3.
+
+So, the key is to find, for each test case, whether C is 2, and then count the number of cells in one of the two regions that, when blocked, split that region into two.
+
+So, the problem reduces to:
+
+- For each test case, determine whether the initial C is 2.
+
+- If yes, then compute the number of cells in one of the two regions that, when blocked, split that region into two.
+
+So, the first step is to process each test case, compute the initial connected regions.
+
+But how?
+
+Wait, the grid is 2 rows, so each cell is (row, column). To find connected regions, we can model each region as a group of connected cells.
+
+But for a 2xN grid, the connected regions can be either:
+
+- A single line (like a snake through the two rows), which is connected.
+
+- Or, two separate regions, each in a different row.
+
+So, for example, if both rows have a connected region, but they are not connected to each other, then the initial C is 2.
+
+So, for the grid to have C=2, the two regions must be in different rows and not connected.
+
+So, how can we find the regions?
+
+Let me think: for each cell, if it's free, and not yet visited, perform a BFS or DFS to find all connected cells. Each such connected component is a region.
+
+So, for each test case, we can:
+
+- Create a visited matrix.
+
+- For each cell, if it's free and not visited, perform BFS.
+
+- Count the number of regions (C).
+
+Once we have C, we can decide whether to compute the answer.
+
+If C is 1: answer is 0.
+
+If C is 2: we need to find the number of cells in one of the two regions that, when blocked, split that region into two.
+
+So, the next step is, for each region, find all cells in that region, and for each cell, determine if blocking it would split the region into two.
+
+But how?
+
+Hmm, in a region, a cell is part of a connected component. So, when a cell is blocked, does it split the region into two?
+
+It depends on whether the cell is a 'bridge' in the region. A bridge is a cell that, when removed, increases the number of regions.
+
+In other words, for a given region, if there's a cell that is part of the region, but removing it disconnects the region into two parts, then that cell is a candidate.
+
+So, for each region, we need to find all the cells that are bridges.
+
+So, the approach is:
+
+For each region R:
+
+- For each cell in R, check if it's a bridge. That is, if removing it increases the number of regions.
+
+If a region has multiple bridges, each of those contributes to the answer, as blocking any of them would split the region into two, thus increasing the total regions from 2 to 3.
+
+So, the total answer is the sum of the number of bridge cells in each region.
+
+So, the plan is:
+
+For each test case:
+
+1. Read the grid.
+
+2. Compute the connected regions (C). If C is 1, output 0. Otherwise, proceed.
+
+3. For each region, determine if it is a single connected line (like a snake) or two separate regions.
+
+Wait, no. For regions, each is a connected component. So, a region can be a single line (like a straight snake) or two separate regions (like two separate lines in different rows).
+
+So, for a region, we need to determine whether it's a single line or two separate regions.
+
+Wait, for a region to be a single line, all its cells are connected in a single line, but the regions are in two rows. So, perhaps the two rows form a single connected region if they are connected via some cells in between.
+
+Wait, no. Because the grid is two rows. So, if all the cells in the two rows are connected via the same column, then the region is a single connected region.
+
+So, the initial C is 1 if and only if the entire grid is a single connected region. Otherwise, it's 2.
+
+So, for each test case, the initial C is 1 if the entire grid is one connected region, else 2.
+
+So, the first step is to compute C.
+
+Once C is determined to be 2, we need to find the number of bridge cells in the two regions.
+
+So, for each region, we need to find how many of its cells are bridges.
+
+So, for each region R:
+
+- For each cell in R, check if it's a bridge.
+
+If a region has k bridge cells, then that contributes k to the answer.
+
+So, the answer is the sum over all regions R of the number of bridge cells in R.
+
+So, the next task is to find, for each region, the number of bridge cells.
+
+So, how to determine if a cell is a bridge.
+
+In a connected region, a cell is a bridge if removing it increases the number of connected regions.
+
+In other words, if the cell is part of a region that is a "chain" where each cell is connected to the next, and the cell is not the end.
+
+Wait, no. For a region that is a straight line, like a snake, each cell in the middle is a bridge because removing it would split the region into two parts.
+
+So, for a region that is a single straight line (like a snake through the two rows), all the cells except the first and last in each row are bridges.
+
+Wait, for example, imagine the grid is:
+
+. x
+
+x x
+
+So, the first row is a single cell, the second row is two cells. The connected regions are the first cell (row 1, col 1) and the two cells in row 2. So, the initial C is 2.
+
+In this case, the first region is just the single cell, which is a bridge because removing it would split the region into two parts (the two cells in row 2 are now separate). So, this cell is a bridge.
+
+The second region is the two cells in row 2. Are they connected? Yes. So, is this region a single line? Yes, because the two cells are connected. So, in this region, all the cells are not bridges, because removing any cell in the region would leave the region connected.
+
+So, the bridge count for this region is 0.
+
+So, the total answer is 1.
+
+So, in this case, the cell in the first region is a bridge, contributing 1 to the answer.
+
+But wait, in this case, the initial C is 2. So, we need to find the number of cell blocks that, when blocked, split the regions into three.
+
+In this example, blocking the first cell in the first region would split the two regions into three. So, that's one cell.
+
+So, the answer is 1.
+
+So, the approach is:
+
+For each region, determine if it's a chain, and if so, count the number of bridge cells.
+
+So, how to represent the regions?
+
+Perhaps, for each region, we can represent it as a list of cells, and for each cell in the list, determine if it is a bridge.
+
+So, the steps are:
+
+For each test case:
+
+1. Read the grid.
+
+2. Compute all connected regions. For each cell, if it's free and not visited, perform BFS to find the entire region, mark all visited cells.
+
+3. Count the number of regions C.
+
+4. If C is 1: output 0.
+
+5. Else, for each region:
+
+   a. Determine if the region is a straight line (like a snake through the two rows).
+
+   b. For each cell in the region, check if it's a bridge.
+
+      i. For a straight line region, a cell is a bridge if it's not the first or last cell in the region.
+
+      Wait, perhaps not. Let's think.
+
+      For a straight line, each cell in the middle is a bridge. For example, in a region with cells (1,1), (1,2), (1,3), (2,3), (2,2), (2,1) — a straight line, each cell except the ends is a bridge.
+
+      So, for a straight line region, all cells except the first and last (if they are in a straight line) are bridges.
+
+      Wait, no. Because in a straight line, the first cell is only connected to the next cell. So, removing the first cell would split the region into two parts: the first cell is removed, the rest are connected. So, the first cell is a bridge.
+
+      Similarly, the last cell in the straight line is a bridge, as removing it would split the region into the first part and the cell before it.
+
+      So, for a straight line region, all cells are bridges. Because each cell is connected to only one other cell, and removing it would split the region.
+
+      So, for example, in a single row, a straight line of N cells, each cell is a bridge.
+
+      So, in that case, for a region that is a straight line, all cells are bridges.
+
+      So, the number of bridge cells in such a region is equal to the number of cells in the region.
+
+   b. For a region that is two separate regions (like two separate lines in different rows), we need to find if any cell is a bridge.
+
+      So, for each cell in the region, when it's removed, does it split the region into two parts?
+
+      For example, in a region that is two separate lines, a cell in one line is a bridge only if the other line is split into two parts by it.
+
+      Wait, no. Let me think of an example.
+
+      Suppose the region is two lines: row 1 is a single cell, row 2 is two cells. So, the region is two separate lines.
+
+      So, the cells are (1,1), (2,1), (2,2).
+
+      So, the regions are:
+
+      R1: (1,1)
+
+      R2: (2,1), (2,2)
+
+      So, the total C is 2.
+
+      Now, for cell (1,1): if we block it, the region R1 is split, but R2 remains as is. So, the total regions become 2, not 3. So, this cell is not a bridge.
+
+      For cell (2,1): if we block it, R2 becomes two separate cells (but wait, R2 was two cells connected. So, blocking (2,1) would split R2 into (2,2) and nothing else. So, R2 becomes two regions, but R1 is still a region. So, total regions become 3. So, cell (2,1) is a bridge, because blocking it increases the regions by 1.
+
+      Similarly, cell (2,2): if we block it, R2 becomes split into (2,1) and (2,2) becomes a single cell? Wait, no. R2 is (2,1) and (2,2). Blocking (2,2) would leave (2,1) as a region. So, R2 is split into (2,1) and (2,2) is blocked, so R2 becomes just (2,1). So, R1 is another region. So, total regions become 3. So, cell (2,2) is a bridge.
+
+      So, in this case, R2 has two bridge cells: (2,1) and (2,2).
+
+      So, the total bridge cells for this region is 2.
+
+      So, for a region that is two separate lines, the number of bridge cells depends on how the lines are connected.
+
+      So, the approach is:
+
+      For a region that is two separate lines, check each cell to see if removing it would split the region into two parts.
+
+      So, for each cell in the region:
+
+      - If it is a bridge, count it.
+
+      How to determine if a cell is a bridge in a two-line region.
+
+      Let's think: the two-line region is a and b, where a is in row 1, and b is in row 2.
+
+      So, the two-line region is a connected component.
+
+      So, for each cell in a:
+
+         If the cell is the only cell in its line, then it's a bridge.
+
+         If it's the last cell in the a line, and the b line is split into two parts by it, then it's a bridge.
+
+      Similarly for cells in b.
+
+      Wait, perhaps a better way is to model the two-line region as a graph, and for each cell, check if removing it increases the number of connected components.
+
+      So, for a cell in a (row 1, col x), when removed, does it split the region into two?
+
+      It depends on whether the a line is split into two parts by the cell, or if the cell is the only cell in the a line, in which case, removing it would split the a line into two parts (but since it's a straight line, removing the middle cell splits the line into two parts).
+
+      Similarly for the b line.
+
+      So, for example, in a two-line region:
+
+      a is (1,1), b is (2,1), and b is connected to some other cell (2,2).
+
+      So, region R2 is (2,1), (2,2).
+
+      So, for cell (2,1):
+
+         If we remove it, does it split R2 into two regions?
+
+         No, because (2,2) is still connected. So, R2 remains as one region.
+
+         So, cell (2,1) is not a bridge.
+
+         So, blocking it does not split R2 into two regions.
+
+      For cell (2,2):
+
+         If we remove it, R2 becomes (2,1), which is a single cell. So, R2 is split into two regions: (2,1) and nothing else. So, yes, R2 becomes two regions.
+
+         So, cell (2,2) is a bridge.
+
+      So, in this case, R2 has one bridge cell: (2,2).
+
+      So, the approach is:
+
+      For each cell in a region, determine if there's any split in the region when it's removed.
+
+      So, for each cell (i,j):
+
+         If the cell is in a line, and it's the end of the line, then removing it would split the line into two.
+
+         Or, if the cell is in a line, and there's another cell beyond it in the same line, then removing it would split the line into two parts.
+
+         Or, if the cell is in a line, and is the only cell in the line, then removing it would split the line into two.
+
+         So, for a cell in a line, it's a bridge if it's:
+
+             - Not the first or last cell in the line.
+
+             OR
+
+             - It's the only cell in the line.
+
+      So, for a line of length L, the cells that are bridges are all except the first and last.
+
+      So, for a two-line region:
+
+         For each cell in a:
+
+             if it's the only cell in a, then it's a bridge.
+
+             else, if it's not the first cell in a's line, and not the last cell, then it's a bridge.
+
+         Similarly for each cell in b.
+
+      So, the plan is:
+
+      For each region:
+
+          If it's a straight line:
+
+              All cells are bridges.
+
+          Else:
+
+              For each cell, check if it's a bridge based on the above conditions.
+
+              Count the number of bridge cells.
+
+      So, the code needs to:
+
+          For each test case:
+
+              Read the grid.
+
+              Compute connected regions.
+
+              C = number of regions.
+
+              If C == 1: output 0.
+
+              Else:
+
+                  For each region:
+
+                      If the region is a straight line:
+
+                          Add the number of cells in the region to the answer.
+
+                      Else:
+
+                          For each cell in the region:
+
+                              Check if it's a bridge.
+
+                              If yes, add to the answer.
+
+                  Output the total.
+
+      Now, the key is to implement this correctly.
+
+      So, let's think about how to represent the regions.
+
+      One way is to represent each region as a list of cells, and for each cell, determine which region it belongs to.
+
+      So, for each cell, if it's free, perform BFS and add all connected cells to the same region.
+
+      The visited matrix can be a 2D array, initially all False.
+
+      So, for each cell (i,j) in the grid:
+
+          if grid[i][j] is free and not visited:
+
+              perform BFS to find all connected cells, mark them as visited.
+
+              add this list to the regions list.
+
+      So, the code can be written as follows.
+
+      Now, for each region, we need to determine whether it's a straight line.
+
+      How?
+
+      For a region, if all the cells are in the same row, then it's a straight line. Or, if the region is in two rows, but all cells are in the same column, which is the same as all cells being in the same row.
+
+      Wait, no. For example, a region could consist of cells (1,1), (1,2), (2,2), (2,1). So, the region is a straight line, but it's not in the same row.
+
+      So, the region is a straight line if all the cells are in the same row or if they form a single column across both rows.
+
+      Wait, no. Because in a two-row grid, a region can be a straight line if all cells are in the same column, but that's only possible if the region is a single column, but that would require the region to have all cells in the same column, which is possible only if the grid is 2xN, and the region is a vertical line.
+
+      So, perhaps the condition for a region being a straight line is:
+
+          all cells in the region are in the same row, and the cells form a consecutive sequence.
+
+      Or, all cells are in the same column, and the cells form a consecutive sequence.
+
+      So, for each region, we can check:
+
+          if all the cells are in the same row, and the cells form a consecutive sequence.
+
+          OR, all the cells are in the same column, and the cells form a consecutive sequence.
+
+      So, for example:
+
+          region is [(1,1), (1,2), (1,3)] → all in same row, consecutive → straight line.
+
+          region is [(2,1), (2,2), (2,3)] → same.
+
+          region is [(1,1), (2,1), (2,2)] → not same row, but in same column, and consecutive → straight line.
+
+      So, for a region, to determine if it's a straight line:
+
+          if all rows in the region are the same, and the columns are consecutive.
+
+          OR, all columns are the same, and the rows are consecutive.
+
+      So, in code:
+
+          for a region, collect all the rows and columns.
+
+          if len(set(rows)) == 1 and is_consecutive(columns):
+
+              it's a straight line.
+
+          elif len(set(cols)) == 1 and is_consecutive(rows):
+
+              it's a straight line.
+
+          else:
+
+              it's a two-line region.
+
+      So, how to implement is_consecutive.
+
+      For a list of numbers, check if they form a consecutive sequence.
+
+      For example, [1,2,3] → yes.
+
+      [1,3,4] → no.
+
+      So, the function is_consecutive can be written as:
+
+          if len(list) < 2: return True.
+
+          min_val = min(list)
+
+          max_val = max(list)
+
+          if max_val == min_val + (len(list)-1):
+
+              return True
+
+          else:
+
+              return False
+
+      So, for each region, we can determine if it's a straight line.
+
+      If it is, then all cells are bridges.
+
+      Else, for each cell, determine if it's a bridge.
+
+      So, the code can proceed as follows.
+
+      Now, let's think about the steps in code.
+
+      Read t test cases.
+
+      For each test case:
+
+          read n.
+
+          read grid1 as a string.
+
+          read grid2 as a string.
+
+          grid = [grid1, grid2]
+
+          visited = [[False for _ in range(n)] for _ in range(2)]
+
+          regions = []
+
+          for i in range(2):
+
+              for j in range(n):
+
+                  if grid[i][j] == '.' and not visited[i][j]:
+
+                      # perform BFS
+
+                      from collections import deque
+
+                      q = deque()
+
+                      q.append( (i, j) )
+
+                      visited[i][j] = True
+
+                      region = [ (i,j) ]
+
+                      while q:
+
+                          x, y = q.popleft()
+
+                          for dx, dy in [ (-1,0), (1,0), (0,-1), (0,1) ]:
+
+                              nx = x + dx
+
+                              ny = y + dy
+
+                              if 0 <= nx < 2 and 0 <= ny < n and not visited[nx][ny] and grid[nx][ny] == '.' :
+
+                                  visited[nx][ny] = True
+
+                                  q.append( (nx, ny) )
+
+                                  region.append( (nx, ny) )
+
+                      regions.append( region )
+
+          C = len(regions)
+
+          if C == 1:
+
+              print(0)
+
+              continue
+
+          else:
+
+              total = 0
+
+              for region in regions:
+
+                  # determine if the region is a straight line
+
+                  rows = [x for x, y in region]
+
+                  cols = [y for x, y in region]
+
+                  is_straight = False
+
+                  if len(set(rows)) == 1:
+
+                      is_straight = True
+
+                  else:
+
+                      if len(set(cols)) == 1:
+
+                          is_straight = True
+
+                  if is_straight:
+
+                      total += len(region)
+
+                  else:
+
+                      # region is two lines, check each cell if it's a bridge
+
+                      is_bridge = False
+
+                      for (x, y) in region:
+
+                          # check if this cell is a bridge
+
+                          # for two-line regions, need to check if removing it splits the region into two
+
+                          # which is more complex.
+
+                          # So, for each cell, we need to see if it is a bridge.
+
+                          # So, for each cell, check if it's a bridge.
+
+                          # How?
+
+                          # For two-line regions, the cell can be in row 1 or row 2.
+
+                          # So, for each cell, we need to see if removing it would split the region into two.
+
+                          # So, for a cell (x, y):
+
+                          # if x is 0 (row 1), then:
+
+                          #   if y is 0: removing it splits the region into row 0, which is empty, and row 1, which is split into two parts.
+
+                          #   elif y is n-1: removing it splits the region into two parts in row 1.
+
+                          #   else: if the row 0 has more than one cell, then removing (0, y) would split the row 0 into two parts, so it's a bridge.
+
+                          # So, in this case, for a cell (0, y) in row 1:
+
+                          #   if y is 0: it's a bridge.
+
+                          #   elif y is n-1: it's a bridge.
+
+                          #   else: if row 0 has any other cells, then removing (0, y) would split the region.
+
+                          # Similarly, for a cell (1, y) in row 2:
+
+                          #   if y is 0: it's a bridge.
+
+                          #   elif y is n-1: it's a bridge.
+
+                          #   else: if row 1 has any other cells, then removing (1, y) would split the region.
+
+                          # So, for a cell in row 1:
+
+                          #   if (x, y) is (0, 0):
+
+                          #       is_bridge = True
+
+                          #   elif (x, y) is (0, n-1):
+
+                          #       is_bridge = True
+
+                          #   else:
+
+                          #       if len( [cell for cell in region if cell[0] == 0] ) > 1:
+
+                          #           is_bridge = True
+
+                          # So, for (0, y) cells, is_bridge is True if y is 0 or n-1, and the other cells in row 1 are present.
+
+                          # Similarly, for (1, y) cells:
+
+                          #   if y is 0: is_bridge = True
+
+                          #   elif y is n-1: is_bridge = True
+
+                          #   else:
+
+                          #       if len( [cell for cell in region if cell[0] == 1] ) > 1:
+
+                          #           is_bridge = True
+
+                          # So, implementing this.
+
+                          if x == 0:
+
+                              # cell in row 1
+
+                              if y == 0:
+
+                                  is_bridge = True
+
+                              elif y == n-1:
+
+                                  is_bridge = True
+
+                              else:
+
+                                  # check if the other row (1) has any cells
+
+                                  if len( [ (a, b) for (a, b) in region if a == 1 ] ) > 0:
+
+                                      is_bridge = True
+
+                          else:
+
+                              # cell in row 2
+
+                              if y == 0:
+
+                                  is_bridge = True
+
+                              elif y == n-1:
+
+                                  is_bridge = True
+
+                              else:
+
+                                  # check if the other row (0) has any cells
+
+                                  if len( [ (a, b) for (a, b) in region if a == 0 ] ) > 0:
+
+                                      is_bridge = True
+
+                          if is_bridge:
+
+                              total +=1
+
+                      else:
+
+                          # region is two-line, but not straight.
+
+                          # so, no bridge cells.
+
+                          pass
+
+                  total += len(region)
+
+              print(total)
+
+      Wait, but this is a lot of code. Let me test it against the earlier example.
+
+      Example:
+
+      Grid:
+
+      . x
+
+      x x
+
+      So, region R1 is (0,0), region R2 is (0,1), (1,1).
+
+      So, for R2, it's a two-line region.
+
+      For cell (0,1):
+
+          it's in row 0, y=1.
+
+          Other cells in row 1 are present.
+
+          So, is_bridge is true.
+
+      For cell (1,1):
+
+          in row 1, y=1.
+
+          Other cells in row 0 are present.
+
+          So, is_bridge is true.
+
+      So, total for R2 is 2.
+
+      So, the total answer is 2.
+
+      Another example:
+
+      Grid:
+
+      . x
+
+      x x
+
+      So, region R1 is (0,0).
+
+      R2 is (0,1), (1,1).
+
+      So, R2 is two-line.
+
+      For cell (0,1):
+
+          is_bridge: yes, because other cells in row 0 are present.
+
+      For cell (1,1):
+
+          is_bridge: yes, because other cells in row 0 are present.
+
+      So, R2 contributes 2.
+
+      So, total is 2.
+
+      So, the code for this case would output 2.
+
+      Another example:
+
+      Grid:
+
+      . x
+
+      x x
+
+      So, C is 2.
+
+      So, for R1, which is (0,0), it's a bridge? No, because it's a single cell. So, no.
+
+      R2 is two-line, and both cells are bridges. So, total is 2.
+
+      So, the code is correct.
+
+      Now, let's think about another example where a region is two-line but not all cells in the same row or column.
+
+      For example:
+
+      grid:
+
+      . x
+
+      x x
+
+      So, region is (0,0), (0,1), (1,1).
+
+      So, it's a two-line region.
+
+      For cell (0,0):
+
+          other cells in row 1: yes.
+
+          So, is_bridge: yes.
+
+      For cell (0,1):
+
+          other cells in row 0: yes.
+
+          So, is_bridge: yes.
+
+      For cell (1,1):
+
+          other cells in row 0: yes.
+
+          So, is_bridge: yes.
+
+      So, all cells in R2 are bridges.
+
+      So, R2 contributes 3.
+
+      So, total is 3.
+
+      So, code should output 3.
+
+      So, the code seems to be handling this correctly.
+
+      Now, let's think about the code structure.
+
+      So, in code:
+
+      Read t.
+
+      For each test case:
+
+          read n.
+
+          read grid1.
+
+          read grid2.
+
+          grid = [grid1, grid2]
+
+          visited = 2D array.
+
+          regions = list of regions.
+
+          C = len(regions).
+
+          if C == 1:
+
+              print(0)
+
+              continue.
+
+          else:
+
+              for each region:
+
+                  determine if it's a straight line.
+
+                  if yes:
+
+                      add len(region) to total.
+
+                  else:
+
+                      for each cell in region:
+
+                          determine if it's a bridge.
+
+                          if yes, add 1.
+
+              print(total)
+
+      So, the code would look like this.
+
+      Now, let's code it.
+
+      Wait, but in the code, for each region, how to determine if it's a straight line.
+
+      So, in code:
+
+      for region in regions:
+
+          rows = [x for x, y in region]
+
+          cols = [y for x, y in region]
+
+          is_straight = False
+
+          if len(set(rows)) == 1:
+
+              is_straight = True
+
+          else:
+
+              if len(set(cols)) == 1:
+
+                  is_straight = True
+
+          if is_straight:
+
+              total += len(region)
+
+          else:
+
+              # process as two-line.
+
+              # count the number of bridge cells.
+
+              is_bridge = False
+
+              for (x, y) in region:
+
+                  if x == 0:
+
+                      # cell in row 1.
+
+                      if y == 0:
+
+                          is_bridge = True
+
+                      elif y == n-1:
+
+                          is_bridge = True
+
+                      else:
+
+                          # check if other row (1) has any cells.
+
+                          if len( [ (a, b) for (a, b) in region if a == 1 ] ) > 0:
+
+                              is_bridge = True
+
+                  else:
+
+                      # cell in row 2.
+
+                      if y == 0:
+
+                          is_bridge = True
+
+                      elif y == n-1:
+
+                          is_bridge = True
+
+                      else:
+
+                          # check if other row (0) has any cells.
+
+                          if len( [ (a, b) for (a, b) in region if a == 0 ] ) > 0:
+
+                              is_bridge = True
+
+                  if is_bridge:
+
+                      total +=1
+
+              # else, no bridges.
+
+      Wait, but in code, the 'else' clause for two-line regions may not be necessary. Because, for two-line regions, the code as written will correctly count the number of bridge cells.
+
+      So, the code can be written as:
+
+      for each region in regions:
+
+          rows = [x for x, y in region]
+
+          cols = [y for x, y in region]
+
+          is_straight = False
+
+          if len(set(rows)) == 1:
+
+              is_straight = True
+
+          else:
+
+              if len(set(cols)) == 1:
+
+                  is_straight = True
+
+          if is_straight:
+
+              total += len(region)
+
+          else:
+
+              is_bridge = False
+
+              for (x, y) in region:
+
+                  if x == 0:
+
+                      if y == 0 or y == n-1:
+
+                          is_bridge = True
+
+                      else:
+
+                          if len( [ (a, b) for (a, b) in region if a == 1 ] ) > 0:
+
+                              is_bridge = True
+
+                  else:
+
+                      if y == 0 or y == n-1:
+
+                          is_bridge = True
+
+                      else:
+
+                          if len( [ (a, b) for (a, b) in region if a ==

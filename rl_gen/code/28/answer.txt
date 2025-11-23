@@ -1,0 +1,617 @@
+0
+Okay, so I've got this problem to solve, and I'm a bit stuck, but I'll try to think it through step by step. Let me try to understand what's being asked here.
+
+The problem is about Yaroslav choosing a subsegment of mushrooms, and then he's taking turns eating them. Each time he eats a mushroom with toxicity k, the character's toxicity g increases by k. But there's a catch: if g exceeds the maximum toxicity level x at any point, then g resets to zero. So, the process continues until all mushrooms are eaten, and we need to find out how many such subsegments result in g not being zero at the end.
+
+Hmm. So, the key is to figure out for each possible subsegment [l, r], whether the sum of the a_i's in that segment, when processed with the given rules, ends up with g > 0.
+
+Wait, but the process isn't just a simple sum. Because whenever the current g exceeds x, it's set to zero, and the next steps continue. So, the sum is not straightforward.
+
+Let me think about how the process works. When you add a_i to g, if g was already greater than x, it resets to zero. So, each time you add a_i, you have to check if adding it causes g to exceed x.
+
+Wait, no. Wait, the process is: for each mushroom in the subsegment, you add a_i to g. But each a_i is the toxicity level of the mushroom. So, if the current g is already greater than x, adding a_i (even if it's very large) won't change it because it's already zero. So, for example, if g is 5 and x is 3, adding any a_i (even 10) won't change g. So, the process is that whenever the current g is >= x, adding a_i doesn't change it, because g is already zero.
+
+Wait, no. Let me read the step again. The process is:
+
+1. Increase g by k (a_i).
+2. If g <= x, continue. Else, set g to zero, and continue.
+
+So, when you add a_i, if after adding, g is greater than x, then set g to zero. So, each addition is done, but if the sum would make it exceed x, it's reset.
+
+So, the process is that each a_i is added to g, but after each addition, we check if g exceeds x. If it does, we set g to zero, and the process continues. So, the way g is calculated is by adding the a_i's, but whenever the sum exceeds x, it's reset to zero.
+
+Wait, no. Because the process is: for each step, add a_i to g. Then, if g is now >x, set g to zero, and continue. So, the process is that each a_i is added, but if at any step the sum exceeds x, it's reset. So, the final g is the sum of all a_i's in the subsegment, but any time the sum exceeds x, it's reset.
+
+Wait, no. Because the process is: for each mushroom in the subsegment, you add a_i to g, and if after adding it, g is >x, you set g to zero. So, for example, if the sum of the subsegment is s, then g is the sum of all a_i's, but each time the sum exceeds x, it's set to zero. So, the process is like adding each a_i, and if the current g (after adding) is greater than x, it's set to zero, and the process continues. So, the g after processing all a_i's is the sum of all a_i's, but if at any point the cumulative sum (after adding a_i) exceeds x, it's reset.
+
+Wait, no. Because the process is: for each mushroom in l to r, you add a_i to g. If at any point, g exceeds x, then g is set to zero, and the process continues. So, the processing is not additive in a straightforward way. It's like, each a_i is added, and if after adding, g is >x, it's set to zero, and the next a_i is processed. So, the g is the sum of the a_i's, but whenever the sum exceeds x, it's set to zero.
+
+Wait, that's a crucial point. So, the process for the subsegment [l, r] is:
+
+g starts at 0.
+
+For each i from l to r:
+
+   g += a_i
+
+   if g > x: g = 0
+
+So, the final g is the sum of a_i from l to r, but whenever the sum exceeds x, it's set to zero. Wait, no, because after each addition, if it exceeds x, g is set to zero, and the next a_i is processed. So, the final g is the sum of all a_i's in [l, r], but whenever the sum after adding a_i exceeds x, it's set to zero.
+
+Wait, no. Let me think differently. Suppose the subsegment is [a, b]. The sum of a_i's is s. If s <= x, then g is s. If s > x, then g is zero, because after adding the first a_i, g would have become s, which is larger than x, so it's set to zero, and the process continues. Wait, no. Because the process is that for each a_i in the subsegment, you add it to g. So, if the sum s is greater than x, then the first a_i is added to g, making it s, which is >x. So, g is set to zero, and the next a_i's are not added. So, the final g is zero if s >x, otherwise s.
+
+Wait, no. That's the opposite. Because for each a_i in the subsegment, you add it to g. So, for example, if the subsegment is [a1, a2, a3], and the sum is s. Let's say s is 5, and x is 3. Then, the first a1 is added, g becomes 5. Since 5 >3, g is set to zero. The next a2 and a3 are not added. So, the final g is zero.
+
+So, the process is that for each a_i in the subsegment, you add it to g. If after adding it, g exceeds x, set g to zero, and don't add any more a_i's. So, the final g is either the sum of all a_i's in the subsegment, or zero, whichever is smaller.
+
+Wait, no. Because if the sum of the subsegment is s, and s >x, then the process will add each a_i until the sum exceeds x, but once it does, g is set to zero and the rest are not added. So, the final g is the sum of the a_i's up to the point where adding another a_i would cause the sum to exceed x, but once that happens, it's zero.
+
+Wait, no. Let's think with an example.
+
+Suppose x is 3.
+
+Subsegment is [2, 3]. Sum is 5.
+
+First a_i is 2: g becomes 2. It's <=x, so proceed.
+
+Second a_i is 3: g becomes 5, which is >x. So, set g to zero, and don't add any more a_i's.
+
+So, final g is zero.
+
+Another example: subsegment [1, 3], x=3.
+
+Sum is 4.
+
+First a_i is 1: g=1 <=3.
+
+Second a_i is 3: g=4>3. So, set g to zero.
+
+Final g is zero.
+
+Another example: subsegment [4, 3], x=3.
+
+Sum is 7.
+
+First a_i is 4: g=4>3. Set g to zero.
+
+Final g is zero.
+
+So, the final g is the sum of the a_i's in the subsegment, but only if adding all of them doesn't cause g to exceed x. Otherwise, it's zero.
+
+So, the final g is the sum of the subsegment if the sum is <=x. Otherwise, it's zero.
+
+Wait, no. Because in the first example, the sum is 5, which is >3. So, the final g is zero.
+
+In the second example, sum is 4>3, so final g is zero.
+
+In the third example, sum is 7>3, so final g is zero.
+
+So, the final g is the sum of the subsegment if the sum is <=x. Otherwise, it's zero.
+
+Wait, no. That's not correct. Because the process is that for each a_i in the subsegment, you add it to g. If adding it causes g to exceed x, then g is reset to zero, and the process moves on to the next a_i. So, the final g is the sum of all a_i's in the subsegment, but only if the sum is <=x. Otherwise, the sum is larger than x, but since each a_i is processed step by step, the first a_i that makes g exceed x will set g to zero, and the rest are not added.
+
+Wait, no. Let's think again.
+
+The process is:
+
+For each a_i in [l, r]:
+
+   g += a_i
+
+   if g >x: g=0
+
+So, the sum is the sum of a_i's, but only until g is <=x. Once any a_i causes g to exceed x, it's reset to zero, and the rest are not added.
+
+So, the final g is the sum of all a_i's in [l, r] that are added before the sum exceeds x.
+
+Wait, no. Because even if the sum is larger than x, but adding a_i once would make it larger, but adding a_i again would make it smaller, because g is reset to zero.
+
+Wait, no. Because after the first a_i, if g exceeds x, it's set to zero, and the next a_i's are not added. So, the process stops after the first a_i.
+
+So, the final g is the sum of the a_i's up to the point where adding the next a_i would cause the sum to exceed x, but once that happens, it's zero.
+
+So, the sum is the sum of all a_i's in the subsegment [l, r], but the process stops when adding a_i would make the sum exceed x. So, the final g is the sum of all a_i's in [l, r] that are added before the sum exceeds x.
+
+Wait, that's a bit tricky. Let me think of a subsegment where the sum is s. If s <=x, then the process adds all a_i's, and g is s. If s >x, then the process adds the first a_i, which makes g exceed x, so g is set to zero. The rest are not added. So, the final g is zero.
+
+So, in this case, the sum is s. If s <=x, then the final g is s. Else, it's zero.
+
+So, the final g is the sum of the subsegment [l, r], if that sum is <=x. Otherwise, zero.
+
+Wait, no. Because for a subsegment where the sum is s, and s >x, the process will add the first a_i, making g exceed x, so g is zero. Then, the process stops. The rest of the a_i's are not added. So, the final g is zero.
+
+So, the final g is s if s <=x, else zero.
+
+So, the final g is s if s <=x, else zero.
+
+Wait, that's correct. So, the problem reduces to finding the number of subsegments [l, r] where the sum of a_i from l to r is <=x.
+
+Because if the sum is <=x, then the final g is that sum, which is non-zero. If the sum is >x, then the final g is zero.
+
+So, the goal is to count the number of subsegments [l, r] where the sum of a_i's in that subsegment is <=x.
+
+So, the problem now is to find the number of subarrays with sum <=x.
+
+This is a classic problem, and there's an efficient way to do it, especially with some optimizations.
+
+So, the problem reduces to: for each test case, count the number of subarrays [l, r] such that the sum of a[l..r] <=x.
+
+Now, the question is, how to compute this efficiently.
+
+Given that n can be up to 2e5, and t up to 1e4, we need an O(n log n) solution.
+
+The standard approach for counting subarrays with sum <=x is to use a sliding window approach, maintaining a window [left, right] where the sum is <=x. We can use two pointers, left and right, to find all possible subarrays.
+
+Wait, but let's think about that. The sliding window approach works when all elements are positive, which they are in this case (a_i >=1). So, for each right, we can find the smallest left such that the sum from left to right is <=x. Then, all subarrays starting from left to right, left+1 to right, etc., up to right, are valid.
+
+So, the steps would be:
+
+1. Initialize left = 0, count =0.
+
+2. For right in 0 to n-1:
+
+   a. While the sum from left to right exceeds x, increment left.
+
+   b. Add (right - left + 1) to the count.
+
+But wait, in this approach, the sum is maintained incrementally. If the sum exceeds x, we have to move left forward until it's within the window.
+
+This is O(n) time, which is acceptable.
+
+So, the plan is:
+
+- For each test case:
+
+   a. Read n, x, and the array a.
+
+   b. Initialize left=0, count=0.
+
+   c. For each right in 0 to n-1:
+
+      i. Compute the current sum from left to right. If adding a[right] to the current sum would make it exceed x, increment left.
+
+      ii. Add (right - left + 1) to count.
+
+   d. Output count.
+
+Wait, but wait. The sliding window approach works when the array is all positive. Which it is, since a_i >=1.
+
+Yes, so this approach should work.
+
+Let me test this logic with some examples.
+
+Example 1:
+
+n=2, x=3, a=[1, 2]
+
+Possible subarrays:
+
+[1] sum=1: <=3 → count +=1.
+
+[1,2] sum=3: <=3 → count +=1.
+
+[2] sum=2: <=3 → count +=1.
+
+Total count=3.
+
+Using the sliding window approach:
+
+left=0.
+
+right=0:
+
+sum is 1 <=3 → add 1-0+1=1 → count=1.
+
+right=1:
+
+sum is 1+2=3 <=3 → add 2-0+1=2 → count=3.
+
+So, correct.
+
+Another example:
+
+n=3, x=5, a=[3, 3, 3]
+
+Possible subarrays:
+
+[3] →3 <=5 → count +=1.
+
+[3,3] →6>5 → no.
+
+[3,3,3] →9>5 → no.
+
+[3] →3 → count +=1.
+
+[3] →3 → count +=1.
+
+[3] →3 → count +=1.
+
+Wait, wait, for right=0, sum is 3 → count +=1.
+
+right=1:
+
+sum is 6>5 → move left to 1.
+
+sum is 3 → add 1-1+1=1 → count +=1.
+
+right=2:
+
+sum is 3+3=6>5 → move left to 2.
+
+sum is 3 → add 1 → count +=1.
+
+So, total count is 3.
+
+Which is correct, as the valid subarrays are [0], [2], and [1,2] (sum 6>5, so invalid). Wait, no, wait:
+
+Wait, the subarrays are:
+
+[0]: sum 3 → valid.
+
+[1]: sum 3 → valid.
+
+[2]: sum 3 → valid.
+
+[0,1]: sum 6>5 → invalid.
+
+[0,2]: sum 6>5 → invalid.
+
+[1,2]: sum 6>5 → invalid.
+
+So, total valid is 3, which matches the count.
+
+So, the approach seems correct.
+
+Another test case:
+
+n=4, x=5, a=[2, 2, 2, 2]
+
+Possible subarrays:
+
+Each single element: sum is 2 <=5 → 4 subarrays.
+
+Subarrays of two elements: sum 4 <=5 → 3 subarrays.
+
+Subarrays of three: sum 6>5 → invalid.
+
+Subarrays of four: sum 8>5 → invalid.
+
+Total 4+3=7.
+
+Using the sliding window approach:
+
+left=0.
+
+right=0: sum 2 → add 1 → count=1.
+
+right=1: sum 4 → add 2 → count=3.
+
+right=2: sum 6>5 → move left to 1. sum is 2 → add 2 → count=5.
+
+right=3: sum is 2+2+2=6>5 → move left to 2. sum is 2 → add 2 → count=7.
+
+Yes, correct.
+
+So, the approach seems to work.
+
+So, now, how to implement this.
+
+In Python, for each test case, read n, x, a.
+
+Initialize left=0, count=0.
+
+sum_current =0.
+
+for right in range(n):
+
+    sum_current += a[right]
+
+    while sum_current > x and left <= right:
+
+        sum_current -= a[left]
+
+        left +=1
+
+    count += right - left +1
+
+Wait, no. Because in each iteration, we add a[right] to sum_current, but we have to check whether it exceeds x.
+
+Wait, but in the sliding window approach, the sum is maintained as sum_current, and as we move right, if sum_current exceeds x, we have to move left until sum_current <=x.
+
+So, the code would be:
+
+sum_current =0
+
+left=0
+
+count=0
+
+for right in range(n):
+
+    sum_current += a[right]
+
+    # Now, see if adding a[right] makes sum_current exceed x.
+
+    # So, while sum_current >x and left <= right:
+
+    #    sum_current -= a[left]
+
+    #    left +=1
+
+    # So, the inner loop is necessary.
+
+    # Then, add the number of valid subarrays ending at right.
+
+    # Which is right - left +1.
+
+    count += right - left +1
+
+Yes.
+
+So, this should work.
+
+Now, let's test this code with the examples.
+
+First example:
+
+n=2, x=3, a=[1,2]
+
+right=0:
+
+sum_current=1 <=3 → add 1-0+1=1 → count=1.
+
+right=1:
+
+sum_current=3 <=3 → add 2-0+1=2 → count=3.
+
+Which is correct.
+
+Another example:
+
+n=3, x=5, a=[3,3,3].
+
+right=0:
+
+sum=3 → add 1 → count=1.
+
+right=1:
+
+sum=6>5 → enter loop: sum_current -=3 (left becomes 1), sum_current=3 → left=1.
+
+sum_current <=5, so add 1 → count=2.
+
+right=2:
+
+sum=3+3=6>5 → enter loop: sum_current -=3 (left=2), sum_current=3 → add 1 → count=3.
+
+Which is correct.
+
+So, the code should be correct.
+
+Now, implement this in Python.
+
+But wait, the code as I wrote earlier may not be sufficient. Because, in each right iteration, I add a[right] to sum_current, then enter a while loop to move left forward if sum_current exceeds x.
+
+But in the code, the sum_current is being reset to zero, which is not correct. Because, for each right, we have to add a[right] to the sum, and then check.
+
+Wait, no. The initial sum_current is 0. For each right, we add a[right] to sum_current. So, in the code, the sum is correctly updated.
+
+So, the code should be:
+
+Read t.
+
+For each test case:
+
+   read n, x.
+
+   read a.
+
+   left=0
+
+   sum_current=0
+
+   count=0
+
+   for right in range(n):
+
+       sum_current += a[right]
+
+       # Now, check if sum_current exceeds x
+
+       while sum_current > x and left <= right:
+
+           sum_current -= a[left]
+
+           left +=1
+
+       # The number of valid subarrays ending at right is right - left +1.
+
+       count += (right - left +1)
+
+   print(count)
+
+Yes.
+
+Wait, but let's see another example.
+
+n=3, x=5, a=[1,1,5].
+
+Subarrays:
+
+[1] →1 <=5 → yes.
+
+[1,1] →2 <=5 → yes.
+
+[1,1,5] →7>5 → no.
+
+[1] → yes.
+
+[1,5] →6>5 → no.
+
+[5] → yes.
+
+So, valid subarrays are [0], [1], [2] → count=3.
+
+Using the code:
+
+right=0:
+
+sum=1 → add 1 → count=1.
+
+right=1:
+
+sum=2 → add 2 → count=3.
+
+right=2:
+
+sum=7>5 → enter loop: sum -=1 → left=1, sum=6>5 → enter loop again: sum -=1 → left=2, sum=5 → add 1 → count=4.
+
+Wait, but according to the actual valid subarrays, the count should be 3.
+
+Hmm, that's a problem.
+
+Wait, what's wrong.
+
+In the subarray [1,1,5], sum is 7, which is >5, so it's invalid.
+
+In the code, when right=2, sum_current is 7.
+
+The loop is entered because sum_current>5.
+
+So, sum_current -=1 (left becomes 1), sum is 6>5.
+
+Loop again, sum_current -=1 (left becomes 2), sum is 5 <=5.
+
+So, count += (2-2+1) =1 → total count is 3.
+
+Which is correct.
+
+So, the code would give 3, which is correct.
+
+Wait, because the subarray [1,1,5] is not valid, but the code correctly counts it as invalid.
+
+So, the code is correct.
+
+Another example: n=3, x=5, a=[2,2,2].
+
+Subarrays:
+
+[2] →2 <=5 → yes.
+
+[2,2] →4 <=5 → yes.
+
+[2,2,2] →6>5 → no.
+
+[2] → yes.
+
+[2,2] → yes.
+
+[2] → yes.
+
+So, count=5.
+
+Using the code:
+
+right=0: sum=2 → add 1 → count=1.
+
+right=1: sum=4 → add 2 → count=3.
+
+right=2: sum=6>5 → enter loop: sum=4, left=1 → add 2 → count=5.
+
+Yes, correct.
+
+So, the code seems to handle this correctly.
+
+Another test case: n=1, x=1, a=[1].
+
+sum=1 → add 1 → count=1.
+
+Which is correct.
+
+So, the code should be correct.
+
+Now, let's write the code.
+
+But wait, in Python, for each test case, we have to process the array a.
+
+So, the code would look like this:
+
+Read t.
+
+For each test case:
+
+   Read n, x.
+
+   Read list a.
+
+   left =0
+
+   sum_current =0
+
+   count=0
+
+   for right in range(n):
+
+       sum_current += a[right]
+
+       while sum_current > x and left <= right:
+
+           sum_current -= a[left]
+
+           left +=1
+
+       count += (right - left +1)
+
+   print(count)
+
+Yes.
+
+So, this should solve the problem.
+</think>
+
+To solve this problem, we need to determine the number of subsegments of mushrooms such that the final value of the toxicity level \( g \) is not zero. The toxicity level \( g \) starts at 0 and increases as we process each mushroom in the subsegment. If adding a mushroom's toxicity level causes \( g \) to exceed a given maximum value \( x \), \( g \) is reset to 0 and the process continues.
+
+### Approach
+1. **Problem Analysis**: The key observation is that the final value of \( g \) will be non-zero if and only if the sum of the toxicity levels in the subsegment does not exceed \( x \). This is because if the sum exceeds \( x \), \( g \) will be reset to zero.
+2. **Sliding Window Technique**: We use a sliding window approach to efficiently count the number of valid subsegments. The window is defined by two pointers, `left` and `right`, which denote the current subsegment being considered.
+3. **Sum Calculation**: For each position `right`, we maintain a running sum of the current subsegment. If this sum exceeds \( x \), we move the `left` pointer forward until the sum is within the limit.
+4. **Count Valid Subsegments**: For each position `right`, the number of valid subsegments ending at `right` is the number of valid starting points from `left` to `right`.
+
+### Solution Code
+```python
+import sys
+
+def main():
+    input = sys.stdin.read
+    data = input().split()
+    idx = 0
+    t = int(data[idx])
+    idx += 1
+    for _ in range(t):
+        n, x = int(data[idx]), int(data[idx + 1])
+        idx += 2
+        a = list(map(int, data[idx:idx + n]))
+        idx += n
+        left = 0
+        sum_current = 0
+        count = 0
+        for right in range(n):
+            sum_current += a[right]
+            while sum_current > x and left <= right:
+                sum_current -= a[left]
+                left += 1
+            count += (right - left + 1)
+        print(count)
+
+if __name__ == "__main__":
+    main()
+```
+
+### Explanation
+1. **Reading Input**: The input is read in one go for efficiency, especially given the constraints.
+2. **Initialization**: For each test case, initialize `left` to 0, `sum_current` to 0, and `count` to 0.
+3. **Iterate Over Subsegments**: For each position `right`, add the toxicity level of the current mushroom to `sum_current`.
+4. **Adjust Window**: If `sum_current` exceeds \( x \), move the `left` pointer forward until `sum_current` is within the limit.
+5. **Count Valid Subsegments**: The number of valid subsegments ending at `right` is the number of valid starting points from `left` to `right`, which is calculated as `right - left + 1`.
+
+This approach ensures that we efficiently count the valid subsegments in linear time, making it suitable for large input sizes.<｜end▁of▁sentence｜>

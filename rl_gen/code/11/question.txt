@@ -1,0 +1,36 @@
+<｜begin▁of▁sentence｜><｜User｜>
+Timur is in a car traveling on the number line from point $0$ to point $n$. The car starts moving from point $0$ at minute $0$.
+
+There are $k+1$ signs on the line at points $0, a_1, a_2, \dots, a_k$, and Timur knows that the car will arrive there at minutes $0, b_1, b_2, \dots, b_k$, respectively. The sequences $a$ and $b$ are strictly increasing with $a_k = n$.
+
+![](CDN_BASE_URL/bacc58f5d5013f5922e96a1311487b97)
+
+Between any two adjacent signs, the car travels with a constant speed. Timur has $q$ queries: each query will be an integer $d$, and Timur wants you to output how many minutes it takes the car to reach point $d$, rounded down to the nearest integer.
+
+Input Format:
+The first line contains a single integer $t$ ($1 \leq t \leq 10^4$) — the number of test cases.
+
+The first line of each test case contains three integers $n$, $k$, and $q$, ($k \leq n \leq 10^9$; $1 \leq k, q \leq 10^5$) — the final destination, the number of points Timur knows the time for, and the number of queries respectively.
+
+The second line of each test case contains $k$ integers $a_i$ ($1 \leq a_i \leq n$; $a_i < a_{i+1}$ for every $1 \leq i \leq k-1$; $a_k = n$).
+
+The third line of each test case contains $k$ integers $b_i$ ($1 \leq b_i \leq 10^9$; $b_i < b_{i+1}$ for every $1 \leq i \leq k-1$).
+
+Each of the following $q$ lines contains a single integer $d$ ($0 \leq d \leq n$) — the distance that Timur asks the minutes passed for.
+
+The sum of $k$ over all test cases doesn't exceed $10^5$, and the sum of $q$ over all test cases doesn't exceed $10^5$.
+
+Output Format:
+For each query, output a single integer — the number of minutes passed until the car reaches the point $d$, rounded down.
+
+Tags:
+['binary search', 'math', 'sortings']
+
+Time Limit: 3000 ms
+Memory Limit: 256 MB
+
+Write Python code to solve the problem. Present the code in
+```python
+Your code
+```
+at the end.<｜Assistant｜><think>

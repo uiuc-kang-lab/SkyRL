@@ -1,0 +1,74 @@
+0
+\sqrt{13}
+Okay, so I need to find the length of a curve defined by parametric equations. The equations given are \( x = 2 \cos^2 \theta \) and \( y = 3 \sin^2 \theta \). Hmm, let me think about how to approach this.
+
+First, I remember that the formula for the length of a parametric curve from \( \theta = a \) to \( \theta = b \) is:
+\[
+L = \int_{a}^{b} \sqrt{\left( \frac{dx}{d\theta} \right)^2 + \left( \frac{dy}{d\theta} \right)^2} \, d\theta
+\]
+So I need to find the derivatives of \( x \) and \( y \) with respect to \( \theta \).
+
+Let me compute \( \frac{dx}{d\theta} \) first. Given \( x = 2 \cos^2 \theta \), using the chain rule, the derivative is:
+\[
+\frac{dx}{d\theta} = 2 \times 2 \cos \theta (-\sin \theta) = -4 \cos \theta \sin \theta
+\]
+Wait, that simplifies to \( -2 \sin 2\theta \) because \( \sin 2\theta = 2 \sin \theta \cos \theta \). So, \( \frac{dx}{d\theta} = -2 \sin 2\theta \).
+
+Now, for \( \frac{dy}{d\theta} \), given \( y = 3 \sin^2 \theta \), similarly:
+\[
+\frac{dy}{d\theta} = 3 \times 2 \sin \theta \cos \theta = 6 \sin \theta \cos \theta
+\]
+Which simplifies to \( 3 \sin 2\theta \) since \( \sin 2\theta = 2 \sin \theta \cos \theta \).
+
+Okay, so now I have both derivatives:
+\[
+\frac{dx}{d\theta} = -2 \sin 2\theta
+\]
+\[
+\frac{dy}{d\theta} = 3 \sin 2\theta
+\]
+
+Next, I need to plug these into the arc length formula. So the integrand becomes:
+\[
+\sqrt{(-2 \sin 2\theta)^2 + (3 \sin 2\theta)^2} = \sqrt{4 \sin^2 2\theta + 9 \sin^2 2\theta} = \sqrt{13 \sin^2 2\theta} = \sqrt{13} |\sin 2\theta|
+\]
+Since we're integrating over a period, and \( |\sin 2\theta| \) is symmetric, I can consider the interval from \( 0 \) to \( \frac{\pi}{2} \) and multiply by 4 to account for all four quadrants.
+
+So the integral becomes:
+\[
+L = 4 \times \int_{0}^{\frac{\pi}{2}} \sqrt{13} |\sin 2\theta| \, d\theta
+\]
+But since \( \sin 2\theta \) is non-negative in \( [0, \frac{\pi}{2}] \), the absolute value can be removed:
+\[
+L = 4 \sqrt{13} \int_{0}^{\frac{\pi}{2}} \sin 2\theta \, d\theta
+\]
+Now, let me compute the integral:
+\[
+\int \sin 2\theta \, d\theta = -\frac{1}{2} \cos 2\theta + C
+\]
+Evaluating from 0 to \( \frac{\pi}{2} \):
+\[
+-\frac{1}{2} \cos \pi + \frac{1}{2} \cos 0 = -\frac{1}{2} (-1) + \frac{1}{2} (1) = \frac{1}{2} + \frac{1}{2} = 1
+\]
+So the integral is 1, and therefore:
+\[
+L = 4 \sqrt{13} \times 1 = 4 \sqrt{13}
+\]
+Wait, let me double-check. The parameterization is periodic with period \( \pi/2 \), so integrating from 0 to \( \pi/2 \) and multiplying by 4 gives the total length. That seems correct.
+
+Alternatively, I could have noticed that the curve might be a type of ellipse or something simpler, but in this case, the derivatives led me to a manageable integral. So I think the length is \( 4 \sqrt{13} \).
+
+But wait, hold on. Let me check the derivatives again. Starting with \( x = 2 \cos^2 \theta \), so \( dx/d\theta = 2 \times 2 \cos \theta (-\sin \theta) = -4 \cos \theta \sin \theta \), which is correct. Similarly for \( y \), so that's correct.
+
+Then the derivatives squared are \( 4 \sin^2 2\theta \) and \( 9 \sin^2 2\theta \), adding to 13 \( \sin^2 2\theta \), square root is \( \sqrt{13} |\sin 2\theta| \). So that's correct.
+
+Then, the integral over 0 to \( \pi/2 \) gives 1, and multiplying by 4 gives 4 \( \sqrt{13} \). Yeah, that seems right.
+
+I think I'm confident with this answer.
+</think>
+
+The length of the curve is \( 4 \sqrt{13} \).
+
+\[
+\boxed{4 \sqrt{13}}
+\]<｜end▁of▁sentence｜>

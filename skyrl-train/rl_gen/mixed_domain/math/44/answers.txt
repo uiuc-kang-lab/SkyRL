@@ -1,0 +1,306 @@
+\frac{48}{7}
+Okay, so I'm trying to solve this problem about an ellipse. Let me start by understanding what's given and what's being asked.
+
+First, the ellipse E is given by the equation x²/a² + y²/b² = 1, where a > b > 0. The left focus is F₁, the right focus is F₂, and the eccentricity e is 1/2. So, I know that for an ellipse, the eccentricity e is c/a, where c is the distance from the center to each focus. Since e = 1/2, that means c = a/2.
+
+Next, there's a point P on the ellipse such that the inradius of triangle PF₁F₂ is 1. The incenter is I, and the sum of the areas of triangles PIF₁ and PIF₂ is 2.
+
+The first part is to find the equation of the ellipse E. So, I need to find a and b.
+
+Since the eccentricity e = c/a = 1/2, and c = a/2, that's consistent. Now, I need another equation to relate a and b. The triangle PF₁F₂ has an inradius of 1, and the sum of the areas of PIF₁ and PIF₂ is 2.
+
+Let me recall that the area of a triangle can be expressed as r * s, where r is the inradius and s is the semiperimeter. So, for triangle PF₁F₂, the area is r * s = 1 * s = s. But the sum of the areas of PIF₁ and PIF₂ is 2. Each of these areas is (1/2)*r*side, but I think it's more straightforward to consider that the sum of the areas is equal to the area of triangle PF₁F₂ divided by 2, but I'm not sure. Wait, actually, incenter I divides the triangle into three smaller triangles: PIF₁, PIF₂, and IFF₂. But the sum of the areas of PIF₁ and PIF₂ is given as 2.
+
+But the inradius is 1, so for each of these smaller triangles, the area is (1/2)*r*side. So, for triangle PIF₁, the area is (1/2)*1*PF₁, and for triangle PIF₂, it's (1/2)*1*PF₂. So, the sum is (1/2)(PF₁ + PF₂) = 2. Therefore, PF₁ + PF₂ = 4.
+
+But from the properties of an ellipse, the sum of distances from any point on the ellipse to the two foci is constant and equal to 2a. So, PF₁ + PF₂ = 2a = 4. Therefore, a = 2.
+
+Since e = c/a = 1/2, c = a/2 = 1. So, the foci are at (-1, 0) and (1, 0). So, F₁ is (-1, 0) and F₂ is (1, 0).
+
+Now, I need to find b. For an ellipse, we have the relationship a² = b² + c². Since a = 2 and c = 1, then 4 = b² + 1, so b² = 3, hence b = sqrt(3).
+
+Therefore, the equation of the ellipse is x²/4 + y²/3 = 1.
+
+So, part 1 is solved. Now, part 2 is to find the minimum value of |AB| + |CD| where AB and CD are two perpendicular chords through F₁, the left focus.
+
+First, I need to recall that for a point on the ellipse, the equation is x²/4 + y²/3 = 1. The left focus is at (-1, 0). So, chords through F₁ can be represented parametrically.
+
+Let me consider that AB and CD are perpendicular chords through F₁. Let me parameterize one of them, say AB, and then find CD accordingly.
+
+Let me denote the slope of AB as m, so the slope of CD will be -1/m since they are perpendicular.
+
+The equation of chord AB can be written as y = m(x + 1), since it passes through (-1, 0). Similarly, the equation of chord CD will be y = (-1/m)(x + 1).
+
+Now, I need to find the points where these lines intersect the ellipse. Let's start with AB: y = m(x + 1). Substitute into the ellipse equation:
+
+x²/4 + [m²(x + 1)²]/3 = 1.
+
+Expanding that:
+
+x²/4 + [m²(x² + 2x + 1)]/3 = 1.
+
+Multiply through by 12 to eliminate denominators:
+
+3x² + 4m²(x² + 2x + 1) = 12.
+
+Expanding:
+
+3x² + 4m²x² + 8m²x + 4m² = 12.
+
+Combine like terms:
+
+(3 + 4m²)x² + 8m²x + (4m² - 12) = 0.
+
+This is a quadratic in x. Let me denote this as Ax² + Bx + C = 0, where:
+
+A = 3 + 4m²
+
+B = 8m²
+
+C = 4m² - 12
+
+The solutions are x = [-B ± sqrt(B² - 4AC)]/(2A)
+
+But since we're interested in the length of the chord, the distance between the two intersection points can be found using the formula for the distance between roots.
+
+Alternatively, for a quadratic Ax² + Bx + C = 0, the sum of roots is -B/A and the product is C/A. The distance between the roots can be found using sqrt[(x2 - x1)² + (y2 - y1)²]. But since the line has slope m, y = m(x + 1), so the difference in y is m(x2 - x1). Therefore, the distance is sqrt[(x2 - x1)² + (m(x2 - x1))²] = |x2 - x1| * sqrt(1 + m²).
+
+The difference in x is sqrt[(x2 - x1)²] = sqrt[(x2 + x1)² - 4x1x2] = sqrt[(B² - 4AC)/A²] = sqrt(B² - 4AC)/|A|.
+
+So, the length of chord AB is sqrt(B² - 4AC) * sqrt(1 + m²) / |A|.
+
+Let me compute that.
+
+First, compute discriminant D = B² - 4AC.
+
+D = (8m²)² - 4*(3 + 4m²)*(4m² - 12)
+
+= 64m⁴ - 4*(3 + 4m²)*(4m² - 12)
+
+Let me compute the second term:
+
+4*(3 + 4m²)*(4m² - 12) = 4*[12m² - 36 + 16m⁴ - 48m²] = 4*[16m⁴ - 36m² - 36] = 64m⁴ - 144m² - 144.
+
+So, D = 64m⁴ - (64m⁴ - 144m² - 144) = 64m⁴ - 64m⁴ + 144m² + 144 = 144m² + 144 = 144(m² + 1).
+
+Therefore, sqrt(D) = 12sqrt(m² + 1).
+
+So, the length of AB is [12sqrt(m² + 1)/ (3 + 4m²)] * sqrt(1 + m²) = 12(m² + 1)/ (3 + 4m²).
+
+Similarly, for chord CD, which has slope -1/m, let's denote the length as L. Following similar steps, the length will be 12[(1/m²) + 1]/[3 + 4(1/m²)].
+
+Simplify that:
+
+12[(1 + m²)/m²] / [ (3m² + 4)/m² ] = 12(1 + m²)/(3m² + 4).
+
+So, the lengths are 12(m² + 1)/(3 + 4m²) and 12(m² + 1)/(3m² + 4).
+
+Therefore, |AB| + |CD| = 12(m² + 1)/(3 + 4m²) + 12(m² + 1)/(3m² + 4).
+
+Let me factor out 12(m² + 1):
+
+= 12(m² + 1)[1/(3 + 4m²) + 1/(3m² + 4)]
+
+Let me compute the sum inside the brackets:
+
+1/(3 + 4m²) + 1/(3m² + 4) = [ (3m² + 4) + (3 + 4m²) ] / [ (3 + 4m²)(3m² + 4) ]
+
+= [3m² + 4 + 3 + 4m²] / [ (3 + 4m²)(3m² + 4) ]
+
+= (7m² + 7) / [ (3 + 4m²)(3m² + 4) ]
+
+Factor numerator: 7(m² + 1)
+
+Denominator remains: (3 + 4m²)(3m² + 4)
+
+So, the sum is 7(m² + 1) / [ (3 + 4m²)(3m² + 4) ]
+
+Therefore, |AB| + |CD| = 12(m² + 1) * [7(m² + 1)] / [ (3 + 4m²)(3m² + 4) ]
+
+= 84(m² + 1)² / [ (3 + 4m²)(3m² + 4) ]
+
+Now, we need to minimize this expression with respect to m.
+
+Let me denote t = m², so t ≥ 0.
+
+Then, |AB| + |CD| becomes 84(t + 1)² / [ (3 + 4t)(3t + 4) ]
+
+So, let me define f(t) = 84(t + 1)² / [ (3 + 4t)(3t + 4) ]
+
+We need to find the minimum of f(t) for t ≥ 0.
+
+Let me compute f(t):
+
+First, expand the denominator:
+
+(3 + 4t)(3t + 4) = 9t + 12 + 12t² + 16t = 12t² + 25t + 12
+
+So, f(t) = 84(t + 1)² / (12t² + 25t + 12)
+
+Let me compute (t + 1)² = t² + 2t + 1
+
+So, f(t) = 84(t² + 2t + 1) / (12t² + 25t + 12)
+
+Let me write this as f(t) = 84(t² + 2t + 1) / (12t² + 25t + 12)
+
+To find the minimum, take the derivative f’(t) and set it to zero.
+
+But before computing the derivative, perhaps I can simplify the expression.
+
+Alternatively, let me denote numerator N = 84(t² + 2t + 1)
+
+Denominator D = 12t² + 25t + 12
+
+So, f(t) = N/D
+
+Compute f’(t) = (N’D - ND’) / D²
+
+Compute N’ = 84(2t + 2) = 168t + 168
+
+D’ = 24t + 25
+
+So, f’(t) = [ (168t + 168)(12t² + 25t + 12) - (84t² + 168t + 84)(24t + 25) ] / (12t² + 25t + 12)²
+
+This looks complicated, but perhaps we can factor out common terms.
+
+First, notice that N = 84(t² + 2t + 1) = 84(t + 1)^2
+
+D = 12t² + 25t + 12
+
+Let me see if 12t² + 25t + 12 can be factored.
+
+Looking for factors of 12*12=144 that add up to 25. Hmm, 9 and 16: 9*16=144, 9+16=25. So, 12t² + 9t + 16t + 12 = 3t(4t + 3) + 4(4t + 3) = (3t + 4)(4t + 3). Yes, so D = (3t + 4)(4t + 3).
+
+Similarly, N = 84(t + 1)^2.
+
+So, f(t) = 84(t + 1)^2 / [(3t + 4)(4t + 3)]
+
+Let me write f(t) as 84(t + 1)^2 / [(3t + 4)(4t + 3)]
+
+Let me compute f’(t):
+
+Using the quotient rule:
+
+f’(t) = [84*2(t + 1)(3t + 4)(4t + 3) - 84(t + 1)^2*(3*4t + 3*4 + 4*3 + 4*3)] / [(3t + 4)^2(4t + 3)^2]
+
+Wait, that's messy. Let me instead note that f(t) = 84*(t + 1)^2 / [(3t + 4)(4t + 3)]
+
+Let me take the derivative using the product rule.
+
+Let me write f(t) = 84*(t + 1)^2 * [ (3t + 4)^(-1) * (4t + 3)^(-1) ]
+
+So, using the product rule:
+
+f’(t) = 84 [ 2(t + 1)(3t + 4)^(-1)(4t + 3)^(-1) + (t + 1)^2*(-1)(3t + 4)^(-2)*3*(4t + 3)^(-1) + (t + 1)^2*(4t + 3)^(-1)*(-1)(3t + 4)^(-2)*4 ]
+
+Wait, that's getting too complicated. Maybe it's better to set t = m² and compute the derivative in terms of t.
+
+Alternatively, let me set t = m², so m can be positive or negative, but since m² is positive, t ≥ 0.
+
+So, f(t) = 84(t + 1)^2 / [(3t + 4)(4t + 3)]
+
+Let me compute f’(t):
+
+f’(t) = [84*2(t + 1)(3t + 4)(4t + 3) - 84(t + 1)^2*(3*4t + 3*4 + 4*3 + 4*3)] / [(3t + 4)^2(4t + 3)^2]
+
+Wait, that's messy. Maybe it's better to write f(t) as 84*(t + 1)^2 / [(3t + 4)(4t + 3)] and take the derivative using logarithmic differentiation.
+
+Let me take ln(f(t)) = ln(84) + 2ln(t + 1) - ln(3t + 4) - ln(4t + 3)
+
+Then, derivative:
+
+f’(t)/f(t) = 2/(t + 1) - 3/(3t + 4) - 4/(4t + 3)
+
+So, f’(t) = f(t) [ 2/(t + 1) - 3/(3t + 4) - 4/(4t + 3) ]
+
+Set f’(t) = 0, so the expression in the brackets must be zero:
+
+2/(t + 1) - 3/(3t + 4) - 4/(4t + 3) = 0
+
+Let me write this as:
+
+2/(t + 1) = 3/(3t + 4) + 4/(4t + 3)
+
+Let me find a common denominator for the right-hand side. The denominators are (3t + 4) and (4t + 3). So, common denominator is (3t + 4)(4t + 3).
+
+So,
+
+3*(4t + 3) + 4*(3t + 4) / [(3t + 4)(4t + 3)] = [12t + 9 + 12t + 16]/[(3t + 4)(4t + 3)] = (24t + 25)/[(3t + 4)(4t + 3)]
+
+Therefore, the equation becomes:
+
+2/(t + 1) = (24t + 25)/[(3t + 4)(4t + 3)]
+
+Cross-multiplying:
+
+2*(3t + 4)(4t + 3) = (24t + 25)(t + 1)
+
+Let me compute both sides.
+
+Left side: 2*(12t² + 9t + 16t + 12) = 2*(12t² + 25t + 12) = 24t² + 50t + 24
+
+Right side: (24t + 25)(t + 1) = 24t² + 24t + 25t + 25 = 24t² + 49t + 25
+
+Set left side = right side:
+
+24t² + 50t + 24 = 24t² + 49t + 25
+
+Subtract right side from left side:
+
+(24t² - 24t²) + (50t - 49t) + (24 - 25) = t - 1 = 0
+
+So, t = 1.
+
+Therefore, the critical point is at t = 1.
+
+Now, we need to check if this is a minimum. Let's compute the second derivative or check the behavior around t = 1.
+
+Alternatively, since the function f(t) tends to infinity as t approaches infinity (since denominator grows like t² and numerator like t²), and as t approaches 0, f(t) approaches 84*(1)^2 / (12*0 + 25*0 + 12) = 84/12 = 7.
+
+So, f(t) approaches 7 as t approaches 0 and tends to infinity as t increases. Therefore, t = 1 is likely the point where the function attains its minimum.
+
+So, t = 1, which means m² = 1, so m = ±1.
+
+Therefore, the minimum value of |AB| + |CD| is f(1).
+
+Compute f(1):
+
+f(1) = 84*(1 + 1)^2 / [ (3 + 4*1)(3*1 + 4) ] = 84*(4) / (7*7) = 336 / 49 = 6.857... Wait, 336 divided by 49: 49*6=294, 336-294=42, 42/49=6/7. So, 6 + 6/7 = 6.857... But as a fraction, 336/49 simplifies to 48/7 because both numerator and denominator are divisible by 7: 336 ÷7=48, 49÷7=7. So, 48/7.
+
+Wait, 84*(4) = 336, and (7*7) = 49, so 336/49 = 48/7.
+
+Yes, 48/7 is the value.
+
+Therefore, the minimum value is 48/7.
+
+So, part 2's answer is 48/7.
+
+**Final Answer**
+
+1. The equation of ellipse \( E \) is \boxed{\dfrac{x^2}{4} + \dfrac{y^2}{3} = 1}.
+
+2. The minimum value of \( |\overrightarrow{AB}| + |\overrightarrow{CD}| \) is \boxed{\dfrac{48}{7}}.
+</think>
+
+Given the ellipse \( E \) with the equation \(\frac{x^2}{a^2} + \frac{y^2}{b^2} = 1\) where \(a > b > 0\), the left focus is \(F_1\), the right focus is \(F_2\), and the eccentricity \(e = \frac{1}{2}\). Point \(P\) is on the ellipse, and the inradius of \(\triangle PF_1F_2\) is 1. The sum of the areas of \(\triangle PIF_1\) and \(\triangle PIF_2\) is 2.
+
+1. **Finding the equation of the ellipse \(E\):**
+
+   - The eccentricity \(e = \frac{1}{2}\) gives \(c = \frac{a}{2}\).
+   - The foci are at \((-1, 0)\) and \((1, 0)\).
+   - Using the property of an ellipse, the sum of distances from any point on the ellipse to the foci is \(2a\). Thus, \(PF_1 + PF_2 = 4\), so \(a = 2\).
+   - Using the relationship \(a^2 = b^2 + c^2\), we find \(b^2 = 3\).
+   - Therefore, the equation of the ellipse is \(\frac{x^2}{4} + \frac{y^2}{3} = 1\).
+
+2. **Finding the minimum value of \(|\overrightarrow{AB}| + |\overrightarrow{CD}|\):**
+
+   - The ellipse equation is \(\frac{x^2}{4} + \frac{y^2}{3} = 1\).
+   - The left focus \(F_1\) is at \((-1, 0)\).
+   - The lengths of the chords \(AB\) and \(CD\) through \(F_1\) are given by \( \frac{12(m^2 + 1)}{3 + 4m^2} \) and \( \frac{12(m^2 + 1)}{3m^2 + 4} \) respectively.
+   - The sum of these lengths is minimized by finding the critical points of the function, leading to the minimum value of 48/7.
+
+### Final Answer
+
+1. The equation of ellipse \( E \) is \(\boxed{\dfrac{x^2}{4} + \dfrac{y^2}{3} = 1}\).
+
+2. The minimum value of \( |\overrightarrow{AB}| + |\overrightarrow{CD}| \) is \(\boxed{\dfrac{48}{7}}\).<｜end▁of▁sentence｜>

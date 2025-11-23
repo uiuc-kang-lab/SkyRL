@@ -1,0 +1,34 @@
+<｜begin▁of▁sentence｜><｜User｜>
+For $k$ positive integers $x_1, x_2, \ldots, x_k$, the value $\gcd(x_1, x_2, \ldots, x_k)$ is the greatest common divisor of the integers $x_1, x_2, \ldots, x_k$ — the largest integer $z$ such that all the integers $x_1, x_2, \ldots, x_k$ are divisible by $z$.
+
+You are given three arrays $a_1, a_2, \ldots, a_n$, $b_1, b_2, \ldots, b_n$ and $c_1, c_2, \ldots, c_n$ of length $n$, containing positive integers.
+
+You also have a machine that allows you to swap $a_i$ and $b_i$ for any $i$ ($1 \le i \le n$). Each swap costs you $c_i$ coins.
+
+Find the maximum possible value of $$\gcd(a_1, a_2, \ldots, a_n) + \gcd(b_1, b_2, \ldots, b_n)$$ that you can get by paying in total at most $d$ coins for swapping some elements. The amount of coins you have changes a lot, so find the answer to this question for each of the $q$ possible values $d_1, d_2, \ldots, d_q$.
+
+Input Format:
+There are two integers on the first line — the numbers $n$ and $q$ ($1 \leq n \leq 5 \cdot 10^5$, $1 \leq q \leq 5 \cdot 10^5$).
+
+On the second line, there are $n$ integers — the numbers $a_1, a_2, \ldots, a_n$ ($1 \leq a_i \leq 10^8$).
+
+On the third line, there are $n$ integers — the numbers $b_1, b_2, \ldots, b_n$ ($1 \leq b_i \leq 10^8$).
+
+On the fourth line, there are $n$ integers — the numbers $c_1, c_2, \ldots, c_n$ ($1 \leq c_i \leq 10^9$).
+
+On the fifth line, there are $q$ integers — the numbers $d_1, d_2, \ldots, d_q$ ($0 \leq d_i \leq 10^{15}$).
+
+Output Format:
+Print $q$ integers — the maximum value you can get for each of the $q$ possible values $d$.
+
+Tags:
+['bitmasks', 'brute force', 'dp', 'implementation', 'number theory']
+
+Time Limit: 5000 ms
+Memory Limit: 512 MB
+
+Write Python code to solve the problem. Present the code in
+```python
+Your code
+```
+at the end.<｜Assistant｜><think>

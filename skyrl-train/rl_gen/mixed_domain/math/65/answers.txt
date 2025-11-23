@@ -1,0 +1,86 @@
+[-1, 1]
+Okay, so I have this problem here: the function f(x) = x + a sin x is monotonically increasing on the entire real line, and I need to find the range of the real number a. Hmm, let me think about how to approach this.
+
+First, I remember that a function is monotonically increasing if its derivative is non-negative everywhere. So, maybe I should start by finding the derivative of f(x). Let me write that down.
+
+f(x) = x + a sin x
+
+The derivative, f'(x), would be the derivative of x plus the derivative of a sin x. The derivative of x is 1, and the derivative of sin x is cos x, so putting that together, f'(x) = 1 + a cos x.
+
+Now, since the function is monotonically increasing, f'(x) must be greater than or equal to zero for all real numbers x. So, I need to ensure that 1 + a cos x ≥ 0 for all x.
+
+Hmm, let me think about the range of cos x. I know that cos x oscillates between -1 and 1 for all real x. So, cos x ∈ [-1, 1]. Therefore, a cos x would depend on the value of a. If a is positive, then a cos x would range between -a and a. If a is negative, it would range between a and -a, but since a is a real number, it could be positive or negative.
+
+Wait, but we need 1 + a cos x ≥ 0 for all x. Let me consider the minimum value of the expression 1 + a cos x because if the smallest value is still non-negative, then all other values will be as well.
+
+So, the minimum of 1 + a cos x occurs when cos x is at its minimum, which is -1, but only if a is positive. If a is negative, then cos x is at its minimum (which is -1), but multiplying by a negative a would give a maximum for the expression, which might not necessarily be the minimum.
+
+Wait, perhaps I should consider the maximum and minimum of cos x to find the extrema of 1 + a cos x.
+
+The function 1 + a cos x will have its maximum and minimum depending on the sign of a. Let's analyze this.
+
+Case 1: a > 0.
+
+In this case, cos x ∈ [-1, 1]. So, when cos x = -1, 1 + a cos x = 1 - a. To ensure that f'(x) ≥ 0 for all x, the minimum value, which is 1 - a, must be ≥ 0. Therefore, 1 - a ≥ 0 ⇒ a ≤ 1.
+
+Also, when cos x = 1, 1 + a cos x = 1 + a, which is always ≥ 0 since a > 0.
+
+Case 2: a = 0.
+
+Then f'(x) = 1, which is always positive. So, a = 0 is acceptable.
+
+Case 3: a < 0.
+
+In this case, cos x ∈ [-1, 1]. So, when cos x = -1, 1 + a cos x = 1 - a. Since a is negative, -a is positive, so 1 - a becomes 1 + |a|, which is definitely greater than 1, so positive. When cos x = 1, 1 + a cos x = 1 + a. Since a is negative, this becomes 1 - |a|, which must be ≥ 0. So, 1 - |a| ≥ 0 ⇒ |a| ≤ 1 ⇒ -1 ≤ a ≤ 1. But since we're in the case where a < 0, this becomes -1 ≤ a < 0.
+
+Wait, but let me verify that. If a is negative, say a = -b where b > 0, then 1 + a cos x = 1 - b cos x. Since cos x ∈ [-1, 1], the smallest value of cos x is -1, so 1 - b*(-1) = 1 + b, which is positive. The largest value is when cos x = 1, so 1 - b. To ensure 1 - b ≥ 0 ⇒ b ≤ 1 ⇒ a ≥ -1.
+
+So, combining both cases where a > 0 and a < 0, we get that a must be between -1 and 1.
+
+Wait, but when a = 1, let me check. f'(x) = 1 + cos x. Since cos x ≥ -1, then 1 + cos x ≥ 0, which is true. Similarly, when a = -1, f'(x) = 1 - cos x. Since cos x ≤ 1, then 1 - cos x ≥ 0, which is also true. So, both endpoints are acceptable.
+
+Therefore, the range of a is [-1, 1].
+
+Wait, let me make sure I didn't miss anything. So, when a is between -1 and 1, inclusive, f'(x) = 1 + a cos x is always non-negative. Therefore, the function is monotonically increasing on the entire real line.
+
+Yes, that seems correct. I think I've covered all cases and checked the boundaries. So, the range of a is from -1 to 1, inclusive.
+
+**Final Answer**
+The range of the real number \( a \) is \boxed{[-1, 1]}.
+</think>
+
+To determine the range of the real number \( a \) such that the function \( f(x) = x + a \sin x \) is monotonically increasing on \( (-\infty, +\infty) \), we need to ensure that the derivative \( f'(x) \) is non-negative for all \( x \).
+
+First, we find the derivative of \( f(x) \):
+\[
+f'(x) = 1 + a \cos x
+\]
+
+For \( f(x) \) to be monotonically increasing, \( f'(x) \geq 0 \) for all \( x \). This means:
+\[
+1 + a \cos x \geq 0 \quad \text{for all } x
+\]
+
+The range of \( \cos x \) is \( [-1, 1] \). Therefore, we need to ensure that the expression \( 1 + a \cos x \) is non-negative for all values of \( \cos x \) within this interval.
+
+- When \( a > 0 \), the minimum value of \( 1 + a \cos x \) occurs at \( \cos x = -1 \):
+  \[
+  1 - a \geq 0 \implies a \leq 1
+  \]
+
+- When \( a = 0 \), the derivative is \( 1 \), which is always positive.
+
+- When \( a < 0 \), the minimum value of \( 1 + a \cos x \) occurs at \( \cos x = 1 \):
+  \[
+  1 + a \geq 0 \implies a \geq -1
+  \]
+
+Combining these results, we find that \( a \) must satisfy:
+\[
+-1 \leq a \leq 1
+\]
+
+Thus, the range of the real number \( a \) is:
+\[
+\boxed{[-1, 1]}
+\]<｜end▁of▁sentence｜>

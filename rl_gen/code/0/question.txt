@@ -1,0 +1,32 @@
+<｜begin▁of▁sentence｜><｜User｜>
+You are given two distinct non-negative integers $x$ and $y$. Consider two infinite sequences $a_1, a_2, a_3, \ldots$ and $b_1, b_2, b_3, \ldots$, where
+
+  * $a_n = n \oplus x$;    * $b_n = n \oplus y$. 
+
+Here, $x \oplus y$ denotes the [bitwise XOR](https://en.wikipedia.org/wiki/Bitwise_operation#XOR) operation of integers $x$ and $y$.
+
+For example, with $x = 6$, the first $8$ elements of sequence $a$ will look as follows: $[7, 4, 5, 2, 3, 0, 1, 14, \ldots]$. Note that the indices of elements start with $1$.
+
+Your task is to find the length of the longest common subsegment$^\dagger$ of sequences $a$ and $b$. In other words, find the maximum integer $m$ such that $a_i = b_j, a_{i + 1} = b_{j + 1}, \ldots, a_{i + m - 1} = b_{j + m - 1}$ for some $i, j \ge 1$.
+
+$^\dagger$A subsegment of sequence $p$ is a sequence $p_l,p_{l+1},\ldots,p_r$, where $1 \le l \le r$.
+
+Input Format:
+Each test consists of multiple test cases. The first line contains a single integer $t$ ($1 \le t \le 10^4$) — the number of test cases. The description of the test cases follows.
+
+The only line of each test case contains two integers $x$ and $y$ ($0 \le x, y \le 10^9, x \neq y$) — the parameters of the sequences.
+
+Output Format:
+For each test case, output a single integer — the length of the longest common subsegment.
+
+Tags:
+['bitmasks', 'greedy']
+
+Time Limit: 1000 ms
+Memory Limit: 256 MB
+
+Write Python code to solve the problem. Present the code in
+```python
+Your code
+```
+at the end.<｜Assistant｜><think>

@@ -1,0 +1,174 @@
+0
+9
+Okay, so I need to find the values of a, b, and c for the parabola y = ax² + bx + c. The parabola passes through the point P(1,1) and is tangent to the line y = x - 3 at point Q(2,-1). 
+
+First, since the parabola passes through P(1,1), I can substitute x=1 and y=1 into the equation:
+
+1 = a(1)² + b(1) + c
+which simplifies to:
+1 = a + b + c  ...(Equation 1)
+
+Next, the parabola passes through Q(2,-1), so substituting x=2 and y=-1:
+
+-1 = a(2)² + b(2) + c
+which simplifies to:
+-1 = 4a + 2b + c  ...(Equation 2)
+
+Now, since the parabola is tangent to the line y = x - 3 at Q(2,-1), two conditions must be satisfied at this point:
+
+1. The parabola and the line must have the same y-value, which we already know they do at x=2 (both y=-1), so that's satisfied.
+
+2. The derivatives of the parabola and the line must be equal at x=2. The derivative of the parabola is y' = 2ax + b, and the derivative of the line y = x - 3 is y' = 1. So:
+
+2a(2) + b = 1
+which simplifies to:
+4a + b = 1  ...(Equation 3)
+
+Now I have three equations:
+
+Equation 1: a + b + c = 1
+Equation 2: 4a + 2b + c = -1
+Equation 3: 4a + b = 1
+
+I can solve these equations step by step. First, let's subtract Equation 1 from Equation 2 to eliminate c:
+
+(4a + 2b + c) - (a + b + c) = -1 -1
+which simplifies to:
+3a + b = -2  ...(Equation 4)
+
+Now I have Equation 3: 4a + b = 1
+and Equation 4: 3a + b = -2
+
+Subtract Equation 4 from Equation 3:
+
+(4a + b) - (3a + b) = 1 - (-2)
+which simplifies to:
+a = 3
+
+Now that I have a = 3, I can substitute back into Equation 3:
+
+4(3) + b = 1
+12 + b = 1
+b = 1 -12
+b = -11
+
+Now substitute a = 3 and b = -11 into Equation 1:
+
+3 + (-11) + c = 1
+-8 + c = 1
+c = 1 +8
+c =9
+
+So the values are a=3, b=-11, c=9.
+
+Let mejust verify everything to ensure no mistakes.
+
+First, check if the point Q(2,-1) is on the parabola:
+
+y = 3(4) + (-11)(2) +9 =12 -22 +9= (12+9)-22=21-22=-1 ✔️
+
+Check the derivative at x=2:
+
+Derivative of parabola: 6x -11
+
+At x=2: 6(2) -11=12-11=1 ✔️ same as the line's derivative.
+
+Check point P(1,1):
+
+y=3(1) + (-11)(1) +9=3-11+9= (3+9)-11=12-11=1 ✔️
+
+So all conditions are satisfied. Therefore, the values are a=3, b=-11, c=9.
+
+Wait, but the parabola is tangent at Q(2,-1), so perhaps the parabola is pivoting around that point, but since it passing through P(1,1) which is close to Q(2,-1), the parabola must be adjusting accordingly. The calculations seem correct.
+
+Another way to look is to subtract the equation of the parabola from the line to get the tangent condition.
+
+The line is y = x -3, so subtract the parabola:
+
+(x -3) - (ax² + bx + c) =0
+
+Since they are tangent at x=2, this quadratic equation in x should have a double root at x=2. So the equation is:
+
+-ax² + (1 - b)x + (-3 -c) =0
+
+And since it's tangent at x=2, x=2 is the double root. So substituting x=2:
+
+- a(4) + (1 - b)(2) + (-3 -c) =0
+-4a +2 -2b -3 -c=0
+-4a -2b -c -1=0
+Which is:
+
+4a +2b +c = -1  ...(Same as Equation 2)
+
+Which is consistent.
+
+Also, the derivative condition gives another equation, which we used.
+
+So all consistent. Therefore, the答案是 a=3, b=-11, c=9.
+
+ boxed{a=3, b=-11, c=9}
+</think>
+
+Given a parabola \( y = ax^2 + bx + c \) passing through the point \( P(1,1) \) and tangent to the line \( y = x - 3 \) at the point \( Q(2,-1) \), we need to find the values of the real numbers \( a \), \( b \), and \( c \).
+
+1. **Substitute point P(1,1) into the parabola equation:**
+   \[
+   1 = a(1)^2 + b(1) + c \implies a + b + c = 1 \quad \text{(Equation 1)}
+   \]
+
+2. **Substitute point Q(2,-1) into the parabola equation:**
+   \[
+   -1 = a(2)^2 + b(2) + c \implies 4a + 2b + c = -1 \quad \text{(Equation 2)}
+   \]
+
+3. **Equating the derivatives at point Q(2,-1):**
+   - The derivative of the parabola \( y = ax^2 + bx + c \) is \( y' = 2ax + b \).
+   - The derivative of the line \( y = x - 3 \) is \( y' = 1 \).
+   \[
+   2a(2) + b = 1 \implies 4a + b = 1 \quad \text{(Equation 3)}
+   \]
+
+4. **Solve the system of equations:**
+   - Subtract Equation 1 from Equation 2:
+     \[
+     (4a + 2b + c) - (a + b + c) = -1 - 1 \implies 3a + b = -2 \quad \text{(Equation 4)}
+     \]
+   - Solve Equations 3 and 4:
+     \[
+     \begin{cases}
+     4a + b = 1 \\
+     3a + b = -2
+     \end{cases}
+     \]
+     Subtract Equation 4 from Equation 3:
+     \[
+     (4a + b) - (3a + b) = 1 - (-2) \implies a = 3
+     \]
+   - Substitute \( a = 3 \) into Equation 3:
+     \[
+     4(3) + b = 1 \implies 12 + b = 1 \implies b = -11
+     \]
+   - Substitute \( a = 3 \) and \( b = -11 \) into Equation 1:
+     \[
+     3 - 11 + c = 1 \implies -8 + c = 1 \implies c = 9
+     \]
+
+5. **Verification:**
+   - Check if point Q(2,-1) is on the parabola:
+     \[
+     y = 3(4) - 11(2) + 9 = 12 - 22 + 9 = -1 \quad \text{(Correct)}
+     \]
+   - Check the derivative at x=2:
+     \[
+     \text{Derivative of parabola} = 6x - 11 \implies 6(2) - 11 = 12 - 11 = 1 \quad \text{(Same as the line's derivative)}
+     \]
+   - Check point P(1,1):
+     \[
+     y = 3(1) - 11(1) + 9 = 3 - 11 + 9 = 1 \quad \text{(Correct)}
+     \)
+
+Thus, the values are \( a = 3 \), \( b = -111 \), and \( c = 9 \).
+
+\[
+\boxed{a=3, b=-11, c=9}
+\]<｜end▁of▁sentence｜>

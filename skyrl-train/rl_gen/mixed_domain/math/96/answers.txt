@@ -1,0 +1,268 @@
+2
+Alright, let's tackle this arithmetic sequence problem step by step. So, we have an arithmetic sequence {a_n}, and we know two specific terms: a₄ = 3 and a₃ + a₁₁ = 18. We need to find the general formula, calculate a₅₅, solve for n when Sₙ = 32, and determine the value of n when Sₙ is minimized. Let's break this down.
+
+Starting with part (1): Find the general formula and calculate a₅₅.
+
+First, I remember that in an arithmetic sequence, each term is the previous term plus a common difference, d. So, the general formula for the nth term is aₙ = a₁ + (n - 1)d. Our goal is to find a₁ and d.
+
+We know that a₄ = 3. Plugging into the formula: a₄ = a₁ + (4 - 1)d => 3 = a₁ + 3d. That's our first equation.
+
+Next, we have a₃ + a₁₁ = 18. Let's express those terms in terms of a₁ and d. a₃ = a₁ + (3 - 1)d = a₁ + 2d, and a₁₁ = a₁ + (11 - 1)d = a₁ + 10d. So, adding those together: (a₁ + 2d) + (a₁ + 10d) = 18. Simplifying: 2a₁ + 12d = 18. That's our second equation.
+
+Now we have a system of two equations:
+1) 3 = a₁ + 3d
+2) 18 = 2a₁ + 12d
+
+Hmm, let's see. Maybe we can solve this system. From equation 1, we can express a₁ in terms of d: a₁ = 3 - 3d. Then plug that into equation 2.
+
+So, substituting a₁ into equation 2: 18 = 2*(3 - 3d) + 12d. Let's compute that:
+
+18 = 6 - 6d + 12d
+18 = 6 + 6d
+Subtract 6 from both sides: 12 = 6d
+Thus, d = 2.
+
+Now that we have d, plug it back into equation 1 to find a₁: 3 = a₁ + 3*2 => 3 = a₁ + 6 => a₁ = 3 - 6 = -3.
+
+So, the general formula is aₙ = -3 + (n - 1)*2. Let's simplify that: aₙ = -3 + 2n - 2 => aₙ = 2n - 5.
+
+Now, to find a₅₅: plug n = 55 into the formula: a₅₅ = 2*55 - 5 = 110 - 5 = 105.
+
+Alright, so part (1) is done. Let me note that down:
+
+1) General formula: aₙ = 2n - 5
+
+2) a₅₅ = 105
+
+Moving on to part (2): If Sₙ = 32, find n.
+
+Sₙ is the sum of the first n terms of the arithmetic sequence. The formula for the sum is Sₙ = (n/2)*(2a₁ + (n - 1)d). Alternatively, it's also Sₙ = n*(a₁ + aₙ)/2.
+
+We can use either formula. Let me first recall our values: a₁ = -3, d = 2.
+
+So, Sₙ = (n/2)*(2*(-3) + (n - 1)*2) = (n/2)*(-6 + 2n - 2) = (n/2)*(2n - 8) = n*(n - 4).
+
+Set that equal to 32: n*(n - 4) = 32.
+
+So, n² - 4n - 32 = 0. Let's solve this quadratic equation.
+
+We can use the quadratic formula: n = [4 ± sqrt(16 + 128)] / 2 = [4 ± sqrt(144)] / 2 = [4 ± 12] / 2.
+
+So, n = (4 + 12)/2 = 16/2 = 8, or n = (4 - 12)/2 = (-8)/2 = -4.
+
+Since n cannot be negative, n = 8.
+
+Wait, let me verify that. If n = 8, let's compute S₈ using the sum formula:
+
+S₈ = (8/2)*(2*(-3) + (8 - 1)*2) = 4*(-6 + 14) = 4*(8) = 32. Yep, that's correct. So, n = 8 is the solution.
+
+Now, part (3): If the value of Sₙ reaches the minimum, find n.
+
+Hmm, so we need to find the value of n where the sum Sₙ is minimized.
+
+In an arithmetic sequence, if the common difference d is positive, the sequence is increasing, so the terms are getting larger. If d is zero, it's constant, and if d is negative, the sequence is decreasing.
+
+Wait, in our case, d = 2, which is positive. So, the sequence is increasing. That means that the terms are getting larger as n increases.
+
+But when considering the sum Sₙ, which is n*(a₁ + aₙ)/2, we can think of it as the average of the first and nth term multiplied by n.
+
+Given that the sequence is increasing (since d > 0), the terms are getting larger, so a₁ is negative (-3), and aₙ is increasing. Let's see when the terms start becoming positive.
+
+We found the general term: aₙ = 2n - 5. Let's find when aₙ = 0: 2n - 5 = 0 => n = 2.5. So, at n = 2.5, the term becomes zero.
+
+This means that before n = 2.5, the terms are negative, and after that, they are positive. Since the sequence is increasing, the terms transition from negative to positive at n = 3. So, starting from n = 3, the terms become positive.
+
+But since the sequence is increasing, the terms after n = 2.5 are positive, and before are negative. The sum Sₙ will be a balance between these.
+
+But in an arithmetic sequence with a positive common difference, the sum Sₙ will have a minimum when the terms are still negative. Wait, no, actually, when the terms are still negative, the sum is negative, but as n increases, the sum becomes less negative (i.e., closer to zero) until the terms start becoming positive, but the sum starts increasing as the positive terms add to the negative ones.
+
+Wait, maybe I need to think differently.
+
+Wait, perhaps the sum will have a minimum when the terms start becoming positive because when you have a mix of negative and positive terms, the sum might be minimized at the point where you have the least negative sum.
+
+Alternatively, since the sequence is increasing, the terms are moving from negative to positive, so the sum will reach a minimum when the last term is still negative.
+
+So, let's find the smallest n where aₙ is still negative.
+
+aₙ = 2n - 5 < 0 => 2n < 5 => n < 2.5.
+
+Since n must be an integer, the largest integer less than 2.5 is 2. So, for n = 2, a₂ = 2*2 -5 = -1, which is negative. For n = 3, a₃ = 1, which is positive.
+
+Therefore, the sum Sₙ will be the sum of the terms up to n = 2, which are both negative, and then from n = 3 onwards, the terms are positive. But since the terms are increasing, the sum will decrease until the point where the terms start becoming positive.
+
+Wait, but the question is about the sum Sₙ reaching the minimum. So, in an arithmetic sequence with positive common difference, the sum Sₙ will decrease until the terms start becoming positive, and then it will start increasing.
+
+Wait, actually, let's think about the sum as a function of n.
+
+Since aₙ is increasing, the terms are getting larger as n increases. So, starting from n = 1, a₁ = -3, then a₂ = -1, a₃ = 1, a₄ = 3, etc.
+
+So, the sum Sₙ is a function that goes from a₁ = -3, then S₂ = (-3) + (-1) = -4, S₃ = (-3) + (-1) + 1 = -3, S₄ = (-3) + (-1) + 1 + 3 = 0, S₅ = (-3) + (-1) +1 +3 +5=5, S₆=10, etc.
+
+Wait, so Sₙ increases as n increases, but it's the sum of terms that are becoming less negative and then positive. So, the sum is increasing. Hmm, but in our case, Sₙ is 32, which occurs at n=8, so the sum reaches 32 at n=8. But we need the minimum sum.
+
+Wait, perhaps the minimum sum occurs before the terms become positive, but since the terms are increasing, the sum is increasing as n increases. Wait, no, in our case, the terms started negative and become positive, so the sum went from -3, then to -4, then to -3, then to 0, then to 5, etc.
+
+Wait, so actually, the sum is not always increasing. It first decreases (becomes more negative) until n=2, then increases. So, the minimum sum is at n=2, which is -4.
+
+But wait, in our arithmetic sequence, the terms are aₙ = 2n -5, starting from n=1: -3, -1, 1, 3, 5, etc. So the terms are negative for n=1,2, and positive starting from n=3.
+
+So, the sum Sₙ is the sum of terms from n=1 to n=k, where k is the term that turns positive.
+
+So, the sum is:
+
+n=1: -3
+
+n=2: -4
+
+n=3: -3
+
+n=4: 0
+
+n=5:5
+
+n=6:10
+
+So, the sum first decreases from n=2 to n=3, but then increases from n=3 onwards.
+
+Wait, so actually, the minimum sum occurs at n=2, which is -4.
+
+But wait, when n=2, the sum is -4, which is less than n=1's -3. So, actually, the minimum is at n=2.
+
+But in our previous calculation, when we found n=8 for Sₙ=32, that's because the sum is increasing as n increases, but the minimum sum is at n=2.
+
+Wait, but the problem is asking for when Sₙ reaches the minimum. So, n=2.
+
+But wait, in our earlier quadratic equation, we found n=8 and n=-4, but that was when considering different variables.
+
+Wait, no, actually, in part (2), we found Sₙ=32 occurs at n=8, but in part (3), we are to find when Sₙ is minimized.
+
+In our arithmetic sequence, the sum Sₙ will be minimized at the smallest n where the terms are still negative, which is n=2. Because for n=1, a₁ is -3, so the sum is -3. For n=2, the sum is -4, which is lower. For n=3, it's -3, which is higher. So, indeed, the minimum sum occurs at n=2.
+
+But wait, in the problem statement, it's about the sum Sₙ reaching the minimum. So, in our case, the sum is minimized at n=2.
+
+But let me think again. Since the terms start negative, the sum is negative, then becomes less negative, then positive.
+
+So, the minimum sum is at the first negative term, which is n=2.
+
+But wait, is that correct? Let's compute Sₙ at n=2: (-3) + (-1) = -4.
+
+At n=1: -3.
+
+So, yes, Sₙ is minimized at n=2.
+
+But wait, in part (2), Sₙ=32 occurs at n=8.
+
+So, to answer part (3): If the value of Sₙ reaches the minimum, find n.
+
+So, the answer is n=2.
+
+Wait, but in the problem, the sequence starts at n=1, so n=2 is the first positive term.
+
+Wait, but the sum is minimized at n=2, so the answer is 2.
+
+But wait, let me make sure. The sum is Sₙ = sum from k=1 to n of a_k.
+
+Given that a_k is 2k -5.
+
+So, the sum is sum_{k=1}^n (2k -5) = 2*sum_{k=1}^n k -5n = 2*(n(n+1)/2) -5n = n(n+1) -5n = n² +n -5n = n² -4n.
+
+So, Sₙ = n² -4n.
+
+To find the minimum of Sₙ, since this is a quadratic in n, opening upwards, the minimum occurs at the vertex. The vertex is at n = -b/(2a) = 4/(2*1) = 2. So, n=2 is where the minimum occurs.
+
+Therefore, the answer is n=2.
+
+But wait, in part (2), Sₙ=32 occurs at n=8, which is much larger. So, in part (3), the sum reaches its minimum at n=2, which is the first positive term.
+
+But let me confirm this with the sum formula:
+
+Sₙ = n² -4n.
+
+So, Sₙ is minimized at n=2, as above.
+
+So, yes, the answer is n=2.
+
+Alternatively, if the problem expects n to be a positive integer, then yes, n=2.
+
+So, in summary:
+
+1) aₙ = 2n -5; a₅₅ = 105
+
+2) n=8
+
+3) n=2
+
+But let me check part (3) again. If n=2, S₂ = -4, but Sₙ is minimized at n=2. So, that's correct.
+
+Alternatively, sometimes people consider the minimum of the sum as the first term, but in this case, since the terms are negative and then positive, the sum is minimized at the first negative term. So, n=2 is correct.
+
+Wait, but actually, in our earlier equation, Sₙ = n² -4n. So, if we consider n as an integer, then the minimum occurs at n=2. So, that's correct.
+
+Alright, I think that's solid.
+
+**Final Answer**
+
+(1) The general formula is $\boxed{a_n = 2n - 5}$ and $a_{55} = \boxed{105}$.
+
+(2) The value of $n$ is $\boxed{8}$.
+
+(3) The value of $n$ when $S_n$ reaches the minimum is $\boxed{2}$.
+</think>
+
+In an arithmetic sequence $\{a_n\}$, we know $a_4 = 3$ and $a_3 + a_{11} = 18$. We need to find the general formula and calculate $a_{55}$; solve for $n$ when $S_n = 32$; and determine when $S_n$ is minimized.
+
+1. **Finding the general formula and calculating $a_{55}$:**
+
+   - Using the given terms, we set up the following equations:
+     \[
+     3 = a_1 + 3d \quad \text{(1)}
+     \]
+     \[
+     18 = 2a_1 + 12d \quad \text{(2)}
+     \]
+   - Solving these equations, we find:
+     \[
+     a_1 = -3, \quad d = 2
+     \]
+   - The general formula is:
+     \[
+     a_n = a_1 + (n - 1)d = -3 + (n - 1) \cdot 2 = 2n - 5
+     \]
+   - Calculating $a_{55}$:
+     \[
+     a_{55} = 2 \cdot 55 - 5 = 110 - 5 = 105
+     \]
+
+2. **Solving for $n$ when $S_n = 32$:**
+
+   - The sum of the first $n$ terms is:
+     \[
+     S_n = \frac{n}{2} (2a_1 + (n - 1)d) = \frac{n}{2} (-6 + 2(n - 1)) = n(n - 4)
+     \]
+   - Setting $S_n = 32$:
+     \[
+     n(n - 4) = 32 \implies n^2 - 4n - 32 = 0
+     \]
+   - Solving this quadratic equation, we get:
+     \[
+     n = 8 \quad \text{(since $n$ cannot be negative)}
+     \]
+
+3. **Finding $n$ when $S_n$ is minimized:**
+
+   - The sum $S_n$ is a quadratic function in $n$:
+     \[
+     S_n = n^2 - 4n
+     \]
+   - The minimum occurs at the vertex of the parabola:
+     \[
+     n = -\frac{b}{2a} = \frac{4}{2} = 2
+     \]
+
+### Final Answers
+
+(1) The general formula is $\boxed{a_n = 2n - 5}$ and $a_{55} = \boxed{105}$.
+
+(2) The value of $n$ is $\boxed{8}$.
+
+(3) The value of $n$ when $S_n$ reaches the minimum is $\boxed{2}$.<｜end▁of▁sentence｜>

@@ -1,0 +1,655 @@
+0
+[-1, 1]
+Okay, so I have this problem where I need to find the range of the real number \( a \) such that the function \( f(x) = x + a\sin x \) is monotonically increasing on \( (-\infty, +\infty) \). Hmm, let me think about how to approach this.
+
+First, I know that a function is monotonically increasing if its derivative is non-negative for all \( x \). So, I should start by finding the derivative of \( f(x) \).
+
+The derivative of \( f(x) \) with respect to \( x \) is:
+\[ f'(x) = \frac{d}{dx}(x) + \frac{d}{dx}(a\sin x) = 1 + a\cos x \]
+
+Okay, so \( f'(x) = 1 + a\cos x \). For \( f(x) \) to be monotonically increasing, we need \( f'(x) \geq 0 \) for all \( x \). That is:
+\[ 1 + a\cos x \geq 0 \forall x \in \mathbb{R} \]
+
+Now, I need to find the range of \( a \) such that this inequality holds for all \( x \). Let me analyze the expression \( 1 + a\cos x \).
+
+The cosine function \( \cos x \) ranges between -1 and 1. So, \( \cos x \in [-1,1] \). Depending on the value of \( a \), the term \( a\cos x \) will vary between \( -a \) and \( a \).
+
+Therefore, the expression \( 1 + a\cos x \) will vary between:
+\[ 1 + a(-1) = 1 - a \]
+and
+\[ 1 + a(1) = 1 + a \]
+
+So, \( 1 + a\cos x \in [1 - a, 1 + a] \).
+
+For \( f'(x) \geq 0 \) for all \( x \), the minimum value of \( f'(x) \) must be greater than or equal to 0. The minimum occurs when \( \cos x \) is at its minimum, which is -1. So, the minimum value of \( f'(x) \) is \( 1 - a \).
+
+Therefore, we need:
+\[ 1 - a \geq 0 \]
+which implies:
+\[ a \leq 1 \]
+
+Wait, let me double-check that. If \( \cos x \) can be -1, then \( f'(x) = 1 + a(-1) = 1 - a \). So, to ensure \( f'(x) \geq 0 \) even at the lowest point of \( \cos x \), which is -1, we need \( 1 - a \geq 0 \), so \( a \leq 1 \).
+
+But wait, let me also consider the other end, when \( \cos x = 1$, then \( f'(x) = 1 + a(1) = 1 + a \). So, the maximum derivative is \( 1 + a \), which is always positive as long as \( a > -1 \), but wait, no, if \( a \) is very negative, \( 1 + a \) could be negative. But in this case, since we are only concerned with the minimum derivative, which is \( 1 - a \), as the maximum derivative is \( 1 + a \), which doesn't affect the monotonicity as long as the minimum is non-negative.
+
+So, the key condition is \( 1 - a \geq 0 \), which gives \( a \leq 1 \).
+
+But wait, let me think again. If \( a \) is positive, then \( a\cos x \) can be positive or negative depending on \( \cos x \). But if \( a \) is negative, then \( a\cos x \) can be positive or negative depending on \( \cos x \) being negative or positive.
+
+Wait, perhaps I should consider the worst case where \( f'(x) \) is smallest, which is when \( a\cos x \) is smallest, i.e., when \( \cos x \) is smallest and \( a \) is positive, or when \( \cos x \) is largest and \( a \) is negative.
+
+This is a bit confusing. Let me try another approach.
+
+The derivative \( f'(x) = 1 + a\cos x \). We need \( f'(x) \geq 0 for all x.
+
+So, \( 1 + a\cos x \geq 0 for all x.
+
+As \( \cos x \) ranges from -1 to1, we need \( 1 + a\cos x \geq 0 for all \( \cos x \in [-1,1] \.
+
+So, the minimum value of \( 1 + a\cos x \) occurs when \( \cos x \) is at its minimum=?, depending on \( a \).
+
+If \( a \geq0 \), then \( \cos x \) can be positive or negative. The minimum of \( \cos x \) is -1, so the minimum of \( f'(x) \) is \( 1 + a(-1) =1 -a \.
+
+If \( a <0 \), then \( \cos x \) can be positive or negative. The maximum of \( \cos x \) is1, and the minimum is -1. So, if \( a <0 \,的话, \( a\cos x \) when \( \cos x =1 是a, 当 cos x = -1 是 -a.
+
+所以, 当 a <0, 最小的 \( a\cos x 是 -a 当 cos x = -1, 因为 a负数，所以 -a 是正数。
+
+所以，当 a <0, f'(x) 的最小值是1 + a(-1) =1 -a, 当 cos x = -1.
+
+Wait, no, if a <0, 则当 cos x = -1, \( a\cos x = -a(1) = -a，因为 cos x = -1, 所以是 -a*(1) = -a，但 a 是负数，所以 -a 是正数。
+
+所以，f'(x) 在 cos x = -1 时是1 + a*(-1) =1 -a。
+
+但 since a <0, -a >0, �所以1 -a =1 + |a| >0。
+
+而当 cos x =1时, f'(x)=1 +a*1=1 +a。
+
+ since a <0, 1 +a <1, 但可能为负if a < -1.
+
+所以, 当 a <0, � needs to ensure that both f'(x) at cos x=1 和 cos x=-1 are >=0.
+
+所以，当 a <0, f'(x) 在 cos x=1 是1 +a, � strictly less than1, 但可能负。
+
+而当 cos x=-1 是1 -a, �因为 a negative, so -a positive, 所以1 -a >1 >0.
+
+所以, 当 a <0, � only need to worry about cos x=1, �即1 +a >=0, � because if 1 +a <0, then at x where cos x=1, f'(x) <0, which is not allowed.
+
+所以, 当 a <0, � strictly needed that 1 +a >=0, �即 a >= -1.
+
+because if a < -1, then 1 +a <0, which would make f'(x) <0 when cos x=1, which is not allowed.
+
+所以,总结：
+
+when a >=0:
+
+ need f'(x) min =1 -a >=0 => a <=1.
+
+when a <0:
+
+ need both f'(x) at cos x=1 和 cos x=-1 >=0.
+
+即：
+
+1 +a >=0 => a >= -1,
+
+和
+
+1 -a >=0 => a <=1.
+
+但 a <0, �所以综合得到：
+
+-1 <=a <0.
+
+because if a < -1, then 1 +a <0, which is not allowed, and if a >=0, then a <=1.
+
+所以, 当 a >=0, 忨须 a <=1,
+
+当 a <0, 忨须 -1 <=a <0.
+
+所以, �合起来，a �in [-1,1].
+
+because when a=1, f'(x)=1 +sin x.
+
+Wait, no, when a=1, f'(x)=1 +sin x.
+
+Wait, no, f'(x)=1 +a cos x, so when a=1, f'(x)=1 +cos x.
+
+Wait, no, sin x和cos x都是一样的吗？不，sin x和cos x都是不同的函数，但它们的范围都是[-1,1].
+
+所以，当 a=1, f'(x)=1 +cos x.
+
+因为 cos x >= -1, �所以 f'(x)=1 +cos x >=1 -1=0.
+
+且当 cos x=-1, f'(x)=0.
+
+所以, 当 a=1, f'(x) >=0,且等于0当x=±pi+2kpi.
+
+所以,pivot point 是当 a=1, 函数pivots around x=pi, etc.,Where derivative zero at those points.
+
+但现在 pivoting around x=0,pivote d=0, pivote f'(0)=1 +a*0=1>0.
+
+pivote d=pi, f'(pi)=1 +a*cos pi=1 -a.
+
+if a=1, f'(pi)=0.
+
+so,pivote distance d=0, f'(0)=1>0.
+
+pivote distance d=pi, f'(pi)=0.
+
+pivote distance d=2pi, f'(2pi)=1 +a*1=1 +a.
+
+if a=1, f'(2pi)=2>0.
+
+so, pivote distance d=pi, f'(pi)=0.
+
+so, pivoting around d=pi.
+
+Similarly, pivoting around d=0, d=pi, d=2pi.
+
+so, when pivoting around d=0, condition is a>=0.
+
+pivoting around d=pi, condition is a<=1.
+
+pivoting around d=2pi, condition is a>=0.
+
+所以, pivoting around d=0 或 d=2pi, a>=0,
+
+pivoting around d=pi, a<=1.
+
+pivoting around pivote point d=pi/2, 或其他, but=pivoting around a specific d.
+
+but in this problem, we are pivoting around d=0, so a>=0.
+
+pivoting around d=pi, so a<=1.
+
+pivoting around d=2pi, a>=0.
+
+所以, pivoting around d=0,pivote d=pi,pivote d=2pi.
+
+so, the pivot points are spaced pi apart.
+
+so, when pivoting around d=0, a>=0.
+
+pivoting around d=pi, a<=1.
+
+pivoting around d=2pi, a>=0.
+
+so, the strict condition for pivoting around d=0 或2pi is a>=0,
+
+for pivoting around d=pi, a<=1.
+
+所以, the strict condition ispivoting around d=0 或2pi required a>=0,
+
+pivoting around d=pi requires a<=1.
+
+所以, the strict condition for pivoting around a specific d=?, else整个函数pivots around that d.
+
+所以,回到原问题：find a such that f(x)=x +a sinx is monotonically increasing on entire real line.
+
+pivoting around d=0,即x=0,pivote d=0.
+
+pivote d=0, pivote d=2pi,etc.,都等于0,因为 cos0=1, cos2pi=1, etc.
+
+所以, pivoting around0或2pi一样。
+
+所以,当pivoting around0,即x=0,则f'(0)=1 +a*sin0=1+0=1>0.
+
+pivoting around x=pi, f'(pi)=1 +a*sinpi=1+0=1>0.
+
+Wait, no, sinpi=0, so f'(pi)=1+0=1>0.
+
+Wait,但 earlier I thought f'(x)=1 +a cosx.
+
+Wait, no, f(x)=x +a sinx, so f'(x)=1 +a cosx.
+
+所以我 previous was correct错了 here.
+
+Wait, f(x)=x +a sinx, so f'(x)=1 +a cosx.
+
+not f'(x)=1 +a sinx.
+
+所以我必须纠正这个错误。
+
+so, f'(x)=1 +a cosx.
+
+so, pivoting around x=0, x=2pi, etc., f'(0)=1 +a cos0=1 +a*1=1 +a.
+
+pivoting around x=pi, f'(pi)=1 +a cospi=1 +a*(-1)=1 -a.
+
+so, pivoting around different points pivotes different derivatives.
+
+so, pivoting around x=0,pivote d=0, pivote d=2pi,etc.,=all multiples of2pi.
+
+pivoting around x=pi,pivote d=pi,pivote d=2pi-pi=pi,etc.,即所有奇数倍的pi.
+
+so, now, the problem is to find a such that f'(x)=1 +a cosx >=0 for all x.
+
+because pivoting around a point doesn't pivot the entire function, but just the derivative at that point.
+
+so, to pivote the entire function f(x) around a point, i.e.,make f(x) monotonic around that point, we need f'(x)>=0 in a neighborhood of that x, but the problem is stated as f(x) is monotonically increasing on entire real line, pivoting around a point pivote d, which implies f'(x)>=0 for all x, pivoting around d, meaning f'(d)=0,pivote d/2, etc., all the way to pivoting entire function,...
+
+但是这里问题只是说f(x)是monotonically increasing on entire real line, pivoting around pivote d=?, �所以可能只需要f'(d)=0,并且f'(x)>=0 on both sides of d,使得f(x)在周围单调 incr Around d.
+
+但这个可能更complex。
+
+但可能更简单的是，pivoting around pivote d=0,即x=0, pivote d=0, pivote d=2pi,etc.,都一样,因为cos0=1,cos2pi=1,etc.
+
+所以, pivoting around x=0, pivote d=0,意味着f'(0)=1 +a cos0=1 +a=0,因为pivoting around0，意味着f(x)在0周围单调 incr，所以f'(0)=0,且f'(x)>=0 on both sides.
+
+所以, pivoting around0意味着f'(0)=0,且f'(x)>=0 for all x,因为pivoting around0意味着函数在0周围单调 incr，且因为pivoting around0,pivote d=0,0+pi,0-pi等等都一样。
+
+所以, pivoting around0,pivote d=kpi,etc.,都一样。
+
+所以,先解决pivoting around0，即f'(0)=0,且f'(x)>=0 for all x.
+
+because if f'(0)=0,且f'(x)>=0 on both sideousandthing, then f(x) is monotonically increasing on entire real line.
+
+because if f'(0)=0, and f'(x)>=0 for x>0 and x<0, then f(x) is non-decreasing around0, Joomla。
+
+但严格单调 incr需要f'(x)>=0，严格>p0。
+
+but optionally, pivoting around0 pivote d=0,0+pi,0-pi等等都一样，所以pivoting around0,pivote d=kpi,等等都一样。
+
+所以, first pivoting case: pivoting around0,pivote d=0,0+pi=pi,0-pi=-pi,etc.
+
+so, four pivots: -pi,0,pi,2pi.
+
+but strictly speaking, pivoting around0,pivote d=kpi.
+
+but for simplicity, four pivots: -pi,0,pi,2pi.
+
+but let's do step by step.
+
+ first pivoting around0,pivote d=0: f'(0)=0 +cluding pivoting other points.
+
+Wait, no, pivoting around0,pivote d=0,pivote d/2, etc.,直到pivoting entire function.
+
+但可能更简单的是，pivoting around0,pivote d=kpi.
+
+所以, first pivoting pivote d=0,pivote d=pi,etc.
+
+但首先，first pivoting pivote d=0,pivote d=pi,...
+
+let me do step by step.
+
+ pivoting around0,pivote d=0:意味着f'(0)=0 +cluding pivoting other points,但可能更准确的是，pivoting around0,pivote d=0,0+pi,0-pi,etc.,即all kpi.
+
+但可能更简单的是，pivoting around0,pivote d=0,pivote d=pi,etc.
+
+但先[pivoting around0,pivote d=0]即f'(0)=0 +cluding pivoting other points<=0, 找a使得f'(0)=0,且f'(x)>=0 for all x.
+
+因为if f'(0)=0,AND f'(x)>=0 for all x,then f(x) is non-decreasing everywhere,但严格单调 incr需要f'(x)>=0且not p0.
+
+but optionally,pivoting p0,p0+pi,p0-pi etc.
+
+but let me do step by step.
+
+first pivoting pivote p0,p0+pi/2,p0+pi,p0+3pi/2,p0+2pi,...
+
+but perhaps better：
+
+pivoting around p0,p0/2,p0/4,etc.,直到p0/2^n=0, sok=0.
+
+所以，pivoting around0,p0/2,k=>0.
+
+所以, skateboard-style pivoting：pivoting around0,p0/2,p0/4,etc.,until0.
+
+so, p0/2^k=0,k>=k0无限，但这不是 practical.
+
+所以，pivoting around0,无穷次 pivoting下去变成0， Not helpful.
+
+所以，pivoting around0,pivote d=0,0+pi/2,pi,3pi/2,2pi,etc.
+
+但可能更简单：
+
+pivoting around0,pivote d=0,pivote d=pi/2,pi,2pi/3,2pi,...
+
+无穷次 pivoting下去变成0，not useful.
+
+所以，pivoting around0,pivote d=kpi/2,k>=0integer.
+
+k=0:0
+
+k=1:0 +/-pi/2
+
+k=2:0 +/-pi
+
+k=3:0 +/-3pi/2
+
+k=4:0 +/-2pi
+
+etc.
+
+but这也太多。
+
+所以，更简单的是 pivoting around0,pivote d=0,0+pi,0+2pi,即all kpi.
+
+so, p0=kpi,k>=0 integer.
+
+so, k=0:0
+
+k=1:+pi
+
+k=2:+2pi
+
+etc.
+
+but更准确的是，pivoting around0,p0/2^k<=epsilon,趋近0,但 Not strict.
+
+所以，可能更简单的是 pivoting around0,pivote d=0,0+pi/2,pi/4,etc.,无穷次 pivoting下去变成0，not useful.
+
+所以，pivoting around0,pivoting p0/2^k<=epsilon,k无限， Not practical.
+
+所以，pivoting around0,pivote d=0,0+pi,0+2pi,etc.,即all kpi.
+
+所以, p0=kpi,k>=0 integer.
+
+so, k=0:0
+
+k=1:+pi
+
+k=2:+2pi
+
+etc.
+
+所以,四个 pivots: -2pi,-pi,pi,2pi.
+
+but可能更准确的是无限 pivots,但不行。
+
+所以，pivoting around0,pivoting p0/k^k<=epsilon,k>=1,k infinity, Not feasible.
+
+所以，pivoting around0,pivote d=kpi,k>=0 integer.
+
+so, k=0:0
+
+k=1:+pi
+
+k=2:+2pi
+
+etc.
+
+所以,四个 pivots: -2pi,-pi,pi,2pi.
+
+但更准确的是无限 pivots,但不行，所以取有限词/Formative。
+
+所以，pivoting around0,pivote d=kpi, k>=0 integer.
+
+所以,四个 pivots：0,pi,2pi,3pi,etc.,和-pi, -2pi,etc.,但pivoting around0,pivote d=-pi, same as +pi，因为cosx是偶函数。
+
+所以，pivoting around0,pivote d=kpi,k>=0 integer.
+
+所以,判别式毙[…]
+
+不如直接解问题：
+
+find a such that f(x)=x +a sinx is monotonically increasing on entire real line.
+
+pivoting around p0=0,pivoting d=0,0+pi/2,pi,etc.,无穷次 pivoting下去变成0，not useful.
+
+所以，正确的pivoting approach是：
+
+pivoting around p0=0,pivoting p0/2^k<=epsilon,k无限，not possible.
+
+所以，pivoting around p0=0,pivoting p0 + pi/2^k epsilon,k infinite, not possible.
+
+所以，正确 pivoting 方法是：
+
+pivoting around p0=0,pivoting p0 + k pi/2^k, k=1,2,3,...无限次,pivoting下去趋近0, not feasible.
+
+所以，正确的pivoting around p0=0,pivoting p0 + pi/2^k epsilon,k infinite, not possible.
+
+所以，正确的pivoting around p0=0,pivoting p0 + epsilon,epsilon>0,但严格来说，pivoting around0,pivoting0 + epsilon,0 -epsilon,所以趋近0 from both sides,意味着f(x)在0附近单调 incr++,即导数在0附近>=0。
+
+所以，更准确的 pivoting around0,pivoting附近x=0+,x=0-,Means derivative near0>=0.
+
+所以, pivoting around0,p0+=0+,p0-=0-,so both derivatives from左右都>=0.
+
+所以, f'(0+)=0+, f'(0-)=0-.
+
+所以, f'(0+)=lim x->0+ f'(x)=lim x->0+1 +a cosx=1 +a*1=1 +a>=0
+
+and
+
+f'(0-)=lim x->0- f'(x)=lim x->0-1 +a cosx=1 +a>=0
+
+所以, both sides趋近于1 +a >=0.
+
+所以, pivoting around0,Requires lim x->0+ f'(x)=1 +a >=0 and lim x->0- f'(x)=1 +a >=0.
+
+所以, 1 +a >=0=>a >=-1.
+
+但同时，因为pivoting around0还包括pivoting around0+pivoting或者其他 points,所以可能需要更 strict condition。
+
+但可能更准确的是，pivoting around0,pivoting d=k pi/2,k>=0 integer.
+
+所以,四个 pivots:0,pi/2,pi,3pi/2,2pi,...
+
+但可能更简单的是：
+
+pivoting around0,pivoting p0 + k pi/2^k, k=1,2,3,...无限次,pivoting downto0.
+
+但这不是 Practical.
+
+所以，正确的approach是：
+
+pivoting around0,pivoting p0 + epsilon,epsilon>0,和p0 - epsilon,所以要求f'(0+)=0和f'(0-)=0，因为 pivoting around0还包括pivoting左右两边 infinitesimal intervals.
+
+所以, f'(0+)=0 and f'(0-)=0.
+
+所以, f'(0+)=lim x->0+ f'(x)=lim x->0+1 +a cosx=1 +a=0
+
+and
+
+f'(0-)=lim x->0- f'(x)=lim x->0-1 +a cosx=1 +a=0
+
+所以, both conditions imply 1 +a=0=>a=-1.
+
+所以, a=-1.
+
+Wait, let me check.
+
+if a=-1, then f'(x)=1 +*(-1)*cosx=1 -cosx.
+
+since cosx<=1, so 1 -cosx>=0, because cosx<=1=> -cosx>= -1=>1 -cosx>=0.
+
+so, f'(x)=1 -cosx >=0 for all x, because cosx<=1.
+
+so, when a=-1, f'(x)=1 -cosx >=0 everywhere,so f(x) is monotonically increasing on entire real line.
+
+so, a=-1.
+
+but earlier]}"
+…"
+
+wait,让我重新计算。
+
+if a=-1, then f'(x)=1 +*(-1)*cosx=1 -cosx.
+
+since cosx<=1, so 1 -cosx>=0, because cosx<=1=> -cosx>= -1=>1 -cosx>=0.
+
+所以, f'(x)=1 -cosx >=0 for all x.
+
+because cosx<=1, so 1 -cosx>=0.
+
+所以, when a=-1, f'(x)>=0 for all x,so f(x) is monotonically increasing on entire real line.
+
+所以, a=-1.
+
+Wait,但 earlier"When a=-1, f'(x)=1 -cosx>=0 for all x,so f(x) is monotonically increasing on entire real line."
+
+所以,答案是a>=-1？
+
+Wait,当a>-1,比如a=0,则 f'(x)=1 +0*cosx=1>=0,so f(x) is monotonically increasing.
+
+当a=1, f'(x)=1 +cosx.
+
+cosx>= -1, so f'(x)=1 +cosx>=0,因为cosx>= -1=> cosx+1>=0.
+
+所以,当a>=-1, f'(x)=1 +a cosx >=0 for all x.
+
+因为 cosx>= -1, so a cosx>= -a.
+
+so, f'(x)=1 +a cosx >=1 -a.
+
+so, to ensure 1 -a >=0,即 a<=1.
+
+so, when a>= -1, 1 -a >=0, because a<=1.
+
+so, when a>= -1 and a<=1, 1 -a >=0, so f'(x)=1 +a cosx >=0 for all x.
+
+because cosx>= -1, so a cosx>= -a, so f'(x)=1 +a cosx>=1 -a.
+
+and if a<=1, then 1 -a >=0.
+
+so, when a>= -1 and a<=1, f'(x)>=0 for all x.
+
+so, the range of a is [-1,1].
+
+because if a>1, then f'(x)=1 +a cosx可能会小于0当cosx=-1。
+
+for example, if a=2, then f'(x)=1 +2*cosx.
+
+when cosx=-1, f'(x)=1 -2=-1<0.
+
+so, not monotonic.
+
+if a<-1, then f'(x)=1 +a cosx.
+
+when cosx=1, f'(x)=1 +a.
+
+if a<-1, then 1 +a <0, so f'(x)<0 when x=0,for example.
+
+so, not monotonic.
+
+only when a>= -1 and a<=1, f'(x)>=0 for all x.
+
+所以,答案是 a∈[-1,1].
+
+所以, boxed outfit:
+
+\boxed{-1 \leq a \leq 1}
+
+Wait,但让我再检查一下。
+
+when a=-1, f'(x)=1 -cosx>=0,因为cosx<=1, so -cosx>= -1, so 1 -cosx>=0.
+
+when a=1, f'(x)=1 +cosx>=0,因为cosx>= -1, so 1 +cosx>=0.
+
+when a=0, f'(x)=1>=0.
+
+when a=0.5, f'(x)=1 +0.5 cosx>=0,因为cosx>= -1, so 0.5 cosx>= -0.5, so 1 -0.5=0.5>=0.
+
+当a=-0.5, f'(x)=1 -0.5 cosx.
+
+since cosx<=1, so -0.5 cosx>= -0.5, so 1 -0.5 cosx>=0.
+
+because -0.5 cosx>= -0.5, so 1 -0.5 cosx>=1 -0.5=0.5>=0.
+
+所以,当a>= -0.5, f'(x)=1 +a cosx>=0.
+
+Wait, Wait,当a=-0.5, f'(x)=1 -0.5 cosx.
+
+since cosx<=1, so -0.5 cosx>= -0.5, so 1 -0.5 cosx>=1 -0.5=0.5>=0.
+
+so, when a>= -0.5, f'(x)>=0.
+
+Wait, but earlier"When a>= -1, f'(x)=1 +a cosx>=0 because cosx>= -1, so a cosx>= -a, so f'(x)>=1 -a.
+
+so, if a>= -1, then 1 -a>=2,which is positive.
+
+wait, no, if a>= -1, then -a<=1, so 1 -a>=0.
+
+because if a>= -1, then a<=1, so -a<=1, so 1 -a>=0.
+
+so, when a>= -1, 1 -a>=0, so f'(x)>=0.
+
+but when a< -1, 1 -a<0.
+
+so, indeed, the correct condition is a>= -1.
+
+because when a>= -1, then f'(x)=1 +a cosx>=0 for all x.
+
+because cosx>= -1, so a cosx>= -a, so f'(x)>=1 -a.
+
+if a>= -1, then 1 -a>=0.
+
+so, when a>= -1, f'(x)>=0.
+
+when a< -1, f'(x)<0 for some x.
+
+for example, a=-2, then f'(x)=1 -2 cosx.
+
+when cosx=1, f'(x)=1 -2=-1<0.
+
+so, not monotonic.
+
+所以, correct condition is a>= -1.
+
+but earlier"When a>=0, f'(x)=1 +cosx>=0, because cosx>= -1, so 1 +cosx>=0.
+
+so, when a>=0, f'(x)>=0.
+
+so, combining both conditions:
+
+when a>=0, f'(x)=1 +a cosx>=0, because cosx>= -1, so a cosx>= -a, so f'(x)>=1 -a.
+
+if a>=0, then 1 -a>=1, which is positive.
+
+so, when a>=0, f'(x)>=1 -a>=0.
+
+so, when a>=0, f'(x)>=0.
+
+when a<0, then f'(x)=1 +a cosx.
+
+if a<0, then a cosx<=0, since cosx<=1, so a cosx<=0.
+
+so, f'(x)=1 + something<=0, so f'(x)>=1 -|a|.
+
+so, to ensure f'(x)>=0, we need 1 -|a|>=0=>|a|<=1=>-1<=a<=1.
+
+so, overall, the condition is -1<=a<=1.
+
+because when a>=0, f'(x)>=0.
+
+when a<=0, f'(x)>=1 -|a|>=0 when |a|<=1.
+
+so, overall, -1<=a<=1.
+
+所以,答案是 a∈[-1,1].
+
+所以, boxed outfit:
+
+\boxed{[-1,1]}
+
+或者 Pepsiboarding式的：
+
+\boxed{-1 \leq a \leq 1}
+</think>
+
+要保证函数 \( f(x) = x + a \sin x \) 在整个实数域上单调 incr，我们需要其导数 \( f'(x) = 1 + a \cos x \) 在所有 \( x \) 上非负，即 \( f'(x) \geq 0 \) 对所有 \( x \in \mathbb{R} \) 成立。
+
+1. **分析导数表达式**：
+   \[
+   f'(x) = 1 + a \cos x
+   \]
+   为了 \( f'(x) \geq 0 \) 对所有 \( x \) 成立，我们需要：
+   \[
+   1 + a \cos x \geq 0 \quad \forall x \in \mathbb{R}
+   \]
+
+2. **考虑 extreme values of \( \cos x \)**：
+   - 当 \( \cos x = 1 \) 时，\( f'(x) = 1 + a \cdot 1 = 1 + a \)。
+   - 当 \( \cos x = -1 \) 时，\( f'(x) = 1 + a \cdot (-1) = 1 - a \)。
+
+3. **确保非负性**：
+   - 对于 \( \cos x = 1 \)，需要 \( 1 + a \geq 0 \) ，即 \( a \geq -1 \)。
+   - 对于 \( \cos x = -1 \)，需要 \( 1 - a \geq 0 \) ，即 \( a \leq 1 \)。
+
+4. **综合条件**：
+   - 从上述两个条件得到 \( -1 \leq a \leq 1 \)。
+
+因此，使得函数 \( f(x) = x + a \sin x \) 在整个实数域上单调 incr 的 \( a \) 的范围是：
+
+\[
+\boxed{-1 \leq a \leq 1}
+\]<｜end▁of▁sentence｜>

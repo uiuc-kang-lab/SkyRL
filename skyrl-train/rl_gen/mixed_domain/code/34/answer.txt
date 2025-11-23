@@ -1,0 +1,525 @@
+Okay, I have this problem to solve, and I need to figure out how to approach it. Let's read through the problem statement carefully.
+
+So, the problem is about max-heaps and performing a certain operation called 'add' a number of times. Then, I need to count the number of different deterministic max-heaps after exactly k add operations. The answer should be modulo p.
+
+First, let's break down the problem.
+
+We have a perfect binary tree with 2^n -1 nodes. Each node has a value a_v, which starts at 0. The add operation adds 1 to every node along the path from the root (node 1) to a chosen node v. So, for each add, the path from 1 to v has its a_x increased by 1.
+
+The goal is to apply this add operation exactly k times, and after that, count the number of deterministic max-heaps. A deterministic max-heap is one where the 'pop' operation is unique. That means, during the 'pop' process, there's only one possible choice at each step, leading to a unique sequence of a_v's.
+
+So, a deterministic max-heap is one that is a max-heap and also that the 'pop' process is deterministic. So, the heap must have the property that at each step, the child with the larger value is chosen, and they are distinct, so no ambiguity exists.
+
+Now, the key is to model how the add operations affect the structure of the heap. Each add operation adds 1 to a subset of nodes (the path from 1 to v). So, after k adds, certain nodes have higher values than others.
+
+But wait, the add operations are applied exactly k times, and each time we choose a v, which affects the path. So, the a_v's are determined by the sum of 1's from all adds that include v.
+
+Hmm, but since each add operation is additive, the a_v is equal to the number of adds that include v. So, each a_v is exactly the count of adds where v is on the path from 1 to the chosen v in the 'pop' process.
+
+Wait, no. Because the 'pop' process is applied for the first time, and each step modifies the a_v's. So, each a_v is the sum of the adds that include the path taken during the 'pop' process.
+
+But the add operations are additive, but the order in which they are applied can affect the a_v's. However, since the add operations are the same throughout, the final a_v's are the sum of the add counts for each path taken during the 'pop' process.
+
+But wait, the add operations are applied exactly k times, each time choosing a v, which adds 1 to the path. So, each a_v is equal to the number of adds that chose a node in the path from 1 to v.
+
+Wait, no. Because the add operations are additive, the a_v is exactly the number of times the node was selected along the path from 1 to v. So, a_v is the number of adds where v is on the path from 1 to the point where the 'pop' process selects v.
+
+But the 'pop' process is applied for the first time, so the selection is deterministic, and the a_v's have a certain structure.
+
+But this feels a bit vague. Let's think differently.
+
+Let me try to model the problem. The 'add' operation adds 1 to all nodes in the path from 1 to v. So, after k adds, each node's value a_v is equal to the number of times v was included in some path during the adds. But each add is a single choice of a v, so each a_v is the count of adds where v is on the path from 1 to v.
+
+Wait, that's not right. Because each add operation is one step. So, for example, the first add operation adds 1 to the path from 1 to v1. Then, the second add operation could add 1 to the path from 1 to v2, which may share some nodes with the first.
+
+So, for each node v, a_v is the number of adds where v is on the path from 1 to the node chosen during the 'pop' process.
+
+But wait, the 'pop' process is applied for the first time, which determines the structure of the heap. So, the a_v's are determined by the initial structure after the adds, and the 'pop' process then determines the heap.
+
+But the problem is to count the number of deterministic max-heaps that can be formed after k adds. So, the a_v's must form a deterministic max-heap, and we need to count how many such heaps exist.
+
+The key is to model how the add operations affect the a_v's, ensuring that the resulting a_v's form a deterministic max-heap.
+
+Let's think about the properties of a deterministic max-heap. For the heap to be deterministic, the 'pop' operation must have a unique choice at every step. This implies that for every node v that is not a leaf, the two children (left and right) have different values. Because, if the left and right children have the same value, the 'pop' operation would have a choice between them, leading to a non-deterministic heap.
+
+Thus, for every node v in the heap (not a leaf), a_v must be strictly greater than both a_{2v} and a_{2v+1}.
+
+Furthermore, the heap must be a max-heap, which requires that for all v, a_v >= a_{2v} and a_v >= a_{2v +1}.
+
+So, combining these, for a deterministic max-heap, for every non-leaf node v, a_v must be strictly greater than both children. And for a leaf node, a_v is 0 initially, but after adds, it's the count of adds that include it.
+
+Wait, but the add operations are applied to the path from 1 to v. So, the a_v's are the counts of adds where v is on that path. So, a_v is the sum of the add operations that choose v as the node in their add step.
+
+But in a heap, the a_v's must satisfy a_v >= a_{2v} and a_v >= a_{2v+1} for all v except the leaves.
+
+So, the problem reduces to finding the number of possible a_v's that form a deterministic max-heap, which are reachable after exactly k adds, and count the number of such heaps, considering that the a_v's are determined by the add operations.
+
+But how do the add operations affect the a_v's? Each add operation is adding 1 to some nodes (the path from 1 to v). So, the a_v's are the sum of the add counts for each node on the path.
+
+Wait, no. Because each add operation adds 1 to the path from 1 to the chosen v. So, for each node along the path, a_v increases by 1. So, a_v is the number of adds that include v in their path.
+
+But wait, for a given add operation, the path is unique. So, each add operation adds 1 to all nodes along that path.
+
+So, the a_v is the number of add operations where v was on the path from 1 to the chosen node during the 'pop' process.
+
+Wait, but the 'pop' process is applied for the first time, so the a_v's are the sum of the adds that chose a node in the path from 1 to the node v during the 'pop' process.
+
+So, for each node v, a_v is the number of add operations that included it. But wait, no. Because the add operations are applied to the path of the 'pop' process. So, each add operation is a single step that adds 1 to the path, and the 'pop' process is the first one. So, a_v is the number of add operations where v is on the path from 1 to the node selected in the 'pop' step.
+
+So, a_v is exactly equal to the number of adds where v is on the path during the 'pop' process.
+
+But how can we model the a_v's? Each a_v is the count of adds that include it. So, the a_v's must form a certain structure.
+
+Wait, but the 'pop' process and the add operations are sequential, so the order in which adds are applied affects the a_v's. But the problem states that we apply the add operations exactly k times, each time choosing any node v, and each add operation adds 1 to the path from 1 to v.
+
+So, the a_v's after k adds are the sum of the add operations that include v. But in the 'pop' process, the a_v's are determined by the order in which the add operations are applied, leading to a unique path that is the 'pop' process.
+
+Wait, no. Because the 'pop' process is applied for the first time, so the order in which adds are applied could affect the a_v's. For example, if two adds are on the same path, the order in which they are applied could determine which node is chosen first.
+
+But the problem says that the 'pop' operation is applied exactly k times, and for each add, the add is done, then the 'pop' is done once, for the first time.
+
+So, the a_v's are determined by the initial state after all adds, but the 'pop' process is the first time it is applied. So, the a_v's are such that the 'pop' process picks a unique path, leading to a unique heap structure.
+
+Hmm, perhaps it's easier to model the a_v's as the sum of the add counts for each node on the path from 1 to v in the 'pop' process. But since the 'pop' process is determined by the adds, the a_v's are a result of the adds, but the heap structure is determined by the 'pop' process.
+
+But the problem is to count the number of possible deterministic max-heaps that can be formed by any sequence of k adds. Or wait, no. The problem states that the add operations are exactly k times, and we need to count the number of different deterministic max-heaps that can result from applying exactly k adds. So, each add sequence leads to a heap, and we need to count the number of such heaps that are deterministic.
+
+Wait, no. Because the add operations are applied exactly k times, and for each add sequence, you get a heap. But the problem is to count the number of different deterministic max-heaps that can be formed by applying exactly k adds. So, the add operations are applied exactly k times, but the resulting heap must be a deterministic max-heap.
+
+So, the problem reduces to: after adding exactly k 1's to the paths of some nodes in the tree, the resulting a_v's must form a deterministic max-heap, and we need to count how many such heaps are possible.
+
+But how do the a_v's look after adding exactly k 1's to the paths of some nodes? Let's think about it.
+
+Each add operation adds 1 to a path. So, the a_v's are the sum of the add counts for each node in the path selected during the 'pop' process.
+
+But since the 'pop' process is deterministic, the order of add operations affects the a_v's. So, the a_v's are determined by the order of the adds.
+
+But the problem is to find the number of possible a_v's that form a deterministic max-heap, given that exactly k adds are applied.
+
+Wait, but the 'pop' process is the first time it's applied, so the a_v's are determined by the initial state after the adds, but the heap structure is determined by the 'pop' process. So, for a given a_v, the heap is determined by the 'pop' process.
+
+But we need to count the number of deterministic max-heaps that are reachable by exactly k adds.
+
+So, perhaps the key is to model the a_v's as the sum of the add operations that include them, and ensure that the a_v's form a deterministic max-heap.
+
+But the problem is to count the number of such heaps, considering that the a_v's are the result of exactly k adds, and the heap is deterministic.
+
+So, the steps to solve the problem are:
+
+1. For each test case, given n, k, p, compute the number of deterministic max-heaps after exactly k adds.
+
+To model this, perhaps we can find the conditions on the a_v's that must be satisfied for the heap to be deterministic, and then count the number of a_v's that fit these conditions and can be formed with exactly k adds.
+
+So, let's model the a_v's.
+
+First, the a_v's must form a deterministic max-heap. So, for each non-leaf node v, a_v > a_{2v} and a_v > a_{2v+1}.
+
+Moreover, the a_v's are the sum of the add operations that include them. But since each add operation adds 1 to a path, each a_v is equal to the number of adds whose chosen node lies on the path from 1 to v.
+
+Wait, no. Because each add operation adds 1 to the path of the node chosen, which is the exact path from 1 to v during the 'pop' step.
+
+But the 'pop' step is the first step where the heap is processed. So, for the a_v's, each a_v is the number of adds where v was on the path during the 'pop' step.
+
+Wait, but in that case, the a_v's are determined by the order of the adds and the 'pop' process. So, the a_v's can vary depending on the add operations.
+
+But the problem is to count the number of a_v's that form a deterministic max-heap and can be formed with exactly k adds.
+
+Alternatively, perhaps the a_v's can be represented in terms of how many adds are applied to each node in the tree, but this seems inconsistent because the add operations are applied to the paths, not the nodes.
+
+Wait, perhaps the a_v's are the sum of the add operations applied to all nodes on the path from 1 to v. So, for any node v, a_v is the number of adds where the chosen node is on the path from 1 to v.
+
+But the add operations are applied exactly k times, each time choosing a particular v. So, the sum of all a_v's is equal to k, because each add increases the a_v of all nodes on the path by 1. So, the sum of a_v's for all v is equal to k.
+
+Wait, because each add increases the a_v's for all nodes on the path exactly once. So, the total sum is k.
+
+So, the sum of a_v's for all v is k.
+
+So, the first condition is that the sum of a_v's for all v in the tree is equal to k.
+
+Another condition is that for a deterministic max-heap, for each v (non-leaf), a_v must be greater than both a_{2v} and a_{2v+1}.
+
+Moreover, the a_v's must form a max-heap, meaning that for any v, a_v >= a_{2v} and a_v >= a_{2v+1}.
+
+So, the problem is to find the number of a_v's that meet these conditions, and also sum to exactly k.
+
+But how can we model this? It's a bit tricky.
+
+Let's think about the structure of the tree. It's a perfect binary tree of height n, with 2^n - 1 nodes. The root is 1, and each node v has left child 2v and right child 2v+1.
+
+Each node v (not a leaf) has exactly two children. For v to be a leaf, it must be that 2v > 2^n -1, which implies that v > (2^n -1)/2.
+
+So, the leaves are the nodes from 2^{n-1} to 2^n -1.
+
+Now, the add operations are k times, each adding 1 to the path from 1 to v in the 'pop' process. So, each a_v is the number of adds where the 'pop' process selected v as the next node.
+
+But the 'pop' process is the first time it's applied, so the a_v's are such that the 'pop' process leads to a unique path.
+
+This seems complicated. Perhaps it's easier to model the problem as a binary tree and find the conditions on the a_v's.
+
+Alternatively, perhaps the a_v's must form a certain structure where each a_v is greater than the sum of a_{2v} and a_{2v+1}. Because during the 'pop' process, each node must have a higher value than its children to avoid ambiguity.
+
+Wait, no. Because during the 'pop' process, the heap is processed in a way that when a node is selected, it's the maximum possible. So, the heap must be a max-heap, and the heap structure must allow the 'pop' process to be deterministic.
+
+So, for a node v to be a leaf, a_v can be any value, but for non-leaf nodes, a_v must be greater than both children.
+
+But in the a_v's, how do the adds affect the a_v's?
+
+Each add operation adds 1 to a path. So, each a_v is the number of adds whose chosen node is on the path from 1 to v.
+
+But the chosen node in the 'pop' step is the first node that would be selected during the 'pop' process. So, the a_v's are determined by the order of the adds and the 'pop' process.
+
+This seems too vague. Perhaps we can model the a_v's in terms of their binary representations.
+
+Another approach: Let's model the a_v's as a binary matrix. Each add operation affects the path from 1 to the chosen v, which is a sequence of nodes. So, each add operation contributes 1 to the a_v's for each node in that path.
+
+So, the a_v's are the sum of the add operations that include them.
+
+The sum of all a_v's is k, since each add operation contributes 1 to each node in its path, and there are k add operations.
+
+So, a_1 = 0 (since it's the root), and a_2^n-1 = 0 (since they are leaves).
+
+Wait no, in the tree, the leaves are 2^{n-1} to 2^n -1. So, a_v is the number of adds that include v. So, for leaves, a_v is the number of adds that chose them.
+
+But the root a_1 is 0, since it's not a leaf.
+
+Now, the problem is to find all possible a_v's that form a deterministic max-heap, and sum to k.
+
+So, the conditions are:
+
+1. a_1 = 0.
+
+2. For all non-leaf v, a_v > a_{2v} and a_v > a_{2v+1}.
+
+3. The sum of a_v's is k.
+
+So, the count is the number of a_v's satisfying conditions 1, 2, and 3.
+
+But how can we model this? It's a combinatorial problem with constraints.
+
+This seems complex. So, perhaps we can find a way to model the a_v's in terms of binary variables and find a generating function or a recursive approach.
+
+Another idea: Since the tree is a perfect binary tree, perhaps the a_v's can be represented in a way that allows us to model their relationships.
+
+Let me think about the a_v's in terms of their positions. For a node v, its parent is p, where p = v//2.
+
+So, the a_v is equal to the number of adds that chose v, plus the a_p (the parent's a value).
+
+But the a_v is also influenced by the adds along the path from 1 to v.
+
+Wait, but the a_v is the sum of the adds that include it. So, a_v = c_v + a_p, where c_v is the number of adds that chose v. Because each add operation that chooses v contributes 1 to a_v, and each add operation that chooses the parent p contributes 1 to a_v via the child v.
+
+Wait, no. Because a_v is the sum of all adds that include it. So, for a node v, a_v = (number of adds where v is included) = c_v + a_p.
+
+Because, for each add that chooses v, it contributes to a_v. Also, each add that chooses the parent p will contribute to a_v via the child v.
+
+So, a_v = c_v + a_p.
+
+This is a crucial insight. Because it allows us to model a_v in terms of c_v and a_p.
+
+Now, since each add operation chooses a v, and each such add contributes 1 to a_v. So, for each add operation, we can choose any node v, and for each v, c_v increases by 1.
+
+But the sum of all c_v's is k, since each of the k adds contributes 1 to exactly one c_v.
+
+So, the sum of c_v for all v is k.
+
+So, the problem reduces to finding the number of ways to assign c_v's to each node v, such that:
+
+1. For each node v:
+
+   a. a_v = c_v + a_p.
+
+   b. For each non-leaf v, a_v > a_{2v} and a_v > a_{2v+1}.
+
+2. The sum of all a_v's is k.
+
+3. The sum of c_v's is k.
+
+But how do we model this?
+
+Wait, but a_v = c_v + a_p implies that a_v > a_p. Because a_v is c_v + a_p, and since c_v is non-negative, a_v is a_p plus something non-negative. So, a_v >= a_p.
+
+But for the heap to be deterministic, for each non-leaf v, a_v must be strictly greater than both children. So, a_v > a_{2v} and a_v > a_{2v+1}.
+
+But a_v = c_v + a_p, and a_p >= a_{2p} and a_p >= a_{2p+1} because the heap is a max-heap structure.
+
+So, a_v = c_v + a_p.
+
+We have a_v > a_{2v} => c_v + a_p > a_{2v}.
+
+But since a_p is >= a_{2p} and a_{2v} is a child of p, which is a_p. So, a_{2v} <= a_p.
+
+So, a_v = c_v + a_p > a_{2v} >= a_p (since a_p >= a_{2p} >= a_{2p} + a_{2p+1} ... etc.) Wait, no. Wait, for the parent p, a_p is the sum of all adds that include p. So, a_p is c_p + a_{2p} + a_{2p+1}.
+
+So, a_p is the sum of adds that include p, which is c_p plus the a values of its children.
+
+So, a_p >= a_{2p} and a_p >= a_{2p+1}.
+
+So, for a_v = c_v + a_p, and since a_p >= a_{2v}, a_v >= c_v + a_{2v}.
+
+But for the heap to be deterministic, a_v must be > a_{2v}.
+
+So, c_v + a_{2v} > a_{2v} => c_v > 0.
+
+So, for each non-leaf node v, c_v must be positive.
+
+Similarly, for the right child, a_v must be > a_{2v+1}, so c_v + a_{2v+1} > a_{2v+1} => c_v >0.
+
+So, for each non-leaf node v, c_v must be >0.
+
+So, this suggests that for each non-leaf node, the number of adds assigned to it must be at least 1.
+
+So, the problem now is to count the number of ways to assign c_v's to each node v (c_v >=0, but for non-leaf nodes, c_v >=1) such that:
+
+1. For each non-leaf node v, c_v >=1.
+
+2. The sum of a_v's is k.
+
+But a_v = c_v + a_p.
+
+Also, the sum of all a_v's is k.
+
+So, let's express the sum of a_v's:
+
+sum_a = sum_{v in V} a_v = sum_{v in V} (c_v + a_p) = sum_{v in V} c_v + sum_{v in V} a_p.
+
+Wait, but a_p is the a value of the parent of v. So, perhaps it's better to model this as a tree and express the sum in terms of the c_v's.
+
+But I'm not seeing it yet.
+
+Another approach: Let's consider the sum of a_v's.
+
+Each a_v is equal to c_v + a_p.
+
+So, sum_a = sum_{v} (c_v + a_p) = sum c_v + sum a_p.
+
+But a_p is the a value of the parent of v. For non-leaf nodes, a_p is the sum of c_p and the a values of their children.
+
+So, a_p = c_p + a_{2p} + a_{2p+1}.
+
+So, sum_a = sum c_v + (sum c_p + a_{2p} + a_{2p+1}) ) for all non-leaf nodes p.
+
+Wait, but for each non-leaf node p, a_p is the sum of c_p and the a values of its children.
+
+So, sum a_p over all non-leaf nodes p is equal to sum (c_p + a_{2p} + a_{2p+1}) ) for all non-leaf p.
+
+Which is equal to sum c_p (over all p) + sum a_{2p} (over all p) + sum a_{2p+1} (over all p).
+
+But the sum of a_{2p} and a_{2p+1} over all p is equal to sum a_v for all v that are children of non-leaf nodes. But that's all v except the leaves.
+
+Wait, because for each non-leaf p, 2p and 2p+1 are its children, which are non-leaf nodes if p is not a leaf.
+
+But in the tree, the leaves are the nodes where 2v > 2^n -1.
+
+So, all non-leaf nodes have children, except for the root, which is a leaf? No. The root is a leaf? No, because the root is 1, and it's a node, but in the tree, it's the root, so it's not a leaf.
+
+Wait, no. The leaves are the nodes where 2v > 2^n -1. So, for a node v to be a leaf, 2v must be greater than 2^n -1. So, v must be greater than (2^n -1)/2.
+
+So, for example, in a tree of height n, the leaves are from 2^{n-1} to 2^n -1.
+
+So, for the root (node 1), it's not a leaf because 2*1 = 2 <= 2^n -1 (since n >=1).
+
+So, the sum of a_p for all non-leaf p is equal to the sum of (c_p + a_{2p} + a_{2p+1}) for all p that are non-leaf.
+
+Which is equal to sum c_p (for all p) + sum a_{2p} (for all p) + sum a_{2p+1} (for all p).
+
+But a_{2p} for all p is equal to the sum of c_{2p} + a_{4p} + a_{4p+1} for all p, and similarly for a_{2p+1}.
+
+So, this seems like a recursive structure.
+
+But perhaps we can model the sum in terms of the c_v's.
+
+Let's try to find a way to express the sum_a in terms of the c_v's.
+
+sum_a = sum (c_v + a_p) for all v.
+
+But a_p is the sum of c_p and a_{2p} and a_{2p+1}.
+
+So, sum_a = sum c_v + sum (c_p + a_{2p} + a_{2p+1}).
+
+But c_p for non-leaf p is included in the sum.
+
+Wait, perhaps the sum can be expressed recursively.
+
+Let me denote S as the sum of a_v's.
+
+So, S = sum (c_v + a_p) = sum c_v + sum a_p.
+
+Now, sum a_p is equal to the sum of (c_p + a_{2p} + a_{2p+1}) for all p in non-leaf nodes.
+
+So, sum a_p = sum c_p + sum a_{2p} + sum a_{2p+1}.
+
+But sum a_{2p} is the sum of a values of the children of all non-leaf nodes. Similarly for the right children.
+
+But the sum a_{2p} is equal to the sum of a_v's for all v that are children of non-leaf nodes. But those are all the non-leaf nodes except the root.
+
+Wait, because for each non-leaf p, 2p and 2p+1 are its children. So, the sum of a_{2p} is equal to the sum of a_v for all non-leaf nodes except the root.
+
+Wait, because the root's children are 2 and 3, which are non-leaf nodes. So, the sum a_{2p} for all p in non-leaf is equal to the sum of a_v for all non-leaf nodes except the root.
+
+Similarly, the sum a_{2p+1} is the same as the sum of a_v for all non-leaf nodes except the root.
+
+So, sum a_{2p} + sum a_{2p+1} = 2*(sum a_v for non-leaf nodes except root).
+
+But the sum a_v for non-leaf nodes is equal to S minus the a_v of the root, which is zero.
+
+Wait, because a_1 is zero, but a_v for other nodes are non-zero.
+
+So, sum a_{2p} + sum a_{2p+1} = 2*(S - a_1) = 2*(S - 0) = 2S.
+
+So, putting it all together:
+
+sum_a = sum c_v + sum a_p.
+
+But sum a_p = sum c_p + sum a_{2p} + sum a_{2p+1} = sum c_p + 2S.
+
+So, sum_a = sum c_v + sum c_p + 2S.
+
+But sum c_v is the sum of c_v for all nodes v. Let's denote T = sum c_v.
+
+So, sum_a = T + sum c_p + 2S.
+
+But sum c_p is the sum of c_p for all non-leaf nodes p.
+
+Because for non-leaf p, c_p is included in T.
+
+So, sum c_p can be written as sum c_p for non-leaf p plus sum c_p for leaves p.
+
+Wait, but leaves are not non-leaf, so sum c_p for non-leaf p is part of T.
+
+Hmm, perhaps this is getting too complicated. Let's try to express S in terms of T and S.
+
+We have:
+
+sum_a = T + sum c_p + 2S.
+
+But sum c_p is the sum of c_p for all non-leaf p, which is equal to T - a_1, because T is the sum of all c_v's, and a_1 is zero.
+
+So, sum c_p = T - a_1 = T.
+
+So, sum_a = T + (T) + 2S = 2T + 2S.
+
+So, sum_a = 2T + 2S.
+
+But sum_a is also equal to k, since each add operation contributes 1 to a_v, and there are k adds.
+
+So, k = 2T + 2S.
+
+We can rearrange this as:
+
+k = 2(T + S) => T + S = k/2.
+
+So, T + S = k/2.
+
+But T is the sum of all c_v's, and S is the sum of all a_v's.
+
+But what's the value of T?
+
+T is the sum of c_v for all v, including the leaves. But a_1 is zero, and for leaves, a_v is c_v + a_p, but a_p is zero for the root, and for other leaves, a_p is a_{2p} + a_{2p+1}, which are non-zero.
+
+Wait, perhaps T can be expressed in terms of S.
+
+But it's unclear.
+
+Another approach: We have sum_a = 2(T + S) = k.
+
+So, T + S = k/2.
+
+We need to find the number of ways to assign c_v's (c_v >=0 for non-leaves, c_v >=1 for leaves) such that T + S = k/2.
+
+But also, a_v = c_v + a_p must be a valid max-heap.
+
+But this seems too abstract.
+
+Alternatively, perhaps the problem can be modeled using generating functions.
+
+The variables are the c_v's for each node.
+
+But given the constraints, perhaps it's manageable.
+
+Another idea: Let's consider that for each non-leaf node v, a_v = c_v + a_p, and a_p >= a_{2p}, a_p >= a_{2p+1}.
+
+But a_p is the sum of c_p and the a values of its children.
+
+So, for each non-leaf node v, a_v = c_v + a_p, and a_p >= a_{2v} and a_p >= a_{2v+1}.
+
+But a_p is the sum of c_p and a_{2p} + a_{2p+1}.
+
+So, a_p >= a_{2v} and a_p >= a_{2v+1}.
+
+But since a_{2v} <= a_p (because a_p is the sum including a_{2v}), then a_p >= a_{2v} is automatically satisfied as a_p = c_p + a_{2p} + a_{2p+1} >= a_{2p} >= a_{2v}.
+
+So, the only constraints are for each non-leaf node v, c_v must be >= 1.
+
+So, the conditions are:
+
+1. For each non-leaf node v, c_v >=1.
+
+2. The sum of a_v's is k.
+
+3. a_v = c_v + a_p, and the a_v's form a max-heap.
+
+Now, considering that a_p is the sum of c_p and the a values of its children, perhaps we can model this as a tree and express the sum in terms of the c_v's.
+
+But this seems challenging.
+
+Another approach: Let's model the problem in terms of the a_v's.
+
+Each a_v is equal to c_v + a_p.
+
+So, a_v = c_v + a_p.
+
+But a_p is the sum of c_p and the a values of its children.
+
+So, a_p = c_p + a_{2p} + a_{2p+1}.
+
+So, substituting, a_v = c_v + c_p + a_{2p} + a_{2p+1}.
+
+But a_{2p} and a_{2p+1} are a_{2v} and a_{2v+1}.
+
+So, a_v = c_v + c_p + a_{2v} + a_{2v+1}.
+
+But a_{2v} is the a value of the left child, and a_{2v+1} is the a value of the right child.
+
+So, for each non-leaf node v, a_v is equal to c_v + c_p + a_{2v} + a_{2v+1}.
+
+But a_{2v} and a_{2v+1} are the a values of their respective children, which are non-leaf nodes or leaves.
+
+Hmm, but this seems recursive.
+
+Alternatively, perhaps we can model this as a system where each a_v is a function of its children and itself.
+
+But this is getting complex.
+
+Another idea: Let's consider the a_v's as a set of variables, and for each non-leaf node, we have a_v = c_v + a_p.
+
+Also, the sum of a_v's is k.
+
+We can model this as a system of equations, but it's unclear.
+
+Alternatively, perhaps the problem can be transformed into a problem where the a_v's are determined by the c_v's and the structure of the tree.
+
+But I'm stuck.
+
+Wait, perhaps the problem can be solved by considering that for each non-leaf node v, a_v = c_v + a_p.
+
+But a_p is the sum of c_p and the a values of its children.
+
+So, a_v = c_v + c_p + a_{2v} + a_{2v+1}.
+
+But a_{2v} and a_{2v+1} are the a values of their children, which are a_{4v}, a_{4v+1}, a_{4v+2}, etc.
+
+Wait, perhaps it's better to model this as a tree and compute a_v's for each node in terms of the c_v's.
+
+But this seems impractical for n up to 500.
+
+So, perhaps the problem can be transformed into a dynamic programming approach, where for each node, we track the possible a_v and the constraints.
+
+But given the time constraints, perhaps it's better to look for a mathematical pattern.
+
+Let's think about the sum of a_v's.
+
+Each a_v is equal to c_v plus the a value of its parent.
+
+So, a_v = c_v + a_p.
+
+But a_p is the sum of c_p and the a values of its

@@ -1,0 +1,725 @@
+Okay, I have to solve this problem where Alice and Bob are playing a game with some balls, and I need to find the expected score each of them gets. Hmm, let's try to break this down.
+
+So, the problem says there are n balls, k of which are special. Each turn, a player picks a random ball, adds its value to their score, and removes it. The special ball gives the same player the next turn if there's at least one ball left. Otherwise, the next player takes a turn. The game continues until all balls are gone.
+
+The task is to compute the expected sum for Alice and Bob, modulo 1e9+7. Oh right, and for each test case, I have to output both values.
+
+Hmm, I remember that expectation is linear, so maybe I can compute the expected value for each ball and sum them up. But how to model the turn order and the probability of each ball being picked by Alice or Bob.
+
+Wait, the key is to figure out in which turns each ball is picked. Because the turn order depends on whether the picked ball is special or not. For example, if a special ball is picked, the same player gets the next turn. Otherwise, the other player takes it.
+
+So the first thing is to model the probabilities of each ball being picked on each step.
+
+Let me think about the process. The initial player is Alice. She picks a ball. If it's special, she gets it and the next is her turn. If not, Bob gets it and the next is his turn.
+
+But wait, what's the order of turns? For example, if a non-special ball is picked, Bob picks next, and so on.
+
+This seems like a recursive process. The state of the game depends on which balls are left and whose turn it is. But with n up to 4e5, we can't model this directly for each test case.
+
+So we need a smarter approach. Maybe we can find the probability that a particular ball is picked in an odd step (Alice's turn) or even step (Bob's turn).
+
+Wait, but the turn alternates only when a special ball is picked. So the selection of which player picks a ball depends on whether the previous pick was special or not.
+
+Let me think about the process:
+
+- The first player is Alice.
+- She picks a ball. If it's special, she gets it and the next turn is her. Else, Bob gets it and the next is his.
+- Then Bob picks. Depending on whether this ball was special or not, next is Bob or Alice.
+
+So the process is a bit like a Markov chain, where the state is the remaining balls and the current player. But with n up to 4e5, we can't model this for each state.
+
+Alternative approach: Let's model the expected contribution of each ball. For each ball, if it's special, it's added to Alice's score if it's picked on an Alice's turn. For non-special, it's added to Alice's if she picks it on her turn, otherwise Bob's.
+
+So, for each ball, we can compute the probability that it's picked on a turn when Alice has to pick it, and when Bob has to pick it.
+
+Wait, but the turn depends on whether the previous ball was special or not. So the first ball determines the initial turn, which then affects all subsequent turns.
+
+Hmm, perhaps it's better to model the expected number of turns each player gets a chance to pick a ball.
+
+But maybe another angle: The game can be considered as a sequence of turns, where each turn is determined by whether the previous pick was special or not.
+
+Wait, perhaps we can model the probability that a particular ball is picked in the first step, second step, etc.
+
+Let me think about the process as a series of possible transitions.
+
+The first player is Alice. She picks a ball uniformly at random.
+
+Let me denote:
+
+- For a special ball, when it's picked, the same player gets the next turn.
+- For a non-special, the other player gets the next turn.
+
+So each time a ball is picked, the next player is determined based on whether it's special or not.
+
+Wait, but the next player is determined by the outcome of the current pick. So the state of who picks next is determined by the current player and the type of the selected ball.
+
+Hmm, this seems complicated. Maybe we can model the probability that Alice picks a ball on her turn, and the probability that Bob picks one on his turn.
+
+Let me try to model the probabilities for the initial steps.
+
+Initially, it's Alice's turn. She picks a ball. The probability that this ball is special is k/n, and non-special is 1 - k/n.
+
+If the ball is special, Alice picks it, and the next player is Alice. The probability that the next pick is by Bob is 0 (since Alice picks again).
+
+If the ball is non-special, Alice picks it, and the next player is Bob. So Bob will have a turn.
+
+So after the first step:
+
+- The probability that Alice picks a special ball is k/n. Then, she picks it again, and the next turn is Alice.
+- The probability that Alice picks a non-special is (n - k)/n. Then, Bob picks next.
+
+Wait, but what about Bob's turn? If Bob picks a special or non-special, the next turn is Bob or Alice, respectively.
+
+Hmm, perhaps the process can be broken down into the turns taken by Alice and Bob.
+
+Let me think of the process as a series of picks, each time the current player picks a ball, and the next player is determined.
+
+The first pick is made by Alice. Then, depending on whether the first pick was special or not, the second pick is made by Alice or Bob.
+
+So the number of picks made by Alice and Bob depends on the initial selection and the subsequent choices.
+
+This seems tricky, but perhaps we can model the expected number of picks Alice and Bob have, and for each pick, the probability that it's Alice's turn or Bob's.
+
+Wait, but the turns alternate only when a special ball is picked. So the process is determined by the sequence of picks and the types of those picks.
+
+So for the entire game, the sequence of players is determined by the first pick and the subsequent picks based on the types of the previous picks.
+
+Let me try to model the expected contribution of each ball.
+
+For a special ball, it will be added to Alice's score if and only if it's picked on an Alice's turn. Similarly, for a non-special ball, it's added to Alice's score if it's picked on her turn.
+
+So, for each special ball, the probability that it's picked by Alice is the sum over all possible steps where she picks it, multiplied by the probability that it's picked at that step and that she is the one whose turn comes.
+
+Similarly for non-special.
+
+So the problem reduces to finding, for each ball, the probability that it's picked on an Alice's turn, and multiply that by the ball's value.
+
+But how?
+
+Another approach: Let's model the game as a series of steps where each step is a turn taken by a player. The first step is Alice's, the second is Bob's, and so on, but each step's player depends on the type of the previous ball.
+
+Wait, no, because the type of the previous ball determines the next player. So the turn alternates only when a special is picked.
+
+So, after the first pick, if it's special, the next player is Alice. Else, the next player is Bob.
+
+Then, the next pick's player is determined by whether the next ball is special or not.
+
+Hmm, so the process is a chain where each step's player is determined by the type of the last ball picked.
+
+This seems complex, but perhaps we can model the expected number of times Alice and Bob pick a ball, and for each, the probability that the next player is Alice or Bob.
+
+Alternatively, perhaps we can model the expected number of picks by Alice and Bob, and then for each pick, the probability that it's Alice's turn or Bob's.
+
+Wait, but that might not be feasible due to the dependencies.
+
+Wait, maybe it's easier to model the probability that a particular ball is picked by Alice. Because the sum over all balls of their expected contributions is the expected total for Alice.
+
+So, for each ball, let's compute the probability p_i that it's picked by Alice.
+
+Then, the expected total for Alice is sum(p_i * v_i).
+
+Same for Bob: sum(1 - p_i * v_i) / 2? Wait no, because for each ball, if it's picked by Alice, Bob doesn't pick it, and vice versa.
+
+Wait, no. For each ball, it's either picked by Alice or by Bob. So for each ball, p_i is the probability it's picked by Alice, and (1 - p_i) is the probability it's picked by Bob.
+
+But wait, that can't be right because the turn alternates depending on whether the previous pick was special.
+
+Wait, no. Because the next player is determined by the previous pick. So for a ball, the probability that it's picked by Alice is not simply the sum of the probabilities of being picked on an even step, but depends on the prior choices.
+
+Hmm, this seems complicated. Maybe we can model the probability that a ball is picked on a particular turn, but I'm not sure.
+
+Another idea: Let's think about the process as a sequence of steps, each step being a turn taken by a player. The first step is Alice's, the second is Bob's, etc., but the choice of next player depends on the type of the previous ball.
+
+So, for each step, the player is determined based on the outcome of the previous step.
+
+So, the first pick is by Alice. Then, the second is by Bob with probability (1 - k/n) (if the first was non-special) or by Alice with probability k/n (if the first was special).
+
+Wait, no. Because the second player is determined by whether the first was special. So, if the first pick was special, then Alice picks again, so the next is Alice. If the first was non-special, next is Bob.
+
+So, in terms of the game:
+
+After the first pick, the next player is Alice if the first was special, else Bob.
+
+Then, the next pick is based on the next player's choice.
+
+This creates a chain where each pick's type (special or not) determines the next player.
+
+But how to model this for all balls?
+
+Wait, perhaps we can model the probability that the first pick is special. Then, the second pick is made by Alice with probability k/n (if first was special), else by Bob.
+
+Wait, no. Because if the first pick is special, the next player is Alice, so the second pick is by Alice. If the first pick is non-special, next player is Bob, so second pick is by Bob.
+
+So, the next step's player depends on the previous step's outcome.
+
+This suggests that the sequence of players is determined by the outcomes of the previous steps.
+
+So, for the entire game, the sequence is:
+
+Step 1: Alice
+
+Step 2: If step 1 was special, Alice; else, Bob.
+
+Step 3: If step 2 was special, same player as step 2; else, the other player.
+
+And so on.
+
+So, the turn alternates (or not) based on whether the previous pick was special.
+
+Hmm, but this is a Markov chain. It's possible to model the probability that the next player is Alice or Bob after each step.
+
+But with n up to 4e5, we can't model each state for each step. So, perhaps a dynamic programming approach is needed.
+
+Wait, but for each ball, the probability that it is picked on a particular turn is needed. So, perhaps we can model, for each ball, the probability that it is picked on step 1, step 2, etc.
+
+But again, with n up to 4e5, this might be computationally heavy unless we find a pattern or mathematical formula.
+
+Let me think about the initial steps.
+
+The first pick is always made by Alice. So, the probability that the first ball is special is k/n, and non-special is (n -k)/n.
+
+If the first pick is special, then the next pick is by Alice. If it's non-special, next is by Bob.
+
+So, for each ball, the probability that it is picked on step 1 is the probability that it's picked in the first step, multiplied by its type.
+
+Wait, perhaps for each ball, the expected value of being picked by Alice is the sum of the probabilities that it's picked on an even step, considering the initial conditions.
+
+Wait, no. Because the turn alternates based on the previous pick.
+
+Hmm, maybe it's better to model the expected number of picks by Alice and Bob, but I'm not sure.
+
+Alternatively, perhaps we can model the expected contribution for each ball as follows:
+
+For each ball, if it's special, its contribution is the probability that it's picked by Alice multiplied by its value.
+
+Similarly, for non-special, it's the probability it's picked by Alice multiplied by its value.
+
+So, the problem is to find, for each ball, the probability that it's picked on Alice's turn.
+
+Wait, but how to compute this.
+
+Another approach: Since the turns are determined by the outcomes of the previous picks, perhaps the probability that a ball is picked on a particular step can be modeled as a product of the probabilities of not being picked in the previous steps and being picked on that step.
+
+But again, for each ball, this would be O(n), which is not feasible.
+
+Wait, but maybe we can model the process in terms of the expected number of times Alice and Bob pick a ball.
+
+Wait, for each ball, the probability that it's picked by Alice is the sum over all possible steps where Alice picks it, multiplied by the probability that this is the step in which it is picked.
+
+But again, this seems difficult.
+
+Alternatively, perhaps we can model the problem as follows:
+
+The game can be seen as a sequence of steps where each step is a player's turn, and the next player is determined by whether the previous pick was special or not.
+
+The initial step is Alice. Then, the next step is determined by the first pick's type.
+
+Let me model this as a recursive problem.
+
+Let me denote:
+
+- p_i: the probability that the ith ball is picked by Alice.
+
+We need to find p_i for each i.
+
+Base case: For the first ball, p_1 is the probability that it's picked by Alice.
+
+Wait, no. Because the first pick is always made by Alice. So, the first ball may be special or not.
+
+Wait, the first ball is picked by Alice. So, for the first ball, if it's special, then Alice picks it and the next player is Alice. So, the first ball is picked by Alice, and the second pick is also by Alice.
+
+So, for the first ball, if it's special, Alice picks it, and the game continues. If it's not, then Bob picks it, and so on.
+
+Hmm, but the choice of the next player depends on the type of the current pick.
+
+So, perhaps we can model this as a Markov chain with states representing whose turn it is next.
+
+Each state is either 'A' (Alice's turn) or 'B' (Bob's turn).
+
+The transitions are as follows:
+
+- From 'A' state:
+
+   - If the next ball picked is special, stay in 'A' state (Alice gets another turn).
+
+   - Else, move to 'B' state (Bob gets a turn).
+
+- From 'B' state:
+
+   - If the next ball picked is special, stay in 'B' state.
+
+   - Else, move to 'A' state.
+
+This seems like a good model.
+
+So, the initial state is 'A'.
+
+We can model the probability that the current state is 'A' or 'B' at each step, but since the process is random, perhaps we can model the expected probabilities for each state.
+
+Let me denote:
+
+- f_A: the probability that a randomly picked ball is special and it's in the 'A' state, and the current state is 'A'.
+
+Wait, perhaps not. Alternatively, perhaps f_A is the expected number of times a special ball is picked when it's 'A's turn.
+
+Hmm, perhaps another approach. Let's model the expected number of times a ball is picked as a function of its type and the current state.
+
+Wait, but for each ball, the probability that it's picked by Alice is needed.
+
+Wait, perhaps for each ball, the probability that it is picked by Alice is the sum of the probabilities that it's picked on a turn when it's Alice's turn.
+
+So, for each ball, we can model the probability that it's picked on a particular step, given the state.
+
+But with n up to 4e5, we can't do this for each ball.
+
+Hmm, maybe we can find a pattern or a formula that allows us to compute this for all balls.
+
+Let me think about the expected number of times a special ball is picked by Alice.
+
+Each special ball contributes to Alice's score with probability p_i, where p_i is the sum over all steps where Alice picks it, multiplied by the probability that it was picked at that step.
+
+But again, this seems complicated.
+
+Wait, perhaps the expected number of times a special ball is picked by Alice is the product of the probabilities of not being picked in the previous steps and being picked in the current step, when Alice's turn comes.
+
+But that seems difficult.
+
+Alternatively, perhaps we can model the process as a binary tree, where each node represents a state, and the children represent the next state. But for n up to 4e5, this is also not feasible.
+
+Wait, perhaps another angle. Let's think about the expected number of balls picked by Alice.
+
+Each time Alice picks a ball, she gets it, and the next pick is again Alice. So the number of balls picked by Alice is equal to the number of times she is the one to pick a ball, which depends on the initial picks and the subsequent ones.
+
+But this is still not helpful.
+
+Wait, perhaps we can model the expected number of turns each player has, and then for each ball, compute the probability that it's picked on Alice's turns.
+
+Hmm, let's see. The total number of turns is equal to the number of balls picked. Let T be the total number of balls picked. But since the game ends when all balls are picked, T = n.
+
+Each turn is either Alice's or Bob's.
+
+The number of turns Alice has is the number of times she picked a ball. Let's denote t_A as the expected number of Alice's turns. Then, t_B = n - t_A.
+
+Wait, but this is not necessarily correct because the turns alternate based on the type of the previous ball.
+
+Hmm, perhaps the expected number of Alice's turns is equal to the sum over all balls of the probability that it's picked on an odd step (1st, 3rd, etc.).
+
+But how to model this.
+
+Wait, let's model the process in terms of the probability of being in a state 'A' or 'B' at each step.
+
+Let me denote:
+
+- p_i: the probability that the ith ball is picked by Alice.
+
+We need to find p_i for each i.
+
+We can model this as a system of equations.
+
+The initial state is 'A'. The first ball is picked by Alice.
+
+So, the first ball, if it's special, contributes to Alice's score, and the next state is 'A'. If it's not special, the next state is 'B'.
+
+From there, each step depends on the type of the previous ball.
+
+But for each ball, this seems difficult.
+
+Alternatively, perhaps for each ball, the probability that it is picked by Alice is equal to the sum over all possible steps where the ball is picked by Alice, multiplied by the probability that it's picked at that step.
+
+But again, this seems computationally intensive.
+
+Wait, perhaps we can model the process as a product of probabilities.
+
+Let me think recursively. Let's denote:
+
+- a: the probability that, when it's 'A's turn, the current ball is picked by Alice.
+
+- b: the probability that, when it's 'B's turn, the current ball is picked by Alice.
+
+These are the expected probabilities for the next step.
+
+Wait, but how are a and b computed?
+
+Wait, in the initial step, it's 'A's turn. So the first ball is picked by Alice. Then, depending on whether it's special or not, the next state is 'A' or 'B'.
+
+So, the initial step's a and b are determined by the probability that the first ball is picked by Alice, and whether it's special.
+
+Wait, perhaps a is the expected probability that the next state is 'A' (i.e., the next pick is by Alice), given that the current turn is 'A's.
+
+Similarly, b is the expected probability that the next state is 'A' given current turn is 'B's.
+
+Wait, but this is getting complicated.
+
+Alternatively, we can model the expected number of times Alice picks a ball in a state 'A' or 'B' as follows:
+
+Let’s denote:
+
+- For state 'A', the expected number of times a ball is picked by Alice is a.
+
+- For state 'B', the expected number of times a ball is picked by Alice is b.
+
+Then, the transitions are:
+
+- When in state 'A', the next state is 'A' with probability k/n (if the next ball is special), because if it's special, the next player is 'A' again.
+
+Wait, no. Because if the next ball is special, the next player is 'A', so the next pick is 'A' again.
+
+Wait, no, because the next player is determined by whether the previous ball was special. So in state 'A', you pick a ball. If it's special, next is 'A'; else, it's 'B'.
+
+So, the transition from state 'A' is:
+
+- With probability (k/n), the next state is 'A'.
+
+- With probability ((n -k)/n), the next state is 'B'.
+
+Similarly, from state 'B':
+
+- With probability (k/n), next state is 'B'.
+
+- With probability ((n -k)/n), next state is 'A'.
+
+Wait, no. Because in state 'B', the next player is determined by whether the previous ball was special. So if the previous ball was special, the next player is 'B'; else, it's 'A'.
+
+Wait, no. The next player is determined by the type of the previous ball. So:
+
+- If the previous ball is special, the next player is the same as the previous. So, if previous was 'A', next is 'A'; if previous was 'B', next is 'B'.
+
+Wait, no. Because the next player is determined as follows:
+
+- If the previous ball was special, the same player gets the next turn.
+
+- Otherwise, the other player gets the next turn.
+
+So, the transition is:
+
+- From state 'A', if the current ball is special, the next state is 'A'; else, it's 'B'.
+
+- From state 'B', if the current ball is special, the next state is 'B'; else, it's 'A'.
+
+Wait, no. Because the next player is:
+
+- If the previous ball is special: same player.
+
+- Else: the other player.
+
+So, when in state 'A' (Alice's turn), the next player is 'A' if the next ball is special, else 'B'.
+
+Similarly, when in state 'B' (Bob's turn), the next player is 'B' if the next ball is special, else 'A'.
+
+So, the transitions are:
+
+State 'A' can transition to 'A' or 'B' based on the type of the next ball.
+
+Wait, no. Because the type of the next ball determines the next state. So, for example, when in state 'A', the next state is 'A' if the next ball is special, else 'B'.
+
+Similarly, when in state 'B', the next state is 'B' if the next ball is special, else 'A'.
+
+Wait, no. Because the next player is determined by the type of the current ball, not the state.
+
+Wait, no. The state represents whose turn it is. The next player is determined by the type of the current ball.
+
+So, for example:
+
+- If the current state is 'A' (Alice's turn), and the current ball picked is special, then the next state is 'A' (Alice's turn again).
+
+- If the current ball is not special, the next state is 'B' (Bob's turn).
+
+Similarly, if the current state is 'B', and the current ball is special, the next state is 'B'; else, it's 'A'.
+
+So, the transitions are as follows:
+
+From state 'A':
+
+- Next state is 'A' with probability k/n (if the next ball is special).
+
+- Next state is 'B' with probability (n -k)/n.
+
+From state 'B':
+
+- Next state is 'B' with probability k/n.
+
+- Next state is 'A' with probability (n -k)/n.
+
+So, this is the transition matrix.
+
+Now, the problem is to model the expected number of times a ball is picked by Alice.
+
+But for each ball, the expected number of times it is picked by Alice depends on the initial state and the transitions.
+
+Hmm, perhaps we can model the expected number of times a ball is picked by Alice starting from state 'A'.
+
+Let me denote E_A as the expected number of times a ball is picked by Alice, given that the current state is 'A'.
+
+Similarly, E_B is the expected number of times a ball is picked by Alice given the current state is 'B'.
+
+Wait, but each ball is picked exactly once, right? Because once a ball is picked, it's removed, so it's not picked again.
+
+Wait, no. Because the game continues until all balls are picked, so each ball is picked exactly once.
+
+Wait, no. Because the game continues until all balls are gone. So each ball is picked exactly once, so each ball contributes exactly once to the total score. So, for each ball, it is either picked by Alice or Bob.
+
+Thus, the problem reduces to, for each ball, compute the probability that it was picked by Alice.
+
+So, for each ball, we can compute this probability.
+
+So, the plan is:
+
+For each ball, compute the probability p_i that it's picked by Alice.
+
+The expected total for Alice is sum(p_i * v_i).
+
+So, the key is to compute p_i for each ball.
+
+Now, let's model this.
+
+Let’s denote for a ball, the probability that it's picked by Alice as p_i.
+
+Then, for the first ball, since it's picked by Alice, p_1 = 1 if it's special, else 0.
+
+Wait, no. Because the first ball is picked by Alice, and if it's special, it's added to her score. So, for the first ball, p_1 is 1 if it's special, else 0.
+
+Wait, no. Because the first ball is picked by Alice, and regardless of its value, it's added to her score. So, if it's special, it's added to her score; else, it's added to Bob's score.
+
+So, for the first ball, p_1 is 1 if the ball is special, else 0. Because it's always picked by Alice.
+
+Wait, no. Because the first ball is picked by Alice, and its value is added to her score. So, p_1 is the probability that the first ball is special, because that's the condition for Alice to get it.
+
+Wait, no. Because the first ball is always picked by Alice, but whether it's special depends on the ball's value. So, if the first ball is special, Alice gets it; else, Bob gets it.
+
+So, for the first ball, Alice's p is 1 if it's special, else 0.
+
+Wait, but the ball's value is not probabilistic, because it's a specific value. So, for each ball, p_i is 1 if it's special and was picked by Alice, else 0.
+
+Wait, no. Because the first ball is always picked by Alice, p_i is 1 if the ball is special, else 0.
+
+Because the value of the ball is fixed. So, for the first ball, if it's special, Alice gets it; else, Bob.
+
+So, for the first ball, p_1 is 1 if v_1 is special (i.e., v_1 is one of the k special balls), else 0.
+
+But for the other balls, their p_i depends on whether the ball is picked on an odd step (Alice's turn) or even step (Bob's turn).
+
+Hmm.
+
+So, the problem is to compute p_i for each ball.
+
+Let me model the process as follows:
+
+We can model the expected p_i for each ball as follows:
+
+Each ball is picked exactly once, and the state transitions are determined by the type of the previous pick.
+
+We can model this as a system of equations, where for each ball, we have an equation for p_i.
+
+But with n up to 4e5, this is not feasible for each ball.
+
+So, perhaps we can find a pattern or a formula for p_i.
+
+Alternatively, perhaps we can model the expected p_i as a function of the initial state and the probabilities.
+
+Wait, perhaps for the first ball, p_1 is 1 if it's special, else 0.
+
+For the other balls, their p_i depends on whether they are picked on an even or odd step.
+
+But again, without knowing the order of picks, it's difficult.
+
+Another approach: The process can be viewed as a Markov chain where each state is the current player, and the transitions are based on whether the previous pick was special.
+
+The initial state is Alice. The transitions are determined by the probabilities.
+
+In this Markov chain, the expected number of times a ball is picked by Alice can be modeled.
+
+But for each ball, it's either picked by Alice or Bob, depending on the state transitions.
+
+Wait, but each ball is picked exactly once, so for each ball, the expected number of times it's picked by Alice is equal to the probability that it is picked on an Alice's turn.
+
+But how to model this.
+
+Alternatively, perhaps the expected p_i for each ball can be expressed as the product of the probabilities that it's picked on the correct step.
+
+Wait, let's think about the process as a series of independent events. But I don't think that's the case.
+
+Wait, perhaps we can model the expected p_i as the product of the probabilities that the ball is picked on an Alice's turn and the type of the previous picks.
+
+But again, this seems unclear.
+
+Wait, perhaps the expected p_i is equal to the probability that the ball is picked on an even step (assuming the first step is step 1, which is Alice's).
+
+But how to compute that.
+
+Hmm.
+
+Another idea: Let's model the process as a binary tree. Each node represents a state, and each edge represents a ball being picked.
+
+But again, for large n, this is not feasible.
+
+Hmm.
+
+Wait, perhaps we can model the process as a series of steps where the probability that the ball is picked by Alice is the product of the probabilities of not being picked in the previous steps and being picked in the current step.
+
+But this seems difficult.
+
+Let me think about the process in terms of the expected value of p_i.
+
+Let me denote:
+
+- For the first ball, p_1 is 1 if it's special, else 0.
+
+For a ball picked at step j (1-based), the probability that it's picked by Alice is the product of the probabilities that the first j-1 balls were not picked by Alice, and this ball is picked by Alice.
+
+But again, for each ball, this seems computationally intensive.
+
+But perhaps we can find a way to model this in terms of the initial conditions and the transitions.
+
+Wait, let's consider the initial state: step 1 is Alice's turn.
+
+The probability that the first ball is special is k / n. Then, the next player is Alice again.
+
+So, for the second step, the probability that a ball is picked by Alice is (1 - k/n) * (probability that the first ball was non-special) multiplied by (k/n) (since the next player is Alice).
+
+Wait, perhaps it's getting too convoluted.
+
+Another approach: Let's model the expected p_i for each ball as a function of the initial conditions and the transition probabilities.
+
+We can model this as a system of equations.
+
+Let me denote:
+
+For each ball, the expected p_i is the probability that it's picked on an Alice's turn.
+
+We can model the expected p_i for each ball as:
+
+p_i = (probability that the first ball is picked by Alice) * (probability that the ball is picked by Alice, given it was picked on an odd step).
+
+But again, this seems too vague.
+
+Alternatively, perhaps we can model this using the linearity of expectation and find a way to compute the sum over all balls of p_i.
+
+Wait, the sum of p_i is the expected number of balls picked by Alice. So, perhaps we can model this sum as a function of the initial conditions.
+
+Alternatively, perhaps we can model the sum as the product of the probabilities that each step is Alice's.
+
+But I'm not seeing it.
+
+Hmm, perhaps it's time to look for a different approach.
+
+Let me think about the expected number of balls picked by Alice.
+
+Each ball is picked exactly once, and each pick is either by Alice or Bob.
+
+The process is as follows:
+
+- The first ball is picked by Alice.
+
+- The next pick depends on whether the first was special.
+
+- Each next pick's player is determined by the type of the previous pick.
+
+So, for each ball, the expected p_i is the probability that it's picked by Alice.
+
+Let me consider the first ball, which is always picked by Alice. So p_1 is 1 if it's special, else 0.
+
+For the second ball, it's picked by Alice if the first was special and the second is picked by Alice.
+
+Wait, no. Because the second pick is determined by the first.
+
+Wait, no. The second ball is picked by the same player as the first if the first was special. So, if the first was special, the second is picked by Alice. If the first was not special, the second is picked by Bob.
+
+So, for the second ball, p_2 is 1 if the first was special (so it's Alice's turn) and the second is picked by Alice (which it is). So, p_2 is 1 if the first was special, else 0.
+
+Wait, no. Because the second ball is picked by Alice if the first was special. So, if the first was special, the second is Alice's turn.
+
+So, for the second ball, if the first was special (prob k/n), then it's picked by Alice with probability 1. Else, it's picked by Bob with probability 1.
+
+But the second ball's p_i is 1 if it's picked by Alice, else 0.
+
+So, p_2 = (k/n) * 1 + ( (n -k)/n ) * 0 = k/n.
+
+Similarly, for the third ball, it's picked by Alice only if the second was picked by Alice.
+
+But wait, how?
+
+Let me model this step by step:
+
+After the first ball is picked by Alice:
+
+- If the first was special (prob k/n), then the second is picked by Alice.
+
+- Else, second is picked by Bob.
+
+So, the second ball is picked by Alice with probability (k/n), else not.
+
+Then, the third ball is picked by Alice only if the second was picked by Alice.
+
+So, the probability that the third ball is picked by Alice is:
+
+prob_second_was_special * prob_third_is_special.
+
+Which is (k/n) * (k/n).
+
+Wait, no. Because if the second was picked by Alice, then the third is picked by Alice again.
+
+Wait, no. Because the third ball is picked by Alice if the second was special.
+
+Yes, because the third ball is picked by Alice only if the second was special.
+
+Wait, no. Because the third ball is picked by Alice only if the second was special.
+
+So, the third ball is picked by Alice with probability equal to the probability that the second was picked by Alice.
+
+So, p_3 = p_2 * (k/n).
+
+Wait, no. Because p_2 is the probability that the second was picked by Alice.
+
+Wait, no. p_2 is the probability that the second ball is picked by Alice.
+
+Which depends on whether the first was special.
+
+So, p_2 = (k/n) * 1 + ( (n -k)/n ) * 0 = k/n.
+
+Then, for the third ball, the probability that it's picked by Alice is equal to the probability that the second was picked by Alice.
+
+But the second is picked by Alice only if the first was special.
+
+So, the probability that the second was picked by Alice is p_2 = k/n.
+
+Then, the third ball is picked by Alice with probability p_2 * 1 = p_2.
+
+Wait, but in the third step, the player is Alice if the second was special.
+
+Which is the case with probability p_2.
+
+So, the third ball is picked by Alice with probability 1, given that the second was special.
+
+But the second was picked by Alice with probability p_2.
+
+So, the third ball's p_3 is p_2 * 1 = p_2.
+
+Similarly, the fourth ball is picked by Alice if the third was picked by Alice.
+
+Which is the case with probability p_3.
+
+So, the fourth ball's p_4 is p_3.
+
+Hmm, so the pattern is that for each ball, p_i = p_{i-1} * (k/n).
+
+But this is only true for the first few steps.
+
+Wait, let's see:
+
+p_1 = 1 if the first ball is special, else 0.
+
+p_2 = (k/n) * 1 + ((n -k)/n) * 0 = k/n.
+
+p_3 = p_2 * (k/n) = (k/n)^2.
+
+p_4 = (k/n)^3.
+
+And so on.
+
+Wait, but this is only true if the previous steps are all special.
+
+But what if the first ball is not special?
+
+In that case, the second ball is picked by Bob.
+
+So, p_2 is

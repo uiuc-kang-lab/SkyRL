@@ -1,0 +1,549 @@
+Okay, I have to solve this problem where given a positive integer n, I need to find the longest possible sequence of positive integers a where each a_i is less than or equal to n, the sequence is strictly increasing, and each a_i divides n when OR'ed with a_{i-1}. Hmm, wait, no, the condition is a_i OR a_{i-1} equals n? Or is it a_i divides a_{i-1}, but that doesn't make sense because a_i is larger than a_{i-1} in a strictly increasing sequence. Wait, no, the condition is a_i OR a_{i-1} equals n. So each a_i must be a divisor of n, but when you OR them, it equals n.
+
+Wait, no. Let me re-read the problem statement. Oh right, the condition is a_i | a_{i-1} = n for all i >=2. So each a_i must be a divisor of n, but when you OR a_i and a_{i-1}, it should equal n. But since a_i is larger than a_{i-1}, OR is more likely to set more bits. Hmm, but how can a_i OR a_{i-1} be n? Because OR is a bitwise operation that can't increase the value beyond the maximum of the two numbers. Wait, a_i is larger than a_{i-1}, so a_i | a_{i-1} = a_i, right? Because a_i is the larger one. So the condition a_i | a_{i-1} = n implies that a_i must be equal to n. Or wait, no, because a_i is larger than a_{i-1}, but when you OR them, you get n. So perhaps a_i is a subset of the bits in n. Or maybe a_i must be a divisor of n, and a_i must be a subset of the bits of n. Or wait, perhaps a_i | a_{i-1} = n implies that a_i OR a_{i-1} is n. But since a_i is larger than a_{i-1}, the OR would be a_i. So a_i must be equal to n. Because a_i | a_{i-1} = a_i. So that would imply that a_i is n. But that can't be right because n can have multiple divisors.
+
+Wait, maybe I'm misunderstanding the condition. The condition says that a_i | a_{i-1} = n. So each step, the OR of the current a_i and the previous a_{i-1} must be equal to n. So for each step, the current a_i must be such that when ORed with a_{i-1}, it equals n. But since a_i > a_{i-1}, the OR would be a_i, which must equal n. So that suggests that a_i = n for all i. But that's only possible if the sequence is of length 1, because the next a_i has to be larger than n, which isn't allowed as a_i can't exceed n. So that can't be the case.
+
+Hmm, so maybe I'm misunderstanding the condition. Let me look again. Oh, wait! No, wait. The condition is a_i | a_{i-1} = n. So for each i >= 2, a_i must be such that when OR'ed with a_{i-1}, it equals n. But since a_i is larger than a_{i-1}, OR is a_i. So a_i must be n. But that's not possible because the sequence can't have multiple elements if it starts with n, because the next element would have to be larger than n, which isn't allowed. So that suggests that the only possible sequence is a single element of n. But that's not the case because for n=1, the only possible sequence is [1], but for n=2, perhaps we can have a longer sequence.
+
+Wait, let's think about n=2. The possible a_1 can be 2. Then a_2 must satisfy a_2 | 2 = 2. So a_2 can be 2, but that's not allowed because it's not strictly increasing. So no, that's not possible. So the only possible sequence is [2], which has length 1. But that's probably not the case.
+
+Wait, perhaps I'm missing something. Let's take n=3. The possible a_1 is 3. Then a_2 must be a number greater than 3, but that's not possible because a_i can't exceed n. So again, only [3], length 1.
+
+Hmm, perhaps I'm approaching this the wrong way. Maybe the condition is not that a_i | a_{i-1} = n, but that a_i divides n in the bitwise OR sense. Or perhaps I'm misunderstanding the condition. Let me check the problem statement again.
+
+The problem says: a_i OR a_{i-1} equals n for all 2 ≤ i ≤k. So, the OR of a_i and a_{i-1} is n.
+
+Wait, but a_i is larger than a_{i-1}, so the OR would be a_i, right? Because a_i is larger and OR can't set more bits than a_i. So a_i must be n. So that would imply that each a_i is n, but the sequence must be strictly increasing, which is impossible except for a single element.
+
+This suggests that the problem has some other constraints. Maybe I'm misinterpreting the condition. Alternatively, perhaps the condition is that a_i is a divisor of n, and when OR'ed with a_{i-1}, it equals n. Wait, but how can that be possible if a_i is larger than a_{i-1}?
+
+Wait, perhaps the condition is a_i OR a_{i-1} = n. So for each i, the OR of the current a_i and the previous a_{i-1} is equal to n.
+
+But since a_i is larger than a_{i-1}, a_i | a_{i-1} is a_i. So that implies that a_i =n, which can't happen because the sequence is strictly increasing. So that suggests that such a sequence can't have more than one element. Which can't be right because the sample input must have longer sequences.
+
+Alternatively, perhaps my initial understanding is incorrect. Maybe the condition is that a_i is a divisor of n and a_i OR a_{i-1} equals n. But that seems unlikely because a_i is larger than a_{i-1}, so OR would be a_i, which must equal n.
+
+Wait, perhaps the condition is that a_i is a divisor of n, and a_i OR a_{i-1} is equal to n. But again, this seems to lead to a_i =n, which can't happen.
+
+Hmm, perhaps I'm wrong about the OR condition. Maybe it's not that a_i OR a_{i-1} =n, but that a_i divides (a_{i-1} OR n). Or perhaps I'm misunderstanding the problem's condition.
+
+Wait, the problem statement says: a_i OR a_{i-1} equals n.
+
+Wait, perhaps the condition is that a_i is a divisor of n, and a_i OR a_{i-1} equals n. So, for each i, a_i must be a divisor of n, and when OR'ed with a_{i-1}, it equals n.
+
+So, let's try n=6. The possible a_i's could be 6, but then a_2 must be a divisor of 6, but a_2 must OR a_1 (which is 6) to equal 6. So a_2 must be a subset of the bits of 6. So a_2 could be 6, but that's not allowed. So perhaps a_2 is 3. Then a_3 must OR 3 to equal 6. So a_3 must be a divisor of 6 and when OR'ed with 3 is 6. So divisors of 6 are 1, 2, 3, 6. 3 OR 3 is 3, which is not 6. So a_3 can't be 3. Wait, but 6 is a divisor. So 6 OR 3 = 7, which is not 6. So no, that's not possible. So in this case, the sequence can only be [6], which is length 1.
+
+Hmm, perhaps I'm approaching this wrong. Let's think of n as a binary number. Then, the bits of a_i must be a subset of the bits of n. Because a_i OR a_{i-1} is n, which is the same as saying that the bits of a_i and a_{i-1} together cover all the bits of n. So, for each a_i, the bits set in it must be a subset of those in n. So a_i must be a divisor of n, and a_i must be a bitwise subset of n.
+
+So, the possible a_i's are all the divisors of n that are bitwise subsets of n. So, for example, for n=6 (110 in binary), the possible a_i's are 6 (110), 3 (011), 2 (010), 1 (001), and 6 again. But wait, 6 is a subset? No, because 6 has all the bits of 3 and 2. Wait, but 6's binary is 110. So any a_i that is a subset would have bits only where n has bits. So, for example, 3 is 011, which is a subset of 110. So a_i can be 3, 2, 1, or 6.
+
+So the idea is that each step, we choose a_i that is a divisor of n, a subset of n's bits, and in a strictly increasing order.
+
+So, to maximize the length of the sequence, we want to choose the smallest possible a_i each time, but in a way that allows a longer sequence.
+
+Wait, but what's the maximum possible length? Let's think.
+
+Suppose n is a power of 2, say n=8 (1000). Then the possible a_i's are 8, 4, 2, 1. So the sequence can be 8,4,2,1, which is length 4.
+
+But for n=12 (1100), the possible a_i's are 12,6,4,3,2,1. So the maximum sequence length is 6.
+
+Wait, but let's see:
+
+n=12.
+
+a_1 can be 12.
+
+a_2 must be a divisor of 12, a subset of 12's bits, and larger than 12? No, can't be. So a_2 can't be larger than 12, so the next possible is 6.
+
+a_2=6.
+
+a_3 must be a divisor of 12, a subset of 12's bits, and larger than 6.
+
+Possible a_i's are 6, but larger ones are 4, 3, 2, 1.
+
+Wait, 4 is a subset of 12's bits. So a_3 can be 4.
+
+a_4 must be larger than 4, so 3.
+
+a_5 can be 2, then 1.
+
+So sequence: 12,6,4,3,2,1. Length 6.
+
+So for n=12, the maximum sequence is 6.
+
+But is there a way to have a longer sequence? Let me see. 12,6,4,3,2,1 is 6 elements.
+
+Is there a way to get more? Let's see: 12 is first, then 6, then 4, then 2, then 1. But that's only 5 elements. So the initial approach of choosing the smallest possible a_i each time gives a longer sequence.
+
+So, the approach is to find the longest possible sequence by choosing the smallest possible a_i at each step that is a subset of n's bits and a divisor of n, and larger than the previous a_i.
+
+But how to model this algorithmically?
+
+Let me think about the structure of the possible a_i's.
+
+Each a_i must divide n, and must be a subset of the bits of n. So, each a_i is a divisor of n, and a_i is less than or equal to n, and when represented in binary, has no bits set where n doesn't have. So, for example, if n is 12 (1100), a_i can be 12,6,4,3,2,1.
+
+Wait, but 4 is a subset of 12's bits. So, any a_i must have a set of bits that is a subset of n's bits.
+
+So, the possible a_i's are all the divisors of n that have no bits set outside of n's bits. So, the maximum possible a_i is n, the minimum is 1.
+
+So, the problem reduces to finding the longest possible strictly increasing sequence where each term is a divisor of n, and a subset of the bits of n.
+
+So, the key is to find the maximum length of such a sequence.
+
+Now, the problem is similar to finding the maximum length of a chain of divisors of n, each of which is a subset of n's bits, and strictly increasing.
+
+So, the approach is to find all such divisors, and then find the longest possible chain where each next element is a subset of the previous and larger than it.
+
+But how?
+
+Wait, perhaps it's better to factorize n into its prime factors, and then the possible a_i's are the divisors that are made up of a subset of the exponents of the prime factors.
+
+For example, n=12=2^2*3^1. A divisor a_i can be 2^a *3^b, where a <=2 and b <=1, and a and b are non-negative integers.
+
+So the possible a_i's are 1, 2, 3, 4, 6, 12.
+
+But the sequence needs to be strictly increasing, so the order is 1, 2, 3, 4, 6, 12.
+
+But this is the sequence of all divisors sorted in order. But in our case, each step must be a divisor of n, and a subset of n's bits.
+
+So, the problem now is to find the longest possible chain of such divisors, where each is a subset of the previous, and larger.
+
+Wait, but in this case, each next term must be a subset, which means that in their binary representation, all set bits are present in the previous term. So, for example, 12 is 1100, 6 is 0110 (so 6 is a subset). 6 is 0110, 4 is 0100 (subset). 4 is subset of 6, so 4 can follow 6. Wait, but 4 is smaller than 6, so that's not allowed. So the sequence must be strictly increasing.
+
+So, for each step, a_i must be larger than a_{i-1}, and a subset of n's bits.
+
+Hmm, so the problem is similar to finding the longest chain where each term is a divisor of n, and each is a subset of the previous, and the terms are in increasing order.
+
+So, the way to model this is to find all possible a_i's, which are the divisors of n that are subsets of n's bits, and then find the longest possible strictly increasing sequence among them.
+
+But n can be up to 1e18, so we need an efficient way to compute this.
+
+An alternative approach is to consider the binary representation of n. The a_i's are all the divisors that can be formed by selecting a subset of the set bits of n.
+
+So, for example, if n is 12 (1100), the a_i's are 1, 2, 3, 4, 6, 12.
+
+We need to arrange these in increasing order, but each next element must be a subset (in terms of bits) and larger than the previous.
+
+So, the possible chain is 1 → 2 → 4 → 8... but wait, 8 is larger than 4, but 8 is not a divisor of 12. So that's not applicable.
+
+In the case of 12, the possible chain is 1 → 2 → 4 →6 →12. But wait, 6 is not a subset of 4. Because 6 in binary is 110, which is 110, while 4 is 100. So 6 is not a subset of 4. So 4 can't directly reach 6. So the chain can't be 4 →6.
+
+Wait, that's a problem. So in the case of n=12, the maximum chain is 1 →2 →3 →4 →6 →12. But wait, 3 is 011, which is a subset of 12's bits (1100). So 3 is a valid next step after 2.
+
+But wait, 2 is 0010, 3 is 0011. So 3 is a superset of 2's bits. So yes, 3 is a subset of 12's bits.
+
+So the chain would be 1 →2 →3 →4 →6 →12. That's a length of 6, which matches the earlier example.
+
+So, the key is to find the longest chain of such divisors, each a subset of the next, and in increasing order.
+
+So, how can we model this chain?
+
+Idea: The maximum chain length is the number of possible divisors that can be formed as subsets of the bits of n, arranged in increasing order.
+
+But how to model this chain.
+
+Alternative approach: The maximum possible chain length is the number of distinct subsets of the bits of n, including the empty subset (but that would give 0, which is not allowed). So, for each bit in n, we can decide whether to include it or not in a divisor.
+
+Wait, but that's not exactly correct because a_i has to be a divisor of n.
+
+So, for example, n=12 (1100). The bits are 1100. So the possible a_i's are the divisors formed by any subset of those bits.
+
+Each a_i is a product of 2^a *3^b, where a <=2, b <=1.
+
+So, the possible a_i's are:
+
+1 (2^0 *3^0)
+
+2 (2^1)
+
+3 (3^1)
+
+4 (2^2)
+
+6 (2^1 *3^1)
+
+12 (2^2 *3^1)
+
+So, the divisors are 1, 2, 3, 4, 6, 12.
+
+So, the possible chain is 1→2→3→4→6→12, which is 6 steps.
+
+So, the length is 6.
+
+So, the strategy is to find all possible a_i's, which are the divisors of n that are subsets of n's bits, and then find the longest chain of these a_i's in strictly increasing order.
+
+But how to compute this.
+
+An alternative approach: For each possible subset of the set bits of n, compute the product of 2^a *3^b, and collect all such products. Then, sort them in increasing order, and find the longest chain where each next element is larger than the previous and is a subset of the next.
+
+Wait, but that's not quite right, because the a_i's must be a subset of n's bits, which can be any subset of the bits, but the a_i must be a divisor of n.
+
+So, the problem reduces to finding the longest chain of such a_i's, in increasing order.
+
+So, the question is, how to model this chain.
+
+An alternative approach is to find all the a_i's, sort them, and then for each element, find the longest chain ending with that element.
+
+But for n up to 1e18 and t up to 1e3, with sum of lengths up to 5e5, this approach would be too slow.
+
+So, perhaps we can find a way to model the chain without enumerating all a_i's.
+
+Let me think about the binary representation of n.
+
+Each a_i must be a subset of n's bits. So, the a_i's are all the divisors of n that are subsets of the bits of n.
+
+So, for example, for n=12 (1100), the a_i's are the product of subsets of the 2^2 and 3^1 bits.
+
+So, each a_i is of the form 2^a *3^b, where a is 0,1,2 and b is 0,1.
+
+So, the possible a_i's are:
+
+a=0, b=0: 1
+
+a=0, b=1:3
+
+a=1, b=0:2
+
+a=1, b=1:6
+
+a=2, b=0:4
+
+a=2, b=1:12
+
+So, the a_i's are 1,2,3,4,6,12.
+
+These can be sorted as 1,2,3,4,6,12.
+
+So, the maximum chain is 6.
+
+So, the problem is to find the maximum length of such a chain.
+
+What's the structure of this chain? It's in the form of a chain where each next element is a multiple of the previous, but not necessarily a multiple by any factor, but a subset of the bits.
+
+Wait, but the a_i's are not necessarily multiples of each other. For example, 2 is a multiple of 1, but 3 is not a multiple of 2. So, the chain must consist of elements where each is larger than the previous, but not necessarily a multiple.
+
+But to have a longer chain, perhaps the elements are as large as possible.
+
+So, perhaps the approach is to find all the possible a_i's, and then find the longest possible sequence where each element is a subset of the bits and strictly larger.
+
+But for n up to 1e18, and t up to 1e3, we need an efficient way.
+
+Alternative Idea:
+
+The maximum possible chain length is the number of distinct divisors of n that are subsets of n's bits. Because each step can be as small as possible, but perhaps that's not the case.
+
+Wait, no. Because for example, in n=12, the maximum chain is 6, which is exactly the number of a_i's. So perhaps the maximum chain is the number of a_i's.
+
+Wait, no, because for n=6, the a_i's are 1,2,3,6. So the chain can be 1 →2 →3 →6, which is length 4, which is the number of a_i's.
+
+So perhaps, the maximum chain length is equal to the number of a_i's.
+
+Is this always the case?
+
+Wait, let's think about n=8 (1000). The a_i's are 1,2,4,8.
+
+The chain can be 1→2→4→8, which is length 4.
+
+Yes.
+
+Another example: n=9 (1001). The a_i's are 1,3,9.
+
+The chain can be 1→3→9, length 3.
+
+Yes.
+
+Another example: n=18 (10010). The a_i's are 1,2,3,6,9,18.
+
+The chain can be 1→2→3→6→9→18, which is length 6.
+
+Yes.
+
+So, it seems that the maximum chain is the number of a_i's.
+
+So, the problem reduces to: for each test case, find all the a_i's (divisors of n that are subsets of n's bits), and output them in increasing order.
+
+But wait, is that always the case? For example, suppose n has a lot of divisors that are subsets, but when sorted, the chain may not be the entire list.
+
+But according to the earlier examples, the maximum chain is the entire list, sorted in increasing order.
+
+So, perhaps the solution is to find all the a_i's, sort them, and output them as the longest sequence.
+
+But how to find all a_i's.
+
+Wait, the a_i's are all the divisors of n that are made by selecting a subset of the bits of n.
+
+So, each a_i is of the form product of 2^a * 3^b, where a is the number of bits set in n, and b is the number of bits set in n that are in the subset.
+
+Wait, no. Because a_i must be a divisor of n, which is a product of its prime factors. So, for any a_i that is a subset of n's bits, it must be a product of the primes in n's factorization, but with exponents not exceeding those in n.
+
+So, for example, if n is 12=2^2 *3^1, then any a_i is 2^a *3^b where a <=2 and b <=1.
+
+So, each a_i is a product of some combination of the exponents of the primes in n.
+
+So, to find all a_i's, we can generate all possible products of the primes in n's factorization, where the exponents are ≤ those in n.
+
+But for n up to 1e18, the number of a_i's can be large. So, for example, if n is a product of several distinct primes, the number of a_i's can be 2^k, where k is the number of distinct primes in n.
+
+But given that n can be up to 1e18, factorizing it may be time-consuming. So, perhaps we need an efficient way to find all a_i's.
+
+But wait, the a_i's are the divisors of n that are made up of the same primes as n, but with exponents no larger than in n. So, to generate all such divisors, we can factorize n into its prime factors, and then generate all possible products of the primes (with exponents up to their exponents in n).
+
+But factorizing n could be time-consuming for large n.
+
+But given that the sum of the lengths across all test cases is up to 5e5, perhaps it's manageable.
+
+So, the plan is:
+
+For each test case:
+
+1. Factorize n into its prime factors. Let's say the prime factors are p1^e1, p2^e2, ..., pr^er.
+
+2. Generate all possible divisors of n that are made up of these primes, with exponents no larger than e1, e2, ..., er.
+
+3. Sort these divisors in increasing order.
+
+4. The length of this sorted list is the maximum possible length of the sequence.
+
+5. The sequence is simply the sorted list.
+
+But wait, is this the correct approach?
+
+Wait, in the case of n=12, the a_i's are 1,2,3,4,6,12. So the sorted list is [1,2,3,4,6,12], which is the maximum chain.
+
+But for n=6, the a_i's are 1,2,3,6. So the sorted list is [1,2,3,6], which is the maximum chain.
+
+So, yes. So the problem is to generate all the a_i's as the divisors of n, and then sort them in increasing order.
+
+But how to generate all the a_i's.
+
+So, the steps are:
+
+- Factorize n into its prime factors, each with their exponents.
+
+- Generate all possible products of these primes, with exponents not exceeding the exponents in n.
+
+- Sort these products in increasing order.
+
+- Output the length and the list.
+
+But wait, for n=1, the only a_i is 1.
+
+For n=2, the a_i's are 1,2.
+
+So the approach is correct.
+
+But the problem is, for n with a lot of prime factors, the number of a_i's can be very large. For example, if n is a product of 1e5 primes, each with exponent 1, the number of a_i's is 2^1e5, which is impossible.
+
+So, this approach is not feasible for large n with many distinct prime factors.
+
+So, this approach is only feasible if n is a product of a small number of primes. But for n up to 1e18, it's possible that n has a large number of distinct prime factors.
+
+So, this approach would not be efficient enough.
+
+Alternative Idea:
+
+But wait, in the problem, the a_i's are required to be a subset of n's bits. So, the a_i's are the divisors of n that are also divisors of (the mask of n's bits). So, for each a_i, it must be a divisor of n, and a divisor of (2^{a_1} * 3^{a_2} ... ), where a_1, a_2 etc. are the exponents of the primes in the mask.
+
+But since the mask is n's bits, which is the same as the product of the primes in the mask.
+
+Wait, no. The mask is the set of bits, which is the same as the product of the primes in the mask.
+
+But this line of thinking may not be helpful.
+
+Another Idea:
+
+The a_i's are all the divisors of n that are made up of the same prime factors as n. So, for example, if n is 12=2^2*3^1, the a_i's are all the divisors that are products of 2^a *3^b, where a<=2, b<=1.
+
+So, the a_i's can be generated by taking all possible combinations of the exponents for each prime.
+
+So, the problem is to generate all such possible products.
+
+But factorizing n may be time-consuming for large n. So, perhaps we can find a way to generate the a_i's without factorizing n.
+
+Alternative Idea: Since a_i must be a subset of n's bits, and a_i must be a divisor of n, the a_i's are exactly the divisors of n. So, the a_i's are the same as the divisors of n.
+
+Wait, no. Because a_i must be a subset of n's bits, but not necessarily a divisor of n. Wait, no, because the condition is a_i divides n.
+
+So, the a_i's are any number that divides n, and is a subset of n's bits.
+
+So, the a_i's are exactly the divisors of n that are made up of the same primes as n, but with exponents ≤ those in n.
+
+So, the a_i's are the same as the set of all divisors of n, but only those that are made from the primes in n.
+
+Wait, no. Because for example, n is 12=2^2*3^1. So, the a_i's are 1,2,3,4,6,12. All are divisors of 12.
+
+But in that case, the a_i's are exactly the divisors of n.
+
+Wait, no. Because 2^a *3^b is a divisor of n.
+
+So, the a_i's are all the products of the primes in n's factorization, with exponents up to those in n.
+
+So, the a_i's are the same as the divisors of n.
+
+Wait, no. For example, n=12, the a_i's are 1,2,3,4,6,12. Which are the divisors of 12. So, yes, the a_i's are the same as the divisors of n.
+
+So, the problem reduces to finding all the divisors of n, and then arrange them in increasing order.
+
+But this is only true if each a_i is a subset of n's bits.
+
+Wait, but wait. Let me think: if a_i is a divisor of n, then a_i's prime factors are a subset of n's prime factors.
+
+But that's not necessarily the case.
+
+Wait, for example, n=12=2^2 *3^1. The a_i's are 1, 2,3,4,6,12.
+
+Each of these is a divisor of 12.
+
+But 6 is 2*3, which is a subset of 12's bits.
+
+Yes.
+
+Another example: n=6=2^1*3^1. The a_i's are 1,2,3,6. All are divisors of 6.
+
+Another example: n=24=2^3*3^1. The a_i's are 1,2,3,4,6,8,12,24. All are divisors of 24.
+
+So yes, the a_i's are exactly the divisors of n.
+
+So, the problem is to find all divisors of n, collect them, sort them in increasing order, and output them.
+
+That's a huge simplification!
+
+So, the approach is, for each n, generate all the divisors, sort them, and output.
+
+So, the problem now reduces to, for each n, find all of its divisors, sort them, and output.
+
+But how to find the divisors efficiently.
+
+The standard approach is to factorize n into its prime factors, then generate all the divisors by taking all combinations of exponents.
+
+But factorizing n may be time-consuming for large n.
+
+But given that the sum of the lengths across all test cases is up to 5e5, perhaps the factorization can be done efficiently.
+
+So, the steps for each test case are:
+
+1. Read n.
+
+2. Factorize n into its prime factors, say, in a dictionary where keys are primes and values are exponents.
+
+3. Generate all possible divisors by taking each prime's exponent from 0 up to its maximum in the factorization.
+
+4. Collect all the divisors, sort them in increasing order.
+
+5. Output the length and the sorted list.
+
+But for n up to 1e18, factorizing could be time-consuming.
+
+But given that the sum of the lengths is up to 5e5, perhaps this is manageable.
+
+So, the code needs to factorize n, which can be done using trial division for small factors, and then perform Pollard's Rho algorithm for larger factors.
+
+But implementing Pollard's Rho is a bit involved, but manageable.
+
+Alternatively, for the problem's constraints, perhaps trial division is sufficient, but that may not be the case for very large primes.
+
+So, the plan is:
+
+Implement a function to factorize n into its prime factors.
+
+Once the factors are known, generate all possible divisors.
+
+Sort them, and output.
+
+So, the code structure would be:
+
+Read t test cases.
+
+For each test case:
+
+   Read n.
+
+   If n is 0, output 0, but n is given as positive.
+
+   Else, factorize n into primes.
+
+   Generate all possible divisors.
+
+   Sort the divisors.
+
+   Output the count and the sorted list.
+
+Now, let's think about how to implement this.
+
+First, for factorization.
+
+Implement a function to find all the prime factors of n, along with their exponents.
+
+This can be done via trial division for small primes, and then using Pollard's Rho for larger primes.
+
+But for the scope of this problem, perhaps a trial division approach is sufficient for the test cases.
+
+But to handle n up to 1e18, we need a robust factorization.
+
+So, let's think about writing Pollard's Rho algorithm.
+
+Alternatively, here's an outline:
+
+Function factor(n):
+
+   Initialize factors as empty dict.
+
+   while n is even:
+
+      add 2 to factors.
+
+      divide n by 2.
+
+   i = 3.
+
+   while i*i <=n:
+
+      while n %i ==0:
+
+         add i to factors.
+
+         n =n/i.
+
+      i +=2.
+
+   if n >1:
+
+      add n to factors.
+
+   return factors.
+
+But this is not efficient for large primes.
+
+Alternatively, use Pollard's Rho algorithm.
+
+But implementing Pollard's Rho is a bit involved.
+
+But given the time constraints, perhaps the code can be written with trial division and for the test cases, it's manageable.
+
+But in the case of large n with many factors, it's not feasible.
+
+But given that the sum of the lengths is up to 5e5, perhaps the code can pass.
+
+But to make it efficient, perhaps a better approach is needed.
+
+Alternatively, for each test case, generate all the divisors by checking all possible exponents for each prime factor.
+
+But that's the same as generating all possible divisors.
+
+So, the code can be structured as follows.
+
+Implement a function to generate all divisors of n, given its prime factors.
+
+Once the factors are known, for each prime p with exponent e, the divisors can be generated by multiplying p^k for k from 0 to e.
+
+So, for example, if factors are {2:2,3:1}, the divisors are 2^0 *3^0 =1, 2^0 *3^1=3, 2^1 *3^0=2, 2^1 *3^1=6, 2^2 *3^0=4, 2^2 *3^1=12.
+
+So, the code can generate all possible combinations of exponents.
+
+Now, to generate the divisors, for each prime, collect the possible exponents, and then generate all combinations.
+
+In code, this can be done recursively.
+
+But for the sake of efficiency, perhaps it's better to represent the

@@ -1,0 +1,191 @@
+\frac{5}{7}
+Okay, so I have this triangle problem to solve. Let me try to break it down step by step.
+
+First, the problem states that in triangle ABC, we have the equation cos 2A - 3cos(B+C) = 1. The area of the triangle is 5√3, and one of the sides, b, is 5. I need to find the value of sin B sin C.
+
+Hmm, let's start by recalling some basic properties of triangles. In any triangle, the sum of the angles is π radians (or 180 degrees). So, A + B + C = π. That means B + C = π - A. Maybe I can use that to simplify the given equation.
+
+Looking at the equation cos 2A - 3cos(B+C) = 1, since B+C = π - A, I can substitute that in. So, cos 2A - 3cos(π - A) = 1. Now, cos(π - A) is equal to -cos A, because cosine is an even function and cos(π - x) = -cos x. So, substituting that in, the equation becomes cos 2A - 3(-cos A) = 1, which simplifies to cos 2A + 3cos A = 1.
+
+Now, I can use the double-angle identity for cosine, which is cos 2A = 2cos²A - 1. So, substituting that in, the equation becomes 2cos²A - 1 + 3cos A = 1. Let's simplify that:
+
+2cos²A + 3cos A - 1 = 1.
+
+Subtract 1 from both sides:
+
+2cos²A + 3cos A - 2 = 0.
+
+Now, this is a quadratic equation in terms of cos A. Let me let x = cos A, so the equation becomes:
+
+2x² + 3x - 2 = 0.
+
+I can solve this quadratic using the quadratic formula: x = [-b ± √(b² - 4ac)] / (2a), where a=2, b=3, c=-2.
+
+Calculating the discriminant:
+
+b² - 4ac = 9 - 4*2*(-2) = 9 + 16 = 25.
+
+So, the solutions are:
+
+x = [-3 ± √25]/4 = [-3 ± 5]/4.
+
+So, two solutions:
+
+x = (-3 + 5)/4 = 2/4 = 1/2.
+
+x = (-3 - 5)/4 = -8/4 = -2.
+
+But cos A can't be -2 because the cosine function only takes values between -1 and 1. So, cos A = 1/2.
+
+Therefore, angle A is π/3 or 60 degrees because cos π/3 = 1/2.
+
+Now, since A is 60 degrees, then B + C = 120 degrees. So, B and C are two angles that add up to 120 degrees.
+
+I need to find sin B sin C. Hmm, I remember that there's a trigonometric identity for sin B sin C. Let me recall it.
+
+Yes, the identity is:
+
+sin B sin C = [cos(B - C) - cos(B + C)] / 2.
+
+Since B + C = 120 degrees, cos(B + C) = cos 120° = -1/2.
+
+So, sin B sin C = [cos(B - C) - (-1/2)] / 2 = [cos(B - C) + 1/2] / 2 = (cos(B - C) + 1/2)/2.
+
+Simplifying, that's (cos(B - C))/2 + 1/4.
+
+So, sin B sin C = (cos(B - C) + 1/2)/2.
+
+But I don't know B - C yet. Hmm, maybe there's another way to find this.
+
+Alternatively, I can use the formula for the area of a triangle. The area is given as 5√3, and one side is b=5. Let me recall that the area can also be expressed as (1/2)*a*c*sin B, where a and c are sides, and B is the included angle.
+
+Wait, but I don't know sides a and c yet. Maybe I can use the Law of Sines or Law of Cosines.
+
+Wait, let's think. Since I know angle A is 60 degrees, and side b=5, which is opposite angle B. So, using the Law of Sines, a/sin A = b/sin B = c/sin C.
+
+So, a = (b sin A)/sin B = (5 sin 60°)/sin B = (5*(√3/2))/sin B = (5√3)/(2 sin B).
+
+Similarly, c = (5√3)/(2 sin C).
+
+Now, the area is also given by (1/2)*b*c*sin A. Since angle A is 60°, sin A = √3/2.
+
+So, area = (1/2)*5*c*(√3/2) = (5c√3)/4.
+
+But the area is given as 5√3, so:
+
+(5c√3)/4 = 5√3.
+
+Divide both sides by 5√3:
+
+c/4 = 1 => c = 4.
+
+So, side c is 4.
+
+Now, since c = 4, and from the Law of Sines, c/sin C = b/sin B.
+
+So, 4/sin C = 5/sin B => sin B = (5 sin C)/4.
+
+Now, I can express sin B in terms of sin C.
+
+Also, since B + C = 120°, I can write B = 120° - C.
+
+So, sin B = sin(120° - C) = sin 120° cos C - cos 120° sin C.
+
+We know sin 120° = √3/2 and cos 120° = -1/2.
+
+So, sin B = (√3/2) cos C - (-1/2) sin C = (√3/2) cos C + (1/2) sin C.
+
+But from earlier, sin B = (5 sin C)/4.
+
+So, equating the two expressions for sin B:
+
+(√3/2) cos C + (1/2) sin C = (5 sin C)/4.
+
+Let me multiply both sides by 4 to eliminate denominators:
+
+2√3 cos C + 2 sin C = 5 sin C.
+
+Subtract 2 sin C from both sides:
+
+2√3 cos C = 3 sin C.
+
+Divide both sides by cos C (assuming cos C ≠ 0, which it can't be because C would be 90°, but let's check later):
+
+2√3 = 3 tan C.
+
+So, tan C = (2√3)/3 = (2/√3) = 2√3/3.
+
+So, tan C = 2√3/3, which corresponds to angle C = arctan(2√3/3).
+
+Let me compute that angle. Since tan C = 2√3/3, which is approximately 1.1547, so C is approximately 49.1 degrees.
+
+But maybe I can find exact values. Let me think.
+
+If tan C = 2√3/3, then we can think of a right triangle where the opposite side is 2√3 and the adjacent side is 3, so the hypotenuse is √( (2√3)^2 + 3^2 ) = √(12 + 9) = √21.
+
+So, sin C = opposite/hypotenuse = 2√3/√21 = (2√3)/(√21) = (2√3 * √21)/(21) = (2√63)/21 = (2*3√7)/21 = (6√7)/21 = (2√7)/7.
+
+Similarly, cos C = adjacent/hypotenuse = 3/√21 = 3√21/21 = √21/7.
+
+So, sin C = 2√7/7 and cos C = √21/7.
+
+Now, from earlier, sin B = (5 sin C)/4 = (5*(2√7/7))/4 = (10√7/7)/4 = (10√7)/28 = (5√7)/14.
+
+So, sin B = 5√7/14.
+
+Now, we need to find sin B sin C.
+
+We have sin B = 5√7/14 and sin C = 2√7/7.
+
+So, sin B sin C = (5√7/14)*(2√7/7) = (10*7)/(14*7) = (70)/(98) = 10/14 = 5/7.
+
+Wait, let me double-check that multiplication.
+
+(5√7/14)*(2√7/7) = 5*2*(√7*√7)/(14*7) = 10*(7)/(98) = 70/98 = 10/14 = 5/7.
+
+Yes, that's correct.
+
+Alternatively, using the identity I mentioned earlier:
+
+sin B sin C = [cos(B - C) + 1/2]/2.
+
+We can compute cos(B - C). Since B + C = 120°, and B - C is some angle.
+
+But perhaps it's easier to compute cos(B - C) using the values we have.
+
+We know that B = 120° - C, so B - C = 120° - 2C.
+
+So, cos(B - C) = cos(120° - 2C).
+
+Using the cosine of difference identity:
+
+cos(120° - 2C) = cos 120° cos 2C + sin 120° sin 2C.
+
+We know cos 120° = -1/2 and sin 120° = √3/2.
+
+We need cos 2C and sin 2C. From earlier, we have tan C = 2√3/3, so we can find sin 2C and cos 2C.
+
+From the right triangle with tan C = 2√3/3, we have sin C = 2√7/7 and cos C = √21/7.
+
+So, sin 2C = 2 sin C cos C = 2*(2√7/7)*(√21/7) = 4√147/49.
+
+Wait, √147 = √(49*3) = 7√3, so sin 2C = 4*7√3/49 = 28√3/49 = 4√3/7.
+
+Similarly, cos 2C = cos²C - sin²C = ( (√21/7)^2 ) - ( (2√7/7)^2 ) = (21/49) - (28/49) = (21 - 28)/49 = (-7)/49 = -1/7.
+
+So, cos 2C = -1/7.
+
+Now, cos(120° - 2C) = cos 120° cos 2C + sin 120° sin 2C = (-1/2)*(-1/7) + (√3/2)*(4√3/7) = (1/14) + (4*3)/14 = 1/14 + 12/14 = 13/14.
+
+So, cos(B - C) = 13/14.
+
+Now, using the identity:
+
+sin B sin C = [cos(B - C) + 1/2]/2 = (13/14 + 1/2)/2 = (13/14 + 7/14)/2 = (20/14)/2 = (10/7)/2 = 5/7.
+
+Yes, that matches the previous result. So, sin B sin C = 5/7.
+
+Therefore, the value is 5/7.
+</think>
+
+The value of $\sin B \sin C$ is $\boxed{\dfrac{5}{7}}$.<｜end▁of▁sentence｜>

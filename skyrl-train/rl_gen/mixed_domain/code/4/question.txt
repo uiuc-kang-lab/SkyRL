@@ -1,0 +1,36 @@
+<｜begin▁of▁sentence｜><｜User｜>
+This is the easy version of the problem. The only difference between the two versions is that in this version, you can make at most $\mathbf{10}$ queries.
+
+This is an interactive problem. If you are unsure how interactive problems work, then it is recommended to read [the guide for participants](https://codeforces.com/blog/entry/45307).
+
+We have a secret ruler that is missing one number $x$ ($2 \leq x \leq 999$). When you measure an object of length $y$, the ruler reports the following values:
+
+  * If $y < x$, the ruler (correctly) measures the object as having length $y$.    * If $y \geq x$, the ruler incorrectly measures the object as having length $y+1$. 
+
+![](CDN_BASE_URL/f2ba8b56cc626dab02991bcad6d908b8)
+
+The ruler above is missing the number $4$, so it correctly measures the first segment as length $3$ but incorrectly measures the second segment as length $6$ even though it is actually $5$.
+
+You need to find the value of $x$. To do that, you can make queries of the following form:
+
+  * $\texttt{?}~a~b$ — in response, we will measure the side lengths of an $a \times b$ rectangle with our ruler and multiply the results, reporting the measured area of the rectangle back to you. For example, if $x=4$ and you query a $3 \times 5$ rectangle, we will measure its side lengths as $3 \times 6$ and report $18$ back to you. 
+
+Find the value of $x$. You can ask at most $\mathbf{10}$ queries.
+
+Input Format:
+Each test contains multiple test cases. The first line of input contains a single integer $t$ ($1 \leq t \leq 1000$) — the number of test cases.
+
+Output Format:
+
+
+Tags:
+['binary search', 'interactive']
+
+Time Limit: 1000 ms
+Memory Limit: 256 MB
+
+Write Python code to solve the problem. Present the code in
+```python
+Your code
+```
+at the end.<｜Assistant｜><think>

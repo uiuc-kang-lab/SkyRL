@@ -1,0 +1,538 @@
+0
+Okay, so I have this problem where I need to find a specific cell (i0, j0) in a matrix. The matrix has n rows and m columns, and each cell contains -1, 0, or 1. The key is that the user can make queries to find this cell, and each query gives some information based on the Manhattan distance and the sum of a certain submatrix.
+
+Let me try to understand the problem step by step. 
+
+The user's goal is to find (i0, j0). Each query consists of selecting a cell (i, j), and the jury responds with a value. If that cell is (i0, j0), the response is 0. Otherwise, the response is the Manhattan distance between (i,j) and (i0,j0) plus the absolute value of the sum S of all elements in a rectangle centered at (i0, j0) that includes (i,j). 
+
+So, the response is |i - i0| + |j - j0| + |S|.
+
+Hmm. The Manhattan distance part is straightforward. The S part is the sum of all elements in the rectangle that is the intersection of the current query cell's row and column ranges around (i0, j0). 
+
+The challenge is to design a strategy to find (i0, j0) with at most n + 225 queries. Wait, n is the number of rows, so 225 is a bit arbitrary. Maybe it's a hint that the approach involves some sort of binary search or some pattern observation.
+
+Let me think about the possible cases. 
+
+First, if the query cell is (i0, j0), the response is 0. So, that's the target. 
+
+But how do I find it without checking every cell? 
+
+Maybe I can start by checking cells in a way that narrows down the possible area where (i0, j0) could be. 
+
+I remember that in some matrix problems, checking the middle row or column can help. For example, in a matrix, looking at the middle row can help find a row where all elements are 0, which could indicate that the target is in that row. But I'm not sure if that applies here.
+
+Alternatively, perhaps the sum S can give some clues about the cell's proximity to the target. Because S is the sum of a certain rectangle, if (i,j) is far away from (i0, j0), then S might be small, but if (i,j) is near, S could be larger.
+
+Wait, but the sum S depends on the rectangle. So, if (i,j) is in the same row as (i0,j0), then the sum S would be the sum of that entire row, but only if (i,j) is in the rectangle. Wait, no. Because the rectangle is determined by min(i, i0) to max(i, i0) in rows, and similarly for columns. So, if i is i0, then the row range is just i0. So, if j is j0, then the sum S is a[i0][j0]. Otherwise, S is the sum of a[i0][j] for j in the column range, but wait no— because if i is not i0, then the row range includes i0. So, the rectangle is from row min(i, i0) to max(i, i0), which is always row i0 (if i is not i0). So, the sum S is the sum of all cells in row i0, columns from min(j, j0) to max(j, j0). So, S is the sum of row i0 from column j_low to j_high, where j_low is min(j, j0) and j_high is max(j, j0).
+
+Wait, that's a crucial observation. So, for any query cell (i,j), the sum S is the sum of row i0 from column min(j, j0) to max(j, j0). Or is it the sum of the rectangle that includes (i,j) as part of the i0 to i0 row and j to j0 column? No, wait, the rectangle is from min(i, i0) to max(i, i0) in rows, and min(j, j0) to max(j, j0) in columns. So, if i is i0, the row range is just i0. So, the sum S is the sum of row i0 from column min(j, j0) to max(j, j0). 
+
+So, for any query (i,j), S is the sum of a[i0][k] for k from a to b, where a = min(j, j0) and b = max(j, j0). So, S is the sum of the row i0 from column a to b.
+
+Wait, that's a key insight. So, the sum S is the sum of the entire row i0, but only from column a to b, where a is min(j, j0) and b is max(j, j0). So, if j is less than or equal to j0, then a is j and b is j0. So, S is the sum of row i0 from column j to j0. If j is greater than j0, then a is j0 and b is j, so S is the sum of row i0 from j0 to j.
+
+So, regardless of j, S is the sum of row i0 from column min(j, j0) to max(j, j0).
+
+Hmm. So, if I can find S for a query (i,j), it tells me the sum of row i0 from some start column to end column, which is the min and max of j and j0.
+
+So, the response is |i - i0| + |j - j0| + S.
+
+Now, the goal is to find i0 and j0.
+
+So, perhaps I can find cells that give me information about i0 and j0.
+
+Let me think about the first query. What if I choose (i0, j0)? Then the response is 0. So, that would be the target. But that's only one query, which is way below the allowed limit of n + 225. So, that's not efficient.
+
+So, I need to find a way to make multiple queries to narrow down the possibilities.
+
+Let me consider what happens when I query a cell (i,j) that is not the target.
+
+The response is |i - i0| + |j - j0| + S.
+
+Now, S is the sum of row i0 from a to b. So, if a and/or b are far from j0, then S could be large.
+
+Wait, but if (i,j) is in the same row as (i0, j0), then the row range is i0. So, S is the sum of row i0 from a to b, where a and b are min and max of j and j0. So, if j is j0, then a and b are both j0, so S is sum of row i0 from j0 to j0, which is 0 (since it's just j0). So, the response would be |i - i0| + 0 + 0 = |i - i0|.
+
+So, if I query a cell in the same row as (i0, j0), and the column is j0, the response is |i - i0|.
+
+That's a useful observation. So, if I query (i0, j0), I get 0. If I query (i0, j), where j != j0, then the response is |i0 - i0| + |j - j0| + S. But S is the sum of row i0 from min(j, j0) to max(j, j0). So, if j is not j0, then S is the sum of row i0 from j to j0 if j < j0, or from j0 to j if j > j0.
+
+Wait, but in this case, the response is 0 + |j - j0| + S.
+
+So, if I query (i0, j), where j != j0, the response is |j - j0| + S.
+
+So, if I can find a way to determine j0 based on the response, that would help.
+
+Hmm. Let me think about this. Suppose I query (i0, j). Then, the response is |j - j0| + S.
+
+But S is the sum of row i0 from a to b, where a is min(j, j0) and b is max(j, j0). So, S is the sum of row i0 from a to b.
+
+Wait, but if j is not j0, then a is min(j, j0), which is the smaller of j and j0, and b is max(j, j0), which is the larger. So, a to b is the entire row i0, because a is the smaller and b is the larger. So, S is the sum of row i0 from a to b.
+
+Wait, no. Wait, a is min(j, j0), b is max(j, j0). So, a to b is the entire range of the row i0. So, S is the sum of row i0 from a to b, which is the entire row. So, S is equal to the sum of the entire row i0.
+
+Wait, that's a critical point. So, for any query (i0, j), the response is |j - j0| + sum_i0. Because S is the sum of row i0 from a to b, which is the entire row i0.
+
+So, the response is |j - j0| + sum_i0.
+
+So, for any query (i0, j), whether j is j0 or not, the response is |j - j0| + sum_i0.
+
+So, if I query (i0, j), the response is |j - j0| + sum_i0.
+
+Hmm, that's a big insight. So, the response for any query in the i0-th row is |j - j0| + sum_i0.
+
+So, that's a key point. So, if I can find a query in the i0-th row, then the response will give me |j - j0| + sum_i0.
+
+So, for example, if I query (i0, j), then the response is |j - j0| + sum_i0.
+
+So, if I can find a cell in the i0-th row, I can compute |j - j0| from the response.
+
+But how? Because the response is |j - j0| + sum_i0.
+
+So, for example, let's say I query (i0, j). The response is d + s, where d is |j - j0| and s is sum_i0.
+
+So, if I can find s, which is the sum of row i0, then I can compute d = response - s. So, j0 = j - d or j0 = j + d, depending on j >= j0 or not.
+
+Wait, but how do I know s? Because s is the sum of row i0, which is known once I know i0. But we don't know i0 yet.
+
+So, this approach might not directly help because s depends on i0, which is what we are trying to find.
+
+Hmm, maybe I need to make another approach.
+
+Another idea: if I can find two cells in the same row as (i0, j0), then the response will give me |i - i0|.
+
+Wait, no. If I query (i, j) where i is not i0, then the response is |i - i0| + |j - j0| + S.
+
+So, S depends on the rectangle. But this seems tricky.
+
+Let me think differently. Since the response is |i - i0| + |j - j0| + S, and S is the sum of a submatrix, perhaps I can find a way to bound i0 and j0.
+
+Wait, but how? Because S can be positive or negative, depending on the sum of the rectangle.
+
+Wait, the sum S can be positive or negative. So, for example, if the rectangle has more 1s than -1s, S could be positive. So, the response could be larger than |i -i0| + |j -j0|.
+
+So, that complicates things.
+
+Alternative approach: Let's try to find a way to determine i0 and j0 by making queries that give us information about their positions.
+
+Let's start by considering the first query. Suppose I query (i0, j0). The response is 0. That's the target. So, if I can do that, then I'm done. But that's one query, which is way below the allowed limit. So, that's not efficient.
+
+So, I need to find a way to find i0 and j0 with more than one query.
+
+Wait, another idea: What if I query a cell that is far from (i0, j0), but in such a way that the sum S is predictable?
+
+For example, if I query a cell in a row far from i0, then the row range for S would be i0, so S is the sum of row i0 from column min(j, j0) to max(j, j0). So, if I query a row far from i0, say i = i0 + 1, then the row range is i0, and S is sum of row i0 from a to b.
+
+So, if I can find such a row, then I can compute S as the sum of row i0.
+
+But again, this seems tricky.
+
+Wait, perhaps I can find the row i0 by looking at the sum of certain cells.
+
+Let me think: if I query a cell in row i, I can get information about i0 and j0. But without knowing i0, it's hard.
+
+Wait, perhaps the key is to find cells that are in the same row or column as (i0, j0), which would allow us to compute |i -i0| or |j -j0|.
+
+Wait, here's another thought: if I can find a cell (i,j) that is in the same row as (i0, j0), then S is the sum of row i0 from min(j, j0) to max(j, j0). So, if I can find such a cell, then I can compute S as the sum of row i0, and then compute d = |j - j0| = response - S.
+
+So, if I can find a cell in the same row as (i0, j0), then I can get d, and then find j0.
+
+Similarly, if I can find a cell in the same column as (i0, j0), then I can get the row distance.
+
+So, perhaps I can make queries in a way that allows me to find these distances.
+
+So, let's outline a possible strategy:
+
+1. Make a query in row 1, say (1, 1). The response is |1 - i0| + |1 - j0| + S.
+
+But S is the sum of row i0 from a to b, where a is min(1, j0) and b is max(1, j0). So, a is min(1, j0), b is max(1, j0). So, a = min(1, j0), b = max(1, j0). So, a to b is just j0 to 1 if j0 <= 1, but wait, no. Wait, if j0 is 3, then a is 1, b is 3. So, S is the sum of row i0 from 1 to 3.
+
+Wait, so for any query (i,j), S is sum of row i0 from a to b, where a is min(j, j0) and b is max(j, j0).
+
+So, for example, if (i,j) is (2, 3), then a is min(3, j0), b is max(3, j0). So, S is sum of row i0 from a to b.
+
+So, if I can find a cell in a row i that is not i0, then the row range is i0, and S is sum of row i0 from a to b.
+
+So, the response is |i - i0| + |j - j0| + sum_i0_a_b.
+
+So, if I can find a cell in a row i that is not i0, then the sum is sum_i0_a_b.
+
+So, perhaps I can find such a row i by making a query in that row.
+
+So, here's a possible approach:
+
+- Make a query in row 1. Let's say (1, 1). The response is d1 + d2 + S1, where d1 is |1 - i0|, d2 is |1 - j0|, and S1 is sum of row i0 from a to b.
+
+But this doesn't directly help because S1 is the sum of row i0, which we don't know.
+
+Hmm.
+
+Alternative idea: make a query that is in a row far from i0, say i = i0 + 1. Then, the row range is i0, so S is sum of row i0 from a to b, which is the same as the sum of row i0.
+
+So, if I can find such a row, then I can get S.
+
+So, the steps could be:
+
+1. Query (i0 + 1, j0). The response is |(i0+1) - i0| + |j0 - j0| + S = 1 + 0 + S.
+
+So, the response is 1 + S.
+
+So, S = response - 1.
+
+But S is the sum of row i0 from a to b, which is sum of row i0. So, if I can find S, then I can get j0.
+
+Because, as before, S is the sum of row i0 from a to b, which is the entire row if (i0 + 1, j0) is in the same row as i0. Wait, no. Because (i0 +1, j0) is in a different row, so the row range is i0, so a is min(j0, j0) = j0, b is max(j0, j0) = j0. So, S is the sum of row i0 from j0 to j0, which is sum of row i0 at column j0.
+
+Wait, that's not correct. Because (i0 + 1, j0) is in a different row, so the row range is i0. So, S is the sum of row i0 from a to b, where a is min(j0, j0) = j0, and b is max(j0, j0) = j0. So, S is the sum of row i0 at column j0.
+
+Wait, but in that case, S is a[i0][j0], which is 0 or 1 or -1.
+
+So, the response is 1 + S.
+
+So, if I query (i0 + 1, j0), the response is 1 + a[i0][j0].
+
+So, a[i0][j0] = response - 1.
+
+So, if I can find such a cell, I can get a[i0][j0], which is the value at (i0, j0). So, that's great.
+
+So, the plan is:
+
+- Query (i0 + 1, j0). The response is 1 + S, where S = a[i0][j0].
+
+So, from this, I can get a[i0][j0].
+
+Once I have that, I can find j0.
+
+So, how to find j0.
+
+Once I have a[i0][j0], which is 0, 1, or -1, I can query cells in the same row as i0, and see where the sum S is zero.
+
+Because if j0 is j, then in the same row i0, for any query (i0, j'), the response is |j' - j0| + S, where S is the sum of row i0 from a to b.
+
+Wait, but if I query (i0, j'), then S is the sum of row i0 from a = min(j', j0) to b = max(j', j0). So, S is a[i0][j'] if j' >= j0, or a[i0][j0] if j' <= j0.
+
+Wait, no. Because a[i0][j'] is part of the sum. So, if j' is j0, then S is a[i0][j0]. If j' is greater than j0, then S is the sum from j0 to j'. So, it's the sum of a[i0][j0] to a[i0][j'].
+
+Wait, but the sum S is the sum of the entire row i0 from min(j', j0) to max(j', j0), which is the same as the sum from j0 to j' if j' >= j0, or from j' to j0 if j' <= j0.
+
+Wait, no. Because min(j', j0) is the smaller of the two, and max is the larger. So, if j' is greater than j0, min is j0, max is j'. So, the sum is from j0 to j', which includes a[i0][j0], a[i0][j0+1], ..., a[i0][j'].
+
+So, the sum S is the sum of row i0 from j0 to j' if j' > j0, or from j' to j0 if j' < j0.
+
+So, if I can find j0, then for any query (i0, j'), the sum S is the sum of row i0 from min(j', j0) to max(j', j0).
+
+So, for a given j0, if I query (i0, j'), the response is |j' - j0| + S.
+
+So, if j' is j0, then S is a[i0][j0], so response is 0 + a[i0][j0] = a[i0][j0].
+
+So, in that case, the response is equal to a[i0][j0].
+
+If j' is not j0, then S is the sum of row i0 from min(j', j0) to max(j', j0). So, the response is |j' - j0| + S.
+
+So, if I can find j0, I can query (i0, j') for various j' and see where the response equals a[i0][j0], or where the response is |j' - j0| + S equals a[i0][j0].
+
+This seems a bit complicated, but perhaps there's a way.
+
+Another idea: Once I have a[i0][j0], I can query cells in the same row i0, and see where the sum S is zero. Because if j' is j0, then S is a[i0][j0], which is known. So, response is 0 + a[i0][j0].
+
+If j' is j0 + 1, then S is the sum from j0 to j0+1, which is a[i0][j0] + a[i0][j0+1]. So, the response is 1 + (a[i0][j0] + a[i0][j0+1]).
+
+Wait, but if I can find a cell (i0, j') where S is zero, then the response would be |j' - j0| + 0 = |j' - j0|.
+
+So, if I can find a j' where a[i0][j'] is equal to j' - j0 or something like that, that might help.
+
+Alternatively, perhaps I can find j0 by checking certain cells.
+
+Let me think: if I query (i0, j), the response is |j - j0| + S.
+
+If I can find a j where S is zero, then the response is |j - j0|.
+
+So, if I can find a j where S is zero, then I can get |j - j0|.
+
+So, perhaps the plan is:
+
+1. Query (i0 + 1, j0) to get a[i0][j0].
+
+2. Then, query (i0, j0) to get zero.
+
+3. Now, to find j0, query (i0, j) for various j, and see where the sum S is zero.
+
+Wait, but how do I find j0.
+
+Alternatively, perhaps I can make a query that gives me a point where S is zero.
+
+Because if j' is j0, then S is a[i0][j0]. So, if I can find a j' where S is zero, then the response is |j' - j0|.
+
+So, the idea is to find a j' where S is zero, and then compute j0 = j' - response.
+
+But how to find such a j'.
+
+Alternatively, perhaps I can make a query in a cell (i0, j) where j is j0, and then the response is zero. But that's the target.
+
+Wait, perhaps I'm going in circles.
+
+Let me try to outline a possible step-by-step approach.
+
+Step 1: Query (i0 + 1, j0). The response is 1 + a[i0][j0].
+
+So, a[i0][j0] = response - 1.
+
+So, now I know the value at (i0, j0).
+
+Step 2: Now, I need to find j0.
+
+So, I can query (i0, j) for various j. For each j, the response is |j - j0| + S.
+
+But S is the sum of row i0 from a to b, where a = min(j, j0), b = max(j, j0).
+
+So, S is the sum of row i0 from a to b.
+
+So, for j < j0: a = j, b = j0. So, S = sum of row i0 from j to j0.
+
+For j > j0: a = j0, b = j. So, S = sum of row i0 from j0 to j.
+
+So, the response is |j - j0| + S.
+
+Now, if I can find j such that S is zero, then the response is |j - j0|.
+
+So, to find j where S is zero.
+
+Wait, how?
+
+Because S is the sum of row i0 from a to b, and a and b are min and max of j and j0.
+
+So, if j is j0, then a = j0, b = j0, so S is sum of row i0 at j0, which is a[i0][j0].
+
+So, response is 0 + a[i0][j0] = a[i0][j0}.
+
+So, if I query (i0, j0), I get zero.
+
+So, that's the target.
+
+So, that's not helpful.
+
+Hmm.
+
+So, perhaps I need to find a j where S is zero.
+
+Wait, but S is the sum of row i0 from a to b.
+
+So, if I can find a j where a to b is the entire row i0, then S is the sum of the entire row i0.
+
+So, if I can find a j where a = j0, b = j0, then S is sum of row i0 at j0.
+
+Which is a[i0][j0}.
+
+So, response is 0 + a[i0][j0}.
+
+So, if a[i0][j0} is zero, then j0 is the index where a[i0][j0} is zero.
+
+Wait, but that's not necessarily true.
+
+Wait, for example, if a[i0][j0} is 1, then response is 1 + S, where S is the sum of row i0 from j0 to j0, which is a[i0][j0} =1. So, response is 2.
+
+Hmm.
+
+So, perhaps I can't find j0 in this way.
+
+Alternative idea: Once I have a[i0][j0}, I can query cells in the same row i0, and for each j, compute j' = j - response.
+
+Because response is |j' - j0| + S.
+
+But I don't know S.
+
+Wait, but S is the sum of row i0 from a to b, where a and b are min(j', j0) and max(j', j0).
+
+So, S is the sum of row i0 from a to b.
+
+So, for j', if j' >= j0: a = j0, b = j'. So, S is sum of row i0 from j0 to j'.
+
+If j' < j0: a = j', b = j0. So, S is sum of row i0 from j' to j0.
+
+So, the response is |j' - j0| + sum (from a to b).
+
+So, for j' >= j0: response = (j' - j0) + sum(j0 to j').
+
+For j' < j0: response = (j0 - j') + sum(j' to j0).
+
+So, perhaps I can find j' such that the sum from a to b is zero.
+
+Because then, response would be |j' - j0|.
+
+But how to find j' where sum(a to b) is zero.
+
+Wait, sum(a to b) is zero if the positive and negative elements cancel out.
+
+So, perhaps it's possible if the row i0 has equal numbers of 1s and -1s.
+
+But that's not necessarily the case.
+
+Hmm.
+
+Another idea: Make a query in a row i that is not i0. Then, the response is |i -i0| + |j - j0| + S.
+
+So, if I can find a cell (i, j) such that S is zero, then the response is |i - i0| + |j - j0|.
+
+So, if I can find a cell where S is zero, then I can get |i -i0| + |j -j0|.
+
+But how?
+
+Wait, S is the sum of row i0 from a to b, where a = min(j, j0), b = max(j, j0).
+
+So, if a == b, then S is row i0[j0], which is a[i0][j0}.
+
+So, if I can find j where a == b, then S is known.
+
+So, for j = j0, a = j0, b = j0. So, S is a[i0][j0}.
+
+So, the response is |i - i0| + 0 + a[i0][j0}.
+
+So, if I can find a cell (i, j0) where the response is |i -i0| + a[i0][j0}.
+
+So, the response is |i -i0| + a[i0][j0}.
+
+So, if I can find such a cell, then I can get |i -i0| = response - a[i0][j0}.
+
+So, that's interesting.
+
+So, the plan is:
+
+1. Query (i0 + 1, j0). Response is 1 + a[i0][j0}.
+
+So, a[i0][j0} = response - 1.
+
+2. Now, query (i0, j0). Response is 0.
+
+3. Now, to find i0, I can query other rows.
+
+Wait, but that's not efficient.
+
+Wait, but perhaps I can find i0 by querying a cell (i, j0), and see where the response is |i -i0| + a[i0][j0}.
+
+So, response = |i -i0| + a[i0][j0}.
+
+So, if I can find a cell (i, j0) where the response equals |i -i0| + a[i0][j0}, then that's true.
+
+So, for example, if I query (i, j0), the response is |i -i0| + a[i0][j0}.
+
+So, if I can find a cell (i, j0) where the response is |i -i0| + a[i0][j0}, but I don't know i0.
+
+Hmm.
+
+So, perhaps this approach is not directly useful.
+
+Alternative idea: Once I have a[i0][j0}, I can query cells (i, j) where j is j0, and see if the sum S is zero.
+
+Wait, no, because S is the sum of the row i0 from a to b.
+
+So, for j = j0, a is min(j0, j) = j0, b is max(j0, j) = j0. So, S is row i0[j0} = a[i0][j0}.
+
+So, response is |j0 - j0| + a[i0][j0} = 0 + a[i0][j0}.
+
+So, that's the same as the response when I query (i0, j0).
+
+So, that's not helpful.
+
+Hmm.
+
+So, perhaps I'm stuck.
+
+Let me think differently.
+
+The problem requires at most n + 225 queries. So, n is up to 5000, and 5000 + 225 is 5225, which is manageable.
+
+So, perhaps the approach is to make queries in such a way that the number of queries is bounded by n + 225.
+
+So, perhaps the idea is to make a query in a row that is far from i0, and then see if the sum S is zero.
+
+Wait, for example, if I query (i0 + 1, j0), then S is the sum of row i0 from j0 to j0, which is a[i0][j0}.
+
+So, response is 1 + a[i0][j0}.
+
+So, a[i0][j0} = response - 1.
+
+So, once I have a[i0][j0}, I can then query cells in the same row to find i0.
+
+Wait, so perhaps the steps are:
+
+1. Query (i0 + 1, j0). Response is 1 + a[i0][j0}.
+
+So, a[i0][j0} = response - 1.
+
+2. Now, query (i0, j0) to get zero.
+
+3. Now, I need to find i0.
+
+But how?
+
+Hmm.
+
+Wait, perhaps I can query a cell (i, j) where j is j0 + 1, and see if the sum S is such that the response is |i -i0| + S.
+
+But without knowing i0, it's difficult.
+
+Alternatively, perhaps the key is to find i0 by querying cells in the same row as i0, and see where the sum S is zero.
+
+Wait, but how.
+
+Wait, if I can find a cell (i, j) where j is j0, then the response is |i -i0| + S, where S is the sum of row i0 from min(j, j0) to max(j, j0}.
+
+So, for j = j0, a[i][j0} is 0 or 1 or -1.
+
+So, S is the sum of row i0 from min(j0, j0) to max(j0, j0), which is the sum of row i0 at j0.
+
+So, S is a[i0][j0}.
+
+So, response is |i -i0| + a[i0][j0}.
+
+So, if I can find a cell (i, j0) where the response is |i -i0| + a[i0][j0}.
+
+But that's the same as the response when I query (i, j0).
+
+So, perhaps that's not helpful.
+
+Wait, perhaps the key is to find a cell (i, j) such that the sum S is zero.
+
+Because then, the response is |i -i0| + 0 = |i -i0|.
+
+So, if I can find such a cell, then I can get |i -i0|.
+
+But how to find such a cell.
+
+Alternatively, perhaps I can find a cell (i, j) where the sum S is zero.
+
+Because then, response is |i -i0|.
+
+So, a[i0][j} is known, and j is j0.
+
+Wait, but I don't know j0.
+
+Hmm.
+
+This is getting complicated.
+
+Maybe I should think of a different approach.
+
+Another idea: Since the response is |i -i0| + |j -j0| + S, and S is the sum of a submatrix, perhaps the sum S can be zero if the submatrix is empty, but that's not possible.
+
+Wait, S is zero only if the sum of row i0 from a to b is zero.
+
+So, if I can find a cell (i, j) where the sum S is zero, then the response is |i -i0| + 0 = |i -i0|.
+
+So, if I can find such a cell, then I can get |i -i0|.
+
+So, the plan is:
+
+1. Query (i0 + 1, j0). Response is 1 + a[i0][j0}.
+
+So, a[i0][j0} = response - 1.
+
+2. Now, query (i0, j0) to get zero.
+
+3. Now, find a cell (i, j) where the sum S is zero.
+
+So, how?
+
+Hmm.
+
+So, to find such a cell, perhaps I can make a query in a row that is far from i

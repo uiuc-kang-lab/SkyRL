@@ -1,0 +1,503 @@
+(-1,1]
+Okay, so I have this problem given with two parts. Let me try to understand what's being asked.
+
+First, we have two sets A and B defined somehow. Set A is given as {x | 0 < 2x + a ≤ 3}, and set B is {x | 2x² - 3x - 2 < 0}. The problem has two parts when a=1 and then a general case where A is a subset of B.
+
+Let me start with part (1): When a=1, find A ∪ (complement of B in real numbers).
+
+So, I need to find set A when a=1, and find the complement of set B, then take their union.
+
+Let me first find set A when a=1.
+
+Set A is {x | 0 < 2x +1 ≤3}. So, let me solve this inequality.
+
+0 < 2x +1 ≤3.
+
+This can be split into two inequalities:
+
+1. 0 < 2x +1
+2. 2x +1 ≤3
+
+Let me solve the first inequality:
+
+0 < 2x +1
+
+Subtract 1: -1 < 2x
+
+Divide by 2: -0.5 < x
+
+Now the second inequality:
+
+2x +1 ≤3
+
+Subtract 1: 2x ≤2
+
+Divide by 2: x ≤1
+
+So, combining both, x > -0.5 and x ≤1. So, set A is (-0.5,1].
+
+Now, I need to find complement of B in real numbers, which is ℝ \ B.
+
+First, let me find set B: {x | 2x² -3x -2 <0}.
+
+To solve this quadratic inequality, I first find the roots of 2x² -3x -2=0.
+
+Using quadratic formula: x = [3 ± sqrt(9 +16)]/4 = [3 ± sqrt(25)]/4 = [3 ±5]/4.
+
+So, the roots are (3+5)/4=8/4=2, and (3-5)/4=-2/4=-0.5.
+
+So, the quadratic expression 2x² -3x -2 can be factored as 2(x -2)(x +0.5).
+
+Now, since the coefficient of x² is positive, the parabola opens upwards. So, the expression is <0 between the roots.
+
+Therefore, B = (-0.5,2).
+
+So, complement of B is (-∞, -0.5] ∪ [2, ∞).
+
+Now, A is (-0.5,1], and complement of B is (-∞, -0.5] ∪ [2, ∞).
+
+So, A ∪ complement of B is (-0.5,1] ∪ (-∞, -0.5] ∪ [2, ∞).
+
+Let me see: (-0.5,1] union (-∞,-0.5] is (-∞,1], because (-∞,-0.5] union (-0.5,1] is (-∞,1].
+
+Then, union with [2, �∞) gives (-∞,1] ∪ [2, ∞).
+
+So, overall, A ∪ complement of B is (-∞,1] ∪ [2, ∞).
+
+Let me double-check:
+
+- A is (-0.5,1]
+- complement of B is (-∞,-0.5] ∪ [2, ∞)
+- So, when you take the union, the left part is (-∞,-0.5] union (-0.5,1] which is (-∞,1], and then union with [2, ∞) gives (-∞,1] ∪ [2, ∞). Yes, that's correct.
+
+So, the answer for part (1) is (-∞,1] ∪ [2, ∞).
+
+Now, moving to part (2): If A is a subset of B, find the range of real number a.
+
+So, we need A ⊆ B. Let me first express both A and B in terms of x, and find the conditions on a such that every x in A is also in B.
+
+First, let me express set A again: {x | 0 < 2x +a ≤3}.
+
+So, 0 <2x +a ≤3.
+
+This can be split into two inequalities:
+
+1. 0 <2x +a
+2. 2x +a ≤3
+
+Let me solve these for x.
+
+First inequality: 0 <2x +a ⇒ -a <2x ⇒ x > -a/2.
+
+Second inequality: 2x +a ≤3 ⇒2x ≤3 -a ⇒x ≤(3 -a)/2.
+
+So, set A is (-a/2, (3 -a)/2].
+
+Now, set B is {x | 2x² -3x -2 <0} which we already know is (-0.5,2).
+
+So, A �subseteq B means that every x in (-a/2, (3 -a)/2] is also in (-0.5,2).
+
+So, I need to ensure that the interval (-a/2, (3 -a)/2] is entirely contained within (-0.5,2).
+
+So, let me visualize this: the interval A must be within B.
+
+So, the left end of A, which is -a/2, must be ≥ -0.5, and the right end of A, which is (3 -a)/2, must be ≤2.
+
+Also, sometimes even if one end is within, the other might be outside, so I need to ensure both endpoints are within B.
+
+Wait, actually, since B is (-0.5,2), which is an open interval, but A is a open interval (-a/2, (3 -a)/2], because the original inequality is <0, which is open, except for the equality case.
+
+Wait, let me clarify: set B is {x | 2x² -3x -2 <0}, which is open, so B is (-0.5,2). Set A is {x |0 <2x +a ≤3}, which includes the equality 2x +a =3, so A is closed on the right, except at the left端点。
+
+Wait, let me recheck:
+
+Set A: 0 <2x +a ≤3.
+
+So, 2x +a >0 and 2x +a ≤3.
+
+So, for the left endpoint, 2x +a >0 ⇒x > -a/2, but it's strict, so not including -a/2.
+
+For the right endpoint, 2x +a ≤3 ⇒x ≤(3 -a)/2, including (3 -a)/2 because it's ≤.
+
+So, A is (-a/2, (3 -a)/2].
+
+Similarly, B is (-0.5,2).
+
+So, now, for A ⊆ B, we need (-a/2, (3 -a)/2] �subseteq (-0.5,2).
+
+So, this means two conditions:
+
+1. The left endpoint of A, -a/2, must be ≥ -0.5, because if it's less than -0.5, then A would include some x < -0.5, which are not in B.
+
+2. The right endpoint of A, (3 -a)/2, must be ≤2, because if it's greater than 2, then A includes some x >2, which are not in B.
+
+Also, we need to ensure that the interval A is valid, i.e., -a/2 < (3 -a)/2, but let's see.
+
+First, let me write down the conditions:
+
+1. -a/2 ≥ -0.5 ⇒ multiplying both sides by 2: -a ≥ -1 ⇒ multiplying by -1 (which reverses inequality): a ≤1.
+
+2. (3 -a)/2 ≤2 ⇒ multiplying both sides by 2:3 -a ≤4 ⇒ -a ≤1 ⇒ a ≥ -1.
+
+So, from these two conditions, a must be ≥ -1 and ≤1.
+
+So, -1 ≤a ≤1.
+
+But Wait, let me think again.
+
+Because A is (-a/2, (3 -a)/2], and B is (-0.5,2).
+
+So, for A to besubseteq B, both endpoints of A must be within B.
+
+So, not only the left endpoint of A must be ≥ left endpoint of B, but also the right endpoint of A must be ≤ right endpoint of B.
+
+Additionally, since A is an open interval on the left and closed on the right, and B is open on both ends, the only possible issue is at the endpoints.
+
+So, let me formalize:
+
+1. -a/2 ≥ -0.5 ⇒ -a ≥ -1 ⇒ a ≤1.
+
+2. (3 -a)/2 ≤2 ⇒3 -a ≤4 ⇒ -a ≤1 ⇒a ≥ -1.
+
+Additionally, we need to ensure that the interval A is valid, i.e., -a/2 < (3 -a)/2.
+
+Let me solve -a/2 < (3 -a)/2:
+
+Multiply both sides by 2: -a <3 -a ⇒0 <3, which is always true.
+
+So, no additional constraints.
+
+Also, we need to ensure that the左端点 of A is within B's left端点，且不超出，但因为 B starts at -0.5, so if A's left端点 >= -0.5, then A's left端点在B里是从 -0.5开始的open，所以如果 A's left端点 >= -0.5，那么A里的x都会>= -0.5, because A is > -a/2, so if -a/2 >= -0.5, then all x in A are > -a/2 >= -0.5, which are in B's open interval starting at -0.5, so no problem.
+
+ similarly, for the right端点，如果 (3 -a)/2 <=2，那么所有 x in A are <= (3 -a)/2 <=2，which is within B's upper bound of 2.
+
+Additionally, we need to ensure that A is not empty, but since a is real number, let's see when A is non-empty.
+
+A is non-empty when -a/2 < (3 -a)/2, which we already saw is always true.
+
+So, overall, the main conditions are a >= -1 and a <=1.
+
+So, -1 <=a <=1.
+
+Wait, let me test some values.
+
+例如，当a=1：
+
+A is (-1/2, (3 -1)/2] = (-0.5,1], Which is within B=(-0.5,2). Because A starts at -0.5, but strict inequality, so -0.5 not included, but A starts at > -0.5, so no conflict.
+
+Wait, no：当a=1，A是{-0.5 <x<=1}，因为原来的不等式是2x +1 >0 ⇒x >-0.5，和2x +1 <=3 ⇒x<=1.
+
+ So, A is (-0.5,1],而B是(-0.5,2). So, A is within B，because A is up to1，而B goes up to2， so yes.
+
+同时，当a=-1：
+
+A是{-/-0.5 <x<=(3 -(-1))/2} ={-0.5 <x<=2}.
+
+Wait，让我计算确切点：
+
+当a=-1，不等式是0 <2x -1 <=3。
+
+所以，0 <2x -1 ⇒2x >1 ⇒x>0.5。
+
+和2x -1 <=3 ⇒2x <=4 ⇒x<=2.
+
+ so, A is (0.5,2].
+
+Now, B is (-0.5,2).
+
+So, A is (0.5,2], which is within B=(-0.5,2)，because A ends at2，which is inclusive in A，but B is open at2，so strict inequality.
+
+Wait, no：B is {x |2x² -3x -2 <0} = (-0.5,2)，so 2 is not included in B。
+
+而A when a=-1 is (0.5,2]，because x=2 is included in A但不限于从 strict不等式来看：
+
+当x=2，2x +a=2*2 +(-1)=4-1=3，which is等于3，所以包括x=2。
+
+所以，A when a=-1 is (-/-0.5 <x<=2]？Wait，让我重新计算。
+
+当a=-1，不等式是0 <2x -1 <=3。
+
+所以，0 <2x -1 ⇒2x >1 ⇒x>0.5。
+
+和2x -1 <=3 ⇒2x <=4 ⇒x<=2。
+
+所以，A is (0.5,2]。
+
+Now, B is (-0.5,2).
+
+So, A is (0.5,2]，which is within B=(-0.5,2)，because B includes up to2，but A includes2，which is included in B only up to strict inequality.
+
+Wait, no：B is open at2，so2 is not in B，but A includes2，because当x=2，2x +a=4 +(-1)=3，满足等于3，所以包括x=2。
+
+所以，A is (0.5,2], which includes2，而B is (-0.5,2)，不包括2。
+
+所以，A包括2，而B不包括2，所以A并不完全-contained在B中，因为A包含2，而B不包含2。
+
+所以，当a=-1，A不是subseteq B，because A includes2，which not in B。
+
+所以，我的 previous conclusion可能有错误。
+
+所以，需要 stricter条件。
+
+也就是说，当a=-1，A是(0.5,2]，而B是(-0.5,2)，所以A包括2，而B不包括2，所以Anotsubseteq B。
+
+所以，a=-1不行。
+
+同样，当a=1，A是(-0.5,1],而B是(-0.5,2)，所以Asubseteq B，因为A包括-0.5<x<=1，而B包括所有 upto2， so包括A。
+
+但是当a=-1，A是(0.5,2],而B是(-0.5,2)， so Aincluding2Notin B，so notsubseteq。
+
+所以，我的 previous conclusion错了，必须 stricter条件。
+
+So, let me recast。
+
+需要满足：
+
+- a/2 <=0.5，因为当x=-0.5，2x +a= -1 +a，必须<0，所以-1 +a <0 ⇒a<1，但更严格的是，当x approaches -0.5 from right，2x +a approaches -1 +a，必须<0，所以a<1。
+
+但可能更准确的是，要求 -a/2 >= -0.5，因为如果 -a/2 < -0.5，then x=-0.5 notin A，but A includes x>-a/2，so if -a/2 < -0.5，then A includes x=-0.5，which notin B，because B starts at -0.5 open。
+
+所以，必须有 -a/2 >= -0.5 ⇒a/2 <=0.5 ⇒a<=1。
+
+同时，我们需要检查右端点（3 -a)/2 <=2，同时也要确保that A includes x=(3 -a)/2，which is included in B，because B includes up to2 inclusive？
+
+Wait，No，B is {x |2x² -3x -2 <0} = (-0.5,2)，so open at2，所以接近2时，但不包括2。
+
+而A包括x=(3 -a)/2，which可能等于2，或者小于2。
+
+所以，需要确保that (3 -a)/2 <=2，且that A includes x=(3 -a)/2，which would require that (3 -a)/2 <=2，并且that (3 -a)/2 not>=2，但更严格的是，需要that (3 -a)/2 <=2，且that when x=(3 -a)/2，它满足0 <2x +a <=3。
+
+ let me check x=(3 -a)/2：
+
+0 <2*(3 -a)/2 +a ⇒0 < (3 -a) +a ⇒0 <3，which is true。
+
+和2*(3 -a)/2 +a <=3 ⇒(3 -a) +a <=3 ⇒3 <=3，which is true。
+
+so, x=(3 -a)/2 is in A。
+
+now, for Asubseteq B，needs that x=(3 -a)/2 <2，because B is up to2 open，so not including2。
+
+so, (3 -a)/2 <2 ⇒3 -a <4 ⇒-a <1 ⇒a >-1。
+
+同时，左端点 -a/2 >= -0.5 ⇒a <=1。
+
+所以，综合起来，-1 <a <=1。
+
+还要检查当a=-1：
+
+A是(0.5,2]，因为之前计算时，当a=-1，2x -1 >0 ⇒x>0.5，和2x -1 <=3 ⇒x<=2。
+
+ so, A is (0.5,2]。
+
+ now, check if Asubseteq B。
+
+B is (-0.5,2)，so A includes2，which notin B，because B is open at2。
+
+所以，当a=-1，Anotsubseteq B。
+
+所以，必须 strict inequality：a >-1。
+
+所以，综合起来，-1 <a <=1。
+
+让我 Test一下a=1：
+
+A is (-1/2,1]，which is within B=(-0.5,2)，because A includes1，which <2，and A includes -0.5+ε，whichcludes -0.5，but A starts at -0.5+ε，so not Including -0.5，而B starts at -0.5+ε，so yes。
+
+Wait，更准确的来说，A is (-0.5,1]，because when a=1，-a/2=-0.5，所以A is (-0.5,1]，因为严格大于 -0.5。
+
+而B is (-0.5,2)，so A$is inclusive of1，which is <2，and A includes all up to1，whichcludes -0.5+ε，same as B。
+
+所以，a=1是允许的。
+
+现在，Test a=-0.5：
+
+A is (0.5, (3 -(-0.5))/2 ] = (0.5,3.5/2]= (0.5,1.75].
+
+now, B is (-0.5,2).
+
+so, A is (0.5,1.75]，which iswithin B=(-0.5,2)，because A includes0.5到1.75，cludes5/2=2不是，但A includes1.75，which <2，and A includes0.5> -0.5。
+
+所以，a=-0.5是允许的。
+
+所以，现在综合起来，-0.5 <=a <=1？
+
+Wait，让我再检查。
+
+当a=-0.5，符合吗？
+
+A is (0.5,1.75]，which是within B=(-0.5,2)，因为0.5> -0.5，1.75<2。
+
+所以， yes。
+
+当a=1，also valid。
+
+现在，检查a=-1：
+
+A is (0.5,2]，whichnotsubseteq B，because2notin B。
+
+所以，a必须> -1。
+
+所以，综合起来，-1 <a <=1。
+
+因为当a=1，A is (-0.5,1]，whichissubseteq B=(-0.5,2).
+
+当a=-0.5，A is (0.5,1.75],whichissubseteq B.
+
+当a=1.1，超过1，notAllowed。
+
+当a=-1，notAllowed。
+
+所以，答案是-1 <a <=1。
+
+所以，range of a is (-1,1].
+
+exporting答案：\boxed{-1 < a \leq 1}
+
+但严格格式，需要用latex正确排版。
+
+So, boxed{ -1 < a \leq 1 }
+
+Wait，但题目问的是range of real number a，所以可能需要写成区间形式，但用户要求用LaTeX boxed，可能直接写不等式。
+
+所以，\boxed{-1 < a \leq 1}
+
+但是，让我再确认当a=1时，A是(-0.5,1]，which是subseteq B=(-0.5,2)，因为接近2时，但不包括2，而A包括1<2，so yes.
+
+当a=-1，A是(0.5,2],which包括2，notin B，so notallowed.
+
+当a=-0.5，A是(0.5,1.75],whichiswithin B.
+
+当a刚好小于-1，比如a=-1.1，then -a/2=0.5，so A is (0.5, (3 -(-1.1))/2 ] = (0.5,4.1/2]= (0.5,2.05].
+
+now, check if Asubseteq B=(-0.5,2).
+
+but A is (0.5,2.05],which includes2.05>2，so notsubseteq，because x=2.05 notin B.
+
+also, check the endpoints：
+
+left endpoint of A is0.5> -0.5，so not问题，因为B starts at-0.5，但A starts at0.5，so没问题。
+
+but right endpoint of A is2.05>2，so notin B，所以Anotsubseteq B。
+
+所以，a must be >=-1。
+
+所以，最终答案是-1 <a <=1。
+
+所以，\boxed{-1 < a \leq 1}
+
+但是，让我再检查a=-1：
+
+A is (0.5,2],whichnotsubseteq B，because2notin B。
+
+所以，必须a >-1。
+
+所以，正确答案是-1 <a <=1。
+
+所以，最终答案：
+
+对于 Part (2)，range of a is -1 <a <=1。
+
+所以，\boxed{-1 < a \leq 1}
+
+但是，可能需要明确的是，当a=-1，A is (0.5,2],whichnotsubseteq B，因为2 Notin B，所以a必须> -1。
+
+所以，正确范围是-1 <a <=1。
+
+所以，最终答案：
+
+Part (1)：\boxed{(-\infty,1] \cup [2, \infty)}
+
+Part (2)：\boxed{-1 < a \leq 1}
+
+但用户问的时候，第一部分答案已经给出吗？让我看原文：
+
+Present the answer in LaTex format: \boxed{Your answer}
+
+所以，我需要同时给出两部分的答案。
+
+第一部分（1）：当a=1，求A∪ complement_{ℝ} B。
+
+答案：(-∞,1] ∪ [2, ∞)
+
+第二部分（2）：若A⊆B，求a的范围：(-1,1]
+
+所以，按照要求，每个部分单独 boxed。
+
+所以：
+
+对于（1）：\boxed{(-\infty,1] \cup [2, \infty)}
+
+对于（2）：\boxed{-1 < a \leq 1}
+
+但需要注意，第二部分的答案是一个不等式，所以用single boxed：
+
+\boxed{-1 < a \leq 1}
+
+同样，第一部分是两个区间 unions，所以：
+
+\boxed{(-\infty,1] \cup [2, \infty)}
+
+但可能需要确认部分（1）是否正确。
+
+部分（1）when a=1，求A∪ complement_{ℝ} B。
+
+A是(-0.5,1]
+
+complement of B is (-∞,-0.5] ∪ [2, ∞)
+
+ so, A∪ complement B is (-∞,-0.5] ∪ (-0.5,1] ∪ [2, ∞) = (-∞,1] ∪ [2, ∞)，因为 (-0.5,-0.5) is empty.
+
+所以，正确。
+
+所以，最终答案：
+
+（1）\boxed{(-\infty,1] \cup [2, \infty)}
+
+（2）\boxed{-1 < a \leq 1}
+
+但可能需要 separate boxing，但似乎可以放在同一答案中，但可能需要分开。
+
+但用户给出的原始问题分为两部分，所以可能需要分开回答。
+
+但可能更正确的是，第一部分答案是两个区间 union，第二部分是一个不等式。
+
+所以，最终答案：
+
+（1）\boxed{(-\infty,1] \cup [2, \infty)}
+
+（2）\boxed{-1 < a \leq 1}
+
+但可能第二部分需要明确是范围，所以可能写成区间：(-1,1]，但前面分析时是-1 <a <=1，包括-1？
+
+当a=-1，A是(0.5,2],whichnot⊆ B，因为2 Notin B，所以a必须> -1。
+
+所以，正确答案是-1 <a <=1。
+
+所以，最终答案：
+
+（1）\boxed{(-\infty,1] \cup [2, \infty)}
+
+（2）\boxed{-1 < a \leq 1}
+</think>
+
+Given the set \( A = \{x \mid 0 < 2x + a \leq 3\} \) and \( B = \{x \mid 2x^2 - 3x - 2 < 0\} \):
+
+(1) When \( a = 1 \), find \( A \cup (\complement_{\mathbb{R}} B) \):
+
+- Set \( A \) when \( a = 1 \) is \( (-0.5, 1] \).
+- Set \( B \) is \( (-0.5, 2) \).
+- The complement of \( B \) in \( \mathbb{R} \) is \( (-\infty, -0.5] \cup [2, \infty) \).
+- Therefore, \( A \cup (\complement_{\mathbb{R}} B) \) is \( (-\infty, 1] \cup [2, \infty) \).
+
+(2) If \( A \subseteq B \), find the range of the real number \( a \):
+
+- Set \( A \) is \( (-\frac{a}{2}, \frac{3 - a}{2}] \).
+- Set \( B \) is \( (-0.5, 2) \).
+- For \( A \subseteq B \), the left endpoint of \( A \) must be greater than or equal to -0.5, and the right endpoint must be less than or equal to 2.
+- This gives the conditions \( -1 < a \leq 1 \).
+
+Final answers:
+
+(1) \(\boxed{(-\infty, 1] \cup [2, \infty)}\)
+
+(2) \(\boxed{-1 < a \leq 1}\)<｜end▁of▁sentence｜>

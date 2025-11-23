@@ -1,0 +1,863 @@
+Okay, so I've got this problem to solve, and I'm a bit stuck, but I'll try to work through it step by step. Let's see what the problem says.
+
+We are given three non-negative integers b, c, d. We need to find a non-negative integer a (which is in the range [0, 2^61]) such that (a | b) - (a & c) equals d. If such an a exists, we print it; otherwise, we print -1. If there are multiple solutions, any is acceptable.
+
+Hmm. So the main equation is (a | b) - (a & c) = d. I need to find a such that this holds. Let's think about the bitwise operations here.
+
+First, I should analyze the equation. Let's denote x = a | b and y = a & c. Then the equation becomes x - y = d.
+
+But how do x and y relate to a? Well, both x and y are derived from a, so perhaps we can find some constraints on a from this.
+
+Wait, let's think about the binary representations. Maybe we can look at each bit position and see what possible conditions a must satisfy.
+
+Another approach: since a is part of both OR and AND operations, perhaps we can find a way to express a in terms of b, c, and d.
+
+Let me try to manipulate the equation:
+
+We have (a | b) - (a & c) = d.
+
+Let me rearrange this:
+
+a | b = (a & c) + d.
+
+But I'm not sure if that helps. Let's think about the binary representations of these operations.
+
+Wait, perhaps we can consider the bits of a, b, and c. Let's think about each bit position and see what it implies.
+
+Let's think about each bit of a, b, c, and the result of a | b and a & c.
+
+Let me denote the bits as 0 to 60, since the maximum a is 2^61.
+
+For each bit position i:
+
+Let’s denote:
+
+- b_i: the i-th bit of b
+- c_i: the i-th bit of c
+- a_i: the i-th bit of a
+
+We need to find a such that for each bit, the equation holds when considering the bits.
+
+But wait, the equation is (a | b) - (a & c) = d. So for each bit, how do these operations affect the result?
+
+Hmm, this might get complicated because subtraction of two numbers is not straightforward in binary. So perhaps I should think of the entire numbers as binary and how their bits contribute to the difference.
+
+Alternatively, perhaps there's a way to model this equation in terms of a.
+
+Let's try to express (a | b) and (a & c) in terms of a, b, and c.
+
+We can note that:
+
+a | b is equal to (a | b) = b | a, because OR is commutative.
+
+Similarly, a & c is equal to c & a.
+
+So the equation is (b | a) - (c & a) = d.
+
+But how can we model this?
+
+Wait, perhaps I can express a as some function of b and c, and then see what d has to satisfy.
+
+Let me consider that a must be such that when you OR with b, and then subtract the AND with c, you get d.
+
+Let me think about the binary representation of each number.
+
+Suppose I consider each bit of a, b, c, and d, and see what constraints they must satisfy.
+
+Another idea: Let's consider the equation as (a | b) - (a & c) = d. Let me denote s = a | b and t = a & c. Then s - t = d.
+
+But how can I relate s and t to a?
+
+Wait, s = a | b, which includes all the bits set in a or b. Similarly, t = a & c, which includes all the bits set in a and c.
+
+But how do s and t relate? Since s is a | b, and t is a & c, perhaps the bits in t are a subset of a, which is a subset of s. Because a | b includes all bits of a and b, and a & c includes only the bits set in both a and c.
+
+So t is a subset of a. But s is the union of a and b.
+
+Hmm, maybe I can find a way to express a in terms of s and t, but I'm not sure.
+
+Wait, let's think about s and t:
+
+s = a | b
+
+t = a & c
+
+s - t = d
+
+So s = t + d.
+
+Wait, but s and t are both non-negative integers. So t can't be greater than s, which is t + d. So d must be >=0, which it is.
+
+But that's just a given.
+
+Alternatively, perhaps I can express a in terms of t and s.
+
+Wait, s = a | b.
+
+But t = a & c.
+
+So, a = t | (a \ c). Because a can be written as the part that's in c (t) plus the part that's not in c (a \ c). But a \ c is a subset of a, so a = t | (a \ c). But how does that relate to s?
+
+Since s is a | b, which is equal to b | a. So s = (t | (a \ c)) | b. Hmm, that seems complicated.
+
+Alternatively, perhaps I can find constraints on a based on the bits of b, c, and d.
+
+Let me think about the bits of a in isolation. For each bit position, what conditions must a satisfy?
+
+Let me consider each bit of a, b, c, and d. Let's denote the binary digits as follows:
+
+For each bit i:
+
+a_i: 0 or 1
+
+b_i: 0 or 1
+
+c_i: 0 or 1
+
+d_i: 0 or 1
+
+We need to find a such that for each bit, the equation holds when considering all bits, including higher bits.
+
+Wait, perhaps we can model this by considering each bit of a, and how it affects the equation.
+
+Let me break down the equation (a | b) - (a & c) = d into the individual bits.
+
+But subtraction is tricky because it's not a simple bitwise operation. So perhaps this approach won't work.
+
+Hmm. Maybe another approach is needed.
+
+Let me think about the possible values of (a | b) and (a & c). Since we have s - t = d, perhaps I can find a condition on a in terms of b and c.
+
+Wait, perhaps I can express s and t in terms of a, and then see if s - t = d.
+
+We have s = a | b.
+
+t = a & c.
+
+So, s - t = d.
+
+But how can I represent this equation in terms of a, b, c?
+
+Wait, perhaps I can find a way to write a in terms of s and t, but I'm not sure.
+
+Alternatively, perhaps I can represent a as a function of s and t.
+
+Wait, another idea: s is a | b, and t is a & c. So, t can be written as a & c.
+
+So, s = t + d.
+
+So, a | b = (a & c) + d.
+
+Hmm. Let's see if that helps.
+
+But how can I find a from this equation?
+
+Wait, perhaps I can think about this as a = (a | b) & (something). Or maybe I can find constraints on a based on the bits.
+
+Alternatively, perhaps I can find a condition on a that must be satisfied for the equation to hold, regardless of the value of d.
+
+Let me consider each bit of a. Let's see:
+
+For each bit position i:
+
+Let me denote:
+
+b_i is the ith bit of b.
+
+c_i is the ith bit of c.
+
+a_i is the ith bit of a.
+
+We can model the bits of s and t.
+
+s is a | b: for each bit i, s_i = 1 if a_i or b_i is 1.
+
+t is a & c: for each bit i, t_i = 1 only if a_i and c_i are both 1.
+
+Then, s - t = d.
+
+Hmm, but the subtraction is a problem because it's not a straightforward bitwise operation.
+
+Wait, but perhaps we can model this as s = t + d, and s is a | b, t is a & c.
+
+So, s = t + d.
+
+So, a | b = (a & c) + d.
+
+Hmm. But how to model this equation.
+
+Wait, perhaps we can consider each bit of a, b, c, and d, and see what constraints are imposed by the equation s = t + d.
+
+Let me think about this for each bit.
+
+I think it's getting complicated. Maybe let's think of the problem in terms of a must satisfy certain conditions.
+
+Another approach: Let's rearrange the equation s - t = d.
+
+s = t + d.
+
+But s is a | b, and t is a & c.
+
+So, a | b = (a & c) + d.
+
+Wait, but how to model this. Maybe we can consider that a | b is equal to (a & c) + d.
+
+So, for each bit position, the bits of s and t must satisfy that s's bits are the sum of t's bits and d's bits, considering possible carry-over.
+
+But that's perhaps not the case, since d is a single number, not a sum of bits.
+
+Hmm. Maybe this line of thought isn't helpful.
+
+Alternative idea: Let's express a in terms of b and c.
+
+Wait, perhaps the equation can be rewritten as:
+
+(a | b) - (a & c) = d.
+
+We can rearrange this as:
+
+a | b = (a & c) + d.
+
+But I'm not sure how to proceed from here.
+
+Wait, perhaps I can consider that a | b is equal to (a & c) + d.
+
+But a | b is a number that includes all the bits of a and b. a & c includes the bits where a and c both have 1s.
+
+So, the difference between a | b and a & c is d.
+
+Hmm, perhaps I can consider the bits of a, and for each bit, determine whether it must be 0 or 1.
+
+This seems like a promising approach. Let's try to model the constraints for each bit of a.
+
+Let me think about each bit position i.
+
+We can consider the possible values of a_i, b_i, c_i, and then see what possible d_i must be.
+
+But how does the subtraction affect the bits?
+
+Wait, maybe it's easier to think about the equation in terms of the binary digits and carry-over during subtraction.
+
+But that seems complicated because subtraction can cause borrow operations, which complicate the analysis.
+
+Alternatively, perhaps I can represent the equation as s = t + d, where s is a | b and t is a & c. Then, the problem becomes finding a such that a | b = a & c + d.
+
+Wait, but in binary, adding d to a & c may cause carries, which would affect the bits of a | b.
+
+Hmm, but how can I model this?
+
+Alternatively, perhaps I can write a | b - (a & c) = d.
+
+Let me think about the binary digits of a, b, c, d, and see what the equation implies for each bit.
+
+But I'm not sure how to proceed. Maybe I should think in terms of the bits of a and how they contribute to the equation.
+
+Wait, let's think about the bits of a in isolation. For a given bit i, what can a_i be, given the bits of b and c, and the desired d.
+
+Let me try to consider each bit i:
+
+We have a_i, b_i, c_i, and d_i.
+
+We need to find a_i such that when we compute (a | b) - (a & c) = d for the entire number, the ith bit of d is d_i.
+
+But since subtraction is involved, the bits might carry over, which complicates things.
+
+Wait, perhaps I can model the equation for each bit, considering the carry from the previous bit.
+
+But that might not be feasible due to the large size of the numbers (up to 1e18, so 60 bits maximum).
+
+Hmm, perhaps another approach is needed.
+
+Wait, maybe we can express a in terms of s and t.
+
+We have s = t + d, where s is a | b, and t is a & c.
+
+But a | b must be equal to (a & c) + d.
+
+Wait, but how can I find a that satisfies this?
+
+Alternatively, perhaps I can express a as (s) - t.
+
+Wait, but s is a | b, and t is a & c. So s is larger than or equal to both a and t.
+
+But if s = t + d, then a | b = t + d, which is larger than t.
+
+Hmm, but I'm not sure.
+
+Wait, let's think about the binary representations. Let me consider the bits of a, and how s and t are built from a.
+
+But I'm stuck. Maybe I should try to find some constraints on a based on the bits of b, c, and d.
+
+Let me think about each bit i:
+
+For each bit i, what must a_i be in order for the equation to hold?
+
+Let's think about the ith bit in s and t.
+
+s_i = (a_i | b_i) 
+
+t_i = (a_i & c_i)
+
+So, s = t + d.
+
+But since s is a | b, which is a number with bits set wherever a or b has them.
+
+But I don't know how subtraction affects the bits.
+
+Alternatively, perhaps I can write the equation in terms of s and t.
+
+But I'm not making progress.
+
+Wait, perhaps I should try to find a relation between s and t.
+
+Since s = t + d, adding d to t must give s.
+
+But s is a | b, and t is a & c.
+
+Hmm.
+
+Wait, perhaps I can model a as t | (s - t). But s is t + d, so a = t | (d). But that seems off because a is part of t.
+
+Alternatively, perhaps a can be written as t | (d), but that may not always hold because a could have more bits set.
+
+Wait, no. Because a is a subset of s, which is t + d.
+
+Hmm.
+
+Alternatively, perhaps the equation s = t + d can be rewritten in terms of a.
+
+Wait, since s = t + d, and s = a | b, and t = a & c, then a | b = (a & c) + d.
+
+But I don't see how to proceed from here.
+
+Another idea: Let's consider that (a | b) must have all the bits that are set in a or b, and (a & c) has all bits set in a and c.
+
+So, (a | b) - (a & c) = d implies that the difference between the bits of a | b and a & c is d.
+
+Let me think about each bit of d.
+
+Wait, perhaps for each bit i, the bits in the difference must satisfy certain conditions.
+
+But I'm not sure.
+
+Alternatively, maybe I can model the bits of a in terms of the bits of b, c, and d.
+
+Wait, perhaps I can consider that a must be such that a | b is a number that is equal to (a & c) + d.
+
+But I'm not making progress here.
+
+Wait, perhaps there's a pattern or a way to find a based on the given d, b, and c.
+
+Let me think about the possible values of a. Since a can be up to 2^61, perhaps I can model a as a function of b and c, and then check if d is satisfied.
+
+But how?
+
+Another idea: Let's consider that a | b is equal to (a & c) + d. So, a | b must be at least as large as (a & c), which is t, and d is s - t.
+
+So, a | b >= t, and a | b = t + d.
+
+But what does this tell me about a?
+
+Hmm, perhaps I can think about a | b in terms of a, since a | b is the bitwise OR of a and b.
+
+So, if I can find a such that a | b is equal to t + d, and t is a & c.
+
+So, a | b must be equal to t + d, which is equal to (a & c) + d.
+
+But I'm not sure.
+
+Wait, perhaps a | b = (a & c) + d.
+
+Which can be rewritten as a | b - (a & c) = d.
+
+But that's the original equation.
+
+Hmm.
+
+Wait, maybe I can express a | b as (a & c) | d.
+
+Wait, because (a & c) + d is the same as (a & c) | d, because addition is equivalent to the bitwise OR when there are no carries.
+
+Wait, no. Because addition could have carries, which would affect the bits.
+
+So, for example, 3 (11) + 1 (01) is 4 (100), which is 3 | 1 = 3, which is not equal to 4. So addition and OR are not the same.
+
+So that approach doesn't hold.
+
+Hmm.
+
+Alternative approach: Let's think about the bits of a, b, c, and d and see if we can find a pattern or constraints.
+
+Let me consider each bit position i:
+
+We need to find a_i such that when we compute a | b and a & c, their difference is d.
+
+Wait, perhaps I can model this for each bit and see what constraints it imposes.
+
+Let's think about the ith bit.
+
+Case 1: b_i = 1.
+
+In this case, a_i | b_i is 1, regardless of a_i. So the ith bit in s is 1.
+
+The ith bit in t is (a_i & c_i).
+
+So, for the ith bit:
+
+s_i - t_i = (1) - (a_i & c_i) = d_i.
+
+But wait, s_i is 1, and t_i is a_i & c_i.
+
+So, 1 - (a_i & c_i) = d_i.
+
+But d is given, so for each bit i, 1 - (a_i & c_i) must equal d_i.
+
+Hmm, this is a bit tricky because d_i can be 0 or 1.
+
+Wait, for each bit i:
+
+If d_i is 1, then 1 - (a_i & c_i) must be 1. Which implies that (a_i & c_i) is 0.
+
+So a_i can be 0 or 1, but a_i & c_i must be 0.
+
+Which means c_i must be 0, because if c_i is 1, then a_i must be 0.
+
+Wait, no. Because a_i & c_i is 0 if either a_i is 0 or c_i is 0.
+
+So, if d_i is 1, then (a_i & c_i) must be 0.
+
+Which implies that either a_i is 0, or c_i is 0.
+
+So, for a_i to be 1, c_i must be 0.
+
+So, in this case, if d_i is 1, then a_i can be 1 only if c_i is 0.
+
+Hmm.
+
+Case 2: b_i is 0.
+
+In this case, a_i | b_i is a_i.
+
+So, s_i is a_i.
+
+t_i is a_i & c_i.
+
+So, the ith bit of s - t is (a_i) - (a_i & c_i) = d_i.
+
+But subtraction is tricky because it can affect the carry-over, but in terms of the ith bit, perhaps we can model it as:
+
+s_i - t_i = d_i + 2k, where k is the carry-over from the lower bits.
+
+But this is getting complicated because it's a bit of a carry chain.
+
+Hmm.
+
+Alternatively, perhaps think about the entire number, considering that the difference is d. So, s = t + d.
+
+But how can I model this in binary, considering that the sum of t and d equals s.
+
+Wait, perhaps for each bit i, (t | d) must have the same bits as s.
+
+But I'm not sure.
+
+Wait, perhaps I can think of the bits of t + d as the bits of s.
+
+Wait, but t is a & c, and d is given. So t + d = s.
+
+But I'm not sure how to model this.
+
+Hmm. Maybe it's time to try to find an expression for a in terms of b, c, and d.
+
+Let me think: since s = t + d, and s is a | b, and t is a & c.
+
+So, a | b = (a & c) + d.
+
+Wait, but (a & c) is a subset of a, and d is another number. So, perhaps a can be written as (a | b) minus (a & c), but that's the original equation.
+
+Wait, perhaps I can model a as (a | b) - (a & c) = d.
+
+But that's the equation, so I'm stuck again.
+
+Another idea: Let's consider that a | b = (a & c) + d.
+
+But (a & c) can be written as a c's bits set where a has them set.
+
+Similarly, a | b is a | b.
+
+So, when you subtract (a & c) from a | b, you get d.
+
+But I'm not sure how to model this.
+
+Wait, perhaps I can represent a in terms of b and c, and then see what d must be.
+
+Wait, let's think about a being a function of b and c.
+
+Hmm.
+
+Alternatively, perhaps the problem can be simplified by considering that a must satisfy a | b - (a & c) = d.
+
+But I'm not making progress.
+
+Wait, perhaps it's time to look for a different approach. Maybe find a condition that a must satisfy for the equation to hold.
+
+Let me think about the equation again: (a | b) - (a & c) = d.
+
+Let me rewrite this as (a | b) = (a & c) + d.
+
+But (a | b) is a number that includes all the bits set in a or b.
+
+(a & c) is a number that includes all the bits set in a and c.
+
+So, the equation is saying that the combined bits of a and b, minus the bits that are common to a and c, equals d.
+
+Hmm.
+
+Wait, perhaps I can model a as a function of b, c, and d, but I'm not sure.
+
+Another idea: Let's think about the bits of a for each position.
+
+For each bit i, let's consider what a_i can be, given that the equation holds.
+
+Let me think about the bits of a, b, c, and d.
+
+We can write:
+
+s_i = (a_i | b_i) (bit i of s)
+
+t_i = (a_i & c_i) (bit i of t)
+
+Then, for each bit i:
+
+If s_i - t_i equals the ith bit of d, considering possible carry-over.
+
+But this seems too vague.
+
+Wait, perhaps for each bit i, the condition on the bits of a is as follows.
+
+Let me denote:
+
+d_i = (s_i - t_i) mod 2
+
+But this is not accurate because subtraction can cause a carry.
+
+Alternatively, perhaps I can model the entire process as a series of equations for each bit, considering carry-over.
+
+But this seems complicated.
+
+Hmm. Maybe I should look for some pattern or formula that can be derived.
+
+Wait, perhaps I can consider that s = t + d.
+
+So, s is t plus d. So, in binary, s is t shifted by some bits plus d.
+
+But again, not sure.
+
+Another idea: Let's consider that a can be written as (s - d), where s is a | b. But then, s must be equal to a | b, and t is a & c. So, s = (s - d) | b, which implies that (s - d) | b is equal to s - d. So, s - d must have all the bits of b set. Which implies that (s - d) | b == s - d.
+
+Which is always true, but I'm not sure if that helps.
+
+Alternatively, perhaps I can think of a as (s - d), but s is a | b.
+
+But s is a | b, which is equal to (a | b). So, perhaps a = (a | b) - d.
+
+But that's the original equation.
+
+Hmm.
+
+Wait, perhaps the key is to find a such that a | b - (a & c) = d.
+
+But how?
+
+Wait, let's think about the problem in terms of constraints on a.
+
+Each bit of a is constrained by whether it can be 0 or 1, given the bits of b, c, and d.
+
+Let me consider each bit i:
+
+We have s_i = a_i | b_i.
+
+t_i = a_i & c_i.
+
+We know that s_i - t_i must be equal to d_i, considering the carry from the previous bit.
+
+But perhaps it's easier to model the condition for each bit, assuming that the carry is 0 for now.
+
+Wait, perhaps I can model the equation for each bit, considering that the carry from the previous bit is considered.
+
+But that's getting into binary addition, which is a bit complex.
+
+Alternatively, perhaps I can model the equation as:
+
+s = t + d.
+
+But since s and t are bitwise ORs and ANDs, perhaps I can find a way to express a in terms of s and t, and then see if a is consistent.
+
+But I'm stuck again.
+
+Another idea: Let's think about the equation (a | b) - (a & c) = d.
+
+Let me rearrange it as (a | b) = (a & c) + d.
+
+But (a & c) is a subset of a, so (a | b) must be equal to a subset of a plus d.
+
+Hmm.
+
+Wait, perhaps I can model a as the OR of (a & c) and d.
+
+Because (a & c) is a subset of a, adding d to it could give a | b.
+
+But not sure.
+
+Wait, perhaps a can be written as a = (a & c) | d, but that's not necessarily the case.
+
+Alternatively, since (a | b) is equal to (a & c) + d, perhaps a | b is equal to the sum of a & c and d, which is a | b = (a & c) + d.
+
+But since addition is involved, perhaps this can be modeled as a | b = (a & c) | d, but that's not correct because addition and OR are different.
+
+Wait, for example, 3 (11) + 1 (01) is 4 (100), which is not equal to 3 | 1 = 3.
+
+So that approach is invalid.
+
+Hmm. I'm stuck. Maybe I should try to find a way to express a in terms of b, c, and d.
+
+Wait, perhaps I can express a as (s) - d, but s is a | b, which is (a | b). So, a = (a | b) - d.
+
+But then, a = s - d.
+
+But s is a | b, which is a | b = s.
+
+So, a = s - d.
+
+But s is a | b, so a is determined by s, which is a | b.
+
+But how to find a?
+
+Hmm, perhaps I can model a as (s - d), but then s is equal to a | b.
+
+Wait, substituting, s = (s - d) | b.
+
+Which implies that (s - d) | b == s.
+
+But s is a | b, which is the same as s. So, (s - d) | b must equal s.
+
+Which would mean that (s - d) has all the bits that are set in b.
+
+So, (s - d) must be a superset of b.
+
+Hmm, but that's only part of the condition.
+
+Wait, perhaps for each bit i, (s - d) must have all the bits set that are set in b.
+
+So, for each bit i, if b_i is 1, then (s - d)_i must be 1.
+
+But how can I model this?
+
+Alternatively, perhaps I can consider that s must be such that when you subtract d, you get a number that has all the bits set where b has them set.
+
+So, (s - d) must be a superset of b.
+
+But since s is a | b, which is a number that includes all bits set in a and b.
+
+Hmm.
+
+This is getting too tangled. Maybe I should try to find a way to compute a.
+
+Wait, perhaps the equation can be rewritten as (a | b) - (a & c) = d.
+
+But a | b is the same as (a | b), and (a & c) is the same as (a & c).
+
+So, perhaps I can model a as (d | a) - (a & c) = b. Wait, no, that's not helpful.
+
+Alternatively, perhaps I can represent a in terms of b and c, and then see what conditions d must satisfy.
+
+Wait, let's think about the bits of a.
+
+For each bit i:
+
+If b_i is 0, then a_i can be anything, except perhaps some constraints from d.
+
+If b_i is 1, then a_i must be 0, or something else.
+
+Wait, no. Because if b_i is 1, then a_i | b_i is 1, regardless of a_i. So, in that case, the ith bit of s is 1.
+
+But t_i is a_i & c_i. So, s_i - t_i = 1 - (a_i & c_i) must equal d_i.
+
+Which can be written as 1 - (a_i & c_i) = d_i.
+
+But since d_i is either 0 or 1, 1 - (a_i & c_i) is 0 or 1.
+
+So, when d_i is 1, 1 - (a_i & c_i) must be 1, which implies that (a_i & c_i) is 0.
+
+Which means that a_i must be 0, because if c_i is 0, a_i can be 1. If c_i is 1, a_i must be 0.
+
+So, for d_i = 1, a_i can be 1 only if c_i is 0.
+
+Wait, that's one condition.
+
+When d_i = 0, 1 - (a_i & c_i) must be 0. Which implies that (a_i & c_i) is 1. So a_i must be 1, and c_i must be 1.
+
+So, for d_i = 0, a_i must be 1 and c_i must be 1.
+
+But this is only when d_i is 0.
+
+Hmm, so for each bit i, a_i is determined based on d_i, b_i, c_i.
+
+Wait, that's a possible way. Let's see.
+
+So, for each bit i:
+
+If d_i is 1:
+
+   Then, 1 - (a_i & c_i) = 1 → a_i & c_i must be 0.
+
+   So, a_i can be 1 only if c_i is 0.
+
+If d_i is 0:
+
+   Then, 1 - (a_i & c_i) = 0 → a_i & c_i = 1.
+
+   So, a_i must be 1 and c_i must be 1.
+
+But wait, what if c_i is 0? Then, a_i must be 1 and c_i must be 1, which is impossible. So, no solution.
+
+So, for each bit i, if c_i is 0 and d_i is 0, then a_i cannot be 1, so a_i must be 0, but then a_i & c_i is 0, which would make 1 - 0 = 1, which is d_i =1. So, in that case, when c_i is 0 and d_i is 0, it's impossible.
+
+So, that's a condition for the solution to exist.
+
+So, in order for the equation to have a solution, the following must hold for all bits i where d_i is 0 and c_i is 0: a_i must be 1, but then (a_i & c_i) is 1, which would make 1 - 1 = 0, which is correct for d_i=0.
+
+Wait, no. Let me re-express this.
+
+For each bit i:
+
+If c_i is 0:
+
+   Then, (a_i & c_i) is 0.
+
+   So, d_i must be 1, because 1 - 0 = 1.
+
+   So, if d_i is 0 and c_i is 0, then it's impossible. So, in this case, the solution a cannot exist.
+
+So, the first condition to check is: for every bit i where d_i is 0 and c_i is 0, it's impossible to find a_i, so the answer is -1.
+
+Wait, that's a crucial point.
+
+So, the algorithm could proceed as follows:
+
+1. For each bit i, where d_i is 0 and c_i is 0:
+
+   If d_i is 0, then it's impossible, so return -1.
+
+   If d_i is 1, then it's possible, but we have to check if a_i can be 1 when c_i is 0.
+
+   Wait, no. Because if c_i is 0, then (a_i & c_i) is 0, so d_i must be 1.
+
+   So, for d_i=0 and c_i=0, it's impossible.
+
+2. For each bit i, the value of a_i is determined based on d_i, c_i, and b_i.
+
+   For each bit i:
+
+   a. If b_i is 1:
+
+      Then, a_i can be 0 or 1.
+
+      Because a_i | 1 is 1, regardless of a_i.
+
+      But we have to satisfy the equation.
+
+      So, let's model this.
+
+      We have s_i = 1 (since b_i is 1), t_i = a_i & c_i.
+
+      So, s_i - t_i = d_i.
+
+      So, 1 - (a_i & c_i) must be equal to d_i.
+
+      So, (a_i & c_i) = 1 - d_i.
+
+      Since 1 - d_i is 0 or 1, depending on d_i.
+
+      So, if d_i is 0, then (a_i & c_i) must be 1.
+
+      So, a_i must be 1 and c_i must be 1.
+
+      If d_i is 1, then (a_i & c_i) must be 0.
+
+      So, a_i can be 0 or 1, but c_i must be 0, or if c_i is 1, a_i must be 0.
+
+   b. If b_i is 0:
+
+      Then, a_i | b_i is a_i.
+
+      So, s_i = a_i.
+
+      t_i = a_i & c_i.
+
+      So, s_i - t_i = a_i - (a_i & c_i) = d_i.
+
+      But how can this be?
+
+      Because a_i - (a_i & c_i) = a_i | c_i.
+
+      Because a_i | c_i is a_i + c_i - (a_i & c_i), which is a_i | c_i.
+
+      So, a_i | c_i = d_i.
+
+      Wait, but wait: a_i | c_i is the same as (a_i | b_i) - t_i.
+
+      But s_i = a_i, t_i = a_i & c_i.
+
+      So, s_i - t_i = a_i - (a_i & c_i) = a_i | c_i.
+
+      So, a_i | c_i = d_i.
+
+      So, for this case, the equation becomes a_i | c_i = d_i.
+
+      So, a_i must satisfy a_i | c_i = d_i.
+
+      Now, let's think about possible a_i values.
+
+      Let's consider possible values for a_i:
+
+      If c_i is 0:
+
+         Then, a_i | 0 = a_i. So, a_i must be equal to d_i.
+
+      If c_i is 1:
+
+         Then, a_i | 1 is 1, so d_i must be 1.
+
+         And a_i can be 0 or 1, but since a_i | c_i is 1, it's okay.
+
+         So, a_i can be 0 or 1.
+
+         But since d_i is 1, this is acceptable.
+
+      So, for b_i = 0:
+
+         If c_i is 0:
+
+             a_i must be equal to d_i.
+
+         Else:
+
+             a_i can be 0 or 1.
+
+      But wait, no. Because a_i can be 0 or 1, but a_i | c_i is 1, which is correct regardless of a_i.
+
+      So, for c_i = 0, a_i must be d_i.
+
+      For c_i = 1, a_i can be 0 or 1.
+
+      So, the condition for the equation to hold when b_i is 0 is that a_i must be d_i if c_i is 0, else a_i can be 0 or 1.
+
+3. So, putting it all together:
+
+   For each bit i:
+
+      If b_i is 1:
+
+         If d_i is 0:
+
+             Then, a_i must be 1, but c_i must be 0. Because (a_i & c_i

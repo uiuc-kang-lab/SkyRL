@@ -1,0 +1,799 @@
+Okay, so I've got this problem to solve, and I'm trying to figure out how to approach it. Let me read through it carefully.
+
+The problem is about a grid with two rows and n columns. Each cell is either free (.) or blocked (x). We need to find the number of cells that, when blocked, result in exactly three connected regions in the grid.
+
+Hmm, connected regions are defined as sets where all cells are reachable from each other, and adding any other free cell would break this. So, each connected region is like a maximal set of connected cells.
+
+The input ensures that the grid has at most one connected region. So, initially, there's at most one such region. But when we block a cell, we might split it into one or more regions.
+
+Our task is, for each free cell, determine if blocking it will cause exactly three regions to form. The output is the count of such cells.
+
+Let me think about the examples. The first example has a grid where some cells are blocked. The regions are red, green, blue. So, when a cell is blocked, it might split a larger region into smaller ones. We need to find cells whose blocking leads to exactly three regions.
+
+So, the approach is probably to find all the cells that, when blocked, split the current connected region into exactly three parts.
+
+But how?
+
+Let me think about the possible scenarios when a cell is blocked. The original grid has 0 or 1 connected region. Let's consider the cases:
+
+Case 1: Original grid has 1 region.
+
+When a cell is blocked, it can split the region into 2 or more parts.
+
+We need to find when this splitting leads to exactly 3 regions.
+
+Wait, but the original region is connected. So, if we block a cell, the regions can be formed by the cell being a bridge between two parts of the region.
+
+So, perhaps the blocked cell is on the boundary between two separate parts of the original region.
+
+So, the process is:
+
+1. Find all the regions in the grid. Since the problem states that the grid has at most one connected region, the regions are determined by the connected cells.
+
+Wait, no. The initial problem says that the grid has at most one connected region, which is the initial state. So, for each test case, the initial state has 0 or 1 regions.
+
+Wait, no. The first paragraph says, "the given grid contains at most 1 connected region." So, the initial grid has 0 or 1 regions.
+
+Wait, no: connected regions are sets where all cells are reachable. So, if the grid has no free cells, then there are 0 regions. But in the problem statement, the grid is made of two rows and n columns, each cell is free or blocked. So, the initial grid may have a single connected region or zero.
+
+Wait, but the problem says that the grid contains at most one connected region. So, in the initial state, the number of regions is either 0 or 1.
+
+So, for each cell that's blocked, we need to see if this operation increases the number of regions to 3.
+
+Wait, no. Wait, when you block a cell, you're removing it from the grid. So, the connected regions change based on whether the cell was part of the original connected region.
+
+So, the process is: Initially, the grid has a certain number of connected regions (0 or 1). When we block a cell, it might disconnect parts of the region, possibly creating new regions.
+
+We need to find cells such that when they are blocked, the number of regions becomes exactly 3.
+
+But how?
+
+Let's think about the process of blocking a cell.
+
+When a cell is blocked, if it was a bridge between two regions, then the number of regions increases by 1. So, if the original grid had 0 regions, blocking a cell would create 1 region. If the original had 1 region, blocking a cell that is a bridge would split it into two, so the regions would go from 1 to 2. But we need it to become 3, which suggests that the cell being blocked is part of a more complex structure.
+
+Wait, perhaps the original region is a single connected component. So, when you block a cell that is on the boundary between two regions, it splits the region into two, but then perhaps that cell is also part of another region elsewhere.
+
+Wait, maybe the original region is a single connected component, and blocking a cell that is in the middle of a line of connected cells would split it into multiple regions.
+
+Alternatively, maybe the original region is a single line, like a snake, and blocking a cell in the middle would split it into two.
+
+Wait, perhaps the key is to find all cells that are on the boundary between regions, and that when removed, the number of regions increases by 2.
+
+So, for the initial 1 region, blocking a cell that is a bridge between two regions would turn it into two regions.
+
+But we need to reach three regions, so maybe the cell is part of a situation where it's blocking another region as well.
+
+Wait, perhaps the initial region is a single line, and blocking a cell in the middle would split it into two regions.
+
+But then, to get three regions, perhaps a cell in one of those regions is blocked, which then splits it into two more.
+
+Alternatively, perhaps the initial region is a single line, and there's another region connected to it. So, blocking a cell in the initial region could split it into two, and blocking a cell in the other region could split it into two, resulting in four regions. But that's not the case.
+
+Hmm, perhaps I'm approaching this the wrong way.
+
+Let me think of the initial state. The grid has at most 1 connected region. So, initial regions count is either 0 or 1.
+
+When we block a cell, we're removing it. So, the new regions are all the connected components that the grid would form after removing the blocked cell.
+
+We need to find how many cells, when blocked, result in exactly 3 regions.
+
+Wait, but in the initial state, the connected regions could be 0, 1, or more. But according to the problem statement, the input grid has at most 1 connected region. So, the initial regions count is 0 or 1.
+
+So, let's consider the two cases.
+
+Case 1: Initial regions count is 0. So, all cells are blocked. Then, when you block a cell, the grid has 0 regions. So, it's not helpful.
+
+Case 2: Initial regions count is 1. So, the grid has a single connected region. When you block a cell, you might split it into two or more regions.
+
+But to get exactly 3 regions, what's needed?
+
+Wait, maybe the initial region is a single connected component, and the blocked cell is a bridge between two separate regions. So, blocking it would split the original region into two.
+
+But then, the total regions would be 2. Wait, no: because the original region is one, blocking a bridge cell would split it into two, making the total regions 2. So that's not 3.
+
+Alternatively, perhaps the original region is a single line, and when you block a cell in the middle, it splits it into two. Then, if that cell was part of another region that's connected, perhaps the blocked cell can also split another region, but I'm not sure.
+
+Wait, maybe I'm overcomplicating this.
+
+Let me think of the problem in terms of the initial connected region.
+
+If the initial connected region is a single connected component, then when I block a cell, the number of regions can change based on whether that cell is a bridge between two parts of the original region.
+
+Wait, perhaps the initial connected region is a single snake-like structure, and when a cell is blocked, it splits the snake into two, and perhaps that split is part of a larger structure.
+
+But I'm not sure. Maybe I should approach this by first determining what it means for a cell to cause the total regions to become 3 when blocked.
+
+So, for a cell to be blocked, it must be in a position where the removal of that cell increases the number of regions by exactly 2.
+
+Because initially, the regions are 1. So, blocking a cell that was the only bridge would split the region into two, but that's 2 regions. But we need 3.
+
+Hmm, that doesn't make sense. So, perhaps the initial regions are 1, and blocking a cell that's part of a structure that, when removed, splits two regions into three.
+
+Wait, maybe the original region is a single connected component, and the blocked cell is such that it's the only cell connecting two separate regions. So, when you block it, you split the original region into two, and these two regions are each split into two, leading to three regions.
+
+Wait, but that would require the original region to be a chain that's connected through this cell. For example, imagine the original region is a straight line of three cells: A-B-C. If cell B is blocked, then A and C form two separate regions. But then, the regions would be A and C, but since they are not connected (assuming the other cells are blocked), the total regions would be two. Hmm, that doesn't help.
+
+Alternatively, perhaps the original region is a more complex structure, like a grid with two rows, and the blocked cell is in a position that, when removed, splits the region into three parts.
+
+Wait, but the grid is 2 rows, so the possible structures are limited.
+
+Another approach: For each cell that is a free cell, determine whether blocking it will cause exactly three regions.
+
+But how?
+
+We can model the grid as a graph, and for each cell (i,j), simulate the removal and count the number of connected components.
+
+But with n up to 2e5, this is not feasible directly.
+
+So, we need a smarter approach.
+
+Let me think about the problem in terms of the initial connected region.
+
+The original connected region is a single connected component. When we block a cell, the regions are the connected components of the remaining cells.
+
+We need the total regions to be exactly three.
+
+So, the original regions are 1. So, after blocking a cell, the regions can increase by 2, making it 3.
+
+But when is that possible?
+
+Wait, for example, the original region is a single line of cells. Blocking a cell in the middle of the line splits it into two regions. But if the line is longer, perhaps the blocked cell is part of a structure that allows for more splits.
+
+Alternatively, perhaps the original region is a 2x1 grid, and the blocked cell is the one in the middle.
+
+Wait, maybe the initial connected region is a 2x1 grid, and the blocked cell is the one in the middle. So, the two cells are connected through the blocked cell. Wait, no, if the two cells are adjacent, blocking one would leave the other as a single cell, but in this case, the original region is a single connected region.
+
+Wait, perhaps I'm getting stuck here. Let's think about the sample input.
+
+In the example, the grid is:
+
+Row 1: .x.x
+
+Row 2: x.x.
+
+So, the free cells are in positions (1,1), (1,3), (2,2), (2,4).
+
+Wait, no. Let me reconstruct the example:
+
+Wait, the example says after some lines, but I'm not sure. But according to the problem statement, the regions are R1, R2, R3. So, perhaps blocking a cell in R2 would split it into two parts.
+
+But perhaps I should think differently.
+
+Another approach: The initial connected region is a single connected component. So, when a cell is blocked, it's possible that this cell is part of a chain that, when removed, splits the region into two or three.
+
+But to get exactly three regions, perhaps the original region is a chain of three cells, and the blocked cell is the middle one.
+
+Wait, in that case, removing the middle cell would split the chain into two separate regions, each with one cell. So, the regions would be two, not three.
+
+Hmm.
+
+Wait, maybe the initial region is a more complex structure, like a 2x2 square. Blocking a cell in the center would split it into four regions, but that's not the case.
+
+Alternatively, perhaps the initial region is a single line, and the blocked cell is in the middle, splitting it into two, but that's two regions.
+
+Hmm.
+
+Wait, perhaps the initial region is a single cell. Then, blocking it would split it into zero regions, which is not helpful.
+
+Alternatively, perhaps the initial region is a single cell connected to another cell. So, the original region is two cells connected. Blocking one of them would leave the other as a single cell, so the regions count as 1. But that's not helpful.
+
+Wait, perhaps the initial region is a single cell. Then, blocking it would result in zero regions, which is not what we want.
+
+Hmm.
+
+Alternatively, maybe the initial region is a 2x1 grid. For example, two cells in the same column, but different rows. So, they are connected. Blocking one of them would leave the other as a single cell, regions count 1. If you then block the other, but that's not the case here.
+
+Wait, perhaps I'm approaching this wrong.
+
+Let me think about the problem differently.
+
+We need to find the number of cells that, when blocked, cause the number of regions to become exactly 3.
+
+Each such cell is a free cell.
+
+So, the process is:
+
+For each free cell (i,j), when blocked, the number of connected regions in the grid is 3.
+
+So, the idea is to find all such cells.
+
+Now, the initial grid has 0 or 1 regions.
+
+Let me think about the initial state:
+
+If initial regions are 0, then all cells are blocked. So, no cells can satisfy the condition.
+
+If initial regions are 1, then after blocking a cell, the regions can change as follows:
+
+- If the cell is in a bridge between two regions: blocking it would split the region into two, so regions count becomes 2.
+
+But we need 3. So, perhaps the cell is part of a structure that, when blocked, splits the region into three parts.
+
+Wait, perhaps the initial region is a single cell. Blocking that cell would split into zero regions, which is not helpful.
+
+Alternatively, perhaps the initial region is a line of cells, and blocking a certain cell in the middle splits it into three regions.
+
+Wait, for example, a line of four cells:
+
+A B C D.
+
+If you block B, then regions are A, C, D. So, three regions. So, blocking B would cause exactly three regions.
+
+So, in this case, cell B is a cell that, when blocked, splits the line into three regions.
+
+But in this case, the initial region is a line of four cells. So, when you block B, you split into three.
+
+So, perhaps the initial connected region is a straight line, and the blocked cell is in the middle, splitting it into three.
+
+So, to find all such cells, we need to find for each cell in the initial region, whether it is a bridge between two regions, and when removed, the regions increase by two.
+
+Wait, perhaps the initial region is a straight line, and the blocked cell is in the middle of that line.
+
+So, for each such cell, it's the only bridge between two regions. So, when it's blocked, the two regions become three.
+
+But the initial regions are 1, so adding this would make it 3.
+
+So, for such a scenario, the cell would be a candidate.
+
+But how to find such cells.
+
+Now, the grid is 2 rows, n columns.
+
+So, the initial region is a single connected region, which could be a straight line.
+
+So, perhaps the initial region is a straight line of m cells.
+
+Then, for each cell in the middle of this line, when blocked, it splits into two regions. So, the initial 1 region becomes two, but that's not enough to reach three.
+
+Wait, perhaps the initial region is a line, and the blocked cell is in a position that, when removed, splits the line into three separate regions.
+
+But that seems unlikely.
+
+Alternatively, perhaps the initial region is a 2x1 grid, meaning two adjacent cells. Blocking one of them would leave one cell as a separate region, so regions count is 1. Not helpful.
+
+Hmm.
+
+Wait, perhaps the initial region is a single cell, but that's impossible because the problem states that the grid has at most 1 region. So, perhaps the initial region is a single cell.
+
+Wait, no. If the initial grid has only one region, it's because all free cells are connected.
+
+So, for example, in a grid where all free cells are connected in a single line, then the initial regions are 1.
+
+So, when you block a cell in the middle of the line, the line is split into two regions. So, the regions count is 2.
+
+But we need regions count to be 3 after blocking.
+
+So, perhaps the initial region is more complex.
+
+Let me think of another example.
+
+Suppose the initial region is a 2x2 square. So, four cells arranged in a square.
+
+Each cell is connected to its adjacent cells.
+
+If I block the center cell, perhaps the regions split into four.
+
+But that's not helpful.
+
+Alternatively, if the initial region is a 2x1 grid (two cells in a line), then blocking the middle cell (if any) doesn't apply.
+
+Wait, no, in a 2x1 grid, there's only one cell in the middle, so blocking it would split the line into one cell and nothing else, but that's not correct.
+
+Hmm, perhaps I'm stuck and need to find another approach.
+
+Let me think about the problem in terms of the initial region's structure.
+
+The initial region is connected. So, it's either a single cell, or a line, or a tree, but in this case, the initial region is a single connected component.
+
+So, when a cell is blocked, the regions can change in various ways.
+
+We need to find the cells that, when blocked, cause the regions to reach exactly three.
+
+Let me think about the possible ways this can happen.
+
+Case 1: The initial region is a single cell. Then, blocking it would result in zero regions. Not helpful.
+
+Case 2: The initial region is a line of cells. So, for example, a 2x1 grid.
+
+In this case, blocking the middle cell splits the line into two. So, regions go from 1 to 2.
+
+But we need 3. So, this case is not helpful.
+
+Case 3: The initial region is a more complex structure, like a 2x2 grid. So, four cells arranged in a square.
+
+If the initial region is a square, then blocking a cell in the center (but that's not possible as the grid is 2x2) would leave the four cells connected.
+
+Wait, in a 2x2 grid, all four cells are connected. So, initial regions are 1.
+
+If I block one cell, the remaining three are connected, so regions count is 1. So, not helpful.
+
+Hmm.
+
+Alternatively, perhaps the initial region is a 2x2 square. When blocked, the regions become three.
+
+But I'm not sure.
+
+Wait, perhaps I'm approaching this wrong. Let's think of the problem in terms of the initial connected region.
+
+Suppose the initial connected region is a single line of m cells. When a cell is blocked, the line is split into two regions.
+
+In this case, the regions count increases by 1, going from 1 to 2.
+
+But we need regions count to be 3.
+
+So, perhaps the initial region is a more complex structure, like a 2x2 square.
+
+Wait, but earlier analysis shows that blocking a cell in a 2x2 square doesn't help.
+
+Alternatively, perhaps the initial region is a 3-cell line. Blocking the middle cell splits it into two regions of 1 and 1, so total regions 2. Not enough.
+
+So, perhaps the initial region is a more complex structure, like a 2x3 grid.
+
+Wait, perhaps the initial region is a grid that's two rows, three columns, forming a 2x3 rectangle, which is connected.
+
+So, the initial regions are 1.
+
+Now, when a particular cell is blocked, the grid may split into two or three regions.
+
+In this case, let's see: for example, blocking the middle cell (the third column in the middle row) would split the region into three.
+
+Wait, perhaps.
+
+But to compute that, it's hard.
+
+Alternatively, perhaps the initial region is a 2x2 grid, and the blocked cell is such that it's the only bridge between two regions.
+
+Wait, but in a 2x2 grid, all cells are connected.
+
+Hmm.
+
+Alternatively, perhaps the initial region is a 2x1 grid, but that's a single cell. Then, blocking it causes regions to be 0.
+
+Hmm.
+
+Alternatively, perhaps the initial region is a single cell, and the blocked cell is the only cell in the grid. But that's not possible because the grid has at least one cell.
+
+Wait, perhaps the initial regions are 1, and blocking a cell splits it into two regions. But regions count would then be 2, which is not 3.
+
+So, perhaps I'm missing something.
+
+Wait, perhaps the initial region is a single cell, and the blocked cell is such that it's part of a larger structure that, when removed, splits the region into three parts.
+
+But that's impossible because the region is one cell.
+
+Wait, perhaps I should think about the problem in a different way.
+
+We need the number of regions to be 3. So, the initial regions are 1, and after blocking, it must be 3.
+
+So, the change in regions is 2.
+
+Which implies that the cell being blocked was a bridge between two regions, and blocking it increases the regions by 2.
+
+So, perhaps the initial region is a single line of three cells, and the blocked cell is the middle one.
+
+Wait, let's see:
+
+Original connected region is:
+
+A B C
+
+So, all three are connected.
+
+If we block B, then the regions are A and C, each as single-cell regions. So, total regions is 2.
+
+Not 3.
+
+Hmm.
+
+Another example: initial region is a line of four cells.
+
+A B C D.
+
+If we block B, then regions are A, C, D. So, three regions.
+
+So, in this case, the initial region is 1, and the blocked cell (B) is a bridge between regions on the left and right. So, after blocking, the regions count increases by 2 (from 1 to 3).
+
+So, for this scenario, the cell B is a candidate.
+
+So, the problem reduces to finding all such cells in the original connected region that, when blocked, split it into three regions.
+
+So, how to find such cells?
+
+The key is to identify cells that, when blocked, split the connected region into exactly three.
+
+So, the original connected region may be a line of cells. So, for each cell in the middle of the line, blocking it would split the line into two regions, leading to regions count 2. So, not helpful.
+
+Wait, but in the previous example, blocking the middle cell of a four-cell line split the region into three parts, leading to regions count 3.
+
+So, perhaps the initial connected region is a line of four cells, and the blocked cell is the middle one, which is the third cell.
+
+Wait, in a four-cell line, cells are 1,2,3,4.
+
+If we block cell 2, then the regions are 1, 3,4. So, three regions.
+
+Yes.
+
+So, in this case, the cell is the middle of the line.
+
+So, the regions count increases by 2 (from 1 to 3).
+
+So, the key is to find such cells in the initial connected region.
+
+So, the approach is:
+
+1. Find the initial connected region. Since the grid has at most 1 region, this is all the free cells that are connected.
+
+2. For each cell in the initial region, determine whether blocking it would split the region into exactly three parts.
+
+3. Each such cell contributes to the count.
+
+But how?
+
+Let me think about the initial region.
+
+The initial region is a connected set of free cells. So, for each cell in this set, check if it is a bridge between two or more regions.
+
+But since the initial region is connected, the only way a cell is a bridge is if it's the only connection between two or more parts of the region.
+
+Wait, but in the initial region, if a cell is a bridge, then removing it would split the region into two parts. So, the regions count would increase by 1.
+
+But we need the regions count to increase by 2.
+
+So, perhaps the initial region is a structure that, when a certain cell is removed, splits it into three parts.
+
+But how?
+
+Wait, perhaps the initial region is a 2x2 square, and the blocked cell is the center. But that's not possible because in a 2x2 grid, all four cells are connected.
+
+Hmm.
+
+Alternatively, perhaps the initial region is a 2x3 grid.
+
+Wait, maybe I'm overcomplicating.
+
+Let me think of the problem in terms of the initial connected region's structure.
+
+Assuming the initial region is a straight line of m cells.
+
+For a cell in the middle of the line, blocking it splits the line into two, leading to regions count 2.
+
+So, not helpful.
+
+But for a line of four cells, blocking the second cell (the third in the line) splits the line into three parts, leading to regions count 3.
+
+So, that's the case we need.
+
+So, perhaps the initial region is a straight line of four cells. Then, the middle cell is the third cell.
+
+Wait, but in a four-cell line, the middle is between cells 2 and 3.
+
+Wait, let's number them 1,2,3,4.
+
+If we block cell 2, then the regions are 1, 3,4. So, three regions.
+
+So, cell 2 is a candidate.
+
+But in this case, the initial regions count is 1. So, after blocking, it's 3. So, we have 2 regions added.
+
+But according to the problem, we need to have exactly 3 regions.
+
+So, perhaps the initial region is a line of 4 cells, and the blocked cell is the second and third cell.
+
+But I'm not sure.
+
+Alternatively, perhaps the initial region is a 2x2 grid, and the blocked cell is the top-left cell.
+
+But in that case, blocking it would leave the other three cells connected, leading to regions count 1.
+
+So, not helpful.
+
+Hmm.
+
+I think I'm stuck on how to model the problem. Let's try a different approach.
+
+Let me think about the problem in terms of the initial connected region.
+
+The initial connected region is a set of cells connected via their sides (no diagonals).
+
+We need to find for each cell in this region, whether the removal of the cell would split the region into exactly three connected components.
+
+So, the regions count after removal is 3.
+
+But how?
+
+Let me think about the initial region as a graph.
+
+Each cell is a node. Edges exist between adjacent cells.
+
+When a node is removed, the graph may split into multiple connected components.
+
+We need to count the number of nodes whose removal results in exactly three connected components.
+
+So, the task becomes: find all nodes in the initial connected region with degree such that their removal splits the graph into exactly three components.
+
+So, for each node u in the initial region, if the number of connected components after removing u is 3, then count it.
+
+But how to compute that.
+
+But for n up to 2e5, and t up to 1e4, this approach won't be feasible with standard methods.
+
+So, we need a smarter way.
+
+Alternative approach:
+
+The initial connected region is a single connected component, which is a grid. So, perhaps the structure is a tree, but with 2 rows.
+
+Wait, but a grid is not a tree, it's a planar graph.
+
+But perhaps, for the initial structure, the connected component is a tree, but that's not necessarily true.
+
+So, perhaps I should think about the initial connected region as a grid, and find for each cell whether it's a "bridge" in some way.
+
+Wait, but for a grid, the concept is more complex.
+
+Wait, perhaps the initial connected region is a single row of cells. So, for example, a 2x1 grid. But that's a single cell, which is connected.
+
+But in that case, blocking it leaves zero regions.
+
+Hmm.
+
+Alternatively, perhaps the initial connected region is a single cell, which is connected only to other cells, but that's not possible since all are free.
+
+Wait, no. All cells are free or blocked. So, the initial connected region is the set of free cells that are connected via their sides.
+
+So, perhaps the initial connected region is a single cell, or a line, or a 2x1 grid, etc.
+
+So, perhaps the problem can be approached by considering the initial connected region as a graph, and for each node, compute if its removal splits the graph into exactly three connected components.
+
+But again, for large n, this is not feasible.
+
+Hmm.
+
+Wait, perhaps the initial connected region is a single cell, but that's not possible as the initial regions count is 1, meaning all are connected.
+
+So, perhaps the initial connected region is a single line of cells.
+
+In a single line of m cells, the connected regions are a straight line.
+
+So, for each cell in the middle of the line, blocking it will split the line into two regions. So, regions count increases by 1.
+
+But we need regions count to be 3, so that suggests that the initial line is longer.
+
+Wait, perhaps the initial line is a chain where the blocked cell is one of the internal cells, but then the line is split into three parts.
+
+Wait, perhaps the line is three cells long.
+
+So, A B C.
+
+If we block B, then the regions are A and C, each as single cells. So, regions count is 2.
+
+Not helpful.
+
+But if the line is four cells, A B C D.
+
+If we block B, the regions are A, C, D. So, three regions.
+
+So, in this case, the initial regions count is 1, and after blocking, it's 3.
+
+So, the middle cell is the third cell.
+
+So, perhaps the initial connected region is a straight line of four cells, and the blocked cell is the third cell.
+
+In this case, the regions count becomes 3.
+
+So, the cell is the middle one.
+
+So, the approach is to find all cells in the initial connected region that are the middle of a straight line of four cells.
+
+But how to generalize this.
+
+So, the problem is to find, in the initial connected region, all cells that are in a straight line, and when blocked, split the line into three regions.
+
+So, perhaps the initial connected region is a straight line of m cells. Then, the blocked cell is the (m-1)/2-th cell.
+
+Wait, for m=4, the third cell is the middle.
+
+So, perhaps the initial connected region is a straight line, and for each cell in the line, if it's the middle of a straight line of four cells, then it's a candidate.
+
+But how to find such cells.
+
+Alternatively, perhaps the initial connected region is a straight line, and for each cell in the line, if it's a bridge between two regions, then blocking it would split the region into three.
+
+So, the problem reduces to, for each cell in the initial connected region, determine if it's a bridge between two regions, and when blocked, it splits the region into three.
+
+But again, how to compute this.
+
+Another idea: the initial connected region is a straight line. So, the blocked cell must be the middle cell. Then, it's a bridge between two regions, and blocking it would split the region into three regions.
+
+So, perhaps the initial connected region must be a straight line of four cells, and the blocked cell is the third one.
+
+So, for each such cell, count it.
+
+But how to find such cases in the grid.
+
+Let me think about the problem in terms of the grid structure.
+
+The initial connected region is a single connected component.
+
+So, the grid may be a single straight line of cells, or a more complex structure.
+
+So, perhaps the initial connected region is a straight line of four cells, and the blocked cell is the third one.
+
+So, for each such cell, it's a candidate.
+
+So, the problem is to find all cells in the initial connected region that are in the middle of a straight four-cell line.
+
+So, for each such cell, add it to the count.
+
+But how to find that.
+
+So, the plan is:
+
+1. For each test case, find all the free cells that are part of the initial connected region.
+
+2. For each such cell, check whether it's part of a straight line of four cells, and that the cell is the third in the line.
+
+3. For each such cell, count it.
+
+But how to do this efficiently.
+
+Hmm.
+
+So, the initial connected region is a single connected component.
+
+To find all cells in this region that are part of a straight line of four.
+
+But how?
+
+Perhaps, for each cell, we can find the maximum extent to the left and right, and top and bottom, and see if it's part of a straight line.
+
+Wait, perhaps we can model the initial connected region as a graph, and for each cell, determine if it's the middle of a straight line of four.
+
+But for n up to 2e5, this needs to be done efficiently.
+
+Alternatively, perhaps the initial connected region is a straight line, and the blocked cell is the middle one.
+
+So, the number of such cells is 1, if the initial region is a straight line of four.
+
+But in other cases, perhaps it's possible to have multiple such cells.
+
+So, the algorithm could be:
+
+For each test case:
+
+1. Find all the free cells that are part of the initial connected region.
+
+2. For each such cell, determine if it's the middle cell of a straight line of four cells.
+
+3. Count the number of such cells.
+
+But how?
+
+Alternatively, perhaps the initial connected region is a single cell, or a line of two cells. In those cases, the initial regions count is 1.
+
+So, when you block a cell, the regions count remains 1.
+
+Which is not the desired outcome.
+
+So, perhaps the initial connected region must be a straight line of four cells.
+
+In that case, the number of such cells is the number of middle cells in all straight lines of four cells in the initial region.
+
+So, for each straight line of four cells, the middle two cells are the third and fourth cells, and each is a candidate.
+
+Wait, no. Wait, for a line of four cells, the middle is the second and third cells.
+
+Wait, no. A line of four cells is A B C D.
+
+The middle is B and C.
+
+So, blocking B would split it into A and CD.
+
+Which is two regions.
+
+So, not helpful.
+
+But blocking C would split it into AB and D. So, two regions.
+
+Hmm.
+
+Wait, perhaps I'm getting stuck. Maybe I should look for a different approach.
+
+Another idea: the initial connected region is a straight line of four cells. Then, any cell in the line that is the third in the line is a candidate.
+
+So, the number of candidates is the number of cells that are the middle of a straight line of four.
+
+So, for the initial connected region being a straight line of four, the count is 1 per such line.
+
+But how to find all such lines in the grid.
+
+So, perhaps the initial connected region is a straight line of four, and the blocks are the middle cells.
+
+So, the approach is:
+
+For each test case:
+
+- Find all the free cells that are part of the initial connected region.
+
+- For each such cell, determine if it's the middle of a straight line of four cells.
+
+- The count is the number of such cells.
+
+But how to do this.
+
+So, perhaps the initial connected region is a straight line of four.
+
+So, the initial regions count is 1.
+
+When a cell is blocked, the regions count increases by 2.
+
+So, the regions count becomes 3.
+
+So, the cell must be the third cell in the line.
+
+So, each such cell is a candidate.
+
+So, the problem reduces to finding, in the initial connected region, how many cells are the third in a straight line of four.
+
+So, the steps are:
+
+1. Find the initial connected region.
+
+2. For each cell in the initial region, check if it is the third cell in any straight line of four cells.
+
+3. Count all such cells.
+
+But how to implement this.
+
+Hmm.
+
+Another approach: For each cell, find all the possible straight lines that pass through it and have four cells.
+
+But this could be time-consuming.
+
+Alternatively, perhaps the initial connected region is a straight line, and the blocked cell is the middle of four.
+
+So, the initial connected region is a straight line of four. Then, the count is 2, as each of the two middle cells is a candidate.
+
+Wait, no.
+
+Wait, in a straight line of four cells, the two middle cells are B and C (assuming A B C D).
+
+Blocking B would split into A and C D.
+
+Blocking C would split into A B and D.
+
+So, both B and C are candidates.
+
+So, for a straight line of four, there are two such cells.
+
+So, the count is 2.
+
+So, the problem is to find all such cells in the initial connected region.
+
+So, the steps are:
+
+For each test case:
+
+1. Find the initial connected region.
+
+2. For each cell in the initial region, find if it's part of a straight line of four.
+
+3. The number of such cells is the count.
+
+So, how to implement this.
+
+So, the plan is:
+
+- For each test case:
+
+   a. Read the grid.
+
+   b. Find all the free cells (.) and mark them as part of the initial connected region.
+
+   c. For each cell in the initial region, determine if it is part of a straight line of four cells.
+
+   d. Count the number of such cells.
+
+So, the

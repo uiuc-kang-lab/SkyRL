@@ -1,0 +1,44 @@
+<｜begin▁of▁sentence｜><｜User｜>
+This is the hard version of the problem. In this version, you must use the minimum number of queries possible. You can make hacks only if both versions of the problem are solved.
+
+This is an interactive problem.
+
+It is a tradition in Mexico's national IOI trainings to play the game "Asesino", which is similar to "Among Us" or "Mafia".
+
+Today, $n$ players, numbered from $1$ to $n$, will play "Asesino" with the following three roles:
+
+  * Knight: a Knight is someone who always tells the truth.    * Knave: a Knave is someone who always lies.    * Impostor: an Impostor is someone everybody thinks is a Knight, but is secretly a Knave. 
+
+Each player will be assigned a role in the game. There will be exactly one Impostor but there can be any (possible zero) number of Knights and Knaves.
+
+As the game moderator, you have accidentally forgotten the roles of everyone, but you need to determine the player who is the Impostor.
+
+To determine the Impostor, you will ask some questions. In each question, you will pick two players $i$ and $j$ ($1 \leq i, j \leq n$; $i \neq j$) and ask if player $i$ thinks that player $j$ is a Knight. The results of the question is shown in the table below.
+
+| Knight| Knave| Impostor   ---|---|---|---   Knight| Yes| No| Yes   Knave| No| Yes| No   Impostor| No| Yes| —   The response of the cell in row $a$ and column $b$ is the result of asking a question when $i$ has role $a$ and $j$ has row $b$. For example, the "Yes" in the top right cell belongs to row "Knight" and column "Impostor", so it is the response when $i$ is a Knight and $j$ is an Impostor.
+
+Find the Impostor in the minimum number of queries possible. That is, let $f(n)$ be the minimum integer such that for $n$ players, there exists a strategy that can determine the Impostor using at most $f(n)$ questions. Then, you should use at most $f(n)$ questions to determine the Impostor.
+
+Note: the grader is adaptive: the roles of the players are not fixed in the beginning and may change depending on your questions. However, it is guaranteed that there exists an assignment of roles that is consistent with all previously asked questions under the constraints of this problem.
+
+Input Format:
+The first line of input contains a single integer $t$ ($1 \leq t \leq 10^3$) — the number of test cases. The description of the test cases follows.
+
+The first line of each test case contains a single integer $n$ ($3 \le n \le 10^5$) — the number of people playing the game.
+
+It is guaranteed that the sum of $n$ over all test cases does not exceed $10^5$.
+
+Output Format:
+
+
+Tags:
+['constructive algorithms', 'dp', 'interactive']
+
+Time Limit: 2500 ms
+Memory Limit: 256 MB
+
+Write Python code to solve the problem. Present the code in
+```python
+Your code
+```
+at the end.<｜Assistant｜><think>

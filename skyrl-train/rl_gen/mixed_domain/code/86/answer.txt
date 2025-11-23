@@ -1,0 +1,619 @@
+Okay, so I've got this problem to solve, and I'm a bit new to these types of grid-based problems. Let me try to understand what's being asked here.
+
+The problem is about a grid graph with n rows and n columns. Each cell has two possible edges: one going right (east) with a value d_{x,y}, and another going down (south) with a value r_{x,y}. We start at (1,1) and need to reach (n,n). As we move along these edges, each time we pass through an edge, its value is added to a set S. The goal is to maximize the MEX of S when we reach (n,n).
+
+Hmm, the MEX is the smallest non-negative integer not present in S. So, to maximize the MEX, we need S to contain all possible integers starting from 0 up to k-1, and then have k not present. The higher k is, the better.
+
+So, the challenge is to find the maximum possible MEX by choosing the optimal paths from (1,1) to (n,n), collecting the edge values along the way, and ensuring that S has as many consecutive integers starting from 0 as possible.
+
+Let me think about the approach here. The grid is small, up to 20x20, and for each test case, n can be up to 20. But wait, the sum of all n^3 across test cases is 8000, which is manageable for some approaches, but for each cell, we might need to track a lot of states.
+
+So, for each cell (x,y), we need to track all possible values that could be in S when we reach it. Because the MEX depends on what values have been collected along the path, not just the current cell's value.
+
+Wait, that's right. The MEX is determined by the set of values collected along the path, so for each cell, we need to consider all possible subsets of S that could lead to it, and track the MEX for each.
+
+But that's computationally intensive because for each cell, the number of possible subsets could be very large. For example, if each cell can contribute up to 2n-2 values, the number of possible subsets could be 2^(2n-2), which is way too big for n=20.
+
+So, that approach might not be feasible. We need a smarter way.
+
+Alternative idea: Since we're trying to maximize the MEX, which is the smallest non-negative integer not present in S, the optimal path would collect as many consecutive integers as possible starting from 0. So, for each number k starting from 0, we want to see if it's possible to collect all numbers 0,1,...,k-1, and then have k missing. The MEX would then be k.
+
+So, the strategy is to find the maximum k where we can collect all numbers from 0 to k-1, and then see if adding k is possible. Then, the MEX would be k.
+
+So, how can we model this? For each cell (x,y), we can track which numbers have been collected so far. But again, the state space is too large.
+
+Wait, perhaps we can model it using dynamic programming where for each cell (x,y), we track the presence of each possible number. But that's not feasible for n=20.
+
+Hmm, maybe we need to find a way to model the minimal required numbers to ensure that the MEX is as large as possible.
+
+Another thought: Since each move can add one value to S, and the order in which values are added doesn't matter, except for the fact that earlier values can affect later ones. So, perhaps for each cell (x,y), we can track the set of numbers that have been collected so far, but again, that's not feasible for n=20.
+
+Wait, but in practice, for each cell, the number of possible values that can be added is small. For example, the maximum d or r in the grid is 2n-2, which for n=20 is 38. So, each cell can have up to 38 possible values added. But for each cell, the state is the set of all possible S values collected up to that cell. That's impossible to track directly.
+
+So, perhaps we need a different approach. Maybe the MEX is determined by the presence of all numbers starting from 0 up to some k-1, and not having k. So, the problem reduces to finding the maximum k such that there exists a path from (1,1) to (n,n) where all integers from 0 to k-1 are present in S, and k is not present.
+
+So, the question is, what is the largest k such that there's a path where all numbers from 0 to k-1 are collected, and k is not collected.
+
+Hmm, so how can we model this?
+
+Another idea: For each cell, we can track the set of numbers collected so far, but again, this is impossible. So, perhaps we can represent the state as the set of numbers collected, but with optimizations. For example, if two states have the same set of numbers, we can merge them.
+
+But even that is not feasible for n=20, as the number of possible subsets is 2^(2n-2), which is way too big.
+
+Wait, but maybe we can model it as a bitmask, but with the size of the bitmask being up to 2n-2, which for n=20 is 38. So, a bitmask of 38 bits. For each cell, we can track a bitmask representing the numbers collected so far. Then, for each cell, we can track the possible bitmasks.
+
+This seems manageable because for each cell, the number of possible bitmasks is 2^38, which is about 2.7e11. That's way too big for n=20.
+
+So, this approach is not feasible.
+
+Alternative approach: Let's think about the problem in terms of the minimum number of steps. Since each move adds exactly one value to S, the size of S is equal to the number of steps taken. To have a MEX of k, we need S to contain all numbers from 0 to k-1. So, the maximum possible MEX is the largest k where the path allows collecting all numbers from 0 to k-1.
+
+So, the problem is to find the maximum k such that there's a path from (1,1) to (n,n) where every number from 0 up to k-1 is present in S, and k is not present.
+
+So, perhaps the way to approach this is to find, for each possible k, whether it's possible to have a path that collects all numbers up to k-1, but not collect k.
+
+If we can do this for all possible k, then the maximum k for which this is possible is the answer.
+
+So, the plan is:
+
+1. For k starting from 0 upwards, check if there's a path from (1,1) to (n,n) where all numbers 0 to k-1 are collected, and k is not collected.
+
+2. The maximum k for which this is possible is the answer.
+
+But how do we check for each k whether such a path exists?
+
+This seems challenging, but perhaps we can model it using BFS with a state that tracks the numbers collected so far. However, the state space is too big.
+
+Alternative idea: Since the MEX is determined by the presence of 0,1,2,...,k-1, and absence of k, perhaps the minimal way to achieve this is to find a path that includes all these numbers. So, for each k, we can try to see if the path can collect all required numbers.
+
+But how to model this efficiently.
+
+Another approach: Let's think about the problem as trying to collect the numbers in order. For example, to have a MEX of k, we must have 0, then 1, then 2, etc., up to k-1, and then missing k.
+
+So, perhaps we can model this as a BFS where each state is the current cell and the set of numbers collected so far. But again, the state space is too large.
+
+Wait, but what if we limit the state to the current cell and the set of numbers collected up to the last step? No, that still doesn't help because the set can be any combination.
+
+Hmm, perhaps it's better to think about the minimal required numbers. For example, to have a MEX of k, the path must collect all numbers from 0 to k-1. So, the problem reduces to finding a path that includes all these numbers.
+
+So, for each k, we can model the problem as a pathfinding problem on the grid where each step adds a number to S, and we need to collect all numbers from 0 to k-1.
+
+So, for each k, we can perform a BFS to see if a path exists that collects all numbers from 0 to k-1, and then check if the path can reach (n,n) without collecting k.
+
+But how do we track which numbers are collected? That's the crux of the problem.
+
+Another idea: For each cell (x,y), and for each possible subset of numbers S that could have been collected up to that cell, track whether it's possible. But again, this is infeasible because the number of subsets is 2^(38), which is 2.7e11 per cell.
+
+Alternative approach: Since the MEX is determined by the presence of 0,1,2,...,k-1, perhaps for each possible k, we can model the problem as a BFS where the state is the current cell and the set of numbers collected so far, but with a priority on the presence of 0,1,...,k-1.
+
+Wait, but that might not help either. I'm stuck.
+
+Let me think about the problem differently. Since the grid is small (n up to 20), perhaps a BFS approach where each state is the current cell and the set of collected numbers, but with some optimizations to manage the state space.
+
+But even that is impractical because for each cell, the number of possible sets is 2^(38), which is way too large.
+
+So, perhaps a different approach is needed. Maybe we can model the problem using bitmask DP, where the state is (x, y, mask), and mask represents the set of numbers collected up to (x,y). Then, for each move, we can update the mask by adding the new value if it's in the grid.
+
+But even with this, for n=20 and each cell having a state with a mask of 38 bits, the total number of states is 20*20*(2^38), which is way too big.
+
+So, this approach is not feasible.
+
+Alternative idea: Since the numbers in the grid are up to 2n-2, perhaps for each cell, we can track the minimal and maximal numbers collected along the path, but that doesn't directly help with the MEX.
+
+Wait, perhaps the MEX is determined by the presence of consecutive integers starting from 0. So, the maximum possible MEX is the largest k where 0,1,...,k-1 are all present in S, and k is not present.
+
+So, perhaps the way to approach this problem is to find the maximum k such that there's a path from (1,1) to (n,n) that includes all integers 0,1,...,k-1, and does not include k.
+
+So, the question is, how to find the maximum k for which such a path exists.
+
+Hmm. So, for each possible k, we need to check if there's a path that collects all numbers from 0 to k-1, and does not collect k.
+
+But how do we model this?
+
+Wait, perhaps for each k, we can perform a BFS where we track the current cell and the set of collected numbers. However, again, the state space is too big.
+
+Alternative approach: Since the MEX is the smallest missing non-negative integer, perhaps the maximum possible MEX is the largest k where all numbers 0 to k-1 are present in S, and k is not present. So, the problem reduces to finding the maximum k where a path exists that includes all 0 to k-1, but not k.
+
+So, perhaps the way to approach this is to find the maximum k where 0,1,...,k-1 are all present in S, and k is not present.
+
+So, perhaps for each cell (x,y), we can track the presence of each number, but again, the state space is too big.
+
+Another idea: Since the MEX is determined by the presence of all numbers starting from 0, perhaps the maximum MEX is determined by the smallest missing number in the path. So, for each cell (x,y), we can track the presence of each number, but again, it's not feasible for large n.
+
+Wait, but what's the maximum possible MEX? It can't be larger than the number of steps taken, because each step adds a new number. So, the maximum possible MEX is up to 2n-2, since each step can add a value up to 2n-2.
+
+So, for each test case, the maximum possible MEX is up to 2n-1 or so.
+
+So, perhaps for each test case, we can try k from 0 up to 2n-1, and for each k, determine whether a path exists that includes all numbers 0 to k-1 and does not include k.
+
+The first k for which such a path exists is the MEX.
+
+So, the plan is:
+
+For k starting from 0:
+
+- Check if there's a path from (1,1) to (n,n) that includes all numbers 0,1,...,k-1, and does not include k.
+
+- If such a path exists, then the MEX is at least k.
+
+- The maximum k for which this is possible is the answer.
+
+So, for each k, we need to find if such a path exists.
+
+The question is, how to check for each k whether such a path exists.
+
+Let me think about how to model this for a particular k.
+
+For a given k, the path must collect all numbers 0 to k-1, and must not collect k.
+
+So, for each cell, we can track the current set of collected numbers, but again, the state space is too big.
+
+Alternative idea: Use BFS, where each state is the current cell (x,y) and a bitmask representing the collected numbers up to k-1. But since k can vary, this might not help.
+
+Wait, but for each k, the maximum number of numbers to collect is k. So, for a given k, the mask can have up to k bits, but since k can be up to 2n-1, it's still a problem.
+
+Hmm.
+
+Another angle: The MEX is determined by the presence of 0,1,2,... So, the minimal k where the MEX is k is when all numbers from 0 to k-1 are present, and k is missing.
+
+So, perhaps the maximum MEX is the largest k where a path exists that includes all numbers 0 to k-1, and does not include k.
+
+So, for each k, we can try to see if there's a path that includes all numbers 0 to k-1, and then see if such a path can reach (n,n) without including k.
+
+But how to check that.
+
+Wait, perhaps we can model this as a BFS where, for each cell (x,y) and for each possible mask of collected numbers up to k-1, we track whether it's possible to reach (x,y) with that mask.
+
+But again, the state space is too big.
+
+Alternative approach: Since the numbers are up to 2n-2, for each cell, we can keep a bitmask of which numbers have been collected up to that point. But even for n=20, 2n-2 is 38, so the mask is 38 bits, which is about 2e11, which is impossible.
+
+So, this approach is not feasible.
+
+Hmm.
+
+Perhaps the problem is similar to finding a path that includes all required numbers, which is a known problem. But I'm not aware of a specific algorithm that can handle this efficiently for grids up to 20x20.
+
+Wait, another idea: Since the MEX is the smallest missing number, perhaps the maximum MEX is the number of steps taken in the path, but that's not necessarily true because some numbers can be skipped.
+
+Wait, for example, in a path that collects 0,1,2,3,4,5,6,7,8,9,10, then the MEX is 11. So, the MEX is not necessarily equal to the number of steps, but can be larger if there are gaps.
+
+So, that approach won't work.
+
+Another thought: The MEX is determined by the presence of all numbers from 0 up to some k-1. So, the maximum possible MEX is the largest k where all numbers 0 to k-1 are present in the path.
+
+So, to find k, we can try all possible k from 0 to the maximum possible (which is 2n-2) and see if such a path exists.
+
+So, for each k, we can try to see if there's a path that includes all numbers 0 to k-1, and then see if the path can reach (n,n) without including k.
+
+So, the first k for which this is possible is the answer.
+
+So, how can we model this for a given k?
+
+For a given k, we need to ensure that all numbers 0 to k-1 are included in the path's S.
+
+So, for each cell (x,y), we can track which numbers have been collected so far, up to k-1.
+
+But again, the state space is too big.
+
+Wait, but perhaps for each cell, we can track the mask of numbers collected up to k-1, but for each cell, the mask can be up to 2n-2 bits, which for n=20 is 38 bits, which is 2^38, which is way too big.
+
+So, this approach is not feasible.
+
+Another idea: Since the MEX is the smallest missing, perhaps the maximum MEX is bounded by the number of steps taken. So, for a path that takes m steps, the MEX can't be larger than m. But that's not necessarily true because the path may skip some numbers.
+
+So, no, that approach won't work.
+
+Hmm. So, I'm stuck. Maybe I should look for similar problems or think of a way to model this.
+
+Wait, perhaps the problem can be modeled using BFS where each state is the current cell and the set of collected numbers. But with some optimizations.
+
+Since each step adds exactly one number, the set size increases by 1 each step. So, for a given k, the path must collect all numbers up to k-1, so the set size must be at least k.
+
+So, for a given k, the path must have at least k steps, and each step must add a new number.
+
+So, for each cell, the state can be represented as (x, y, mask), where mask is the set of numbers collected up to that cell.
+
+But again, this is not feasible for n=20.
+
+Wait, but for each k, the mask can be represented as a bitmask of size k. Since k can be up to 38, the mask is manageable.
+
+So, for each k, we can model a BFS where the state is (x, y, mask), and mask is a bitmask of the first k numbers (0 to k-1).
+
+So, for each k, we can perform a BFS and see if we can reach (n,n) with mask equal to all 1's (meaning all numbers 0 to k-1 are collected).
+
+But what's the maximum k we need to try?
+
+The maximum possible MEX is the largest k where a path exists that collects all numbers 0 to k-1, and then does not collect k.
+
+So, for k up to 2n-2.
+
+So, for each test case, we can try k from 0 to 2n-2, and for each k, perform a BFS to see if a path exists.
+
+Once we find the largest k where this is possible, that's our answer.
+
+But how to model the BFS for each k.
+
+Wait, for each k, the mask can be up to 2n-2 bits, but for a given k, the mask is only using the first k bits (0 to k-1). So, for each k, the mask is a k-bit number.
+
+So, for each k, we can model the BFS with a state of (x, y, mask), where mask is a k-bit number.
+
+The initial state is (1,1, 0), since we haven't collected any numbers yet.
+
+The goal is to reach (n,n) with mask equal to (2n-2) - 1, which represents having collected all numbers 0 to k-1.
+
+So, for each k, the BFS is as follows:
+
+- Start at (1,1) with mask 0.
+
+- For each step, move to an adjacent cell, and if the move is east or south, add the corresponding d or r value to the mask.
+
+- The mask is updated only if the new value is less than k.
+
+Wait, no, because once a number is collected, it's added to the mask. So, for the mask, each new number added (whether it's from d or r) must be less than k. Because if it's >=k, then it's not part of the numbers we need to collect.
+
+So, in the BFS for a given k, when moving to a new cell, we add the new value to the mask only if it's less than k.
+
+Wait, but the new value could be equal to k, which means that it's not part of the numbers we need to collect. So, in that case, the mask remains the same.
+
+So, the steps are:
+
+For each k:
+
+1. Initialize a queue with (x=1, y=1, mask=0), and a visited set to track which states have been processed.
+
+2. For each state in the queue:
+
+   a. If (x,y) is (n,n), return True (we've collected all needed numbers for this k).
+
+   b. For each possible direction (right and down):
+
+      i. Compute new x and y.
+
+      ii. If new x and y are within bounds:
+
+         - Compute the new value to add (d or r).
+
+         - If the new value is less than k, then new_mask = mask | (1 << new_value).
+
+         - Else, new_mask = mask.
+
+         - If new_mask has all bits set (i.e., new_mask == (1 << k) - 1), then we've found a path that collects all needed numbers.
+
+   c. Add the new state (new_x, new_y, new_mask) to the queue if it hasn't been visited before.
+
+3. If any state reaches (n,n) with new_mask == (1 << k) - 1, then return True for this k.
+
+4. If after processing all states, no such path is found, return False.
+
+So, for each k, we perform a BFS with states (x, y, mask), where mask is a k-bit number.
+
+This way, for each k, the BFS can be done, and we can check if a path exists.
+
+Now, for each test case, we can iterate k from 0 up to 2n-2, and for each k, perform this BFS.
+
+Once we find the largest k where the BFS returns True, that's our answer.
+
+The maximum possible MEX is the largest such k.
+
+Now, let's think about the time complexity.
+
+For each test case, the maximum k is up to 2n-2, which is 38 for n=20.
+
+For each k, the BFS runs on a grid of size n x n, and for each cell, the mask can be up to k bits. So, for each cell, the number of possible masks is 2^k, which is up to 2^38 for each cell.
+
+But for each test case, the number of test cases is up to 100, but each has n up to 20.
+
+Wait, but for each test case, the sum of all n^3 is up to 8000, so for each test case, n is up to 20.
+
+So, for each test case, the maximum k is 2n-2 = 38.
+
+So, for each k from 0 to 38, we perform a BFS.
+
+The BFS for each k is O(n^2 * 2^k), which for n=20 and k=38 is 20*20*(2^38) = 400 * 2^38, which is way too big (about 400 * 2.7e11 = 1.08e14 operations per test case). That's impossible.
+
+So, this approach is not feasible for n=20.
+
+Hmm, so I need a better approach.
+
+Alternative idea: Since the MEX is determined by the presence of consecutive numbers, perhaps the maximum MEX is equal to the number of steps taken in a path that collects all numbers up to k-1, and then the path can be completed without collecting k.
+
+Wait, but the number of steps is the same as the number of cells visited, which is (n-1)*2 + 1, which is 2n-1 for a path from (1,1) to (n,n).
+
+So, the maximum possible MEX is 2n-1, but only if the path can collect all numbers from 0 to 2n-2.
+
+But that's not necessarily possible.
+
+So, perhaps the maximum MEX is the largest k for which the path can collect 0 to k-1, and then can reach (n,n) without collecting k.
+
+But again, how to model this.
+
+Another thought: Since the MEX is the smallest missing number, perhaps the maximum MEX is the number of unique numbers collected along a certain path.
+
+So, to maximize the MEX, we need to collect as many consecutive numbers starting from 0 as possible.
+
+So, perhaps the problem reduces to finding a path that includes all numbers from 0 up to some k-1, and then see if such a path exists.
+
+But again, the state space is too large.
+
+Wait, perhaps we can model the problem as finding the maximum k where a path exists that includes all numbers from 0 to k-1, and then the path can reach (n,n) without including k.
+
+So, the plan is:
+
+1. For each possible k, starting from 0 up to 2n-2, check if a path exists that:
+
+   a. Collects all numbers 0,1,...,k-1.
+
+   b. Does not collect k.
+
+2. The maximum such k is the answer.
+
+So, for each k, can we find a path that satisfies these conditions.
+
+The question is, how to efficiently check for each k.
+
+Another angle: The MEX is determined by the presence of consecutive numbers starting from 0. So, for the maximum MEX, the path should collect all numbers starting from 0 up to some k-1, and then the path can reach (n,n) without collecting k.
+
+So, perhaps for each k, the path must include all numbers from 0 to k-1, and then can proceed to (n,n) without adding k.
+
+So, the problem is to find the maximum k where such a path exists.
+
+So, perhaps the way to approach this is to find the maximum k for which the path exists.
+
+But again, the state space is too large.
+
+Alternative idea: Use a BFS where each state is the current cell and the set of collected numbers. But instead of tracking all possible sets, track the maximum k that can be achieved.
+
+Wait, that's an interesting idea. Let me think.
+
+We can model the state as (x, y, mask), where mask is a bitmask representing the numbers collected so far. The mask can be up to 2n-2 bits long.
+
+For each test case, we can perform a BFS where each state is (x, y, mask), and for each move, we add the new number to the mask if it's less than the current k being considered.
+
+Wait, but we don't know k in advance. So, perhaps the approach is to perform a BFS for each possible k, starting from 0 up to 2n-2, and for each k, see if a path exists that collects all 0 to k-1.
+
+So, for each k, we can perform a BFS with the state (x, y, mask), where mask is a k-bit number.
+
+Once we find a path for a certain k, we can record the maximum k.
+
+So, the steps are:
+
+For each test case:
+
+   max_mex = 0
+
+   for k in 0 to (2n-2):
+
+      if k == 0:
+
+         max_mex = 0
+
+         continue
+
+      if k == 1:
+
+         check if there's a path that includes 0.
+
+         if yes: max_mex = 1
+
+         else: continue
+
+      else:
+
+         perform BFS for this k.
+
+         if path exists:
+
+             max_mex = k
+
+   output max_mex
+
+So, for each k, we perform a BFS.
+
+Now, the question is, how to implement this efficiently.
+
+For each k, the BFS is:
+
+   - Start at (1,1) with mask 0.
+
+   - For each step, move to right or down.
+
+   - For each new cell, compute the value to add (d or r).
+
+   - If the new value is less than k, then new_mask = mask | (1 << new_value).
+
+   - Else, new_mask = mask.
+
+   - If new_mask has all bits set (i.e., (1 << k) - 1), then we've collected all needed numbers.
+
+So, the BFS can be implemented using a queue, and a visited set to avoid revisiting the same state.
+
+But for each k, the visited set is 2^k possible masks, which is 2^38 for k=38, which is 2.7e11. That's way too big.
+
+So, this approach is not feasible.
+
+Hmm.
+
+Another idea: Since we're only interested in whether a path exists for a certain k, perhaps we can optimize by using a bitmask that only tracks which numbers up to k-1 are collected.
+
+So, for each k, the mask is a k-bit number, and the state is (x, y, mask).
+
+But even then, for n=20 and k=38, it's impossible to track all possible masks.
+
+So, this approach is not feasible.
+
+Alternative Idea: Since the numbers are up to 2n-2, which is 38 for n=20, perhaps we can model the state as (x, y, mask), where mask is a bitmask of up to 38 bits. But for each k, we can limit the mask to the first k bits.
+
+So, for each k, the mask is a k-bit number, and the state is (x, y, mask).
+
+So, for each test case, the BFS for a given k is as follows:
+
+   Initialize a queue with (1,1, 0).
+
+   For each state (x, y, mask):
+
+      if x == n and y == n, return k.
+
+      for each direction (right, down):
+
+         compute new_x, new_y.
+
+         if new_x and new_y are within bounds:
+
+             value = d if direction is right else r.
+
+             if value < k:
+
+                 new_mask = mask | (1 << value)
+
+             else:
+
+                 new_mask = mask
+
+             if new_mask has all bits set (i.e., (1 << k) - 1):
+
+                 return True
+
+             if (new_x, new_y, new_mask) not in visited:
+
+                 add to queue and mark as visited.
+
+So, for each k, the BFS is performed.
+
+Now, the question is, how to implement this efficiently.
+
+The problem is that for each k, the number of possible masks is 2^k, which is 2^38 for k=38, which is way too big.
+
+So, this approach is not feasible.
+
+So, I'm stuck again.
+
+Wait, perhaps I can find a way to represent the mask more efficiently.
+
+Another Idea: Since the MEX is the smallest missing number, perhaps the maximum MEX is the number of steps taken in the optimal path, but that's not necessarily true.
+
+Wait, but in the worst case, the MEX could be as high as 2n-2, which is the maximum possible.
+
+So, perhaps the way to proceed is to find the maximum k for which a path exists that collects all numbers from 0 to k-1, and then the path can reach (n,n) without collecting k.
+
+So, for each possible k, we can try to find a path that includes all numbers 0 to k-1, and then see if such a path exists.
+
+But again, the state space is too big.
+
+Alternative Idea: Since the problem is about collecting the smallest missing number, perhaps the maximum MEX is determined by the first missing number in the path. So, the maximum MEX is the first missing number in a path that includes all numbers 0 to MEX-1.
+
+So, perhaps the approach is to find the path that includes all numbers 0 to MEX-1 and is as long as possible.
+
+But I'm not sure.
+
+Hmm.
+
+Another Idea: Since the numbers are up to 2n-2, perhaps for each cell, we can track the presence of each number. But again, this is not feasible for n=20.
+
+So, perhaps I should think of the problem differently.
+
+Wait, perhaps the MEX can be determined by the presence of 0,1,2,...,k-1 in S. So, to maximize the MEX, we need to include as many small numbers as possible.
+
+So, perhaps the optimal path is one that collects the numbers 0,1,2,..., up to some k-1.
+
+So, for each k, the maximum MEX is k.
+
+So, the problem reduces to finding the largest k where a path exists that includes all numbers 0 to k-1.
+
+So, the plan is:
+
+For each test case:
+
+   For k from 0 to (2n-2):
+
+      Check if there's a path from (1,1) to (n,n) that includes all numbers 0 to k-1.
+
+      The maximum such k is the answer.
+
+So, the key is to find the largest k for which this is possible.
+
+Now, the challenge is to find this efficiently.
+
+Another Idea: Since the MEX is the smallest missing number, perhaps the maximum MEX is the size of the smallest missing number in the optimal path. So, perhaps the approach is to find the path that includes the smallest possible missing number.
+
+But this is circular.
+
+Hmm.
+
+Wait, perhaps the maximum MEX is the maximum number of consecutive integers starting from 0 that can be collected along a path.
+
+So, for example, if a path can collect 0,1,2,3,4, then the MEX can be 5.
+
+So, the problem is to find the path that collects the maximum number of consecutive integers starting from 0.
+
+So, perhaps the approach is to find the maximum k such that 0,1,2,...,k-1 are all collected along some path.
+
+So, the question is how to model this.
+
+Another Idea: Since the MEX is the smallest missing number, the maximum MEX is at least the size of the set {0,1,2,...,k-1} that is collected along a path.
+
+So, for each test case, the maximum MEX is the maximum k for which such a path exists.
+
+So, the approach is to find the maximum k where a path exists that includes all 0 to k-1.
+
+Now, how to compute this.
+
+Idea: Use BFS where each state is (x, y, mask), where mask represents the set of collected numbers up to k-1.
+
+But since k can be up to 2n-2, this approach is not feasible.
+
+Alternative Idea: Since the MEX is the smallest missing number, perhaps the maximum possible MEX is the number of steps taken in the path that includes all numbers from 0 to m-1, where m is the MEX.
+
+So, for each test case, the maximum MEX is the largest m such that there's a path that includes all numbers from 0 to m-1.
+
+So, perhaps the approach is to find the path that includes the smallest possible set of numbers, but that's not directly helpful.
+
+Hmm.
+
+I think I'm stuck. Maybe I should look for similar problems or think about how to model the state space.
+
+Wait, perhaps the state can be represented as (x, y, mask), but for each k, the mask is a k-bit number. So, for each k, the mask is up to 38 bits, which is manageable for n=20.
+
+So, for each k, the BFS is performed, and if any state reaches (n,n) with mask == (1 << k) - 1, then k is possible.
+
+So, the code can be written as follows:
+
+For each test case:
+
+   Read n.
+
+   Read the grid, which is n rows, each with n integers.
+
+   Read the next n rows, each with n integers (r values).
+
+   Initialize the maximum mex to 0.
+
+   For k in 0 to (2n-2):
+
+      if k == 0:
+
+          mex = 0
+
+          continue
+
+      if k == 1:
+
+          check if there's a path that includes 0.
+
+          if yes, mex = 1
+
+          else, continue
+
+      else:
+
+          perform BFS for this k.
+
+          if a path exists that reaches (n,n) with mask == (1 << k) - 1:
+
+              mex = k
+
+   output mex.
+
+So, the code will proceed as such.
+
+Now, the problem is to implement

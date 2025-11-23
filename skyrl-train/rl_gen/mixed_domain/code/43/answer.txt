@@ -1,0 +1,531 @@
+Okay, so I've got this problem to solve, and I'm a bit stuck, but I'll try to break it down. Let's see what the problem is about.
+
+The problem is about an apartment with n rooms, each having a light that's initially off. Each room has a chip that's installed at a specific time a_i. The chip affects the light's status every k minutes. The chip turns the light on for k minutes, then off for the next k, on for the next, and so on. So the light is on at times that are multiples of k away from a_i.
+
+Our goal is to find the earliest time when all rooms have their lights on. If it's impossible, we return -1.
+
+Hmm, so for each room, we need to find the earliest time when the light is on. Then, the maximum of these times across all rooms should be the answer. But wait, no. Because the chips are installed at different times, the schedule might be different for each room. So we need to find a time T such that for every room i, the light is on at time T.
+
+Wait, but the chips are installed in the rooms at times a_i, a_i + k, a_i + 2k, etc. So each room's light is on during the intervals [a_i + m*k, a_i + (m+1)*k) for m >=0. Wait, no, because the first k minutes it's on, then off for k, on for k, etc. So the on intervals are [a_i, a_i +k), [a_i +k, a_i + 2k), [a_i +2k, a_i +3k), etc. So the light is on during the intervals [a_i + m*k, a_i + (m+1)*k) for integer m >=0.
+
+So for room i, the light is on during the intervals [a_i + m*k, a_i + (m+1)*k) where m is 0,1,2,... So the earliest time the light is on is a_i, but wait no. Because the entire interval is on. So any time after a_i + m*k and before a_i + (m+1)*k, the light is on. So the earliest time the light is on is a_i + m*k, for the smallest m where a_i + m*k is as small as possible.
+
+Wait, no. Wait, the first interval is [a_i, a_i +k), so the light is on during that interval. So for example, if a_i is 5, k is 2, then the light is on from 5 to 7 (since a_i +k is 7). So the earliest time the light is on is 5, but wait, 5 is the start of the interval. So for room i, the earliest time the light is on is the earliest possible time that is >= a_i and is in one of the on intervals.
+
+Wait, but the problem is, each room's on intervals are determined by the chip. So for each room, we need to find the earliest time t_i such that t_i is in the on interval of room i. Then, the overall answer is the maximum of all t_i's, because all rooms must be on.
+
+But wait, no. Because the times when the chips are installed are all different, but each room's on time can vary. So perhaps the earliest time T where all rooms are on is the maximum of all t_i's, where t_i is the earliest time for room i to be on, but considering all the constraints of the other rooms.
+
+Wait, no. Because each room's on time is based on its own a_i and k. So for each room, the earliest time the light is on is a_i, but since the intervals are every k minutes, the earliest possible time for the light to be on is a_i. Because, for example, if a_i is 5 and k is 2, then at 5 the light is on. So for room i, the earliest possible time it's on is a_i. But wait, the interval is [a_i, a_i +k), so any time after a_i up to a_i +k is on. So the earliest possible time is a_i, but the light is on right at a_i. So for the problem, the earliest time for room i is a_i.
+
+Wait, but that's not correct. Because for room i, the light is on during the entire interval [a_i, a_i +k). So the earliest time when the light is on is a_i. So, for each room, the earliest time is a_i. But wait, no, that's not the case. Because the problem is to find the earliest time when all rooms are on. So if all rooms have their earliest on time as a_i, then the maximum of all a_i would be the answer. But that's only possible if all a_i are on. But the problem is that the earliest time when all are on is at least the maximum of a_i, because all rooms must have their on intervals including T.
+
+Wait, no. Because the on intervals are periodic. So, for example, if a_i is 5, k is 2. So the on intervals are [5,7), [7,9), [9,11), etc. So the earliest time the light is on for room i is 5, but the on intervals are 5<=t<7, 7<=t<9, etc. So the earliest time is 5. So for room i, the earliest time is a_i.
+
+So, for all rooms, their earliest time is a_i. So the answer is the maximum a_i, but wait, because that's only correct if all rooms are on at that time. Let's see: the maximum a_i is T. For each room i, does T lie in their on interval?
+
+Wait, a_i is <= T < a_i +k? Because T is the maximum a_i. So for each room i, a_i <= T < a_i +k. So T is in the on interval of room i. So yes, all rooms are on at T.
+
+So the answer is the maximum a_i. But wait, no. Because in the sample input, let's see:
+
+Suppose n=1, k=5. a_1 is 0. Then the earliest time is 0. That's correct.
+
+Another example: n=2, k=2. a1=0, a2=1. Then the earliest time is 1, because a2 is 1. But for room 1, the on intervals are [0,2), [2,4), etc. So at time 1, it's on. For room 2, the on intervals are [1,3), [3,5), etc. So at time 1, it's on. So the maximum is 1, which is correct.
+
+But wait, what if a2 is 3, k=2. Then the earliest time is 3. For room 1, the on intervals are [0,2), [2,4), etc. So at 3, the light is on. So yes.
+
+So, the answer is the maximum of all a_i. But wait, wait, let's think again. What if two rooms have a_i and a_j, and their a_i is greater than a_j, but a_i - a_j is less than k. Then, the maximum a_i is the earliest time, which is correct.
+
+But what if k is such that the on intervals of the rooms don't overlap at the maximum a_i?
+
+Wait, no. For example, let's say n=3, k=4. a1=0, a2=3, a3=5. So the maximum a_i is 5. For room 1, the on intervals are [0,4), [4,8), etc. So 5 is in [4,8), which is on. Room 2: a2=3 is in [3,7), which is on. Room 3: a3=5 is in [5,9), which is on. So yes, 5 is the answer.
+
+But what if a_i's are such that the maximum a_i is not in any of the on intervals of all rooms?
+
+Wait, no. Because for each room i, their on intervals are [a_i, a_i +k). So, if the maximum a_i is T, then for room i, T is >= a_i, so it's in the first interval. Thus, T is in the on interval of room i.
+
+So, the earliest possible time is the maximum a_i.
+
+Wait, but wait. What about when the maximum a_i is not in the on interval of some room i.
+
+No, because for room i, the on intervals are [a_i, a_i +k). So T is >= a_i, so it's in the on interval.
+
+So yes, the earliest time when all rooms are on is the maximum of a_i, provided that all a_i's are considered.
+
+Wait, but wait another example. Let's say n=2, k=3. a1=0, a2=3. So the maximum is 3. For room 1, a1=0: the on intervals are [0,3), [3,6), etc. So 3 is not in [0,3), but it is in [3,6). So yes.
+
+But another example: n=3, k=4. a1=0, a2=3, a3=5. So the maximum is 5. For a3=5, the on intervals are [5,9), [9,13), etc. So 5 is in [5,9), so it's on.
+
+So the conclusion is that the earliest time when all rooms are on is the maximum of all a_i, provided that in all rooms, their a_i is such that a_i + m*k >= T for some m.
+
+Wait, no, because a_i is <= T < a_i +k, since T is the maximum a_i. So T is in [a_i, a_i +k), so it's in the on interval of room i.
+
+Thus, the answer is simply the maximum of the a_i's, but only if this maximum is within all rooms' on intervals. Which it is, because the maximum a_i is in [a_i, a_i +k) for each i.
+
+Wait, but wait. Let's think about the case where the maximum a_i is equal to a_i + m*k for some m. Because the on intervals are [a_i, a_i +k), [a_i +k, a_i + 2k), etc. So the light is on during [a_i, a_i +k), which is when the time is >= a_i and < a_i +k. So if the maximum a_i is, say, a_i + 1, which is less than a_i +k, then it's on.
+
+So, the earliest time is the maximum a_i, and this is when all rooms are on.
+
+Wait, but wait. What if a_i is the same as some other a_j. Then, the maximum could be in a room where a_i is not the maximum? No, because the maximum is the largest of all a_i's.
+
+So, in all cases, the earliest time is the maximum a_i.
+
+Wait, but this can't be right, can it? Because let's say n=2, k=2. a1=1, a2=3. So the maximum a_i is 3. For room 1, the on intervals are [1,3), [3,5), etc. So 3 is in [3,5), which is on. So yes, 3 is the earliest time.
+
+But wait, what if a_i is 3, k=2. So the on intervals are [3,5), [5,7), etc. So 3 is in the first interval, which is on. So yes.
+
+So, the logic is correct.
+
+So the problem reduces to, for each test case, compute the maximum of a_i. But wait, wait, no—because what if the maximum a_i is such that for some room, the a_i is too late. Wait, no, because the on intervals are [a_i, a_i +k). So, for a_i, the earliest time it's on is a_i, but the duration is k minutes. So any time T >= a_i and T < a_i +k is on. So, the maximum a_i is T, which is in [a_i, a_i +k) for all i. So T is in each on interval.
+
+But wait, what if the maximum a_i is a_i for some i, and a_i is not earlier than all other a_j's?
+
+Wait, no. The maximum a_i is the largest among all a_i's. So for each i, a_i <= T. So for each i, T is in [a_i, a_i +k), because T >= a_i. So yes.
+
+So, the answer is the maximum a_i, provided that for all i, a_i +k > T? No, because T is the maximum a_i, so for i with a_i = T, T < a_i +k is automatically true because T is the maximum. So yes, the answer is the maximum a_i.
+
+Wait, but wait. What if two rooms have a_i and a_j such that a_i is greater than a_j, but a_i - a_j is less than k. So a_i is in [a_j, a_j +k), because a_j <= T =a_i < a_j +k. So yes.
+
+So, the answer is to compute the maximum a_i for each test case.
+
+Wait, but let's think of this test case:
+
+n=2, k=3.
+
+a1=0, a2=2.
+
+So the maximum is 2. For room 1, the on intervals are [0,3), [3,6), etc. So 2 is in [0,3), so on. For room 2, the on intervals are [2,5), [5,8), etc. So 2 is in [2,5), so on. So yes, the answer is 2.
+
+Another test case: n=3, k=4.
+
+a1=0, a2=3, a3=5.
+
+Maximum is 5.
+
+For a3=5, the on intervals are [5,9), [9,13), etc. So yes, 5 is on.
+
+But wait, what if the maximum a_i is such that for some room, a_i +k is equal to the maximum a_i. Is that possible?
+
+No. Because the maximum a_i is the largest a_i, so for any other a_j, a_j <= a_i. So a_i +k is larger than a_j, but that doesn't affect the maximum a_i's on interval.
+
+So, the conclusion is, the earliest time when all rooms are on is the maximum a_i.
+
+Wait, but let's think of a case where the maximum a_i is such that, for some room, the a_i is exactly T, but T is not in their on interval.
+
+Wait, no. Because T is the maximum a_i, so for any room i, T >= a_i. So, T is in the first interval [a_i, a_i +k). So yes, it's in the on interval.
+
+So, the answer is to compute the maximum a_i across all rooms.
+
+But wait, let's test this.
+
+Test case 1:
+
+n=1, k=5.
+
+a = [0]. So answer is 0.
+
+Test case 2:
+
+n=2, k=2.
+
+a = [1,3]. The maximum is 3.
+
+For room 1: 3 is in [1,3), which is on.
+
+Room 2: 3 is in [3,5), which is on. So yes, 3 is the answer.
+
+Another test case:
+
+n=3, k=4.
+
+a = [0, 3,5]. Max is 5.
+
+Room 0: 5 is in [0,4), no. Wait, wait, no. Wait, 5 is >= 0 and <4? No, 5 >=0 is true, but 5 is not <4. So 5 is not in [0,4). So that's a problem.
+
+Wait, wait, but this contradicts our earlier conclusion. So what's wrong here?
+
+Wait, no. Because the on intervals are [a_i, a_i +k). So for room 0, a_i is 0, and k is4. The on intervals are [0,4), [4,8), etc. So 5 is in the second interval, which is [4,8). So yes, 5 is on.
+
+Wait, but 5 is in [4,8), which is correct.
+
+So the earlier test case is incorrect. So the maximum a_i is 5, which is in [4,8), so it's on.
+
+So the logic holds.
+
+But what about another example.
+
+n=3, k=2.
+
+a = [0, 1, 2].
+
+So the maximum is 2.
+
+For room 0: 2 is in [0,2) ? No. Wait, 2 is not less than 2. So 2 is not in [0,2). So is 2 in [0,2) or in [2,4)? No, it's at the boundary. So for room 0, the on intervals are [0, 2), [2,4), etc. So 2 is in [2,4), which is on. So yes.
+
+So, for each room, the maximum a_i is in their on interval.
+
+So, the answer is the maximum a_i.
+
+So, the approach is: for each test case, compute the maximum of a_i.
+
+But wait, let's think again. What if two rooms have a_i and a_j, and their a_i is such that a_i +k is equal to a_j. Like, a_i = 5, a_j=5, k=2. Then, the on intervals are [5,7), [7,9), etc. So for a_i=5, the on intervals are [5,7), and for a_j=5, same. So the maximum is 5, which is in their on intervals.
+
+But wait, what if a_i is 5, a_j is 7, k=2. Then, for a_i=5, the on intervals are [5,7), [7,9), etc. For a_j=7, the on intervals are [7,9), [9,11), etc. So the maximum a is 7. For a_i=5, 7 is in [7,9), which is on. For a_j=7, 7 is in [7,9), which is on. So yes.
+
+So, the conclusion is that the earliest time is the maximum of a_i.
+
+But wait, let's think about a case where all a_i are the same.
+
+n=3, a_i = [5,5,5], k=3. Then the on intervals are [5,8), [8,11), etc. So 5 is in [5,8), so all are on at 5.
+
+So the answer is 5.
+
+Another test case: n=3, a_i = [5,5,5], k=3. So all are on at 5.
+
+So, the approach is correct.
+
+But wait, let's think about a case where the maximum a_i is such that it's not in the same on interval as some other room.
+
+Wait, no. Because the maximum a_i is the largest, so for each other a_j, a_j <= a_i. So a_i is in [a_j, a_j +k) because a_j <= a_i < a_j +k. So yes, a_i is in the on interval of room j.
+
+So, the earliest time is the maximum of a_i.
+
+Wait, but wait. What if the maximum a_i is exactly equal to a_i +k? For example, a_i = 3, k=2. Then the on interval is [3,5). So 3 is included in [3,5), which is on. So yes.
+
+So, the answer is the maximum a_i.
+
+Therefore, the solution is to compute the maximum of the a_i's for each test case, and that is the answer.
+
+But wait, wait another thing. Suppose that for some room i, a_i is 4, k=3. So the on intervals are [4,7), [7,10), etc. So at time 4, it's on. So the maximum a_i is 4, which is in [4,7). So yes.
+
+But what about a_i=5, k=3. So the on intervals are [5,8), [8,11), etc. So 5 is in [5,8), which is on.
+
+So, the answer is the maximum a_i.
+
+So, the code is to compute the maximum of a_i for each test case, and output that. But wait, no—because in the sample input, the first test case:
+
+n=1, k=5, a=[0]. The maximum is 0, which is correct.
+
+Another sample:
+
+n=2, k=2, a=[1,3]. The maximum is 3. So output is 3.
+
+Another sample:
+
+n=2, a=[0,1], k=2. So maximum is 1. For room 0, the on intervals are [0,2), [2,4), etc. So 1 is in [0,2). For room 1, the on intervals are [1,3), [3,5), etc. So 1 is in [1,3), so yes.
+
+So, the code is to output the maximum a_i.
+
+But wait, no. Let's see another test case.
+
+n=3, a = [5, 5, 5], k=3. The maximum is 5. So the answer is 5.
+
+But what if the maximum a_i is 5, but it's in the same room, but k is 1.
+
+Wait, a_i=5, k=1. Then the on intervals are [5,6), which is impossible. Because 5 is in [5,6), which is on.
+
+So, yes, the maximum a_i is 5, which is the earliest time.
+
+But wait, wait: if k=1, and a_i is 5, then the on intervals are [5,6), [6,7), etc. So 5 is in [5,6), so yes.
+
+So, seems correct.
+
+So, the code is to find the maximum a_i for each test case.
+
+So, the steps for the code are:
+
+For each test case:
+
+1. Read n and k.
+
+2. Read the list of a_i's.
+
+3. Compute the maximum of a_i's.
+
+4. Output that maximum.
+
+But wait, wait. Wait, no. Because in some cases, the maximum a_i is not in the on interval of some other room.
+
+Wait, no. Because for any room j, a_j <= max_a. So, a_j +k >= max_a, because max_a is the maximum. So a_j <= max_a <= a_j +k.
+
+So, max_a is in [a_j, a_j +k) for all j.
+
+Yes.
+
+So, the answer is the maximum a_i.
+
+But let me think about this again.
+
+Suppose n=3, a = [0, 0, 0], k=1. So the on intervals are [0,1), [1,2), etc. So the maximum a_i is 0. So 0 is in [0,1), so all rooms are on. So the answer is 0.
+
+Another example: n=3, a = [0, 0, 0], k=2. The on intervals are [0,2), [2,4), etc. So 0 is in [0,2), so all rooms are on.
+
+Wait, but what if a_i's are all the same, but the maximum a_i is equal to a_i +k, but that's not possible because a_i is the maximum. So a_i is the largest, so a_i +k is larger than a_i.
+
+So, the maximum a_i is always in the on interval of each room.
+
+So, the code is correct.
+
+So, the code is to compute the maximum of a_i's.
+
+But wait, what about the case where the maximum a_i is equal to a_i +k, but that's not possible because a_i is the maximum.
+
+Wait, no. The maximum a_i is the largest, so a_i +k is larger than a_i, so a_i is in [a_i, a_i +k). So it's in the first interval, which is on.
+
+So, yes.
+
+So, the code is straightforward.
+
+But wait, let's look at the sample input.
+
+Sample Input 1:
+
+5
+3 2
+1 3 4
+5 2
+1 2 3 4 5
+2 1
+5 1
+3 2
+1 1 3 4
+2 4
+3 5
+
+Sample Output:
+
+4
+1
+-1
+4
+-1
+
+Wait, for the first test case:
+
+n=3, k=2.
+
+a = [1,3,4].
+
+The maximum is 4.
+
+But according to the sample output, the answer is 4.
+
+Yes. So the code would output 4.
+
+Another test case: n=5, k=2, a=[1,2,3,4,5]. The maximum is 5. So the answer is 5.
+
+Third test case: n=2, k=1. a = [5,1]. The maximum is 5.
+
+But according to the sample output, it's -1.
+
+Wait, that's a problem.
+
+Wait, in the third test case, n=2, k=1. a = [5,1]. So the maximum a_i is 5.
+
+But the on intervals for room 1 is [1, 2). So 5 is in [1,2) only if 5 is less than 2, which it's not. So 5 is not in any on interval.
+
+So, the answer is -1.
+
+So, our earlier conclusion is wrong.
+
+Hmm, that's a problem.
+
+So, the code as I thought would output 5, but the correct answer is -1.
+
+So, that's a mistake. So, what's wrong with the earlier logic?
+
+Ah, because the on intervals are determined by the a_i's. So for room i, the on intervals are [a_i, a_i +k). So, for room 1, a_i is 5, and k is 1. So the on intervals are [5,6), [6,7), etc. So 5 is in [5,6), which is on. But for room j, a_j is 1, k=1. The on intervals are [1,2), [2,3), etc. So 5 is not in any of those.
+
+So, for room j, the light is on at 1, 2, but not at 5. So, the maximum a_i is 5, but in this case, at 5, the light of room j is off.
+
+So, the answer is -1.
+
+So, the earlier logic is incorrect. Because the maximum a_i might be in a room's on interval, but not in all rooms.
+
+So, the initial approach is wrong.
+
+So, what's the correct approach?
+
+We need to find a time T where, for each room i, T is in [a_i, a_i +k) modulo something? Or, T must be in room i's on interval.
+
+But how to find such a T for all rooms.
+
+This is more complex.
+
+So, let's re-examine the problem.
+
+Each room has its own a_i and k. The light is on during [a_i, a_i +k), [a_i +k, a_i + 2k), etc.
+
+So, for each room i, the on intervals are [a_i + m*k, a_i + (m+1)*k), where m is 0,1,2,...
+
+So, for each room, the on intervals are m*k <= t < (m+1)*k, for some m.
+
+Wait, no. Because the on intervals are [a_i, a_i +k), [a_i +k, a_i + 2k), etc. So, the interval is a_i <= t < a_i +k, and a_i +k <= t < a_i + 2k, etc.
+
+So, for each room i, the on intervals are [a_i + m*k, a_i + (m+1)*k) for m >=0.
+
+So, for all rooms, T must lie in one of their on intervals.
+
+So, to find the earliest T where this is true for all rooms.
+
+But how to compute this.
+
+Hmm, this seems challenging. Because for each room, we have an infinite number of possible on intervals, and we need to find a T that is in at least one interval of each room.
+
+But to compute this for multiple test cases, we need an efficient way.
+
+But how?
+
+Idea: For each room i, the earliest possible T is a_i, but the earliest T that is in the on interval for all rooms is the maximum a_i, but only if all a_i's are such that their a_i +m*k >= T for some m.
+
+Wait, no. Because, for example, in the third test case, room 1's a_i is 5, k=1. So the on intervals for room 1 are [5,6), [6,7), etc. So the earliest T is 5,6,7,...
+
+But for room 2, a_i=1, k=1. The on intervals are [1,2), [2,3), etc.
+
+So, at T=5, the light in room 2 is off. So, 5 is not a valid T.
+
+So, what's the earliest T where T is >= a_i for all i, and T is in one of their on intervals.
+
+So, the problem is to find the earliest T such that for every i, T is in at least one of i's on intervals.
+
+So, for each room i, T must satisfy T >= a_i + m_i *k for some m_i >=0, and T < a_i + (m_i +1)*k.
+
+So, for all i, T >= a_i + m_i *k, and T < a_i + (m_i +1)*k.
+
+We need to find the minimal T such that this holds for all i.
+
+So, this is equivalent to T must be >= a_i for all i, and T < a_i +k for each i.
+
+Wait, because for each i, m_i can be 0, which gives [a_i, a_i +k).
+
+So, for T to be in all rooms' on intervals, T must be >= a_i for all i, and T < a_i +k for all i.
+
+Because if T is >= a_i for all i, then T is in [a_i, a_i +k) for each i, provided T < a_i +k.
+
+But wait, that's not necessarily true. Because T could be in room i's on interval [a_i, a_i +k), but if T is not in any other room's on interval.
+
+Wait, no. Because for T to be in all on intervals, it must be in each room's on interval. So, for each room i, T must be in [a_i, a_i +k) modulo something? Or, more precisely, T must be in [a_i, a_i +k) for some m_i.
+
+But since T is a time, it's not modulo anything. So, T must be in [a_i + m_i *k, a_i + (m_i +1)*k) for some m_i.
+
+So, for all i, T must be >= a_i + m_i *k and T < a_i + (m_i +1)*k.
+
+So, T must be >= a_i for all i, and T must be < a_i +k for all i.
+
+Wait, is that correct?
+
+Because for each i, m_i can be 0, which gives [a_i, a_i +k). So, if T is in [a_i, a_i +k) for all i, then it's in all on intervals.
+
+So, the earliest T is the maximum a_i, but only if T is less than a_i +k for all i.
+
+Wait, no. Because for room i, a_i could be higher than T, but T is in [a_i, a_i +k), which is a_i <= T < a_i +k.
+
+But if T is the maximum a_i, then for each i, a_i <= T < a_i +k.
+
+So, T is in [a_i, a_i +k) for all i.
+
+So, T is in all on intervals.
+
+Thus, the earliest T is the maximum a_i, provided that for all i, a_i < a_i +k.
+
+Which is always true, since k is positive.
+
+So, why in the third test case, the answer is -1.
+
+Wait, let's see.
+
+Test case 3:
+
+n=2, k=1.
+
+a = [5,1].
+
+So, maximum a_i is 5.
+
+But for room 2, a_i=1, k=1.
+
+The on intervals are [1,2), [2,3), etc.
+
+So, T=5 is not in any on interval of room 2.
+
+So, the answer is -1.
+
+So, the earlier logic is wrong.
+
+Because the maximum a_i is 5, but T=5 is not in any on interval of room 2.
+
+So, how to find such a T.
+
+So, the problem is more complex.
+
+We need to find the minimal T such that for all i, T is in [a_i, a_i +k) or T is in [a_i +k, a_i + 2k) or any other m_i *k interval.
+
+So, T can be written as T = a_i + m_i *k, where m_i is an integer >=0, and T < a_i + (m_i +1)*k.
+
+So, for each i, T can be written as a_i + m_i *k, and T < a_i + (m_i +1)*k.
+
+Which simplifies to:
+
+m_i <= (T - a_i)/k < m_i +1.
+
+But since m_i is an integer, T must be in one of the intervals [a_i, a_i +k), [a_i +k, a_i + 2k), etc.
+
+So, for all i, T must be in one of their on intervals.
+
+Thus, the problem is to find the minimal T that is in all intervals for each room.
+
+How can we find such a T?
+
+Idea: For each room i, the possible T's are a_i, a_i +k, a_i +2k, etc.
+
+So, for all i, T must be one of their a_i + m_i*k.
+
+Thus, the minimal T is the minimal number that is present in the intersection of all these sequences.
+
+But how to compute this efficiently.
+
+But considering that n can be up to 2e5, and t is up to 1e4, we need an O(n) or O(n log n) solution.
+
+Alternative approach: For each test case, collect all possible T's that are a_i + m_i *k for some m_i >=0, and see if there exists a T that is present in all sequences.
+
+But this is not feasible for large n.
+
+Alternative Idea: The earliest possible T is the maximum a_i.
+
+But, as in the third test case, the maximum a_i may not be in all on intervals.
+
+So, perhaps we need to find the maximum a_i, and then check if for all i, a_i < T < a_i +k.
+
+Wait, no, because T can be in a higher interval of a_i.
+
+But in the third test case, the maximum a_i is 5, but for room 2, a_i=1, k=1, the on intervals are [1,2), [2,3), etc. So, 5 is not in any of these.
+
+So, the earliest possible T is 5, but it's not in all on intervals.
+
+So, the answer is -1.
+
+So, the problem is more complex than I thought.
+
+So, what's the solution.
+
+Another Idea: For each room i, the earliest T that is in their on interval is a_i.
+
+But, to find a T that is in all rooms' on intervals, it must be >= a_i for all i, and T is in one of their on intervals.
+
+So, the minimal T is the maximum of all a_i, but only if for all i, a_i < T < a_i +k.
+
+Wait, no. Because T can be a_i + m_i *k, where m_i >=0, and T < a_i + (m_i +1)*k.
+
+So, for example, in the third test case, the maximum a_i is 5. So, T must be >=5, and <6.
+
+But for room 2, a_i=1, k=1. So T must be in [1,2) or [2,3), etc.
+
+So, if T is 5, it's not in any of these intervals.
+
+So, the earliest T that is >=5 and <6 is 5, but it's not in any on interval for room 2.
+
+So, the answer is -1.
+
+So, how to find such a T.
+
+Perhaps, the solution is to find the maximum a_i, and then check if for all i, a_i < (

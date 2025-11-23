@@ -1,0 +1,188 @@
+0
+(-1,1]
+Alright, let's tackle this problem step by step. So, we have two sets, A and B, defined in terms of x and a parameter a. The problem has two parts, and I'll handle each part one by one.
+
+First, let me understand what set A is when a=1. The set A is defined as {x | 0 < 2x + a ≤ 3}. So, when a=1, it becomes {x | 0 < 2x + 1 ≤ 3}. I need to solve this inequality to find the range of x.
+
+Let me break it down. The inequality is 0 < 2x + 1 ≤ 3. I can split this into two parts:
+
+1. 0 < 2x + 1
+2. 2x + 1 ≤ 3
+
+Starting with the first part: 0 < 2x + 1. Subtract 1 from both sides to get -1 < 2x, then divide by 2 to get -0.5 < x.
+
+Second part: 2x + 1 ≤ 3. Subtract 1 to get 2x ≤ 2, then divide by 2 to get x ≤ 1.
+
+So, combining both parts, x must be greater than -0.5 and less than or equal to 1. So, A = (-0.5, 1].
+
+Next, I need to find the complement of B in the real numbers, denoted as complement_R(B). To do this, I first need to determine set B.
+
+Set B is defined as {x | 2x² - 3x - 2 < 0}. I need to solve this quadratic inequality. First, find the roots of the equation 2x² - 3x - 2 = 0.
+
+Using the quadratic formula: x = [3 ± sqrt(9 + 16)] / 4 = [3 ± sqrt(25)] / 4 = [3 ± 5]/4.
+
+So, the roots are (3+5)/4 = 2 and (3-5)/4 = -0.5. Therefore, the quadratic can be factored as 2(x - 2)(x + 0.5) < 0.
+
+To determine where the quadratic is negative, we can analyze the sign changes around the roots x = -0.5 and x = 2.
+
+The quadratic opens upwards (since the coefficient of x² is positive), so it will be negative between its roots. Thus, B = (-0.5, 2).
+
+Now, the complement of B in R is everything outside of B, so complement_R(B) = (-∞, -0.5] ∪ [2, ∞).
+
+Now, we need to find A ∪ (complement_R(B)). So, A is (-0.5, 1], and complement_R(B) is (-∞, -0.5] ∪ [2, ∞).
+
+Let's visualize this on the number line. A starts just above -0.5 and goes up to 1. complement_R(B) has two parts: from negative infinity up to -0.5, and from 2 to infinity.
+
+When we take the union of A and complement_R(B), the overlapping parts are already covered, but the gaps are from -∞ to -0.5 (from complement_R(B)), from -0.5 to 1 (from A), and from 2 to ∞ (from complement_R(B)). So, the union will be (-∞, ∞), except perhaps where there's a gap. Wait, but actually, A starts just above -0.5, and complement_R(B) goes up to -0.5. So, the union will cover everything except perhaps the point exactly at -0.5, but since A is open at -0.5 and complement_R(B) includes -0.5, the union will be (-∞, ∞).
+
+Wait, let me double-check. A is (-0.5, 1], and complement_R(B) is (-∞, -0.5] ∪ [2, ∞). So, when we take the union, the interval (-∞, -0.5] is covered by complement_R(B), and (-0.5, 1] is covered by A. Then, from 2 onwards, it's covered by complement_R(B). So, actually, the union is (-∞, ∞), because there's no gap between the two sets. Wait, but at x = -0.5, complement_R(B) includes it, and A is open at -0.5, so the union will include all real numbers except perhaps x = -0.5 is not in the union because A doesn't include it, but complement_R(B) does. So, the union is (-∞, ∞).
+
+Wait, no, because A is (-0.5, 1], which doesn't include -0.5, and complement_R(B) includes -0.5. So, the union will include all real numbers except perhaps x = -0.5 is not included, but complement_R(B) includes it. So, actually, the union is (-∞, ∞).
+
+Wait, no, because complement_R(B) includes -0.5, and A doesn't include it, so the union will include all real numbers except perhaps x = -0.5 is not in the union because A is open at -0.5. Wait, no, because A is (-0.5, 1], which is all x > -0.5 up to 1, and complement_R(B) includes x ≤ -0.5. So, together, they cover all x ≤ 1 from A and x > -0.5 from complement_R(B). Wait, perhaps I'm overcomplicating.
+
+Let me think again. A is (-0.5, 1], and complement_R(B) is (-∞, -0.5] ∪ [2, ∞). So, when we take the union, we combine these two sets. The complement_R(B) gives us everything up to -0.5 and beyond 2. A gives us from -0.5 up to 1. So, the union will be (-∞, ∞), because complement_R(B) covers everything up to -0.5, and A covers everything from -0.5 up to 1. Then, complement_R(B) covers from 2 onwards. So, overall, the union is all real numbers.
+
+Wait, no, because complement_R(B) is (-∞, -0.5] ∪ [2, ∞), and A is (-0.5, 1]. So, the union will be (-∞, -0.5] ∪ (-0.5, 1] ∪ [2, ∞), which simplifies to (-∞, ∞), because (-0.5, 1] includes all x from -0.5 to 1, and complement_R(B) includes everything up to -0.5 and beyond 2. So, together, they cover all real numbers except perhaps x = -0.5 is not in complement_R(B), but A is open at -0.5, so the union will be (-∞, ∞).
+
+Wait, no, because complement_R(B) includes -0.5, and A is (-0.5, 1], so together, they cover all x ≤ 1 from A and x > -0.5 from complement_R(B). Then, from 2 onwards, it's covered by complement_R(B). So, the union is indeed all real numbers.
+
+Wait, but let me confirm. If I take the union of A and complement_R(B), and A is (-0.5, 1], and complement_R(B) is (-∞, -0.5] ∪ [2, ∞), then the union will be (-∞, ∞), because complement_R(B) covers everything up to -0.5, and A covers everything from -0.5 up to 1, and complement_R(B) covers from 2 onwards. So, together, they cover all real numbers.
+
+So, for part (1), the answer is all real numbers, which in LaTeX is \boxed{(-\infty, \infty)}.
+
+Now, moving on to part (2): If A is a subset of B, find the range of the real number a.
+
+So, we need to find all a such that every x in A is also in B.
+
+First, let's recall the definitions:
+
+A = {x | 0 < 2x + a ≤ 3} = ( ( -a + 0 ) / 2, (3 - a)/2 ) = ( -a/2, (3 - a)/2 )
+
+Wait, no, let's solve 0 < 2x + a ≤ 3.
+
+First, 0 < 2x + a => 2x > -a => x > -a/2.
+
+Second, 2x + a ≤ 3 => 2x ≤ 3 - a => x ≤ (3 - a)/2.
+
+So, A = ( -a/2, (3 - a)/2 )
+
+Similarly, B is (-0.5, 2), as we found earlier.
+
+So, for A to be a subset of B, every x in A must satisfy -0.5 < x < 2.
+
+Therefore, the interval A must be entirely contained within B.
+
+So, we need:
+
+- a/2 ≥ -0.5 (since the lower bound of A is -a/2, and we need this to be greater than -0.5)
+
+and
+
+(3 - a)/2 ≤ 2 (since the upper bound of A is (3 - a)/2, and we need this to be less than 2)
+
+Additionally, we need to ensure that the lower bound of A is less than the upper bound of A, which is already satisfied since (3 - a)/2 > -a/2 for a < something, but let's check.
+
+First inequality: -a/2 ≥ -0.5 => Multiply both sides by -2 (reversing inequality): a ≤ 1.
+
+Second inequality: (3 - a)/2 ≤ 2 => Multiply both sides by 2: 3 - a ≤ 4 => -a ≤ 1 => a ≥ -1.
+
+So, combining these two, a must be between -1 and 1, inclusive.
+
+Wait, but let me double-check. If a is in [-1, 1], then A = ( -a/2, (3 - a)/2 )
+
+Let's see:
+
+If a = -1, then A = ( 0.5, (3 - (-1))/2 ) = (0.5, 2)
+
+If a = 1, then A = ( -0.5, (3 - 1)/2 ) = (-0.5, 1)
+
+So, in both cases, A is a subset of B, which is (-0.5, 2).
+
+Wait, but when a is 1, A is (-0.5, 1], which is a subset of B = (-0.5, 2). Similarly, when a is -1, A is (0.5, 2), which is also a subset of B.
+
+What if a is between -1 and 1? Let's take a = 0, then A = (0, 1.5), which is a subset of B.
+
+What if a is greater than 1, say a = 2? Then A = ( -1, (3 - 2)/2 ) = (-1, 0.5). Is this a subset of B = (-0.5, 2)? No, because A starts at -1, which is less than -0.5, so A would extend beyond B on the left. Similarly, if a is less than -1, say a = -2, then A = (1, (3 - (-2))/2 ) = (1, 2.5). This would extend beyond B on the right, so it's not a subset.
+
+Therefore, the range of a is [-1, 1].
+
+Wait, but let me double-check the inequalities again.
+
+From the lower bound: -a/2 ≥ -0.5 => a ≤ 1.
+
+From the upper bound: (3 - a)/2 ≤ 2 => 3 - a ≤ 4 => -a ≤ 1 => a ≥ -1.
+
+So, a must be between -1 and 1, inclusive.
+
+Thus, the answer is a ∈ [-1, 1].
+
+So, putting it all together:
+
+(1) A ∪ (complement_R(B)) = (-∞, ∞), so \boxed{(-\infty, \infty)}
+
+(2) The range of a is \boxed{[-1, 1]}
+</think>
+
+To solve the given problem, we break it down into two parts as specified.
+
+### Part (1)
+
+Given \( A = \{x \mid 0 < 2x + a \leq 3\} \) and \( a = 1 \), we need to find \( A \cup (\complement_{\mathbb{R}} B) \).
+
+1. **Find set \( A \) when \( a = 1 \):**
+   \[
+   0 < 2x + 1 \leq 3
+   \]
+   Solving the inequalities:
+   - \( 0 < 2x + 1 \) simplifies to \( -0.5 < x \).
+   - \( 2x + 1 \leq 3 \) simplifies to \( x \leq 1 \).
+   Thus, \( A = (-0.5, 1] \).
+
+2. **Find set \( B \):**
+   \[
+   B = \{x \mid 2x^2 - 3x - 2 < 0\}
+   \]
+   Solving the quadratic inequality:
+   - The roots are \( x = -0.5 \) and \( x = 2 \).
+   - The quadratic is negative between the roots, so \( B = (-0.5, 2) \).
+
+3. **Find the complement of \( B \) in \( \mathbb{R} \):**
+   \[
+   \complement_{\mathbb{R}} B = (-\infty, -0.5] \cup [2, \infty)
+   \]
+
+4. **Find the union \( A \cup (\complement_{\mathbb{R}} B) \):**
+   - \( A = (-0.5, 1] \)
+   - \( \complement_{\mathbb{R}} B = (-\infty, -0.5] \cup [2, \infty) \)
+   - The union covers all real numbers except for the gap between \( (-0.5, 1] \) and \( (-\infty, -0.5] \), which is already covered by \( \complement_{\mathbb{R}} B \). Thus, the union is all real numbers.
+
+\[
+A \cup (\complement_{\mathbb{R}} B) = (-\infty, \infty)
+\]
+
+### Part (2)
+
+We need to find the range of \( a \) such that \( A \subseteq B \).
+
+1. **Express set \( A \) in terms of \( a \):**
+   \[
+   A = \left( \frac{-a}{2}, \frac{3 - a}{2} \right)
+   \]
+
+2. **Determine the conditions for \( A \subseteq B \):**
+   - The lower bound of \( A \) must be greater than the lower bound of \( B \): \( \frac{-a}{2} \geq -0.5 \)
+     - Solving gives \( a \leq 1 \).
+   - The upper bound of \( A \) must be less than the upper bound of \( B \): \( \frac{3 - a}{2} \leq 2 \)
+     - Solving gives \( a \geq -1 \).
+
+3. **Combine the conditions:**
+   - \( -1 \leq a \leq 1 \)
+
+Thus, the range of \( a \) is \([-1, 1]\).
+
+### Final Answers
+
+(1) \(\boxed{(-\infty, \infty)}\)
+
+(2) \(\boxed{[-1, 1]}\)<｜end▁of▁sentence｜>

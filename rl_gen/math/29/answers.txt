@@ -1,0 +1,28 @@
+1
+0.3
+Okay, so I have this problem here where ξ follows a normal distribution with mean 0 and variance σ², written as N(0, σ²). The probability that ξ is between -2 and 2 is given as 0.4, and I need to find P(ξ > 2). Hmm, let me think about how to approach this.
+
+First, since ξ is normally distributed with mean 0, it's symmetric around 0. That means the probability of being less than -2 is the same as being greater than 2. But wait, in this case, the probability between -2 and 2 is 0.4, so the total area under the curve is 1. Therefore, the area to the left of -2 and the area to the right of 2 should each be (1 - 0.4)/2 = 0.3. That means P(ξ < -2) = 0.3 and P(ξ > 2) = 0.3. So, is the answer 0.3? That seems straightforward, but let me double-check to make sure I didn't miss anything.
+
+Wait, the problem says P(-2 ≤ ξ ≤ 2) = 0.4, which is the middle part. Since the total probability is 1, the remaining probability is 1 - 0.4 = 0.6, which is split equally on both sides because of the symmetry. So yes, each tail has 0.3 probability. Therefore, P(ξ > 2) is 0.3. I think that's correct. But just to be thorough, maybe I should consider if the standard deviation σ affects this result, but since we're only asked for the probability and not the exact value in terms of σ, it's not necessary here. So the answer should be 0.3.
+
+Wait, but let me think again. The standard normal distribution is often used with mean 0 and variance 1, so if we standardize ξ, we can use the Z-table. Let me try that approach to confirm.
+
+Let Z = ξ / σ, so Z follows N(0,1). Then P(-2 ≤ ξ ≤ 2) = P(-2/σ ≤ Z ≤ 2/σ) = 0.4. Let me denote z = 2/σ, so P(-z ≤ Z ≤ z) = 0.4. From the standard normal table, P(-z ≤ Z ≤ z) = 2Φ(z) - 1 = 0.4, where Φ(z) is the cumulative distribution function. So, 2Φ(z) - 1 = 0.4 => Φ(z) = 0.7. Therefore, z = Φ⁻¹(0.7). Looking up 0.7 in the Z-table, Φ(0.524) ≈ 0.7, so z ≈ 0.524. Therefore, 2/σ = 0.524 => σ = 2 / 0.524 ≈ 3.805.
+
+But wait, do I need the value of σ? The question is asking for P(ξ > 2), which is P(Z > 2/σ) = P(Z > 0.524). From the Z-table, Φ(0.524) ≈ 0.6997, so P(Z > 0.524) ≈ 1 - 0.6997 = 0.3003. So approximately 0.3, which confirms my earlier answer.
+
+Therefore, the answer is 0.3.
+</think>
+
+To find \( P(\xi > 2) \) given that \( \xi \) follows a normal distribution \( N(0, \sigma^2) \) and \( P(-2 \leq \xi \leq 2) = 0.4 \), we can use symmetry and the properties of the normal distribution.
+
+1. The total probability is 1, so the probability outside the interval [-2, 2] is \( 1 - 0.4 = 0.6 \).
+2. By symmetry, the probability to the left of -2 is equal to the probability to the right of 2.
+3. Therefore, each tail has probability \( 0.6 / 2 = 0.3 \).
+
+Thus, \( P(\xi > 2) = 0.3 \).
+
+\[
+\boxed{0.3}
+\]<｜end▁of▁sentence｜>

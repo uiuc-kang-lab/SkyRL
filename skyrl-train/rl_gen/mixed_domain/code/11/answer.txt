@@ -1,0 +1,1013 @@
+Okay, so I've got this problem to solve, and I'm a bit stuck. Let me try to think through it step by step.
+
+The problem is about creating a matrix b from matrix a. The conditions are that every element in b is different from the corresponding element in a, and both matrices contain all integers from 1 to n*m exactly once.
+
+Hmm. So, for each cell (i,j), b[i][j] must not equal a[i][j]. Also, all numbers from 1 to n*m must be present in b, and each exactly once.
+
+First, I need to figure out under what circumstances this is possible. Because if it's not possible, I should output -1.
+
+Let me think about the cases where it's possible.
+
+Well, one obvious case is when the matrix is of size 1x1. Because then, the only element is a[1][1], and b must have the same number but different. But since n=1 and m=1, that's impossible. So for 1x1 matrix, output is -1.
+
+But wait, the problem statement says that a has all integers from 1 to n*m, and n and m are at least 1. So for a 1x1 matrix, a has 1, and b needs to have 1, but it's the same as a. So no solution.
+
+So for 1x1, output is -1.
+
+What about for 2x2 matrices? Let's think.
+
+Suppose a is:
+1 2
+3 4
+
+Then, b must be a matrix where each element is different, and contains 1,2,3,4.
+
+So possible b could be:
+2 3
+4 1
+
+Yes, that works. So in this case, it's possible.
+
+Another example: a is:
+1 3
+2 4
+
+Then, b could be:
+2 1
+4 3
+
+Yes, that's also valid.
+
+Wait, but what if a is:
+1 2
+2 3
+
+Wait, no, a is supposed to have all distinct elements. So that's not a valid a.
+
+So, the matrix a has all unique elements from 1 to n*m.
+
+So, the problem is to construct b such that for every cell, b[i][j] != a[i][j], and all numbers are present.
+
+So, how can I approach this?
+
+I think the key is to find a way to swap elements between rows and columns such that no element in b is the same as a.
+
+Wait, but it's not just swapping. Because for each cell, you have to make sure that the new value is not present in that position.
+
+Wait, perhaps the approach is to create a new matrix where each cell is set to a different value, ensuring that for each cell, we don't pick a[i][j].
+
+But how?
+
+Hmm. Let's think of it as a bipartite graph matching problem. Or perhaps not.
+
+Alternatively, think about the problem as trying to find a permutation where each element is placed in a different cell.
+
+Wait, but that's a bit vague.
+
+Another approach: Since all elements in a are unique, for each cell (i,j), a[i][j] is unique. So, in matrix b, each position must have a different value.
+
+So, perhaps the way to construct b is to shift each row by one, but that might not work for all cases.
+
+Wait, let's think about the sample I had earlier. For a 2x2 matrix, the solution was to swap the first row with the second row, and then swap the first column with the second. Or something like that.
+
+Wait, in the first example, a was:
+1 2
+3 4
+
+b was:
+2 3
+4 1
+
+Which is a rotation. So, each row is shifted, and the columns are also shifted.
+
+So, perhaps a way to construct b is to perform a cyclic shift of the rows and columns.
+
+But that might not always work.
+
+Wait, what's the condition for this to be possible?
+
+Maybe the problem can be solved if and only if no element is in its original position. Because if an element is on the diagonal (i,i), then in b, that position can't have a[i][i]. So, for such cases, perhaps we have to swap rows and columns.
+
+Wait, no. Because the problem allows for any arrangement as long as each cell is different and all numbers are present.
+
+So, perhaps the approach is to create a new matrix where each cell is set to a different value.
+
+Wait, maybe the problem can be solved by checking whether there's any fixed point. A fixed point is where a[i][j] = i*m + j. Because in that case, in b, we can't have that value, so we need to swap it with another. But how?
+
+Wait, perhaps the problem can be solved by ensuring that for each cell, if a[i][j] is not equal to its original position, then it's fine. But if it is, then we need to swap it with some other cell.
+
+Wait, but that's not sufficient. Because even if a cell is in its original position, we might have other cells that are also in their original positions, and we have to handle those.
+
+So, perhaps the problem is possible if and only if the matrix a has no fixed points, and the number of fixed points is even.
+
+Wait, that's an interesting thought. Because each fixed point (where a[i][j] = i*m + j) would require that in b, we can't have that value. So, for each such cell, we have to swap it with another cell.
+
+If the number of fixed points is even, then we can pair them up and swap, which would lead to a valid matrix. If it's odd, then it's impossible.
+
+So, the approach would be:
+
+1. For each cell (i,j), check if a[i][j] equals i*m + j. That's the condition for a fixed point.
+
+2. Count the number of fixed points.
+
+3. If the count is odd, output -1.
+
+4. If even, then construct the matrix b by swapping pairs of fixed points.
+
+Wait, but how do I construct the matrix?
+
+Alternatively, perhaps it's possible to create b by swapping each fixed point with another fixed point. But how?
+
+Wait, perhaps it's easier to think in terms of the following:
+
+If there are zero fixed points, then the matrix can be constructed by any permutation of the elements, as long as each cell is different from a. But wait, that's not necessarily the case. For example, if a is a permutation of 1..n*m, then b can be any permutation that is different from a. So, in this case, it's always possible.
+
+Wait, no. Because a is a permutation, but b must also be a permutation. So, in this case, as long as there's at least one cell where a[i][j] != b[i][j], which is always true except when b is a permutation that is a derangement of a. So, for a with no fixed points, it's possible to construct b.
+
+Wait, but if a has no fixed points, then b can be any permutation of the numbers 1 to n*m, except a itself. So, that's possible.
+
+So, the problem arises when there are fixed points. Because for each fixed point, we have to swap it with another fixed point, but that's only possible if the count is even.
+
+So, the steps are:
+
+- Count the number of fixed points (cells where a[i][j] == i*m + j).
+
+- If the count is odd, then it's impossible to construct b, so output -1.
+
+- If the count is even, then for each pair of fixed points, swap their values in b.
+
+Wait, but wait: when you swap two fixed points, you have to ensure that in the new matrix, the values in the swapped cells are different from a.
+
+Wait, because in a, those cells are fixed points. So, when you swap, you need to make sure that the new value in b is not equal to a's value.
+
+So, for example, suppose a has two fixed points at positions (i1, j1) and (i2, j2). In matrix a, a[i1][j1] = i1*m + j1, same for (i2,j2).
+
+In matrix b, we need to set b[i1][j1] to some value that is not equal to a[i1][j1], which is i1*m + j1. Similarly for b[i2][j2].
+
+So, when swapping, we can select a value from the remaining numbers and assign them to the positions.
+
+But how to ensure that this is possible.
+
+Hmm, perhaps the way to proceed is:
+
+1. Check if the number of fixed points is even. If not, output -1.
+
+2. Else, create a new matrix b where for each fixed point, we swap it with another fixed point.
+
+But how to choose which two to swap.
+
+Wait, perhaps the simplest way is to pair the fixed points in such a way that when we swap, the new values are different from a.
+
+Wait, for example, in a 2x2 matrix:
+
+a is:
+1 2
+2 3
+
+Wait, no, because a is supposed to have all distinct elements. So, a 2x2 matrix can't have 1,2,2,3. So, that's invalid.
+
+Wait, let's take a 2x2 matrix where a has no fixed points.
+
+For example:
+
+a is:
+2 1
+3 4
+
+In this case, the fixed points are where i*m + j equals a[i][j].
+
+For 2x2, m=2.
+
+So, for (1,1): 1*2 +1=3. a[1][1] is 2, not equal.
+
+(1,2): 2*2 +2=6? Wait, no, wait, m=2, so for 2x2 matrix, the indices are 1-based. So, for i in 1..2, j in 1..2.
+
+So, fixed points are where a[i][j] = i*2 + j.
+
+So, in the example:
+
+a is:
+2 1
+3 4
+
+Check for fixed points:
+
+i=1, j=1: 1*2 +1=3. a[1][1] is 2. Not equal.
+
+i=1, j=2: 1*2 +2=4. a[1][2] is 1. Not equal.
+
+i=2, j=1: 2*2 +1=5. a[2][1] is 3. Not equal.
+
+i=2, j=2: 2*2 +2=6. a[2][2] is4. Not equal.
+
+So, no fixed points. So, it's possible to construct b.
+
+How? Let's say we can swap any two elements in b.
+
+For example, swap (1,1) and (2,2):
+
+b becomes:
+4 1
+3 2
+
+Wait, let's check:
+
+b[1][1] is4 !=2.
+
+b[1][2] is1 !=1? No, because in a, it's 1. So, that's equal. So that's not allowed.
+
+Oops, that's a problem.
+
+Wait, so in this case, we have to ensure that when swapping, the new values are different from a.
+
+So, the approach is:
+
+For each fixed point, find a value to swap with another fixed point such that the new value is not equal to a's value.
+
+Wait, but how?
+
+Hmm. So, perhaps the idea is that in the matrix b, for each fixed point, we can take a value from the remaining numbers (not used in a) and assign it to that position, but ensuring that it's different from a's value.
+
+Wait, but it's possible that some of the remaining numbers are equal to a's value.
+
+Wait, for example, in a 2x2 matrix where a is:
+
+2 1
+
+3 4
+
+The remaining numbers are 5,6,7,8? Wait, no. Wait, 2x2 matrix has 4 elements. So, the numbers are 1,2,3,4. So, a has all four, so the remaining numbers are none.
+
+Wait, no, a is 2x2, so numbers are 1,2,3,4. So, all are used in a.
+
+So, in this case, when creating b, you can't have any fixed points, so you can just swap any two elements.
+
+But in the earlier example where a is:
+
+2 1
+
+3 4
+
+We can create b by swapping (1,1) and (2,2):
+
+b becomes:
+
+4 1
+
+3 2
+
+Now, check each cell:
+
+b[1][1] is4 !=2.
+
+b[1][2] is1 !=1? No, because a[1][2] is 1. So, that's the same as a. So, this is invalid.
+
+So, the approach of just swapping any two elements is not sufficient.
+
+Hmm. So, in this case, we have to make sure that the new value is not equal to a's value.
+
+So, perhaps the way to proceed is:
+
+For each fixed point, we can choose a value from the remaining numbers (not present in a) and assign it to that cell, ensuring that it's not equal to a's value.
+
+Wait, but in this case, the remaining numbers are 5,6,7,8? No, because a is 2x2, so the numbers are 1,2,3,4. So, the remaining is none.
+
+Wait, that's a problem.
+
+So, perhaps in this case, when creating b, we can't have any fixed points, so we have to swap two non-fixed points.
+
+Wait, but how.
+
+Wait, maybe in cases where there are no fixed points, it's possible to construct b by just swapping any two elements, as long as they are not fixed points.
+
+Wait, but in the example I had, a is:
+
+2 1
+
+3 4
+
+So, the fixed points are none.
+
+So, in this case, I can swap any two elements. So, for example, swap (1,1) and (1,2):
+
+b becomes:
+
+1 2
+
+3 4
+
+Wait, no, that's the same as a. So, that's invalid.
+
+Wait, no. Because for (1,1), a is 2. So, if I swap (1,1) with (1,2), the new a[1][1] becomes1, which is different from 2.
+
+Wait, but in this case, the new matrix would be:
+
+1 2
+
+3 4
+
+Which is the same as a, but with (1,1) and (1,2) swapped. So, in this case, is this a valid b?
+
+Yes. Because in b, each cell is different from a.
+
+Because:
+
+b[1][1] is1 !=2.
+
+b[1][2] is2 !=1.
+
+b[2][1] is3 !=3? Wait, no. b[2][1] is3, which is equal to a[2][1], which is3.
+
+So, that's a problem.
+
+So, in this case, swapping (1,1) and (1,2) in a would result in b being:
+
+1 2
+
+3 4
+
+Which has b[2][1] =3, which is same as a[2][1], which is3. So, it's invalid.
+
+So, that approach doesn't work.
+
+So, perhaps the approach is more complicated.
+
+So, what's another approach?
+
+Hmm. Maybe for each fixed point, we can find a non-fixed point to swap with, ensuring that the new value is not equal to a's value.
+
+Wait, but in the example where a is:
+
+2 1
+
+3 4
+
+We have no fixed points. So, perhaps we can swap (1,1) with (2,1):
+
+a[1][1] is2, a[2][1] is3.
+
+So, swapping gives:
+
+3 1
+
+2 4
+
+Now, check each cell:
+
+b[1][1] is3 !=2.
+
+b[1][2] is1 !=1? No, because a[1][2] is1. So, that's invalid.
+
+Hmm.
+
+So, this approach also doesn't work.
+
+So, perhaps the problem is more complex.
+
+Let me think differently.
+
+Another approach: For each cell, decide whether to swap a[i][j] with another cell's value.
+
+But ensuring that no cell has the same value as a[i][j].
+
+Wait, but how?
+
+Perhaps, the problem can be solved by first identifying all fixed points. If there are no fixed points, then it's possible to construct b by any permutation except a.
+
+Wait, but that's not necessarily true. For example, in a 2x2 matrix where a is:
+
+3 1
+
+2 4
+
+So, the fixed points are where i*2 +j equals a[i][j].
+
+For i=1, j=1: 1*2 +1=3. a[1][1] is3. So, fixed point.
+
+i=1, j=2: 1*2+2=4. a[1][2] is1 !=4.
+
+i=2, j=1: 2*2+1=5. a[2][1] is2 !=5.
+
+i=2,j=2: 2*2+2=6. a[2][2] is4 !=6.
+
+So, only one fixed point.
+
+So, the count is 1, which is odd. So, output is -1.
+
+So, that's one case.
+
+Another example: a is:
+
+1 3
+
+2 4.
+
+In this case, the fixed points are:
+
+i=1, j=1: 1*2 +1=3. a[1][1] is1 !=3.
+
+i=1,j=2: 2+2=4. a[1][2] is3 !=4.
+
+i=2,j=1: 2*2 +1=5. a[2][1] is2 !=5.
+
+i=2,j=2: 2*2 +2=6. a[2][2] is4 !=6.
+
+So, no fixed points. So, it's possible to create b.
+
+So, how?
+
+In this case, we can swap any two cells.
+
+For example, swap (1,1) and (2,2):
+
+b becomes:
+
+4 3
+
+2 1.
+
+Check each cell:
+
+b[1][1] is4 !=1.
+
+b[1][2] is3 !=3? No, because a[1][2] is3. So, that's invalid.
+
+So, that's a problem.
+
+Hmm. So, in this case, swapping (1,1) and (2,2) is invalid because b[1][2] is 3 which equals a[1][2].
+
+So, the approach of swapping any two cells is not sufficient.
+
+So, to solve this, perhaps the way is to find a way to swap two cells such that neither of them is equal to a's value.
+
+So, in this case, the fixed points are none.
+
+So, to create b, we can swap two cells that are not fixed points.
+
+Wait, but in this example, all cells are non-fixed.
+
+So, perhaps the approach is to find two cells that are not fixed points, and swap their values in a way that the new values are not equal to a's original values.
+
+So, in the example where a is:
+
+1 3
+
+2 4.
+
+We can swap (1,2) and (2,1):
+
+a[1][2] is3, a[2][1] is2.
+
+In b, these become 2 and 3.
+
+So, b becomes:
+
+1 2
+
+3 4.
+
+Check each cell:
+
+b[1][1] is1 !=1? No. So, that's invalid.
+
+Hmm, that's also a problem.
+
+Wait, so swapping (1,2) and (2,1) gives:
+
+1 2
+
+3 4.
+
+In this case, b[1][1] is1, which is equal to a[1][1]. So, invalid.
+
+So, that's a problem.
+
+Hmm.
+
+So, perhaps the approach is to swap two cells that are non-fixed points and whose values are different from each other and different from a's values.
+
+Wait, but in this example, all cells are non-fixed.
+
+So, perhaps the way is to find two cells (i,j) and (k,l) where i !=k, j !=l, and a[i][j] != a[k][l], and also a[i][j] != a[k][l] (which is always true).
+
+Wait, but in this case, perhaps we can swap any two cells, as long as the new values are not equal to a's.
+
+So, for the example where a is:
+
+1 3
+
+2 4.
+
+We can choose to swap (1,2) and (2,1):
+
+a[1][2] is3, a[2][1] is2.
+
+In b, they become 2 and 3.
+
+So, b is:
+
+1 2
+
+3 4.
+
+Now, check each cell:
+
+b[1][1] is1 !=1? No.
+
+So, that's invalid.
+
+So, this approach doesn't work.
+
+Hmm.
+
+So, maybe the problem is more complex and requires a different approach.
+
+Let me think about the constraints again.
+
+The problem is to find a matrix b such that for every cell (i,j), b[i][j] != a[i][j], and all numbers from 1 to n*m are present.
+
+So, the key is that b is a permutation of the numbers 1 to n*m, with the constraint that each cell is different from a's corresponding cell.
+
+So, the approach is to find a permutation of the numbers 1 to n*m, such that for each cell (i,j), the new value is not equal to a[i][j].
+
+So, how can I model this?
+
+Hmm.
+
+An alternative approach is to try to construct b by trying to assign each cell a value different from a's.
+
+So, perhaps, I can create b by taking a permutation of the numbers, and for each cell, ensure that the value is not a[i][j].
+
+Wait, but that's not sufficient, because in the example I had earlier, a is 2x2 with all four numbers, but the permutation of 1-4 is 2-1 and 3-4, which leads to b being:
+
+2 1
+
+3 4.
+
+Wait, in this case, b[1][1] is2, which is same as a[1][1] (2). So, that's invalid.
+
+So, that approach also doesn't work.
+
+Hmm.
+
+So, perhaps I need to find a way to assign values to b such that for each cell, the value is different from a.
+
+So, the problem is similar to a derangement problem, but in a matrix.
+
+Wait, but a derangement is a permutation where no element appears in the same position. But here, it's a bit different.
+
+But maybe the approach is similar.
+
+So, perhaps, I can model this as a bipartite graph where one set is the rows and the other set is the columns, and edges represent possible assignments.
+
+But I'm not sure.
+
+Alternatively, perhaps I can model the problem as finding a permutation of the numbers 1 to n*m, such that for each cell (i,j), the permutation's value at (i,j) is not equal to a[i][j].
+
+Wait, that's exactly the problem.
+
+So, the problem reduces to finding a permutation p of 1..n*m, such that for all i,j, p[i][j] != a[i][j].
+
+Wait, no, because p is just a permutation, not a matrix. Wait, no, p is a matrix where each cell is a unique number from 1 to n*m.
+
+Wait, no. Because p is a permutation, it's a matrix where each cell is exactly one number, and all numbers are used once.
+
+So, the permutation is a bijection from the set of cells to the numbers 1..n*m.
+
+So, the problem is to find a permutation of the numbers 1..n*m, such that for each cell (i,j), the value in p[i][j] is not equal to a[i][j].
+
+So, the task is to find such a permutation.
+
+Hmm.
+
+So, how can I find such a permutation?
+
+Well, one way is to try to construct p by ensuring that for each cell, the value is not a[i][j], and all values are used exactly once.
+
+So, perhaps the approach is to:
+
+1. Check if the number of fixed points is even. If not, output -1.
+
+2. Else, construct p by swapping pairs of fixed points.
+
+But how?
+
+So, let's think about the steps.
+
+First, for each cell, check if it's a fixed point (i.e., p[i][j] = a[i][j]).
+
+If no fixed points, then it's easy: just create any permutation of the numbers.
+
+But if there are fixed points, we need to make sure that in the permutation, the fixed points are not in their original positions.
+
+So, the approach is:
+
+- Collect all the fixed points.
+
+- If the count is odd, output -1.
+
+- Else, for each pair of fixed points, swap their values in the permutation.
+
+Wait, but how to ensure that the new values are not equal to a's original values.
+
+So, for each pair (i,j) and (k,l), where i !=k and j !=l, we need to assign p[i][j] = some value not equal to a[i][j], and p[k][l] = some value not equal to a[k][l].
+
+So, perhaps the way is to:
+
+- For each fixed point, assign a new value from the remaining numbers.
+
+But how?
+
+Wait, perhaps the way to proceed is:
+
+1. Collect all the fixed points.
+
+2. If the count is odd, output -1.
+
+3. Else, for each fixed point, assign a new value from the remaining numbers.
+
+But how to ensure that the new value is not equal to the original a's value.
+
+So, the steps are:
+
+- Create a list of all numbers from 1 to n*m.
+
+- Create a set of fixed points.
+
+- If the count of fixed points is odd, output -1.
+
+Else:
+
+- For each fixed point, find a number from the remaining numbers (not in a) and assign it to that cell, ensuring that it's not equal to a's value.
+
+Wait, but in this case, the remaining numbers are those not present in a. So, if a has all numbers, then the remaining is empty. So, that's the case where no fixed points.
+
+So, perhaps, the way is:
+
+- For each fixed point (i,j), find a number x from the remaining numbers (not in a), such that x is not equal to a[i][j].
+
+- Assign x to (i,j).
+
+- Then, for other cells, assign numbers from the remaining.
+
+But this seems complicated.
+
+Alternatively, perhaps the way is:
+
+- For each fixed point (i,j), assign a new number x, which is not equal to a[i][j], and also not present in a.
+
+Wait, but if a already contains all numbers, then this is impossible.
+
+So, perhaps, the approach is:
+
+If there are no fixed points, then it's possible to construct b as any permutation, as long as it's different from a.
+
+But if there are fixed points, then we need to swap them with non-fixed points.
+
+So, the steps are:
+
+1. Check if the number of fixed points is even. If not, output -1.
+
+2. Else, for each fixed point, find a non-fixed point to swap with, ensuring that the new value is not equal to a's value.
+
+So, for example, in a 2x2 matrix where a is:
+
+1 2
+
+3 4.
+
+No fixed points.
+
+So, in this case, we can create b by swapping any two cells.
+
+For example, swap (1,1) and (2,2):
+
+b becomes:
+
+4 2
+
+3 1.
+
+Check:
+
+b[1][1] is4 !=1.
+
+b[1][2] is2 !=2? No, because a[1][2] is2. So, that's invalid.
+
+So, that approach is not correct.
+
+Wait, so perhaps the way is to swap non-fixed points.
+
+Wait, but in this case, all cells are non-fixed.
+
+So, perhaps the approach is to find two non-fixed points to swap.
+
+But in this case, all are non-fixed, so any swap is allowed.
+
+Wait, but in the example above, a is:
+
+1 2
+
+3 4.
+
+So, swapping (1,1) and (1,2):
+
+b becomes:
+
+2 1
+
+3 4.
+
+Check:
+
+b[1][1] is2 !=1.
+
+b[1][2] is1 !=2.
+
+b[2][1] is3 !=3? No, a[2][1] is3. So, that's invalid.
+
+Hmm.
+
+So, perhaps the approach is to find two cells that are both non-fixed, and swap their values.
+
+In this case, (1,1) is fixed, so can't swap with it.
+
+So, (1,2) is non-fixed, and (2,1) is non-fixed.
+
+So, swap (1,2) and (2,1):
+
+a[1][2] is2, a[2][1] is3.
+
+So, in b, they become 3 and 2.
+
+So, b becomes:
+
+1 3
+
+2 4.
+
+Check each cell:
+
+b[1][1] is1 !=1? No.
+
+So, that's invalid.
+
+Hmm.
+
+So, perhaps the problem is that when the number of fixed points is even, but all the fixed points are in positions that require their values to be swapped with non-fixed points, but the new values may end up equal to a's values.
+
+So, perhaps the approach is more involved.
+
+Another idea: For each cell, if it's a fixed point, we can assign a different value from a, but not from a's current value.
+
+So, for each fixed point (i,j), the value in b[i][j] must be a value not in a, but also not equal to a[i][j].
+
+So, the steps are:
+
+1. For each fixed point (i,j), collect the set of available values (all numbers except those in a) and also not equal to a[i][j].
+
+2. If for any fixed point, there are no such available values, then it's impossible.
+
+3. Else, for each fixed point, assign a value from the available set.
+
+4. The remaining cells can be filled with any available values.
+
+So, this seems like a way to proceed.
+
+So, let's outline the steps for the code:
+
+For each test case:
+
+- Read n and m.
+
+- Read the matrix a.
+
+- Collect all the fixed points: (i,j) where a[i][j] == i*m + j.
+
+- Collect the set of fixed values: {a[i][j] for (i,j) in fixed points}.
+
+- Create a list of all numbers from 1 to n*m.
+
+- Create a set of these numbers.
+
+- For each fixed point (i,j):
+
+   - The available numbers are those not in a, and not equal to a[i][j].
+
+- If for any fixed point, the available numbers are empty, output -1.
+
+- Else, for each fixed point, assign a value from the available numbers.
+
+   - The available numbers are a list, perhaps a sorted list.
+
+   - Assign the values in some order.
+
+- Then, fill the rest of the matrix with the remaining available numbers.
+
+So, the code can be structured as follows:
+
+For each test case:
+
+   Read n, m.
+
+   Read the matrix a.
+
+   fixed_points = list of (i,j) where a[i][j] == i*m +j.
+
+   fixed_values = set( a[i][j] for (i,j) in fixed_points )
+
+   total = n*m
+
+   available = list of numbers from 1 to total, excluding those in a.
+
+   available = [x for x in range(1, total +1) if x not in a]
+
+   # Now, for each fixed point, check if there are available numbers.
+
+   # If any fixed point has no available numbers, output -1.
+
+   for (i,j) in fixed_points:
+
+       available_for_i_j = [x for x in available if x != a[i][j]]
+
+       if not available_for_i_j:
+
+           print(-1)
+
+           # proceed to next test case.
+
+           break
+
+   else:
+
+       # Now, collect the available numbers for each fixed point.
+
+       available_list = [x for x in available for (i,j) in fixed_points if x != a[i][j]]
+
+       # Now, assign these available numbers to the fixed points.
+
+       # We can sort them and assign in order.
+
+       available_list.sort()
+
+       # Now, create a list of all cells, and for each cell, if it's a fixed point, assign the next available number.
+
+       # Else, assign the next available number.
+
+       # So, create a list of all cells, and for each, if it's a fixed point, take the next available number.
+
+       # Else, take the next available number.
+
+       # So, create a list called b.
+
+       b = [[0 for _ in range(m)] for _ in range(n)]
+
+       index = 0
+
+       for i in range(n):
+
+           for j in range(m):
+
+               if (i,j) in fixed_points:
+
+                   # Assign the next available number.
+
+                   b[i][j] = available_list[index]
+
+                   index +=1
+
+               else:
+
+                   # Assign the next available number.
+
+                   b[i][j] = available_list[index]
+
+                   index +=1
+
+       # Now, check if b is valid.
+
+       # For each cell, check if b[i][j] != a[i][j].
+
+       valid = True
+
+       for i in range(n):
+
+           for j in range(m):
+
+               if b[i][j] == a[i][j]:
+
+                   valid = False
+
+                   break
+
+           if not valid:
+
+               break
+
+       if valid:
+
+           print(n*m, end=' ')
+
+           print(' '.join(map(str, b)))
+
+       else:
+
+           print(-1)
+
+Wait, but in the example where a is:
+
+2 1
+
+3 4
+
+So, n=2, m=2.
+
+fixed_points are none.
+
+So, available_list is [5,6,7,8]?
+
+Wait, no. Because a is [2,1,3,4], so the numbers in a are 2,1,3,4.
+
+So, total is 4.
+
+So, available is numbers from 1-4, excluding 1,2,3,4. Wait, that's not possible. So, available is empty.
+
+Wait, that's a problem.
+
+Wait, no. Because a is [2,1,3,4]. So, the numbers are 2,1,3,4.
+
+So, the available numbers are 5,6,7,8? No, because 5>4.
+
+Wait, no. Because n*m is 4. So, the numbers are 1,2,3,4.
+
+So, a contains all four numbers. So, available is empty.
+
+So, in this case, for each fixed point, the available list is empty, so the code would output -1.
+
+Which is correct.
+
+So, in this case, the matrix a is a permutation of 1-4, so no fixed points.
+
+So, b can be created by swapping any two elements, as long as they are not fixed points.
+
+Wait, but in this case, since all elements are non-fixed, we can swap any two.
+
+So, for example, swap (0,0) and (0,1):
+
+b becomes [1,2,3,4].
+
+Check each cell:
+
+b[0][0] is1 !=2.
+
+b[0][1] is2 !=1.
+
+b[1][0] is3 !=3? No, because a[1][0] is3. So, invalid.
+
+So, that's a problem.
+
+So, the code would output -1, but that's incorrect because a is a permutation, so b can be any permutation except a.
+
+So, the code is correct in this case, as it would output -1.
+
+Wait, but that's not correct.
+
+Because in this case, a is a permutation of 1-4, and the code would output -1, but that's wrong because it's possible to construct b.
+
+Wait, because a is a permutation of 1-4, so b can be any permutation except a.
+
+So, in this case, the code would output -1, but that's incorrect.
+
+So, this indicates a flaw in the approach.
+
+So, what's wrong here?
+
+Because the code above assumes that if there are no fixed points, then b can be any permutation except a.
+
+But in this case, it's not possible, because the code would output -1.
+
+So, the approach is incorrect.
+
+Hmm.
+
+So, perhaps the code needs to handle the case where the available list is empty, but that's only possible when a is a permutation of 1..n*m.
+
+So, in that case, the code would have to output a permutation that's different from a.
+
+So, the code's current approach would output -1, but that's incorrect.
+
+So, what's wrong with the approach?
+
+So, the code's logic is:
+
+- If there are no fixed points, then it's possible to construct b.
+
+But in the case where a is a permutation of 1..n*m, then it's not possible to construct b, because b must be a permutation that's different from a.
+
+So, in that case, the code would output -1, which is wrong.
+
+So, the code needs to handle this case.
+
+So, the code's logic is incorrect.
+
+So, the problem is that when there are no fixed points, the

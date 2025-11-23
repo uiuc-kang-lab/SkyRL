@@ -1,0 +1,206 @@
+\frac{5}{7}
+Okay, so I have this triangle problem to solve. Let me try to break it down step by step. 
+
+First, the problem states:
+
+In triangle ABC, it is given that cos 2A - 3cos(B+C) = 1, the area of triangle ABC is 5√3, and b=5. Find the value of sin B sin C.
+
+Alright, so I need to find sin B sin C. Let me jot down what I know.
+
+1. cos 2A - 3cos(B+C) = 1
+2. Area of triangle ABC = 5√3
+3. Side b = 5 (which is opposite angle B)
+
+Hmm, let me recall some triangle properties and identities that might help here.
+
+First, in any triangle, the sum of angles is π radians (or 180 degrees). So, A + B + C = π. That means B + C = π - A. Maybe I can use that to simplify the given equation.
+
+So, cos(B+C) = cos(π - A) = -cos A. Because cos(π - x) = -cos x. That's a useful identity.
+
+So, substituting into the first equation: cos 2A - 3(-cos A) = 1 → cos 2A + 3cos A = 1.
+
+Now, I can use the double-angle identity for cos 2A. Recall that cos 2A = 2cos² A - 1. So, substituting that in:
+
+2cos² A - 1 + 3cos A = 1 → 2cos² A + 3cos A - 2 = 0.
+
+Hmm, now I have a quadratic in terms of cos A. Let me let x = cos A for simplicity.
+
+So, 2x² + 3x - 2 = 0. Let me solve this quadratic.
+
+Using the quadratic formula: x = [-b ± √(b² - 4ac)] / 2a → here a=2, b=3, c=-2.
+
+So, x = [-3 ± √(9 + 16)] / 4 = [-3 ± √25] / 4 = [-3 ± 5] / 4.
+
+So, two solutions: x = (-3 + 5)/4 = 2/4 = 1/2, and x = (-3 - 5)/4 = -8/4 = -2.
+
+But cos A can't be -2 because the cosine function only ranges between -1 and 1. So, cos A = 1/2. That means A = π/3 (60 degrees) because cos π/3 = 1/2.
+
+Great, so angle A is 60 degrees. Now, let me see what else I can find.
+
+I know side b = 5, which is opposite angle B. So, perhaps I can use the Law of Sines to relate the sides and angles.
+
+Law of Sines: a/sin A = b/sin B = c/sin C = 2R, where R is the circumradius.
+
+Since I know b = 5 and angle A = π/3, let me find the circumradius R.
+
+From a/sin A = b/sin B, but I don't know a or b yet. Wait, maybe I can express a and c in terms of angles B and C.
+
+Since A = π/3, then B + C = 2π/3. So, C = 2π/3 - B.
+
+Maybe I can express sin C in terms of sin(B), since sin(2π/3 - B) = sin(2π/3)cos B - cos(2π/3)sin B.
+
+Wait, let me compute sin C:
+
+sin C = sin(2π/3 - B) = sin(2π/3)cos B - cos(2π/3)sin B.
+
+I know that sin(2π/3) = √3/2 and cos(2π/3) = -1/2. So,
+
+sin C = (√3/2)cos B - (-1/2)sin B = (√3/2)cos B + (1/2)sin B.
+
+So, sin C = (√3 cos B + sin B)/2.
+
+Hmm, that's useful. Now, I need to find sin B sin C. Let me compute that:
+
+sin B sin C = sin B * (√3 cos B + sin B)/2 = [√3 sin B cos B + sin² B]/2.
+
+Okay, so that's an expression for sin B sin C in terms of sin B and cos B. I need to find the value of this expression.
+
+Let me see what else I have. The area of the triangle is given as 5√3. The area can be expressed in terms of sides and angles as (1/2)ab sin C, but maybe it's better to use the formula (1/2)bc sin A.
+
+Yes, since I know side b = 5, side c (which I don't know yet), and angle A = π/3. So, area = (1/2) * b * c * sin A.
+
+Let me write that down:
+
+Area = (1/2) * b * c * sin A = 5√3.
+
+Substituting the known values:
+
+(1/2) * 5 * c * sin(π/3) = 5√3.
+
+Sin(π/3) is √3/2, so:
+
+(1/2) * 5 * c * (√3/2) = 5√3 → (5c√3)/4 = 5√3.
+
+Divide both sides by 5√3:
+
+c/4 = 1 → c = 4.
+
+Great, so side c is 4. Now, I know sides b = 5, c = 4, and angle A = π/3. Now, perhaps I can use the Law of Cosines to find another side or angle.
+
+Law of Cosines: a² = b² + c² - 2bc cos A.
+
+Let me compute side a:
+
+a² = 5² + 4² - 2*5*4*cos(π/3) = 25 + 16 - 40*(1/2) = 41 - 20 = 21.
+
+So, a = √21.
+
+Now, I have all sides: a = √21, b = 5, c = 4.
+
+Now, perhaps I can find angles B and C using the Law of Sines.
+
+From Law of Sines: a/sin A = b/sin B = c/sin C.
+
+We know a = √21, sin A = sin(π/3) = √3/2, b = 5, c = 4.
+
+So, let me compute the common ratio:
+
+√21 / (√3/2) = √21 * 2 / √3 = 2√(21/3) = 2√7.
+
+So, the common ratio is 2√7. Therefore,
+
+b/sin B = 5/sin B = 2√7 → sin B = 5 / (2√7).
+
+Similarly, c/sin C = 4/sin C = 2√7 → sin C = 4 / (2√7) = 2/√7.
+
+Okay, so sin B = 5/(2√7) and sin C = 2/√7.
+
+Now, I need to find sin B sin C:
+
+sin B sin C = (5/(2√7)) * (2/√7) = (5 * 2) / (2√7 * √7) = 10 / (2 * 7) = 10 / 14 = 5/7.
+
+Wait, that's straightforward. So, sin B sin C = 5/7.
+
+Wait, let me double-check the calculations to ensure there are no errors.
+
+First, from the area: (1/2) * 5 * c * (√3/2) = 5√3 → (5c√3)/4 = 5√3 → c = 4. That seems correct.
+
+Then, Law of Cosines: a² = 25 + 16 - 40*(1/2) = 41 - 20 = 21 → a = √21. Correct.
+
+Law of Sines: √21 / (√3/2) = √21 * 2 / √3 = 2√7. Correct.
+
+Then, sin B = 5 / (2√7), sin C = 2 / √7. Multiplying them: (5 * 2) / (2√7 * √7) = 10 / (2*7) = 10/14 = 5/7. Correct.
+
+Wait, but let me think if there's another way to confirm this result. Maybe using the identity we had earlier.
+
+We had cos 2A + 3cos A = 1.With A = π/3, cos 2A = cos(2π/3) = -1/2. So, -1/2 + 3*(1/2) = -1/2 + 3/2 = 1. Which matches the given equation. So, that checks out.
+
+Also, the area calculation was correct. So, all the steps seem to be consistent.
+
+Therefore, the value of sin B sin C is 5/7.
+
+**Final Answer**
+\boxed{\dfrac{5}{7}}
+</think>
+
+Given the problem in triangle \(\triangle ABC\):
+
+1. \(\cos 2A - 3\cos(B+C) = 1\)
+2. The area of \(\triangle ABC\) is \(5\sqrt{3}\)
+3. Side \(b = 5\)
+
+We need to find the value of \(\sin B \sin C\).
+
+First, we use the identity \(\cos(B+C) = \cos(\pi - A) = -\cos A\). Substituting this into the given equation:
+
+\[
+\cos 2A + 3\cos A = 1
+\]
+
+Using the double-angle identity \(\cos 2A = 2\cos^2 A - 1\), we get:
+
+\[
+2\cos^2 A - 1 + 3\cos A = 1 \implies 2\cos^2 A + 3\cos A - 2 = 0
+\]
+
+Solving this quadratic equation for \(\cos A\):
+
+\[
+x = \frac{-3 \pm \sqrt{25}}{4} \implies x = \frac{1}{2} \text{ (since } x = -2 \text{ is not possible)}
+\]
+
+Thus, \(\cos A = \frac{1}{2}\), so \(A = \frac{\pi}{3}\).
+
+Using the Law of Sines and the given area:
+
+\[
+\text{Area} = \frac{1}{2} \cdot b \cdot c \cdot \sin A = 5\sqrt{3}
+\]
+
+Substituting the known values:
+
+\[
+\frac{1}{2} \cdot 5 \cdot c \cdot \frac{\sqrt{3}}{2} = 5\sqrt{3} \implies \frac{5c\sqrt{3}}{4} = 5\sqrt{3} \implies c = 4
+\]
+
+Using the Law of Cosines to find side \(a\):
+
+\[
+a^2 = b^2 + c^2 - 2bc \cos A \implies a^2 = 25 + 16 - 40 \cdot \frac{1}{2} = 21 \implies a = \sqrt{21}
+\]
+
+Using the Law of Sines again to find \(\sin B\) and \(\sin C\):
+
+\[
+\frac{\sqrt{21}}{\frac{\sqrt{3}}{2}} = 2\sqrt{7} \implies \sin B = \frac{5}{2\sqrt{7}}, \sin C = \frac{2}{\sqrt{7}}
+\]
+
+Thus, the product \(\sin B \sin C\) is:
+
+\[
+\sin B \sin C = \left(\frac{5}{2\sqrt{7}}\right) \left(\frac{2}{\sqrt{7}}\right) = \frac{10}{14} = \frac{5}{7}
+\]
+
+\[
+\boxed{\dfrac{5}{7}}
+\]<｜end▁of▁sentence｜>

@@ -1,0 +1,101 @@
+1
+y = \frac{9}{2}x^2 - 12x + 4
+Okay, so I have this problem where I need to find the equation of a parabola \( y = ax^2 + bx + c \) with \( a > 0 \) that passes through the points \( (0, 4) \) and \( (2, -2) \). The goal is to find the equation when the length of the segment it cuts on the x-axis is the shortest. Hmm, let me break this down step by step.
+
+First, since the parparabola passes through \( (0, 4) \), I can substitute \( x = 0 \) and \( y = 4 \) into the equation to find \( c \). So, \( 4 = a(0)^2 + b(0) + c \), which simplifies to \( c = 4 \). Easy enough.
+
+Next, the parparabola also passes through \( (2, -2) \). So, substituting \( x = 2 \) and \( y = -2 \) into the equation gives \( -2 = a(2)^2 + b(2) + c \). Since we already know \( c = 4 \), this simplifies to \( -2 = 4a + 2b + 4 \). Subtracting 4 from both sides gives \( -6 = 4a + 2b \), which can be written as \( 4a + 2b = -6 \). Hmm, I can simplify this equation by dividing both sides by 2, which gives \( 2a + b = -3 \). So, now I have a relationship between \( a \) and \( b \): \( b = -3 - 2a \).
+
+Now, the next part is about the length of the segment cut on the x-axis by the parparabola being the shortest. Wait, the segment cut on the x-axis by the parparabola actually refers to the roots of the parparabola, right? Because the parparabola intersects the x-axis at two points (unless it's tangent, but since \( a > 0 \) and it's cutting the x-axis, it must intersect at two distinct points). So, the length of the segment between these two roots is what we need to minimize.
+
+So, the roots of the parparabola are the solutions to \( ax^2 + bx + c = 0 \). Since \( c = 4 \), the equation is \( ax^2 + bx + 4 = 0 \). The roots can be found using the quadratic formula: \( x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a} \). But in this case, \( a \) is the coefficient, so the discriminant is \( b^2 - 4a(4) = b^2 - 16a \). The roots are \( x = \frac{-b \pm \sqrt{b^2 - 16a}}{2a} \).
+
+The length of the segment between the roots is the difference between the larger root and the smaller root. So, using the quadratic formula, the larger root is \( \frac{-b + \sqrt{b^2 - 16a}}{2a} \) and the smaller root is \( \frac{-b - \sqrt{b^2 - 16a}}{2a} \). Subtracting these gives \( \frac{2\sqrt{b^2 - 16a}}{2a} = \frac{\sqrt{b^2 - 16a}}{a} \). So, the length \( L \) is \( \frac{\sqrt{b^2 - 16a}}{a} \).
+
+We need to minimize this length \( L \). So, \( L = \frac{\sqrt{b^2 - 16a}}{a} \). To simplify the minimization process, I can square both sides to get \( L^2 = \frac{b^2 - 16a}{a^2} \). So, minimizing \( L \) is equivalent to minimizing \( L^2 \), which is \( \frac{b^2 - 16a}{a^2} \).
+
+Now, I need to express everything in terms of one variable to minimize.Earlier, I had \( b = -3 - 2a \). So, I can substitute \( b \) in terms of \( a \) into the expression for \( L^2 \).
+
+So, \( b = -3 - 2a \), so \( b^2 = (-3 - 2a)^2 = 9 + 12a + 4a^2 \). Then, \( b^2 - 16a = 9 + 12a + 4a^2 - 16a = 9 - 4a + 4a^2 \). So, \( L^2 = \frac{9 - 4a + 4a^2}{a^2} = \frac{4a^2 -4a +9}{a^2} = 4 - \frac{4}{a} + \frac{9}{a^2} \).
+
+So, now \( L^2 = 4 - \frac{4}{a} + \frac{9}{a^2} \). Now, I need to minimize this expression with respect to \( a \). Since \( a > 0 \), I can take the derivative of \( L^2 \) with respect to \( a \) and set it to zero to find the critical points.
+
+Let me compute the derivative \( \frac{d(L^2)}{da} \). So, \( \frac{d}{da} (4 - 4a^{-1} + 9a^{-2}) = 0 + 4a^{-2} - 18a^{-3} = \frac{4}{a^2} - \frac{18}{a^3} \). Setting this equal to zero: \( \frac{4}{a^2} - \frac{18}{a^3} = 0 \). Multiply both sides by \( a^3 \) to eliminate denominators: \( 4a - 18 = 0 \). So, \( 4a = 18 \), which gives \( a = \frac{18}{4} = \frac{9}{2} = 4.5 \).
+
+So, the critical point is at \( a = 4.5 \). Now, I need to check if this is a minimum. Since the second derivative is positive或其他 methods, but given the context, it's likely a minimum.
+
+So, now, knowing that \( a = \frac{9}{2} \), we can find \( b \) using \( b = -3 - 2a \). So, \( b = -3 - 2*(9/2) = -3 -9 = -12 \. And we already have \( c = 4 \.
+
+So, the equation of the parparabola is \( y = \frac{9}{2}x^2 -12x +4 \.
+
+Wait, but the problem asks for the equation when the length of the segment cut on the x-axis is the shortest. So, yeah, everything seems to fit. But let me just verify一下是否正确。
+
+ first, let me confirm that the parparabola passes through the points. When x=0, y=4, which is correct. When x=2, y= (9/2)*4 -12*2 +4 = 18 -24 +4 = -2, which is correct.
+
+Now, the roots of the parparabola are the solutions to \( \frac{9}{2}x^2 -12x +4 =0 \. Multiply both sides by 2 to eliminate the fraction: \( 9x^2 -24x +8 =0 \. Using the quadratic formula, x = [24 ± sqrt(576 - 288)] /18 = [24 ± sqrt(288)] /18 = [24 ± 12*sqrt(2)] /18 = [24/18] ± [12*sqrt(2)/18] = 4/3 ± (2/3)*sqrt(2).
+
+So, the two roots are \( x = \frac{4}{3} + \frac{2\sqrt{2}}{3} \) and \( x = \frac{4}{3} - \frac{2\sqrt{2}}{3} \. The distance between these two points is the difference between the larger and smaller root, which is \( \frac{4\sqrt{2}}{3} \.
+
+Now, let me see if this is indeed the minimum possible length. So, earlier, we derived that \( a = 4.5 \) minimizes the length. Let me think about the expression for \( L^2 \): \( 4 - \frac{4}{a} + \frac{9}{a^2} \. When a increases, the terms \( \frac{4}{a} \) and \( \frac9{a^2} \) decrease, so \( L^2 \) increases, which means \( L \) increases. When a decreases, \( \frac4a \) and \( \frac9a^2 \) increase, so \( L^2 \) decreases, which means \( L \) decreases. But Wait, no, when a decreases, \( L^2 \) decreases, which means \( L \) decreases. So, the smaller the a, the smaller the length, until either a reaches zero or something, but a cannot be zero because the parparabola would not be quadratic.
+
+But in our case, the critical point is at a=4.5, which is positive, so it's valid. So, indeed, as a increases below 4.5, the length increases, and as a decreases below the critical point, the length also increases, until a reaches the critical point, where the length is minimized. Wait, no, let me think again.
+
+Actually, the function \( L^2 = 4 - \frac4a + \frac9a^2 \) can be rewritten as \( L^2 = \frac9a^2 - \frac4a +4 \. To find the minimum, we take the derivative respect to a: \( \frac{d(L^2)}da = - \frac9a^2 - \frac4a^2 +0 = - \frac9a^2 - \frac4a^2 = - \frac13a^2 \). Wait, no, that's not correct. Let me redo the derivative.
+
+Wait, \( L^2 = 9/a^2 -4/a +4 \. So, derivative respect to a: \( d/da (9/a^2) = -18/a^3 \), \( d/da (-4/a) = 4/a^2 \), and derivative of 4 is 0. So, total derivative: \( -18/a^3 +4/a^2 \. Set this equal to zero: \( -18/a^3 +4/a^2 =0 \. Multiply both sides by \( a^3 \): \( -18 +4a =0 \. So, 4a=18 => a=4.5 \. So, yes, the critical point is at a=4.5.
+
+Now, to confirm whether this is a minimum, we can take the second derivative: \( d^2(L^2)/da^2 = 54/a^4 -8/a^3 \. At a=4.5, let's compute this: 54/(4.5)^4 -8/(4.5)^3. Both terms are positive, so the second derivative is positive, confirming that it's a minimum.
+
+So, indeed, the minimal length occurs when a=4.5, which is 9/2. So, the equation of the parparabola is \( y = \frac92 x^2 -12x +4 \.
+
+Wait, but let me just think if there is another way to approach this problem, possibly without calculus, to confirm the result.
+
+Another approach: the length of the segment cut on the x-axis is the distance between the roots, which is \( \frac{\sqrt{b^2 -4ac}}{a} \). Wait, no, earlier I derived that the length is \( \frac{\sqrt{b^2 -16a}}{a} \). Wait, let me confirm again.
+
+The quadratic equation is \( ax^2 + bx +4=0 \. The roots are \( x = \frac{-b ± \sqrt{b^2 -16a}}{2a} \. So, the larger root minus the smaller root is \( \frac{2\sqrt{b^2 -16a}}{2a} = \frac{\sqrt{b^2 -16a}}{a} \. So, the length is \( \frac{\sqrt{b^2 -16a}}{a} \.
+
+So, to minimize this, we can write \( L^2 = \frac{b^2 -16a}{a^2} \. Then, we need to minimize \( b^2 -16a \) under the constraint \( 2a + b = -3 \]. Because earlier, we had \( 2a + b = -3 \) from the point (2, -2).
+
+So, substituting \( b = -3 -2a \ into \( b^2 -16a \): \( (-3 -2a)^2 -16a =9 +12a +4a^2 -16a =4a^2 -4a +9 \. So, \( L^2 = \frac4a^2 - \frac4a +9 \. Wait, no, wait: \( L^2 = \frac{b^2 -16a}{a^2} = \frac4a^2 - \frac4a +9 \. So, again, we have \( L^2 =4/a^2 -4/a +9 \. To minimize this, we can let \( x =1/a \, so \( L^2 =4x^2 -4x +9 \. Now, this is a quadratic in x, which is minimized at x = -b/(2a) =4/(2*4)=0.5 \. So, x=0.5, which means 1/a=0.5, so a=2. Wait, but earlier I got a=4.5anding arrives at a different result. Wait,这是矛盾的，所以必须找出错误。
+
+Wait, no,让我重新整理。之前 I had \( L^2 = \frac{b^2 -16a}{a^2} \, and b^2 -16a =4a^2 -4a +9 \, so \( L^2 = (4a^2 -4a +9)/a^2 =4 -4/a +9/a^2 \. Now, to minimize this, let me let x = a, so \( L^2 =9/x^2 -4/x +4 \. To find the minimum, take derivative with respect to x: \( d/dx (9/x^2 -4/x +4) = -18/x^3 +4/x^2 \. Set this equal to zero: -18/x^3 +4/x^2 =0 => -18 +4x=0 =>4x=18=>x=4.5 \. so, a=4.5anding正确。
+
+所以，之前用另一个变量替换可能出错了。正确的应该是直接对 \( L^2 =4 -4/a +9/a^2 \)取导，得到临点a=4.5。
+
+所以，确认一下，a=4.5anding是正确的。
+
+所以,最终答案是 \( y = \frac92 x^2 -12x +4 \.
+
+让我写得更 neatly： \( y = \frac{9}{2}x^2 -12x +4 \.
+
+让我检查一下是否可以简化或者写得更 neatly。可能可以写成标准形式或其他形式， but 提看来已经是 simplest form。
+
+所以，最终答案是 \( y = \frac{9}{2}x^2 -12x +4 \.
+</think>
+
+To find the equation of the parabola \( y = ax^2 + bx + c \) that passes through the points \( (0, 4) \) and \( (2, -2) \) and cuts the x-axis such that the length of the segment is shortest, we proceed as follows:
+
+1. **Determine \( c \):**
+   - Substituting \( (0, 4) \) into the equation gives \( c = 4 \).
+
+2. **Find relationship between \( a \) and \( b \):**
+   - Substituting \( (2, -2) \) into the equation gives \( -2 = 4a + 2b + 4 \), which simplifies to \( 2a + b = -3 \).
+
+3. **Length of the segment on the x-axis:**
+   - The roots of the quadratic equation \( ax^2 + bx + 4 = 0 \) are given by \( x = \frac{-b \pm \sqrt{b^2 - 16a}}{2a} \).
+   - The length of the segment is \( \frac{\sqrt{b^2 - 16a}}{a} \).
+
+4. **Express \( L^2 \) in terms of \( a \):**
+   - Substituting \( b = -3 - 2a \) into the length formula gives \( L^2 = \frac{4a^2 - 4a + 9}{a^2} = 4 - \frac{4}{a} + \frac{9}{a^2} \).
+
+5. **Minimize \( L^2 \):**
+   - Taking the derivative of \( L^2 \) with respect to \( a \) and setting it to zero gives \( a = 4.5 \).
+
+6. **Find \( b \) and \( c \):**
+   - Using \( a = 4.5 \), we find \( b = -3 - 2(4.5) = -12 \) and \( c = 4 \).
+
+Therefore, the equation of the parabola when the length of the segment cut on the x-axis is the shortest is:
+
+\[
+\boxed{\frac{9}{2}x^2 - 12x + 4}
+\]<｜end▁of▁sentence｜>

@@ -1,0 +1,508 @@
+0
+Okay, I'm trying to solve this problem where I need to count the number of brilliant subarrays in a given array. Let's break down what I understand from the problem statement.
+
+So, a subarray is considered brilliant if, after performing some operations, it becomes consecutive. The operations involve adding the average of two distinct elements, provided that the average is an integer and not already in the set. The process continues until the set can't be expanded anymore.
+
+Hmm, I need to find all subarrays [l, r] such that when I perform these operations, the resulting set is consecutive.
+
+Wait, what makes a subarray brilliant? Let me think about what a consecutive set requires. A consecutive set is one where every element is exactly one more than the previous, forming a sequence of integers without gaps. So, for a subarray to be brilliant, it must be possible through adding averages to turn into such a sequence.
+
+Let me think about the properties of such a subarray. Suppose the subarray is already consecutive. Then, it's obviously brilliant. But what about subarrays that are not consecutive but can be expanded into a consecutive set?
+
+I remember that the consecutive set is the minimal set that includes the original subarray and is closed under taking averages. So, the process of adding averages will continue until no more can be added. The resulting set will be the minimal set containing the original subarray and all possible averages that can be formed.
+
+Wait, but this might not directly help. Maybe I should think about the binary representation of the elements in the subarray. Like, for a subarray to be able to expand into a consecutive set, the elements must form a structure where their average is also present, propagating up the hierarchy.
+
+Another thought: maybe the subarray must be such that all elements are part of a chain where each element can be obtained by adding the average of its neighbors. Or perhaps the elements are such that when you take the average of any two, the result is already in the set.
+
+Alternatively, perhaps the subarray is a set of consecutive integers. Because in that case, any two elements have an average that's also present, so the expansion process would just keep adding all possible averages, eventually making the entire set consecutive.
+
+Wait, that's a key point. If the subarray itself is a consecutive sequence, then it is a brilliant subarray. Because adding any two elements x and y (which are consecutive) will give an average of (x + y)/2, which is an integer since x and y are consecutive. For example, 2 and 3 average to 2.5, but wait no, that's not an integer. Hmm, maybe I'm mixing up the examples.
+
+Wait the problem statement says that the average must be a positive integer and not already in the set. Oh right, so if x and y are consecutive, their average is (x + y)/2, which is an integer only if x and y are of the same parity. So, for example, 2 and 4 average to 3. So, in that case, adding 3 to the set would make it consecutive.
+
+Wait, so if the subarray is [2,4], then adding 3 would make it [2,3,4]. Then, 2 and 4 average to 3, which is already present. So in this case, the expansion would stop here because no new elements can be added. So the resulting set is {2,3,4}, which is consecutive. So the original subarray [2,4] is brilliant.
+
+Ah, so the key is that the original subarray must be such that all elements can be expanded through adding averages to form a consecutive set.
+
+Wait, but when the initial subarray has elements that are not consecutive, how can the expansion process reach a consecutive set?
+
+Hmm, perhaps the initial subarray must form a structure where all elements lie in a certain arithmetic progression, and the expansion process can fill in the gaps.
+
+Another angle: think of the elements in the subarray as forming a tree where each node is the average of two others. The minimal closure under averages is the set obtained by adding all possible averages until no more can be added.
+
+Wait, maybe the elements must form a chain where each step is the average of the next two elements. Like, for example, 2,4,6. The average of 2 and 6 is 4, which is already present. So adding 4 doesn't change anything. So the only way to expand is to add 4, but it's already present. So the set remains {2,4,6}, which is not consecutive. So this subarray wouldn't be considered brilliant.
+
+But wait, that's not the case. In this example, the subarray is [2,4,6]. The average of 2 and 6 is 4, which is already present. So no new elements can be added. So the set remains {2,4,6}, which is not consecutive. So this subarray is not brilliant.
+
+Wait, but what if the subarray is [2,5,4,3] as in the example? Let's see: 2 and 5 average to 3.5, which is not integer, so no. 2 and 4 average to 3, which is not in the set. 4 and 5 average to 4.5, no. 5 and 4 average to 4.5, no. 2 and 5 average to 3.5, which is not integer. 2 and 3 average to 2.5, no. 3 and 4 average to 3.5, no. 2 and 4 average to 3, which is not present. So no new elements can be added. So the resulting set is {2,3,4,5}, which is consecutive. So this subarray is brilliant.
+
+So the key is that after expansion, the set becomes consecutive.
+
+Hmm, so the problem is to find all subarrays [l, r] such that, when you perform the expansion steps, the set becomes consecutive.
+
+Let me think about what conditions must hold for a subarray to be brilliant.
+
+Idea: The subarray must form a chain where each element can be obtained by averaging two elements in the subarray. So, the minimal possible set is the set of all elements in the subarray and all their averages, which must eventually form a consecutive set.
+
+Wait, but the expansion process stops when you can't add any more elements. So the set after expansion is the closure of the subarray under taking averages. So for the closure to be consecutive, the original subarray must have certain properties.
+
+Another approach: For a subarray to be brilliant, it must be possible to expand it into a consecutive set, which requires that the subarray can be expanded by adding averages until it's consecutive. So, the minimal set after expansion is the smallest possible consecutive set that contains the subarray.
+
+Wait, but what's the minimal such set? It's the set that includes all elements of the subarray and is closed under taking averages. So, for the closure to be consecutive, the subarray must have certain properties.
+
+Wait, perhaps the minimal closure is the set of all integers that lie between the minimum and maximum of the subarray and are such that they form a consecutive sequence.
+
+No, that's not necessarily the case. Because the closure under averages doesn't necessarily produce a consecutive range. For example, the subarray [2,6]. The averages are 4, which is not in the subarray. So the closure includes 2,4,6, which is not consecutive. So the closure is not consecutive. So this subarray is not brilliant.
+
+Wait, but in that case, how can the closure be consecutive? It can't, so that subarray is not brilliant.
+
+So, for a subarray to be brilliant, the closure under averages must be a consecutive set.
+
+So, the closure includes all elements in the subarray, plus all their averages, and so on. The closure must form a consecutive sequence.
+
+Hmm. So, perhaps the closure is the set of all elements that are in the same arithmetic progression as the minimal and maximal elements, and the step is 1.
+
+Wait, let's think about the minimal and maximal elements of the subarray. Let min be the minimum, max the maximum. If the closure is to be consecutive, then all numbers between min and max must be present.
+
+But how can that happen? For example, in the example [2,5,4,3], the closure includes 2,3,4,5, which is consecutive.
+
+In the [2,6] example, the closure includes 2,4,6, which is not consecutive.
+
+So, perhaps the closure is consecutive only if the elements form a chain where each step is the average of two others, and all elements are consecutive in some way.
+
+Wait, perhaps the closure is the set of all integers between min and max with step 1. So, for the closure to be consecutive, the subarray must be such that every integer between min and max is present in the closure.
+
+But how?
+
+Wait, perhaps the key is that the subarray is a set of consecutive integers. Because in that case, every average of two elements is also an integer and is present in the set. So, the closure is the entire set, which is consecutive.
+
+So, any subarray that is already a consecutive sequence is brilliant.
+
+But are there other subarrays that are not consecutive but their closures become consecutive?
+
+Hmm, for example, consider a subarray [2,4,6]. The closure includes 2,3.5, 4,5,6. But 3.5 is not an integer, so it's not added. So the closure is {2,4,6}, which is not consecutive. So this subarray is not brilliant.
+
+So, the closure is only consecutive if the subarray is such that all elements can be expanded into a consecutive set.
+
+Wait, but in the [2,5,4,3] example, the closure is {2,3,4,5} which is consecutive. So, how was that possible?
+
+So, the closure included 3, which is the average of 2 and 4. Then, 3 was added, and then 3 can be used to form other averages. For example, 3 and 4 average to 3.5, which is not integer. 3 and 5 average to 4, which is already present. 4 and 5 average to 4.5, no. 2 and 3 average to 2.5, no. 2 and 5 average to 3.5, no. So no new elements are added, and the closure is {2,3,4,5}, which is consecutive.
+
+So, in this case, the closure is consecutive because the subarray was such that adding the averages didn't create any new elements, but the existing elements already formed a consecutive set.
+
+Wait, but how did 3 get into the closure? Because 2 and 4 average to 3, so 3 is added. Then, 3 is used in other averages, but no new elements are added beyond that.
+
+So, perhaps the closure of the subarray is the minimal set that includes the subarray and all possible averages, and that's a consecutive set.
+
+So, for a subarray to be brilliant, the closure must be a consecutive set.
+
+So, how can I model this?
+
+Hmm, perhaps the way to think about it is that the closure is the set of all elements that are in the same arithmetic progression as the minimal and maximal elements, and the difference between min and max must be compatible with the average steps.
+
+Alternatively, perhaps the closure is the set of all integers between min and max, inclusive, and the step between consecutive elements is 1.
+
+So, the closure is consecutive if and only if, after adding all possible averages, the resulting set is the entire range from min to max.
+
+So, the problem reduces to: find all subarrays [l, r] such that when you perform these expansion steps, the closure is the entire range from min to max of the subarray, and each step in between is filled with integers.
+
+Wait, but this seems a bit vague. How can I find the conditions for a subarray to have a closure that is a consecutive set?
+
+Another approach: perhaps for a subarray to be brilliant, the minimal and maximal elements in the subarray must form a consecutive sequence when all the averages are considered.
+
+Wait, perhaps the subarray must form a structure where each element is in the minimal possible closure.
+
+Alternatively, perhaps the closure is the set of all integers between the minimal and maximal elements of the subarray, and the step between consecutive elements is 1.
+
+So, for the closure to be consecutive, the minimal and maximal elements must form a consecutive sequence when considering all the elements that can be formed by averages.
+
+But how do I model that?
+
+Wait, perhaps the closure is the set of all integers in the interval [min, max], and the step between consecutive integers is 1. So, the closure is the entire range.
+
+But that's only possible if the subarray is such that all numbers between min and max can be expressed as an average of some elements in the subarray, and thus, the closure includes all of them.
+
+But that's not necessarily the case.
+
+Hmm, perhaps I should think about the problem in terms of the minimal and maximal elements of the subarray.
+
+Let me denote the minimal element as m and the maximal as M, in the subarray [l, r].
+
+If the closure is to be a consecutive set, then every integer between m and M must be present in the closure.
+
+So, the question is: for a given subarray [l, r], is it true that all integers between m and M are in the closure of the subarray under the operation of taking averages?
+
+If yes, then the subarray is brilliant.
+
+So, the problem becomes: for each subarray [l, r], determine whether the closure is the entire range [m, M], and thus is consecutive.
+
+But how to compute this efficiently for all subarrays?
+
+Wait, this seems computationally intensive for large n. So, perhaps there's a pattern or a mathematical condition that can be checked efficiently.
+
+Let me think about the properties that a subarray must satisfy for its closure to be consecutive.
+
+Suppose the subarray has min m and max M. The closure is the set of all integers between m and M that can be formed by taking averages of elements in the subarray.
+
+But for the closure to be consecutive, all integers between m and M must be present.
+
+So, the question is: for the subarray, can all integers between m and M be formed as averages of some elements in the subarray?
+
+But how?
+
+Wait, perhaps the subarray must be such that the step between m and M is a multiple of some step that can be achieved through the averages.
+
+Alternatively, perhaps the subarray must form a chain where every element can be expressed as an average of two others, allowing the closure to reach all the integers in between.
+
+But I'm not sure how to model this.
+
+Another idea: the minimal and maximal elements of the subarray must be such that all numbers in between can be formed by some combination of averages.
+
+Wait, but for example, in the subarray [2,5,4,3], the closure after expansion is [2,3,4,5], which is consecutive. So, m=2, M=5, and all numbers between 2 and 5 are present.
+
+So, in this case, the closure is the entire range.
+
+But how do I find for a given subarray whether this condition holds?
+
+Hmm, perhaps for a given subarray, the closure is the entire range between m and M if and only if for every integer k between m and M, there exists a sequence of elements in the subarray that can be averaged to get k.
+
+But this seems computationally expensive for large subarrays.
+
+Wait, but perhaps the closure is the entire range if and only if the subarray is such that the step between consecutive elements is 1, but that's not the case in the example [2,4,6].
+
+So, that's not a general condition.
+
+Wait, perhaps the key is that the minimal and maximal elements of the subarray are such that the difference M - m is a multiple of some step, and this step divides the difference between consecutive elements in the subarray.
+
+Wait, perhaps not. Let's think differently.
+
+Let me consider that for the closure to be consecutive, the minimal and maximal elements must form a consecutive sequence, and any integer in between must also be present.
+
+So, for the closure to be consecutive, the minimal and maximal elements must form a consecutive sequence, and all other elements in between must be present through some averages.
+
+Wait, but how can I verify that for a given subarray?
+
+Another idea: perhaps the subarray must be such that for every pair of elements x and y in the subarray, the average (x + y)/2 is also in the subarray. But no, because in the example [2,5,4,3], the average of 2 and 5 is 3.5, which is not in the subarray, but 3 is added. So, it's not enough to have all averages present.
+
+Hmm, perhaps I should think about the closure as the set generated by the initial subarray and all possible averages. So, the closure is the smallest set containing the subarray and closed under the average operation.
+
+Wait, but this is a closure under a certain operation, but it's not a standard closure. So, perhaps the closure is the set of all numbers that can be obtained by adding any averages of any two elements in the closure.
+
+Wait, but in that case, the closure would eventually include all numbers between the minimal and maximal elements, provided that the subarray contains enough elements.
+
+Wait, but the example [2,5,4,3] shows that the closure is {2,3,4,5}, which is a consecutive set. So, for that subarray, the closure is the entire range.
+
+So, perhaps the condition is that the minimal and maximal elements are such that all numbers between them can be formed by some averages of elements in the subarray.
+
+But how to model this.
+
+Wait, let's think about the minimal and maximal elements. Let m be the minimal and M the maximal in the subarray. If m and M are consecutive (M = m + 1), then the closure is automatically consecutive, because there's only one integer between them.
+
+Wait, but what if the subarray has elements that are not consecutive but the closure is still the entire range? For example, [2,6]. Then, the closure is {2,4,6}, which is not consecutive. So, in that case, m=2, M=6, which is not consecutive, so the closure is not consecutive.
+
+So, perhaps the subarray's closure is consecutive only if m and M are consecutive and the subarray's closure includes all numbers between them.
+
+But how can I model that.
+
+Another approach: perhaps the closure will be consecutive if and only if the subarray can form a chain where every element is the average of two others, thus allowing the closure to reach all the integers in between.
+
+Wait, but what does that mean for the subarray.
+
+If the subarray is such that every element is the average of two others, then perhaps the closure can reach all the integers between m and M.
+
+But no, that's not necessarily the case. For example, consider a subarray [2,5,4,3]. Each element is the average of two others: 2 and 4 average to 3, 3 and 4 average to 3.5 (but wait, that's not an integer, so 3.5 is not in the subarray. So, the closure includes 3, but 3 is not the average of two in the subarray. Wait, 3 is the average of 2 and 4, which are in the subarray. So, that's why 3 is added. So, perhaps for the closure to reach all the integers between m and M, the subarray must be such that for every pair of elements x and y, (x + y)/2 is also present in the subarray.
+
+But in the example [2,5,4,3], the pair 2 and 5 averages to 3.5, which is not in the subarray. So, why is 3 added? Because 3 is the average of 2 and 4, which are in the subarray.
+
+Ah, right! So, the closure is the minimal set containing the subarray and all possible averages. So, the closure includes all elements that can be formed by any sequence of averages.
+
+So, the closure may not need to include all possible averages of every pair, but only the ones that are formed by the process.
+
+Hmm, this complicates things.
+
+So, perhaps the way to model this is to find for each subarray whether the closure under the average operation eventually covers all integers between m and M.
+
+But how to compute that efficiently.
+
+An alternative idea is to realize that the closure will form a consecutive set if and only if the subarray is such that all elements in the range [m, M] are present, and that the subarray's minimal and maximal elements differ by a number that is compatible with the possible averages.
+
+Wait, but I'm not sure how to model that.
+
+Another thought: the closure will be consecutive if and only if the subarray can be expanded in such a way that all numbers in the range [m, M] are present.
+
+But how can I find that for a given subarray.
+
+Wait, perhaps the closure will be consecutive if and only if the minimal and maximal elements of the subarray are such that M - m is a multiple of some d, and the subarray contains enough elements to allow all numbers in between.
+
+But I'm not sure.
+
+Alternatively, perhaps for the closure to be consecutive, the subarray must have the property that for every pair of elements x, y, the average (x + y)/2 is also present in the subarray.
+
+But in the example [2,5,4,3], the average of 2 and 5 is 3.5, which is not in the subarray, but 3 is added because it's the average of 2 and 4.
+
+So, perhaps the closure includes all averages that can be formed through the process, which may not require that all possible averages are present initially.
+
+Hmm, this is getting complicated. Maybe I should look for a way to model the closure and check whether it's consecutive.
+
+But for the problem, given the constraints on the size of n (up to 4e5 per test case), any O(n^2) approach is impossible. So, I need an O(n) or O(n log n) approach.
+
+Wait, perhaps the key is to find that a subarray is brilliant if and only if it is a set of consecutive integers. Because in that case, the closure is the entire set, which is consecutive.
+
+But the example [2,5,4,3] shows that the closure is consecutive, but the subarray is not a set of consecutive integers. So, that condition is necessary but not sufficient.
+
+So, that approach is not correct.
+
+Hmm, perhaps the only brilliant subarrays are those that are already consecutive. Because in the example [2,5,4,3], the closure is consecutive, but the subarray is not consecutive.
+
+So, that's not the case.
+
+Another idea: perhaps a subarray is brilliant if and only if the minimal and maximal elements are consecutive, and the subarray's closure includes all numbers between them.
+
+But how to check that.
+
+Wait, perhaps the closure is consecutive if and only if the minimal and maximal elements of the subarray are consecutive, and all elements in between can be formed by some average.
+
+But again, this requires checking for each subarray, which is computationally expensive.
+
+Wait, but perhaps for the closure to be consecutive, the minimal and maximal elements must be consecutive, and the subarray must contain all elements in between. But that's not the case, as in the example [2,5,4,3], the minimal and maximal are consecutive (5-2=3, wait no, 5-2=3, not 1. Wait, 5 is larger than 2, so the difference is 3. So, that's not consecutive.
+
+Wait, perhaps the condition is that the minimal and maximal are consecutive and the subarray's closure includes all elements in between.
+
+Wait, but in the example [2,5,4,3], the minimal is 2, maximal is 5, which are not consecutive. But the closure is consecutive.
+
+Wait, no. 2 and 5 are not consecutive, but the closure includes 3 and 4. So, this condition is not sufficient.
+
+Hmm.
+
+Alternative approach: Let's think about what's the minimal and maximal element of the closure of a subarray.
+
+The minimal element of the closure is the minimum of the subarray.
+
+The maximal is the maximum.
+
+Because any average can't be larger than the maximum or smaller than the minimum.
+
+So, the closure's min is the subarray's min, and the max is the subarray's max.
+
+So, for the closure to be consecutive, it must include every integer between the subarray's min and max.
+
+But how to model that.
+
+Wait, perhaps the closure is the set of all integers between the subarray's min and max, inclusive, and the closure is the minimal such set.
+
+So, for the closure to be consecutive, the subarray must have min and max such that the range [min, max] is completely filled by the closure.
+
+So, the problem reduces to: for a subarray [l, r], is [min, max] a subset of the closure.
+
+But how can I compute this for all subarrays efficiently.
+
+Wait, but perhaps the closure is the entire range [min, max] if and only if the subarray is such that for every pair of elements x and y, (x + y)/2 is also present in the subarray.
+
+Because that would allow the closure to include all possible averages, eventually filling in every integer in between.
+
+So, in the example [2,5,4,3], the pair 2 and 5 averages to 3.5, which is not in the subarray. However, 3 is present because it's the average of 2 and 4, which are in the subarray. So, that suggests that the closure includes 3 because it's the average of 2 and 4. But 2.5 is not in the subarray. So, perhaps the closure isn't the entire range.
+
+Wait, but the closure includes 3, which is the average of 2 and 4, but how does that help in reaching 3.5? Because 3.5 is between 2 and 4, it's not in the subarray. So, perhaps the closure can't reach all the numbers in [2,5].
+
+So, perhaps the closure is not the entire range in that case.
+
+Hmm, perhaps I'm stuck. Let's try to think of the problem differently.
+
+The closure of a subarray [l, r] is the minimal set containing it and all averages of any two elements in it. So, the closure is the smallest possible set that satisfies these conditions.
+
+So, for the closure to be consecutive, the minimal and maximal elements must form a consecutive sequence, and every integer between them must be present.
+
+So, the steps are:
+
+1. For a given subarray [l, r], compute m = min, M = max.
+
+2. Check if M - m == 1. If yes, then the closure is consecutive, since there's only one number in between.
+
+3. Else, check if all integers between m and M are present in the closure.
+
+But how to do this efficiently.
+
+Alternative idea: For a subarray to be brilliant, it must be such that the minimal and maximal elements are consecutive, and any element in the subarray is the average of two elements in the subarray.
+
+Wait, that's not necessarily true, as seen in the example [2,5,4,3]. The subarray's elements are 2,5,4,3. The minimal is 2, and the maximal is 5. 2 and 5 are not consecutive, but the closure is still consecutive.
+
+So, this approach is not sufficient.
+
+Hmm. Maybe I should think about the problem in terms of the minimal and maximal elements.
+
+Wait, perhaps the closure will be consecutive if and only if the subarray's min and max are consecutive, and the subarray's min and max are such that the difference (max - min) is divisible by some d, allowing the closure to reach every integer in between.
+
+But perhaps this is not the case.
+
+Alternatively, perhaps the subarray's closure is the entire range [m, M] if and only if the set of all averages of elements in the subarray covers every integer between m and M.
+
+But how to check this.
+
+Another idea: the closure is the set of all integers that can be obtained by any number of averages of elements in the subarray.
+
+So, the closure is the set of all integers that can be expressed as a linear combination of the subarray elements with coefficients that are sums of averages of 1/2's.
+
+Wait, but this sounds computationally intensive.
+
+Wait, perhaps the closure is the set of all integers that can be formed by the subarray's elements multiplied by some coefficients that are sums of 1/2's.
+
+But I'm not sure how to model this.
+
+Wait, perhaps each average operation can be seen as a step towards the average. So, perhaps the closure is the set of all numbers that can be expressed as (sum of elements * coefficients) / (sum of coefficients), where the coefficients are such that sum of coefficients is a power of 2.
+
+Wait, that's an interesting thought. Because each average operation is essentially adding a new constraint.
+
+For example, when you have two elements x and y, their average is (x + y)/2. This can be thought of as x * (1/2) + y * (1/2). So, in terms of weighted averages, the coefficients sum to 1.
+
+But when you have more elements, the coefficients get more complex.
+
+Wait, perhaps the closure is the set of all numbers that can be written as a sum of the form (k1 * a1 + k2 * a2 + ... + kn * an) / (k1 + k2 + ... + kn), where each ki is a positive integer, and (k1 + ... + kn) is a power of two.
+
+Because each average operation can be represented as adding a new term with coefficient 1/2 to each element.
+
+Hmm, perhaps that's the case.
+
+So, for a subarray [a1, a2, ..., an], the closure can generate any number of the form (sum_{i} (ai * ki)) / (sum_{i} ki), where ki are positive integers, and sum ki is a power of two.
+
+So, for the closure to be consecutive, all integers between m and M must be expressible as such a fraction.
+
+But how to determine this.
+
+For example, in the subarray [2,4], the closure can generate 3, because 2*1 +4*1 =6, divided by 2 is 3. So, yes, closure is consecutive.
+
+In the subarray [2,5], the closure can generate (2*1 +5*1)/2 = 3.5, but that's not an integer. So, the closure is not consecutive.
+
+Wait, but the closure includes 3.5, but since it's not an integer, the closure can't be consecutive.
+
+So, how can a closure include all integers between m and M?
+
+It seems that the closure will include all integers between m and M if and only if for every integer k in [m, M], there exists a way to express k as (sum (ai * ki)) / sum ki, where sum ki is a power of two.
+
+But for a given subarray, how can I check this efficiently.
+
+But this seems computationally expensive, especially for large n.
+
+Hmm, perhaps I should look for an alternative approach.
+
+Wait, perhaps the key is that the closure of a subarray is the set of all possible averages generated by expanding the subarray until no new averages can be added. So, for the closure to be consecutive, the minimal and maximal elements must form a consecutive set, and the subarray must be such that this process can generate all integers in between.
+
+But I'm not sure how to model this.
+
+Wait, perhaps the closure can be represented as a set of intervals, and the minimal and maximal elements must cover all the integers in between.
+
+But again, I'm not sure.
+
+Another idea: the closure will include all integers between the minimal and maximal of the subarray if and only if the subarray contains enough elements to allow all these integers to be formed as averages.
+
+But how can this be checked.
+
+Hmm.
+
+Wait, perhaps the closure will include all integers between m and M if and only if the subarray contains all the integers in [m, M].
+
+Because, for example, in the example [2,5,4,3], the closure includes 3, which is between 2 and 5, but the subarray doesn't include 3.
+
+So, that's not a condition.
+
+Hmm.
+
+Alternatively, perhaps the closure is the entire range [m, M] if and only if the subarray is such that for every integer k in [m, M], there exists a sequence of averages that can reach k.
+
+But again, how to model this.
+
+Wait, perhaps the closure is the entire range [m, M] if and only if the subarray is such that it contains all the elements between m and M. Because then, you can form any integer in between by adding averages of the adjacent elements.
+
+But that's not the case, as seen in the example [2,5,4,3], where the subarray doesn't contain 3.
+
+So, that's not the condition.
+
+Hmm.
+
+At this point, I'm stuck on finding a way to model the closure. Maybe I should look for patterns or properties that can help.
+
+Let me think about the problem in terms of the minimal and maximal elements.
+
+Suppose that the minimal element is m and the maximal is M. Then, the closure must include all integers between m and M.
+
+So, for the closure to be consecutive, for every integer k in [m, M], there must be a way to reach k through a series of averages.
+
+But how can I model this.
+
+Wait, perhaps the closure is the entire range [m, M] if and only if the subarray is such that for every integer k in [m, M], there exists a way to express k as a sum of the subarray elements multiplied by some coefficients that sum to a power of two, and the sum of those coefficients is a power of two.
+
+But again, this seems computationally intensive.
+
+Hmm.
+
+Alternative approach: perhaps the closure will be consecutive if and only if the minimal and maximal elements are consecutive, and all the elements in between can be formed by adding averages of the subarray's elements.
+
+Wait, but I'm not sure.
+
+Wait, perhaps the closure is the entire range [m, M] if and only if the subarray is such that for every integer k in [m, M], the subarray contains k.
+
+Because in that case, you can average adjacent elements to form k.
+
+But in the example [2,5,4,3], the subarray doesn't contain 3, but the closure includes 3. So, that condition is not sufficient.
+
+Hmm.
+
+Another idea: perhaps the closure is the entire range [m, M] if and only if the subarray is such that for each element a in the subarray, a can be expressed as a sum of some subset of the subarray's elements multiplied by 0.5's.
+
+But I'm not sure.
+
+This is getting quite stuck. Maybe I should think about the problem in terms of the minimal and maximal elements and the subarray.
+
+Wait, perhaps the closure will be the entire range [m, M] if and only if the subarray includes all the elements that are needed to generate every integer in [m, M] as an average.
+
+But again, not sure.
+
+Alternatively, perhaps the closure is consecutive if and only if the subarray is a set of consecutive integers. Because in that case, the closure is the entire set, which is consecutive.
+
+But the example [2,5,4,3] shows that this is not the case.
+
+So, perhaps the condition is not about the subarray being consecutive, but about the closure being consecutive.
+
+Hmm.
+
+Wait, perhaps I should think about the problem differently. Let's think about what makes a subarray 'brilliant' according to the problem statement.
+
+The problem says that a subarray is brilliant if applying the expansion steps leads to a consecutive set.
+
+So, the closure of the subarray must be a consecutive set.
+
+So, perhaps the closure is the entire range [m, M], or a subset of that.
+
+But, to find all such subarrays, maybe I can precompute for each subarray whether its closure is consecutive.
+
+But for n up to 4e5, this is impossible.
+
+So, perhaps the key insight is that a subarray is brilliant if and only if the minimal and maximal elements are consecutive, and for every integer between them, the subarray contains that integer.
+
+Because, then, the closure will include all those integers.
+
+Wait, let's test this.
+
+In the example [2,5,4,3], the minimal is 2, maximal is 5. They are not consecutive. So, according to this condition, it's not a brilliant subarray.
+
+But the example shows that it is brilliant. So, this condition is incorrect.
+
+Hmm.
+
+Alternatively, perhaps the subarray must be such that for every integer k in [m, M], the subarray contains k.
+
+But as discussed earlier, that's not sufficient.
+
+Another idea: perhaps the closure is the entire range [m, M] if and only if the subarray is such that every element in the range [m, M] is present in the closure.
+
+But how to find this.
+
+Alternatively, perhaps the closure is the entire range [m, M] if and only if the subarray is such that for every integer k in [m, M], there exists a way to express k as a sum of the subarray's elements multiplied by some coefficients that sum to a power of two.
+
+But I'm not sure how to compute this.
+
+Hmm. Maybe I should consider the binary representations of the elements.
+
+Wait, since each average is (x + y)/2, which can be represented as (x + y) * 0.5.
+
+But perhaps the

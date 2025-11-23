@@ -1,0 +1,561 @@
+0
+Okay, I need to solve this problem where I have to find the minimum possible median of an array after performing certain operations. Let me read the problem statement carefully.
+
+So, the problem says that for each query x, I can choose any element in the array that is at least x, and subtract x from it. I can do this any number of times, and I need to find the minimum possible median of the array after these operations. The median is defined based on the sorted array: for even n, it's the (n+1)/2-th element, and for odd n, it's the (n+1)/2-th as well.
+
+Hmm. So, for each x, I can decrease some elements (those >= x) as much as possible, but in a way that the median is as small as possible.
+
+The approach here is probably to find, for each x, the minimal possible median. Let's think about how this can be done.
+
+Let me think about the sorted array. After performing the operations, the elements can be adjusted, but each a_i can be reduced as many times as possible, as long as it's >=x. Wait, no. Because each operation subtracts x, so after one operation, a_i becomes a_i -x. The next operation can only be done if the new a_i is still >=x. So, for each element, the maximum number of times I can subtract x is determined by how much it's larger than x.
+
+Wait, for example, if an element is a_i = 5, and x is 2. I can subtract x to get 3, then again to 1, but then I can't subtract x anymore. So for this element, I can subtract 2 two times, each time subtracting x, but the maximum is limited by how many times x can be subtracted until it's less than x.
+
+But in this problem, we can do it any number of times as long as it's possible. So, the optimal approach is to subtract x as much as possible, but only for those elements that are >= x.
+
+Wait, but to minimize the median, I need to make as many elements as possible as small as possible, especially the ones in the median positions.
+
+So, the strategy is to determine for each x, what's the minimal possible median by adjusting certain elements.
+
+Let me think about the sorted array. Let's sort the array in non-decreasing order. The median is the element at position m where m is (n+1)//2 -1 for 1-based indexing.
+
+Wait, no. For n elements, the median is at position (n-1)/2 if 0-based, or (n+1)/2 in 1-based. Wait, the problem statement says for even n, the median is the (n+1)/2-th element, and for odd n, it's (n+1)/2-th. So in 1-based index, it's (n+1)//2.
+
+So, for example, n=3, the median is at 2nd position (1-based). For n=4, it's 3rd position.
+
+So, the approach is to, for each x, find the minimal possible value of the element at position (n+1)//2 after performing operations.
+
+Wait, but the operations can be applied to any elements, so for each x, I can choose which elements to subtract as much as possible. So, to minimize the median, I should focus on the elements that are in the lower positions and possibly reduce them as much as possible.
+
+Wait, but the median is in the middle. So, perhaps the optimal strategy is to make the elements at positions (n+1)//2 as small as possible.
+
+Wait, maybe I should think about the sorted array. Let's sort the array in non-decreasing order.
+
+For each x, I can modify the elements by subtracting x each time, but each time the element must be >=x. So, for each element a_i, the maximum number of times I can subtract x is floor((a_i - x) / x). Wait, no. Because each subtraction is a_i - x, and then again as long as it's >=x.
+
+Wait, let's see. The number of times I can subtract x from a_i is the maximum k such that a_i >= x*k. Because each subtraction reduces it by x, so after k subtractions, it's a_i -k*x, which is >=0.
+
+Wait, no. Because after each subtraction, the element must be >=x to perform the operation again. So, the maximum k is the maximum number of times you can subtract x from a_i until a_i -k*x <x. Or perhaps, until a_i -k*x is >=x, but then you can't subtract anymore.
+
+Wait, no. For example, a_i =5, x=2. After subtracting once, it's 3, which is >=2. Subtract again, 1, which is <2. So for a_i=5, x=2, k can be 2.
+
+So, the maximum number of times you can subtract x from a_i is floor( (a_i) / x ), but wait, no. Because 5 /2 is 2.5, floor is 2, which is correct.
+
+Wait, 5 //2 is 2, which is correct.
+
+So, for each a_i >=x, the maximum number of subtractions is floor( a_i /x ). Because each subtraction is x, so a_i /x gives the maximum possible steps.
+
+Wait, no. Wait, a_i >=x, and you can subtract x as long as after subtraction, the element is still >=x. So, for a_i, the maximum number of times you can subtract x is the maximum k where a_i -k*x >=x. So:
+
+a_i -k*x >=x
+=> k*x <= a_i -x
+=> k <= (a_i -x)/x
+But wait, this would imply k <= (a_i -x)/x. But for a_i >=x, (a_i -x) is >=0. So, the maximum k is floor( (a_i -x)/x ) +1? Or wait, let's compute:
+
+For a_i =5, x=2: (5-2)/2 = 1.5, floor is 1. So k can be 1. But in reality, you can subtract twice. So perhaps the formula is incorrect.
+
+Wait, let's re-express:
+
+After subtracting x k times, the value is a_i -k*x.
+
+We need a_i -k*x >=x.
+
+So, a_i -k*x >=x
+=> a_i >= (k+1)*x
+So, (k+1)*x <=a_i
+=> k+1 <= a_i /x
+=> k <= (a_i /x) -1
+
+But since k must be an integer >=0, the maximum k is floor( (a_i /x ) -1 )
+
+Wait, for a_i=5, x=2: 5/2 is 2.5, subtract 1 gives 1.5. So k can be 1, which is correct. So the maximum k is 1.
+
+Wait, but in the earlier example, a_i=5, x=2, you can subtract twice: 5-2=3, 3-2=1. So 1 is less than 2, so the second subtraction is not possible. So the maximum k is 2. Hmm, so the formula isn't correct.
+
+Wait, perhaps the correct formula is k is the maximum number of times you can subtract x such that a_i -k*x >=x for each step.
+
+Wait, let's think of a_i as 5, x=2.
+
+After first subtraction: 3, which is >=2. So can subtract again: 1, which is <2. So you can subtract twice?
+
+Wait, wait, the operation is to choose an element i where a_i >=x, and change it to a_i -x. So, after the first subtraction, it's 3, which is >=x. So the operation can be done again. So for a_i=5, x=2, you can subtract twice.
+
+So, the maximum k is 2.
+
+So, for a_i=5, x=2, (a_i -x) is 3, which is >=x. Then subtract again: 1, which is <x. So the total is 2.
+
+So, the formula is: the maximum k is the maximum number of times you can subtract x from a_i, stopping when the result is less than x.
+
+So, the condition is a_i -k*x >=x.
+
+So, a_i -k*x >=x
+=> a_i >= (k+1)*x
+=> k <= (a_i -x)/x.
+
+But in this case, a_i=5, x=2: 5 >= (k+1)*2.
+
+So, (k+1) <= 2.5 → k+1 can be 2 → k=1.
+
+But in reality, we can do 2 subtractions. So what's wrong here?
+
+Wait, perhaps the formula is a_i -k*x >=x → a_i - (k+1)*x >=0. Wait, no, that's not correct.
+
+Wait, let's re-express the condition.
+
+After k subtractions, the value is a_i -k*x. We need this to be >=x, because we can perform the operation again.
+
+So, a_i -k*x >=x → a_i -x >=k*x → (a_i -x)/x >=k.
+
+So, k can be as large as (a_i -x) /x, but k must be an integer.
+
+So, k_max is floor( (a_i -x)/x )
+
+Wait, in the case of a_i=5, x=2: (5-2)/2=1.5 → floor is 1. But that's only 1 subtraction.
+
+But in reality, for a_i=5, x=2, you can subtract 2 times. So, maybe the formula is incorrect.
+
+Wait, wait. Let's see:
+
+After the first subtraction, a_i becomes 3. Is 3 >=x? Yes. So you can perform another subtraction, making it 1, which is less than x. So you can't subtract again. So, the maximum is 2 subtractions, which means k is 2.
+
+So the formula (a_i -x)/x is 3/2=1.5. So, floor is 1. But 1 is less than 2.
+
+So, in this case, the formula is not correct.
+
+Hmm, maybe the correct formula is (a_i -x) //x, but that gives 1, but the actual k is 2.
+
+Wait, perhaps I should model the problem differently. For a given x, the optimal strategy is to subtract x as much as possible from the elements, but the elements can be in any order.
+
+Wait, for each x, I can subtract x from any element as long as it's >=x. So, the maximum number of times I can subtract x from a_i is floor( (a_i) / x ), but I have to subtract until a_i <x.
+
+Wait, for a_i=5, x=2: 5//2=2. So you can subtract twice.
+
+Yes, because 5-2=3, 3-2=1, which is less than 2.
+
+So, the formula for the maximum number of subtractions is floor( a_i /x ). So, for each a_i >=x, the maximum k is floor(a_i /x).
+
+So, for each x, the minimal median is achieved by subtracting as much as possible from the elements, but the minimal median is determined by the elements that are in the lower positions after these operations.
+
+Wait, but which elements to subtract from? Because the median is the middle element, perhaps it's best to subtract as much as possible from the elements in the lower half of the array.
+
+Wait, but the array is sorted. So, the sorted array is in non-decreasing order.
+
+Let me think: the median is at position m = (n+1)//2 -1 (if 0-based) or (n+1)/2 (if 1-based).
+
+Wait, in 1-based, for n=5, m is 3.
+
+So, for the median, I need to choose elements at position m.
+
+So, to minimize the median, I need to make the elements at position m as small as possible.
+
+So, perhaps the strategy is to select the m-th element in the sorted array and subtract as much as possible from it, but also from the elements before it, but not sure.
+
+Wait, maybe it's better to think that after all possible operations, the new array is such that the median is as small as possible. So, for each x, I can choose to subtract x from some elements, but the optimal approach is to make the m-th element as small as possible.
+
+So, perhaps the minimal possible median is the maximum between the original a_i's m-th element and the value after subtracting as much as possible from the m-th element.
+
+Wait, perhaps not. Let's think differently.
+
+After all possible operations, the array is modified such that certain elements are reduced. The minimal median is determined by the m-th element.
+
+So, for each x, the minimal median is the maximum between the original a_i's m-th element and the new a_i's m-th element after subtracting as much as possible.
+
+But I'm not sure.
+
+Wait, maybe we can precompute for each x, the minimal possible a_i's m-th element.
+
+Wait, to find the minimal median, the m-th element in the sorted array after operations is as small as possible.
+
+So, perhaps the minimal median is the m-th smallest value that can be achieved by subtracting x as much as possible from any elements.
+
+But how?
+
+Wait, the median is the m-th element. So, to minimize it, we need to minimize a_i's m-th element. So, for each x, we can subtract x from any elements, but the minimal possible is achieved by subtracting as much as possible from the elements in the first m positions.
+
+Wait, but the array is sorted. So, perhaps the optimal approach is to subtract x from the elements in the first m positions, but only if their current a_i is >=x.
+
+Wait, no. Because the array is already sorted. So, after sorting, the first m elements are the smallest.
+
+So, for each x, we can subtract x from the first m elements, but each element can be subtracted as much as possible, but only if their current a_i is >=x.
+
+Wait, but in the sorted array, the first m elements are the smallest. So, to minimize the median, perhaps we should subtract x from the first m elements as much as possible.
+
+But for each x, how much can we subtract from the first m elements?
+
+Because for each element in the first m positions, we can subtract k times, where k is the maximum possible.
+
+But the maximum times k is floor(a_i /x) for each a_i in the first m positions.
+
+Wait, but that's for each element. So, for each x, the maximum number of subtractions we can perform is the sum of floor(a_i/x) for the first m elements, but not exceeding the total number of operations allowed.
+
+Wait, but that's not correct. Because each operation subtracts x from a single element. So, the total number of operations is the sum of k_i, where k_i is the number of times we subtract x from the i-th element (i is in the first m elements).
+
+Wait, but for each x, the maximum number of operations is the sum of floor(a_i/x) for i=1 to n, but that's not correct because each operation can only be done once per element. So, the maximum number of operations is the sum of k_i, which is the sum of floor(a_i/x) for all i in 1..n, but each a_i is subtracted k_i times.
+
+Wait, but each a_i can be subtracted any number of times, but the sum of k_i is the total number of operations.
+
+But that's not constrained. So, for each x, the maximum number of operations is determined by the sum of k_i, where each k_i is floor(a_i /x) for a_i >=x, and 0 otherwise.
+
+But the problem is, when you perform these operations, the elements are modified, so the sorted array changes, which affects which elements are in the m-th position.
+
+So, perhaps the optimal approach is to, for each x, subtract as much as possible from the m-th element and the first m-1 elements, but how?
+
+Alternatively, perhaps we can precompute for each x, the minimal possible a_i's m-th element after subtracting as much as possible.
+
+Wait, perhaps for each x, the minimal possible median is the maximum between the m-th element in the original array and the m-th element after subtracting as much as possible from the first m elements.
+
+Wait, no. Because the array is sorted, and subtracting from the first m elements can only decrease their values.
+
+So, the minimal median is the m-th element of the sorted array after subtracting x as much as possible from the first m elements.
+
+Wait, perhaps the minimal median is the maximum between the m-th element in the original array and the (m)th element after subtracting x as much as possible from the first m elements.
+
+Wait, that might be the case.
+
+Let me try to model it.
+
+For each x, the minimal median is the m-th element in the sorted array after all possible subtractions. To find this, I can subtract as much as possible from the first m elements, because they are the smallest and thus have the most impact on the median.
+
+So, for each x, the minimal median is the m-th element in the sorted array after subtracting x as much as possible from the first m elements.
+
+But how to compute this efficiently.
+
+The key is that, for each x, the maximum number of times we can subtract x from the first m elements is the sum of floor(a_i /x) for each a_i in the first m elements, but each a_i can be subtracted up to floor(a_i/x) times.
+
+Wait, but that's not correct. Because each subtraction is an operation that reduces the element by x. So, for each element a_i in the first m, the maximum number of times you can subtract x is k_i = floor(a_i /x). So, the sum of all k_i is the total number of operations, but for each x, this sum is the maximum number of operations we can perform. But the problem is, with the operations, the elements are being modified, and their order in the sorted array may change.
+
+But perhaps, since we're trying to minimize the m-th element, which is the median, we should focus on making the m-th element as small as possible.
+
+So, perhaps the minimal possible median is the m-th element in the sorted array, after subtracting x as much as possible from the first m elements.
+
+Wait, but how?
+
+Alternatively, for each x, we can compute the minimal possible a_i for the m-th position as the maximum between the m-th element in the original array and the (m-th element after subtracting x as much as possible from the first m elements) which is the m-th element in the array after all possible subtractions.
+
+But how to compute this.
+
+Let me think of it as follows: for each x, the minimal possible median is the maximum between the m-th element in the original array, and the m-th element after subtracting as much as possible from the first m elements.
+
+Wait, but the array is sorted, so the first m elements are the smallest. So, for each x, the minimal median is the maximum of the m-th element in the original array and (the m-th element in the array after subtracting x as much as possible from the first m elements).
+
+Wait, but how to compute this.
+
+Wait, perhaps for each x, we can compute the maximum between the original a_i's m-th element and the a_i's m-th element after subtracting as much as possible from the first m elements.
+
+Wait, but I'm not sure.
+
+Let me try to model it.
+
+Suppose I have a sorted array a_1, a_2, ..., a_n.
+
+The m-th element is a_m.
+
+When I perform operations on the first m elements, each can be reduced by x as much as possible.
+
+So, for each of the first m elements, the maximum number of subtractions possible is floor(a_i /x).
+
+So, the new value of a_i is a_i - k_i * x, where k_i is the maximum possible for each element.
+
+But since the array is sorted, and we're subtracting as much as possible from the first m elements, the new array after all subtractions is a_1, ..., a_m, ... a_n, but a_1, ..., a_m have been reduced.
+
+So, the new array is sorted, and the new a_m is the m-th element.
+
+So, the minimal possible median is the m-th element of the new array.
+
+So, the question is: for each x, what is the m-th element of the new array after subtracting as much as possible from the first m elements.
+
+But how?
+
+Wait, perhaps for each x, we can compute the minimal possible a_i for i=1..m, and then find the m-th element.
+
+But how to compute the minimal possible a_i for each i in 1..m.
+
+Wait, for each i in 1..m, the minimal possible a_i is a_i minus the maximum possible number of subtractions, which is floor(a_i /x).
+
+But wait, no. Because if x is greater than a_i, then you can't subtract, so the minimal a_i is a_i.
+
+But if x is less than or equal to a_i, then you can subtract as much as possible.
+
+Wait, but for each x, the minimal possible a_i is the maximum between a_i - (floor(a_i /x) *x) and 0. Because you can't subtract more than the original a_i.
+
+Wait, but for x > a_i, floor(a_i/x) is 0, so the a_i can't be reduced. So, for x > a_i, the a_i remains as is.
+
+So, for each i in 1..m, the minimal possible a_i is max( a_i - k_i *x, 0 ), where k_i is floor(a_i/x). Wait, but not exactly. Because a_i -k_i *x is a_i - (floor(a_i/x) *x). So, for example, if a_i=5, x=2, floor(5/2)=2. 5-2*2=1, which is correct.
+
+So, for each i in 1..m, the minimal possible a_i is a_i - (k_i)*x, where k_i is floor(a_i /x) if a_i >=x, else 0.
+
+So, the new a_i is a_i - (k_i)*x.
+
+Wait, but then the array after these operations is a_1, a_2, ..., a_m, ... a_n, where a_1, a_2, ..., a_m have been reduced as much as possible.
+
+But since the array is sorted, the new a_m could be lower than the original a_m, or perhaps not, depending on the other elements.
+
+Wait, no. Because when you subtract from the first m elements, the new a_1, ..., a_m could be in any order, but the array is still sorted.
+
+Wait, no. Because the original array is sorted, and the first m elements are the smallest. So, when you subtract from them, the first m elements may become smaller, but the rest are larger or equal.
+
+So, the new array after all operations is still sorted, but the first m elements are the smallest.
+
+So, the new a_m is the m-th element of the new array.
+
+So, the minimal possible median is the m-th element of the new array after operations.
+
+So, for each x, the minimal median is the m-th element of the sorted array after subtracting as much as possible from the first m elements.
+
+But how to compute this for each x efficiently.
+
+The problem is that n can be up to 1e5, and q up to 1e5.
+
+So, for each test case, n and q can be up to 1e5, which is manageable.
+
+But the per-test-case processing needs to be efficient.
+
+So, here's the approach:
+
+1. For each test case, sort the array a in non-decreasing order.
+
+2. For each query x, compute the maximum possible number of subtractions from the first m elements (m is (n+1)//2).
+
+   a. For each i from 1 to m, compute the maximum number of subtractions k_i = floor(a_i /x).
+
+   b. The new a_i is a_i - k_i *x.
+
+   c. So, the new array is a_1, a_2, ..., a_m, ... a_n.
+
+   d. But since the array is still sorted, the new a_m is the m-th element.
+
+3. So, for each x, the minimal median is a_m_new, which is the a_m after all possible subtractions.
+
+But wait, this is not correct because the array after subtraction may not be sorted. Because when you subtract from the first m elements, the first m elements are now smaller, but the rest are larger or equal.
+
+So, the new array is not necessarily sorted. So, to find the m-th element, we need to find the smallest a_i in the first m elements after subtraction.
+
+But that's not the case. Because the array is sorted, and we subtract from the first m elements, the new array is still sorted.
+
+Wait, no. Let's think about it.
+
+Original array is sorted: a_1 <= a_2 <= ... <= a_m <= ... <= a_n.
+
+After subtracting from the first m elements, the new a_1, a_2, ..., a_m are a_1 -k_1, a_2 -k_2, ..., a_m -k_m.
+
+But since a_1 <= a_2 <= ... <= a_m, and k_i is floor(a_i/x), which can vary.
+
+So, the new array could be unsorted. For example, a_1 -k_1 could be larger than a_2 -k_2 if a_1 -k_1 >= a_2 -k_2.
+
+So, the array is no longer sorted.
+
+Thus, the m-th element is not the a_m after subtraction; it's the m-th element of the new array, which is not necessarily a_m.
+
+So, this approach is incorrect.
+
+Hmm, so I need to find a better way.
+
+Alternative approach: For each x, the minimal possible median is the maximum between the m-th element in the original array and the m-th element in a modified array where the first m elements have been reduced as much as possible.
+
+But how to compute this.
+
+Wait, perhaps the minimal possible median is the maximum between the m-th element in the original array and the (m)th element in the array after subtracting x as much as possible from the first m elements.
+
+Wait, but the array is sorted, and after subtracting, the first m elements are smaller, so the m-th element in the new array is the minimal between the original a_m and the new a_m.
+
+No, that's not correct.
+
+Wait, perhaps the minimal possible median is the maximum between the original a_m and the (m)th element after subtracting from the first m elements.
+
+Wait, but I'm not sure.
+
+Maybe the minimal possible median is the maximum of the m-th element in the original array and the (m)th element in the array after subtracting x as much as possible from the first m elements.
+
+But how to compute this.
+
+Wait, perhaps for each x, the minimal possible median is the maximum between the original a_m and the a_m after subtracting for the first m elements.
+
+Wait, but that's not correct because the array after subtraction is not necessarily sorted.
+
+Alternative idea: The minimal possible median is the maximum of the original a_m and the (m)th element in the modified a array.
+
+But how to compute the (m)th element in the modified a.
+
+Wait, perhaps for each x, the minimal possible median is the maximum between the a_i's m-th element and the (m)th element in the array where the first m elements are reduced as much as possible.
+
+But I'm stuck.
+
+Alternative approach: Let's think of the problem differently.
+
+The median is the m-th element. To minimize it, we need to make it as small as possible.
+
+So, for each x, we can compute the maximum possible number of subtractions from the first m elements, but the minimal possible median is the maximum between the m-th element in the original array and the (m)th element in the array after subtracting as much as possible from the first m elements.
+
+Wait, perhaps it's the maximum between the original a_i's m-th element and the a_i's m-th element after subtracting as much as possible from the first m elements.
+
+But how to compute that.
+
+Wait, perhaps for each x, the minimal possible median is the maximum of the original a's m-th element and the a's m-th element after subtracting as much as possible from the first m elements.
+
+So, for each x, the minimal median is the maximum between the original a's m-th element and the new a's m-th element.
+
+Wait, but how to compute the new a's m-th element.
+
+Wait, perhaps the minimal possible median is the maximum between the original a's m-th element and the (m)th element in the array where the first m elements are as small as possible.
+
+But how to compute that.
+
+Wait, perhaps for each x, the minimal possible median is the maximum between a_m and the (m)th element in the array after subtracting x as much as possible from the first m elements.
+
+So, the steps are:
+
+- Sort the array a.
+
+- For each query x:
+
+   - Compute the maximum number of subtractions possible from the first m elements: k_i = floor(a_i /x) for each i in 1..m.
+
+   - For each i in 1..m, new a_i = a_i - k_i *x.
+
+   - Now, the new array is a_1 -k_1, a_2 -k_2, ..., a_m -k_m, a_{m+1}, ..., a_n.
+
+   - But since the array is not necessarily sorted, the new a_m is the m-th element.
+
+   - So, the minimal median is the maximum between a_m and the a_m' where a_m' is the new a_m.
+
+But how to compute a_m' efficiently.
+
+Wait, no. Because the new a_m' is not necessarily the same as the original a_m.
+
+Wait, because the array is not sorted, the new a_m' could be any value in the first m elements.
+
+So, the minimal median is the maximum between the original a_m and the new a_m' (since the new a_m' is the m-th element of the modified array which may be smaller than the original a_m).
+
+Wait, no. Because the new a_m' is the m-th element after any operations, which could be smaller than the original a_m.
+
+So, the minimal median is the maximum between the original a_m and the new a_m'.
+
+But how to compute this.
+
+Alternatively, perhaps the minimal median is the maximum between the original a_m and the (m)th element in the array after subtracting as much as possible from the first m elements.
+
+But how to compute this.
+
+Wait, perhaps for each x, the minimal possible median is the maximum between the original a_m and the (m)th element in the array where each a_i in the first m is reduced by as much as possible.
+
+But how to compute the (m)th element after this.
+
+Wait, perhaps the minimal possible median is the maximum between a_m and the (m)th element in the array where each a_i in the first m is reduced by as much as possible.
+
+But how to compute that.
+
+Wait, perhaps for each x, the minimal possible median is the maximum between a_m and the (m)th element in the array where for each i in 1..m, a_i is reduced by as much as possible.
+
+So, for each i in 1..m, a_i is reduced to a_i - (k_i)*x, where k_i = floor(a_i/x).
+
+Then, the new array is a_1, a_2, ..., a_m, ..., a_n.
+
+But since the array is not sorted, the new a_m is the m-th element.
+
+So, the minimal median is the maximum of a_m and the new a_m.
+
+Wait, that's correct, because the new a_m is the m-th element of the modified array, which is after subtracting as much as possible from the first m elements.
+
+So, the minimal median is the maximum between a_m and the new a_m.
+
+But how to compute the new a_m.
+
+Wait, but the new a_m is the m-th element of the array after subtracting as much as possible from the first m elements.
+
+So, the steps are:
+
+1. Sort the array a.
+
+2. For each query x, compute for each i in 1..m, the new a_i = a_i - (floor(a_i /x))*x.
+
+3. Compute the new a_m, which is the m-th element of the sorted array after the operations.
+
+4. The minimal median is the maximum between a_m and a_m'.
+
+So, the problem reduces to, for each x, compute a_m and a_m' and take the maximum.
+
+But how to compute a_m' efficiently.
+
+Wait, but a_m' is the m-th element of the array after subtracting from the first m elements.
+
+But the array is not sorted, so a_m' is simply the minimum of the first m elements.
+
+So, a_m' is the minimum of a_1, a_2, ..., a_m.
+
+Wait, no. Because a_1 is the smallest, a_m is the m-th smallest.
+
+Wait, no. Because after subtracting as much as possible, some a_i in the first m could be reduced beyond a_m.
+
+So, the new array is not necessarily sorted, so the m-th element is not a_m.
+
+So, for the new array, the m-th element is the minimum of the first m elements.
+
+Wait, no. Because the array is not sorted, the m-th element is the smallest of the first m elements.
+
+Yes, because the array is sorted originally, but after subtracting, the first m are the smallest, then the rest are larger.
+
+So, the new array is a_1', a_2', ..., a_m', a_{m+1}', ..., a_n', where a_i' = a_i - k_i*x for i=1..m.
+
+Since the original array is sorted, a_1' <= a_2' <= ... <= a_m' <= a_{m+1}'.
+
+So, the new array is not sorted, but the first m elements are in non-decreasing order, and the rest are in non-decreasing order.
+
+So, the m-th element is a_m'.
+
+So, to find a_m', we can compute the minimum among the first m elements after subtracting.
+
+So, the minimal possible median is the maximum between a_m and a_m'.
+
+Wait, but a_m is the original m-th element, and a_m' is the m-th element in the modified array, which is the minimum of the first m elements.
+
+So, the minimal median is the maximum of a_m and a_m'.
+
+So, the problem reduces to, for each x, compute a_m and a_m', then take the maximum.
+
+So, how to compute a_m' efficiently.
+
+Wait, a_m' is the minimum of a_1, a_2, ..., a_m.
+
+Wait, no. Because when you subtract from the first m elements, the a_1' could be less than a_2', etc. So, a_m' is not necessarily the minimum of the first m elements.
+
+Wait, because a_1' is the first element, which is the smallest after subtracting.
+
+Wait, no. Because a_1' is the smallest in the first m elements.
+
+Wait, no. Because the array is sorted, the first element after subtraction is a_1' = a_1 - k_1*x.
+
+Which is the smallest of the first m elements.
+
+So, a_m' is the minimum of the first m elements, which is a_1'.
+
+So, a_m' is a_1' = a_1 - k_1*x.
+
+So, the minimal possible median is max(a_m, a_1 - k_1*x).
+
+But wait, that's not correct because a_m' is the m-th element of the new array, which could be less than a_1'.
+
+Wait, no. Because a_1' is the first element, which is the smallest of the first m elements. So, the m-th element is the smallest of the first m elements, which is a_1'.
+
+So, the minimal possible median is the maximum between a_m and a_1' (a_1 - k_1*x).
+
+So, for each x, the minimal median is the maximum between the original a_m and (a_1 - floor(a_1/x) *x).
+
+Wait, that makes sense, because a_1' is a_1 minus as much as possible, which is the maximum possible a_1' is a_1 - (floor(a_1/x) *x).
+
+So, the minimal possible median is the maximum between a_m and (a_1 - k_1 *x).
+
+But why is that?
+
+Because the first m elements can be reduced as much as possible, and the m-th element is the minimum of the first m elements, which is a_1' = a_1 - k_1*x.
+
+So, the minimal possible median is the maximum between a_m and a_1'.
+
+So, for each x, the minimal median is the maximum between a_m and (a_1 - k_1 *x).
+
+Wait, that's an interesting approach.
+
+So, the steps are:
+
+1. Sort the array a in non-decreasing order.
+
+2. For each query

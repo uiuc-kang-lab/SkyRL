@@ -1,0 +1,585 @@
+Okay, so I've got this problem to solve, and I'm a bit nervous because it's a bit tricky. Let's try to break it down step by step.
+
+The problem is about counting the number of triplets (a, b, c) of positive integers that satisfy two conditions: ab + ac + bc ≤ n and a + b + c ≤ x. Also, the order matters, meaning (a, b, c) and (b, a, c) are considered different.
+
+Hmm, right. So for each test case, given n and x, I need to find all possible ordered triplets that meet these conditions.
+
+First, I need to think about how to efficiently compute this, especially since n and x can be up to 1e6, and t can be up to 1e4. So any brute-force approach would be way too slow.
+
+Let me start by thinking about the constraints. The two conditions are:
+
+1. ab + ac + bc ≤ n
+2. a + b + c ≤ x
+
+I need to find all (a, b, c) such that both are satisfied.
+
+Wait, let's rearrange the first condition. ab + ac + bc can be written as (a + b + c)(ab + ac + bc) = something? Wait, no. Alternatively, ab + ac + bc = (a + b + c)(a + b + c) - (a² + b² + c²) all over 2. Or maybe there's a smarter way to express this.
+
+Wait, perhaps it's better to think in terms of variables. Let me denote s = a + b + c, and p = ab + ac + bc. So the problem is to count the number of triplets where p ≤ n and s ≤ x.
+
+But how do I relate s and p? Hmm. There's a relationship between s and p, but I'm not sure. Let's see: for given a, b, c, s = a + b + c, p = ab + ac + bc. So p can be written in terms of s and the sum of squares.
+
+Wait, another approach: for a given s and p, can I find the possible a, b, c?
+
+Alternatively, perhaps I can find the number of triplets (a, b, c) such that a + b + c ≤ x and ab + ac + bc ≤ n. But this might not be directly helpful.
+
+Wait, maybe I can model this as a problem where I iterate over possible a, b, c, but that's probably not feasible for large x and n.
+
+Another idea: since the order matters, perhaps the triplets can be considered as all possible ordered triples (a, b, c), and I need to count those that satisfy both conditions.
+
+But even that, considering that both n and x can be up to 1e6, it's not clear.
+
+Wait, perhaps I can find a way to express the problem in terms of variables that can be iterated more efficiently. Let's think about the two conditions.
+
+Condition 1: ab + ac + bc ≤ n. Let's factor this. Let's see: ab + ac + bc = a(b + c) + bc. Hmm, but that might not help directly.
+
+Wait, another approach: note that ab + ac + bc = (a + b + c)(a + b + c) - (a² + b² + c²) / 2. Wait, no, that's not correct. Let me check:
+
+Wait, (a + b + c)^2 = a² + b² + c² + 2(ab + ac + bc). So rearranging, 2p = (a + b + c)^2 - (a² + b² + c²). So p = [s² - (a² + b² + c²)] / 2, where s = a + b + c.
+
+But I'm not sure if that helps, because then p is expressed in terms of s and the sum of squares. But that might not directly lead to a solution.
+
+Alternatively, perhaps I can think about the problem in terms of a, b, and c being variables that are each bounded by some function of s and p.
+
+Wait, but s is bounded by x, and p is bounded by n. So for each a, b, c, a + b + c ≤ x, and ab + ac + bc ≤ n.
+
+But considering all possible a, b, c up to x is not feasible, as the sum could be up to 3e6 for each test case, which is way too big.
+
+Hmm. So I need a smarter approach.
+
+Wait, perhaps I can find the maximum possible a, b, c in terms of s and p. For a given s and p, what's the maximum a, b, c can be?
+
+Wait, for a given s and p, the maximum possible a is when a is as large as possible, and b and c are as small as possible. But a, b, c are all positive integers, so for a given s, the maximum a is when b and c are 1.
+
+So let's see: suppose a is as large as possible. Then b and c are 1 each. So a + 1 + 1 = s → a = s - 2. Then p = ab + ac + bc = a*(1 +1) + 1*1 → a*2 + 1. So p = 2a + 1.
+
+But for a given s, the maximum a can be is (s - 2), but only if p is ≤ n.
+
+Alternatively, maybe for a given s, the maximum possible p is achieved when a is as large as possible, but I'm not sure.
+
+Wait, maybe I can model it as for a given s, the maximum possible a is s - 2, and then p is 2a +1. So for a given s, the maximum a is s-2, and then p is 2a +1. So for a given s, the maximum p is 2(s-2) + 1 = 2s -3.
+
+But if n is less than 2s -3, then for that s, there are no possible triplets.
+
+So perhaps for each s from 3 to x, I can calculate the maximum possible a, and then for each a, calculate the maximum possible p.
+
+But I'm not sure how to proceed.
+
+Wait, maybe it's better to think in terms of a, b, c, and their sum and sum of products.
+
+But perhaps a better approach is to precompute for each s, the maximum p possible, and find for each s how much of n is consumed, and then compute the possible a, b, c.
+
+Alternatively, perhaps I can model the problem as follows:
+
+Since the order matters, each triplet (a, b, c) can be considered as a, b, c where a ≤ b ≤ c (but no, because the problem counts all permutations as distinct). Wait, no, the order matters, so (a, b, c) is different from (b, a, c) for example, but in a sorted way, like a ≤ b ≤ c, perhaps we can find the number of such triplets and then multiply by the number of permutations.
+
+But no, because the problem states that the order matters. So for each triplet (a, b, c), all permutations are counted as separate triplets. So for example, (1,2,3) is a different triplet than (2,1,3), etc.
+
+So that approach might not help.
+
+Hmm, so perhaps the way to approach this is to iterate over possible a, b, c in a way that covers all possibilities, but in a way that's efficient.
+
+Let me think about the constraints:
+
+1. a + b + c ≤ x → s ≤ x
+2. ab + ac + bc ≤ n → p ≤ n
+
+We need to find all ordered triplets (a, b, c) satisfying these.
+
+But for large x and n, iterating through all possible triplets is computationally expensive.
+
+So, perhaps we can find a way to express the count in terms of a, b, and c, but find a way to compute it efficiently.
+
+Wait, perhaps we can precompute for each a, the maximum possible b and c that satisfy the constraints given a.
+
+Let me try to fix a and see what constraints are on b and c.
+
+Given a, the sum s = a + b + c ≤ x → b + c ≤ x - a.
+
+And the product p = ab + ac + bc ≤ n → ab + ac + bc ≤ n.
+
+We can factor ab + ac + bc as a(b + c) + bc ≤ n.
+
+But since b + c = s' where s' = b + c, and s' ≤ x - a.
+
+So for a fixed a, the sum s' = b + c must be ≤ x - a.
+
+Also, the product bc is to be considered.
+
+Hmm, this seems a bit complicated.
+
+Alternatively, perhaps I can express bc in terms of b + c and s'.
+
+Wait, bc ≤ [ (b + c)^2 - (b^2 + c^2) ] / 2. But I'm not sure if that helps.
+
+Wait, maybe for a given a, the maximum possible value of bc is when b and c are as large as possible, but subject to b + c ≤ s'.
+
+So, the maximum bc is when b = c' where c' = s' - b, but constrained by the sum.
+
+Wait, perhaps another approach: for a fixed a, consider that b + c = t, where t ranges from 2 to x - a.
+
+Then, the product bc is maximized when b and c are as equal as possible. So, for t, the maximum bc is floor(t^2 /4). Or perhaps it's (t^2 - (t mod 2))/4 or something like that.
+
+Wait, yes, for a given t, the maximum value of bc is floor(t^2 /4). So bc ≤ (t^2)/4.
+
+So, for a fixed a and t = b + c, the product bc can be up to (t^2)/4.
+
+So, for a fixed a and t, the condition ab + ac + bc ≤ n can be rewritten as a*(b + c) + bc ≤ n → a*t + bc ≤ n.
+
+But bc can be at most t²/4. So, substituting, we get a*t + t²/4 ≤ n.
+
+But t is also limited by t ≤ x - a.
+
+So, for a fixed a, the maximum possible t is x - a. And for each t from 2 to min(x - a, t_max where a*t + t²/4 ≤ n), we can compute the number of (b, c) pairs that satisfy b + c = t and bc ≤ (t²)/4.
+
+Wait, but bc is already ≤ t²/4, so if a*t + t²/4 ≤ n, then any bc that is ≤ (t²/4) would satisfy the condition.
+
+So, for each a, and for each t, if a*t + t²/4 ≤ n, then the number of (b, c) pairs is the number of positive integers b and c such that b + c = t, and bc ≤ (t²)/4.
+
+But wait, for t ≥ 2, the maximum bc is achieved when b and c are as close as possible.
+
+So, for a given t, the number of (b, c) pairs is the number of integers b where 1 ≤ b ≤ t-1, and c = t - b ≥ 1.
+
+But bc must be ≤ t²/4.
+
+So, for each t, the number of (b, c) pairs is the number of integers b in [1, t-1] such that b*(t - b) ≤ t²/4.
+
+But since b and t - b are symmetric, for each b ≤ t/2, the count is the same.
+
+Wait, perhaps a smarter way is to find for a given t, the number of b's such that b ≤ t/2 and b*(t - b) ≤ t²/4.
+
+Wait, but for any t, the maximum bc is t²/4, and it's achieved when b = t/2 (if t is even) or when b is as close as possible to t/2.
+
+So, for any t, the maximum bc is t²/4, which is achieved when b = t/2.
+
+So, for a given t, the condition a*t + bc ≤ n is satisfied if a*t + (t²/4) ≤ n.
+
+But wait, bc can be up to t²/4, so if a*t + t²/4 ≤ n, then any bc ≤ t²/4 would satisfy the condition.
+
+So, for a given a and t, if a*t + (t²)/4 ≤ n, then for that t, all (b, c) pairs where b + c = t and bc ≤ t²/4 contribute to the count.
+
+But since bc is ≤ t²/4, and a*t + bc ≤ a*t + t²/4 ≤ n, then all (b, c) pairs that sum to t are acceptable.
+
+So, the number of such (b, c) pairs is the number of positive integers b, c with b + c = t.
+
+But since b and c are positive integers, for each t ≥ 2, the number of (b, c) pairs is t-1. Because b can be from 1 to t-1, and c is determined as t - b.
+
+But wait, for each t, the number of (b, c) pairs is t-1. But that's only if b and c are positive integers.
+
+Wait, but for t ≥ 2, yes, the number of pairs is t-1, because b can be 1, 2, ..., t-1, and c = t - b.
+
+So, for a given a and t, if a*t + t²/4 ≤ n, then the number of (b, c) pairs is (t-1).
+
+But wait, that's only if a*t + t²/4 ≤ n.
+
+But what if a is larger than (n - t²/4)/t ?
+
+Wait, no. Because for a given t, the condition is a*t + t²/4 ≤ n. So for a given a, as long as a*t + (t²)/4 ≤ n, the (b, c) pairs are acceptable.
+
+So, for a fixed a, the maximum t is x - a, but we also have to ensure that a*t + (t²)/4 ≤ n.
+
+So, for a given a, the possible t's are those where t ≤ x - a and a*t + (t²)/4 ≤ n.
+
+So, the approach is as follows:
+
+For each test case, for each a starting from 1 up to x, we can compute the maximum possible t for which a*t + (t²)/4 ≤ n, and t ≤ x - a.
+
+For each such t, the number of (b, c) pairs is t-1.
+
+Then, for each such a and t, the number of triplets contributed is the number of (b, c) pairs for that a and t, multiplied by the number of permutations considering a, b, c.
+
+Wait, no, because for each a, b, c, the order matters. So for each (a, b, c) triplet where a, b, c are positive integers, the ordered triplets can be considered. So for each a, the (b, c) pairs are all possible, and each can be ordered in any way.
+
+But I'm not sure. No, because a, b, c are all variables, and for each a, the (b, c) pairs are considered as ordered.
+
+Wait, perhaps for a fixed a, the number of ordered triplets is the number of (b, c) pairs multiplied by the number of possible permutations.
+
+Wait, no. For each (a, b, c) triplet, the order matters. So for each a, the number of ordered triplets contributed by a is the number of possible (b, c) pairs that satisfy the conditions, multiplied by the number of permutations of (a, b, c).
+
+Wait, no. Because for a given a, the (b, c) can be any of the (t-1) pairs, but each such pair can be arranged in different orders.
+
+Wait, but in the problem statement, the triplet is ordered. So for each (b, c) pair, the triplet (a, b, c) is considered, and (a, c, b) is another triplet.
+
+So, for a fixed a, the triplet (a, b, c) is considered, and (a, c, b) is another.
+
+So, for each a, the number of (b, c) pairs is t-1, and each of these can be arranged in 2 ways if b ≠ c, or 1 way if b = c.
+
+But this complicates things, as I have to consider the permutations.
+
+Hmm, perhaps a better way is to model the problem as:
+
+For each a, the number of triplets (a, b, c) is equal to the number of ordered pairs (b, c) where b and c are positive integers, b + c ≤ (x - a), and ab + ac + bc ≤ n.
+
+But since the order matters, each (b, c) pair contributes two triplets unless b = c.
+
+Wait, but that would double count if we have all a, b, c and their permutations.
+
+Alternatively, perhaps for each a, the number of triplets is the sum over all possible b and c (positive integers) such that b + c ≤ x - a and ab + ac + bc ≤ n, and for each such (b, c), we count the number of permutations.
+
+But this seems complex.
+
+Alternatively, perhaps we can model the problem as:
+
+For each a, the number of triplets is the number of (b, c) pairs that satisfy the two conditions, multiplied by the number of permutations, but that's not accurate because a, b, c are all variables.
+
+Wait, perhaps it's better to think that for each a, the number of triplets is the number of (b, c) pairs where b + c ≤ x - a, and ab + ac + bc ≤ n. But for each such (b, c), the triplet (a, b, c) is considered, but in reality, each (b, c) can be arranged in 2 ways if b != c, or 1 way if b = c.
+
+But this would lead to double counting, as (a, b, c) and (a, c, b) are two separate triplets.
+
+So, perhaps the way to proceed is:
+
+For each a, the number of triplets is the number of (b, c) pairs where b + c ≤ x - a and ab + ac + bc ≤ n.
+
+But since each (b, c) pair is considered in order, this would count both (b, c) and (c, b) as separate triplets.
+
+So for a fixed a, the number of triplets is the count of (b, c) pairs where b + c ≤ s (s = x - a) and ab + ac + bc ≤ n.
+
+But how to compute this count efficiently.
+
+Wait, but for each a, the maximum s is x - a, and the maximum t (b + c) is s.
+
+So, for each a, we can compute the maximum t as s.
+
+Then, for each t from 2 to s, we can find the maximum a that satisfies a*t + (t^2)/4 ≤ n.
+
+Wait, perhaps for a given a and t, if a*t + (t^2)/4 ≤ n, then the number of (b, c) pairs is t-1.
+
+But this is under the condition that a is ≤ (n - (t^2)/4)/t.
+
+Wait, maybe I can reorganize this.
+
+For each a, the maximum t is x - a.
+
+Then, for each t in 2 to min(x - a, t_max where a*t + t²/4 ≤ n):
+
+the number of (b, c) pairs is (t-1), and for each such pair, we have a triplet (a, b, c).
+
+But wait, for each a and t, the number of triplets is (t-1) multiplied by 1, but each triplet is unique.
+
+But this approach would require for each a, iterating over all possible t up to (x - a) and checking if a*t + (t²)/4 <= n.
+
+But this is O(x) per test case, which is 1e6 per test case, and t can be up to 1e4. So 1e4 * 1e6 = 1e10 operations, which is way too slow.
+
+So, this approach is not feasible.
+
+Hmm, perhaps we need a better mathematical approach.
+
+Let me think about the sum s = a + b + c ≤ x, and p = ab + ac + bc ≤ n.
+
+We can model this as s and p being bounded.
+
+So, perhaps for each s from 3 to x, we can compute the maximum p allowed, and then for each s, sum over a, b, c such that a + b + c = s, and ab + ac + bc ≤ n.
+
+Then, the total is the sum of the counts for all s.
+
+But for each s, the number of triplets (a, b, c) with a + b + c = s is equal to the number of integer solutions where a + b + c = s, a, b, c ≥1.
+
+Which is (s-1 choose 2), but that's the number of ordered triplets.
+
+So, for each s from 3 to x, we can compute the maximum p allowed, and find the number of ordered triplets (a, b, c) where a + b + c = s and ab + ac + bc ≤ n.
+
+But how?
+
+Wait, for a given s, the maximum p is achieved when a, b, c are as large as possible. Maybe the maximum p is when a = s - 2, b = 1, c = 1, giving p = 2a + 1.
+
+But that's just one possibility.
+
+Alternatively, perhaps for each s, the maximum possible p is when a is as large as possible, but I'm not sure.
+
+Alternatively, perhaps for a given s, the maximum p is achieved when a, b, c are as equal as possible.
+
+But I'm not sure.
+
+Wait, perhaps for a given s, the maximum p is when a, b, c are as equal as possible.
+
+So, for s, the maximum possible p is achieved when a = floor(s/3), b = floor(s/3), c = s - a - b, or something like that.
+
+But perhaps this is a way to find the maximum p for a given s.
+
+But for our problem, it's the other way: for a given s, what is the maximum p allowed, and then count the number of triplets with a + b + c = s and p ≤ n.
+
+Wait, perhaps it's easier to model p as a function of a, b, c.
+
+But this seems complicated.
+
+Alternatively, perhaps for a given s, the maximum p is (s^2 - s)/3. Because for a = b = c = s/3, p would be 3*(s^2/9) = s²/3.
+
+But this is only the case when s is divisible by 3.
+
+But for other s, perhaps the maximum p is when two variables are as large as possible.
+
+Wait, for s=3: a=1, b=1, c=1 → p=3.
+
+For s=4: a=2, b=1, c=1 → p=2*1 + 2*1 + 1*1 = 2+2+1=5.
+
+Which is larger than s²/3=16/3=5.333, which is larger than 5. So perhaps the maximum p for s=4 is 5.
+
+But for s=5: a=2, b=2, c=1 → p=4 + 2 + 2 = 8. Which is larger than (5^2)/3 = 8.333.
+
+So, for s=5, the maximum p is 8, which is less than 8.333.
+
+So, perhaps the maximum p for a given s is ceil(s² / 3).
+
+So, for a given s, the maximum p is the maximum possible, which is floor((s^2)/3) for s not divisible by 3, and ceiling((s^2)/3) otherwise.
+
+Wait, perhaps this is a way to find the maximum p for a given s.
+
+So, for each s, the maximum allowed p is floor((s^2)/3).
+
+Wait, for s=3: 3²/3=3, which matches.
+
+s=4: 16/3=5.333, but the maximum p is 5.
+
+s=5: 25/3 ~8.333, but the maximum p is 8.
+
+So, the maximum p for a given s is floor((s^2)/3).
+
+Wait, perhaps it's better to model it as p_max(s) = floor((s^2)/3).
+
+So, for a given s, the maximum p is floor(s^2 /3).
+
+If n >= p_max(s), then for s, all triplets (a, b, c) with a + b + c = s will satisfy p <= n.
+
+So, the number of triplets for s where a + b + c = s and p <=n is equal to the number of ordered triplets with a + b + c = s.
+
+Which is (s-1 choose 2) = (s-1)*(s-2)/2.
+
+Wait, no. The number of ordered triplets (a, b, c) is (s-1 choose 2) = (s-1)(s-2)/2.
+
+But wait, no. Because a, b, c are positive integers, the number of ordered triplets is (s-1 choose 2) only for unordered triplets. Wait, no.
+
+Wait, the number of ordered triplets where a + b + c = s is equal to the number of solutions to a, b, c ≥ 1 of a + b + c = s, which is equal to (s-1 choose 2).
+
+Yes, because the problem is equivalent to putting s-1 indistinct items into 3 distinct boxes, each at least 0. So, the formula is (s-1 choose 2).
+
+So, for a given s, if p_max(s) ≤ n, then the number of triplets is (s-1 choose 2). Otherwise, it's the number of triplets where p is ≤n.
+
+But how to find the number of triplets where a + b + c = s and p = ab + ac + bc ≤n.
+
+This seems challenging.
+
+Wait, but perhaps for each s, the number of triplets (a, b, c) is equal to the number of ordered triplets where a + b + c = s and ab + ac + bc ≤n.
+
+So, for each s, compute the number of ordered triplets (a, b, c) with a + b + c = s and ab + ac + bc ≤n.
+
+But how?
+
+Wait, perhaps for a given s, the minimal value of p is 3, achieved when a = b = c =1.
+
+The maximum p is floor(s^2 /3).
+
+So, for each s, if n is less than 3, then the number of triplets is zero.
+
+Else, if n is larger than or equal to p_max(s), then the number of triplets is (s-1 choose 2).
+
+Otherwise, we need to find the number of triplets where p ≤n.
+
+So, the problem reduces to, for each s from 3 to x, compute the number of ordered triplets (a, b, c) with a + b + c = s and ab + ac + bc ≤n.
+
+So, for each s, the count is the number of ordered triplets (a, b, c) where a, b, c are positive integers, a + b + c = s, and ab + ac + bc ≤n.
+
+This seems manageable.
+
+So, the plan is:
+
+For each test case, iterate over s from 3 to x.
+
+For each s, compute the number of ordered triplets (a, b, c) with a + b + c = s and ab + ac + bc ≤n.
+
+Sum these counts for all s.
+
+The challenge is to compute, for each s, the number of ordered triplets (a, b, c) with a + b + c = s and ab + ac + bc ≤n.
+
+So, how to compute this.
+
+Let me denote p = ab + ac + bc.
+
+We can express p in terms of s and the variables.
+
+We know that a + b + c = s.
+
+We can express p as ab + ac + bc = (a + b + c)^2 - (a^2 + b^2 + c^2) / 2.
+
+Wait, actually, from earlier:
+
+p = [s² - (a² + b² + c²)] / 2.
+
+But this doesn't seem helpful directly.
+
+Alternatively, perhaps we can express p in terms of (a, b, c) and find an upper bound.
+
+But I'm not sure.
+
+Wait, perhaps we can model the problem as follows: for a given s, the number of ordered triplets is equal to the number of ordered pairs (a, b) where a, b ≥1, a + b ≤ s - c, but this is getting complicated.
+
+Alternatively, perhaps for a given s, the number of triplets is equal to the number of ordered pairs (a, b) such that a + b ≥ 2, a + b ≤ s - 1, and ab + a c + b c ≤n, where c = s - a - b.
+
+But this seems difficult.
+
+Wait, perhaps I can model it as follows:
+
+For a given s, c = s - a - b.
+
+So, p = ab + a(s - a - b) + b(s - a - b) = ab + a s - a² - a b + b s - a b - b².
+
+Simplify:
+
+ab + a s - a² - ab + b s - ab - b².
+
+= a s - a² - ab + b s - b².
+
+= s(a + b) - (a² + b²) - ab.
+
+Wait, perhaps this can be rewritten.
+
+Alternatively, perhaps I can express p in terms of a and b.
+
+But this seems challenging.
+
+Alternatively, perhaps I can find that for a given s, the minimal and maximal possible p, and then find the conditions on a and b such that p ≤n.
+
+But I'm not sure.
+
+Alternatively, perhaps for each s, the number of triplets is the number of (a, b, c) where a + b + c = s, and ab + ac + bc ≤n.
+
+But to find this, perhaps we can find a way to compute the sum over a and b, where a + b ≤ s -1, and a, b ≥1, and (ab + a(s - a - b) + b(s - a - b)) ≤n.
+
+But this seems computationally intensive.
+
+Wait, but for a given s, a and b are positive integers with a + b ≤ s - 1.
+
+So, for each a from 1 to s-1, and for each b from 1 to s - a - 1, compute p = ab + a c + b c, where c = s - a - b.
+
+If p ≤n, then this triplet is counted.
+
+But for s up to 1e6, this would be O(s^2) per test case, which is not feasible.
+
+So, perhaps we need a smarter way.
+
+Wait, perhaps I can find the maximum a for a given s such that p ≤n, and then compute the number of b's for that a.
+
+But I'm not sure.
+
+Alternatively, perhaps for a given s, the maximum a can be found such that for all b, p ≤n.
+
+But again, it's unclear.
+
+Wait, perhaps I can model the condition p ≤n for a given a and b.
+
+So, p = ab + a c + b c = ab + c(a + b).
+
+But c = s - a - b.
+
+So, p = ab + (s - a - b)(a + b).
+
+s is fixed for a given s.
+
+So, for a given a and b, p is a function of s.
+
+But since s is fixed for each test case, perhaps I can precompute for all s.
+
+But I'm not sure.
+
+Hmm, perhaps we can find a way to express p in terms of a, b, and s, and then find the conditions.
+
+Let me write p as:
+
+p = ab + a c + b c = ab + c(a + b).
+
+But c = s - a - b.
+
+So,
+
+p = ab + (s - a - b)(a + b).
+
+= ab + (a + b)(s - a - b).
+
+= ab + s(a + b) - (a² + 2ab + b²).
+
+= ab + s(a + b) - a² - 2ab - b².
+
+= s(a + b) - a² - ab - b².
+
+So, p = s(a + b) - a² - ab - b².
+
+Now, the condition p ≤n can be rewritten as:
+
+s(a + b) - a² - ab - b² ≤n.
+
+Which can be rearranged as:
+
+s(a + b) ≤ a² + ab + b² + n.
+
+But I'm not sure how to proceed from here.
+
+Alternatively, perhaps I can find that for fixed a and b, the condition p ≤n can be expressed as s ≤ (a² + ab + b^2 + n) / (a + b).
+
+But a + b is fixed for a given a and b.
+
+But since s = a + b + c, and c is positive, s ≥ a + b + 1.
+
+So, combining these, perhaps for a given a and b, the maximum possible s for which p ≤n is s ≤ (a² + ab + b^2 + n) / (a + b).
+
+But s can't be larger than x, and also, since c = s - a - b ≥1, s ≥ a + b + 1.
+
+So, for a given a and b, s can range from max( a + b + 1, 3 ) to min( (a² + ab + b^2 + n) / (a + b), x ).
+
+But I'm not sure.
+
+Alternatively, perhaps for a given a and b, the maximum s is min( x, (a² + ab + b^2 +n) / (a + b) ).
+
+But again, this seems complicated.
+
+Wait, perhaps for a given a, the maximum b is such that the corresponding s is ≤x and p ≤n.
+
+But I'm stuck.
+
+Hmm.
+
+Perhaps it's better to find an alternative approach.
+
+Let me think about the sum s = a + b + c and p = ab + ac + bc.
+
+We can try to model this as a problem where for each possible s, we find the maximum p as before, and then compute the number of triplets for each s.
+
+But that's again O(x) per test case, which is too slow.
+
+Alternatively, perhaps precompute for each s, the maximum p is floor(s^2 /3), and for each s, the number of triplets is (s-1 choose 2) if n >= floor(s^2 /3), else compute the number of triplets where p <=n.
+
+But how to compute the number of triplets where p <=n for a given s.
+
+Wait, perhaps for a given s, the number of triplets where a + b + c = s and ab + ac + bc <=n can be found by considering a and b.
+
+So, for each a and b, compute p as above, and check if p <=n.
+
+But as before, for s up to 1e6, this approach is O(s^2), which is not feasible.
+
+Hmm.
+
+Wait, perhaps another approach: for each a and b, compute the maximum c as s -a -b, then compute p for that a, b, c. If p <=n, then count it.
+
+But again, this is O(s^2) per test case, which is not feasible.
+
+So, perhaps, I need to find a mathematical way to compute the number of triplets for a given s.
+
+Wait, perhaps for a given s, the number of triplets is the number of (a, b, c) such that a + b + c = s and ab + ac + bc <=n.
+
+But perhaps for a given s, the minimal value of ab + ac + bc is 3 (when a = b = c =1), and the maximum is floor(s²/3).
+
+So, for each s, if n >= 3, we have some triplets.
+
+But how to find the count.
+
+Wait, perhaps for a given s, the number of triplets is equal to the number of ordered pairs (a, b) such that a + b >= 2, a + b <= s -1, and p <=n.
+
+But I'm not sure.
+
+Alternatively, perhaps I can model the problem as follows:
+
+For a given s, the maximum possible value of ab + ac + bc is floor(s²/3). So, if n >= floor(s²/3), all triplets are counted, which is (s-1 choose 2).
+
+Otherwise, we need to find the number of triplets where ab + ac + bc <=n.
+
+So, for a given s, if n >= floor(s²/3), the count is (s-1 choose 2).
+
+Otherwise, we need to count the number of triplets where ab + ac + bc

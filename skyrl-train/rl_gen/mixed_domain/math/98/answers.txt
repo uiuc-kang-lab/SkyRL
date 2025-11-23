@@ -1,0 +1,81 @@
+y = \frac{9}{2}x^2 - 12x + 4
+Okay, so I have this problem where I need to find the equation of a parabola \( y = ax^2 + bx + c \) with \( a > 0 \) that passes through the points (0,4) and (2,-2). The goal is to find the equation when the length of the segment it cuts on the x-axis is the shortest. Hmm, let me break this down step by step.
+
+First, since the parabola passes through (0,4), I can plug in x=0 and y=4 into the equation to find c. So, \( 4 = a(0)^2 + b(0) + c \) which simplifies to \( c = 4 \). Got that down.
+
+Next, the parab passes through (2,-2), so I can plug in x=2 and y=-2. That gives me \( -2 = a(2)^2 + b(2) + c \), which simplifies to \( -2 = 4a + 2b + c \). Since I already know c=4, I can substitute that in: \( -2 = 4a + 2b + 4 \). Subtract 4 from both sides: \( -6 = 4a + 2b \). I can simplify this equation by dividing everything by 2: \( -3 = 2a + b \). So, now I have two equations: \( c = 4 \) and \( -3 = 2a + b \). But wait, this only gives me two equations for three variables (a, b, c). Hmm, but I already know c, so I need to find a and b such that the parab passes through both points.
+
+Wait, no, actually, I just used two points to find two equations, but since a > 0, it's a valid parabola. But wait, actually, with two points and the direction that it opens (a > 0), I think the parabola is determined up to the vertex. But maybe I need to find the specific parabola where the segment on the x-axis is shortest. Hmm, perhaps I need to consider the x-intercepts themselves.
+
+The parabola cuts the x-axis at some points, say x1 and x2, assuming it has two real roots. The length of the segment on the x-axis would be |x1 - x2|. I need to minimize this length. But wait, the parabola passes through (0,4) and (2,-2), so it's fixed in some way except for the vertex or something. Hmm, maybe I need to express b in terms of a, or a in terms of b, and then find the condition where the length of the x-intercept segment is minimized.
+
+So, from the earlier step, I have \( -3 = 2a + b \), so \( b = -3 - 2a \). Now, the parabola is \( y = ax^2 + (-3 - 2a)x + 4 \). Now, to find the x-intercepts, I need to solve \( ax^2 + (-3 - 2a)x + 4 = 0 \). The solutions are given by the quadratic formula: \( x = [3 + 2a ± sqrt((3 + 2a)^2 - 16a)] / (2a) \). Let me compute the discriminant: \( D = (3 + 2a)^2 - 16a = 9 + 12a + 4a^2 -16a = 4a^2 -4a +9 \). Hmm, so D = 4a^2 -4a +9. Now, the roots are \( x = [3 + 2a ± sqrt(4a^2 -4a +9)] / (2a) \). 
+
+So, the two x-intercepts are \( x1 = [3 + 2a + sqrt(4a^2 -4a +9)] / (2a) \) and \( x2 = [3 + 2a - sqrt(4a^2 -4a +9)] / (2a) \). Therefore, the length of the segment is \( |x1 - x2| = [2 sqrt(4a^2 -4a +9)] / (2a) = sqrt(4a^2 -4a +9)/a \). So, the length L = sqrt(4a^2 -4a +9)/a.
+
+Now, I need to minimize this length L with respect to a. Since a > 0, I can ignore the absolute value. So, L = sqrt(4a^2 -4a +9)/a. To minimize L, I can minimize L^2, since square is a monotonic function for positive values. So, L^2 = (4a^2 -4a +9)/a^2 = 4 -4/a +9/a^2.
+
+Now, let me define f(a) = 4 -4/a +9/a^2. I need to find the minimum of f(a) for a >0. To find the minimum, I can take the derivative of f(a) with respect to a and set it to zero. So, f'(a) = 0 +4/a^2 -18/a^3. Setting f'(a)=0: 4/a^2 -18/a^3 =0. Factor out 2/a^3: 2/a^3 (2a -9) =0. Since a >0, 2/a^3 ≠0, so 2a -9=0 => a=9/2.
+
+So, the critical point is at a=9/2. Now, I need to verify if this is a minimum. I can take the second derivative f''(a): f''(a) = -8/a^3 +54/a^4. At a=9/2, let's compute f''(a): -8/( (9/2)^3 ) +54/( (9/2)^4 ). This is negative plus positive. Let me compute numerically:
+
+First, (9/2)^3 = 729/8, so 8/(729/8) =64/729.
+
+(9/2)^4 =6561/16, so 54/(6561/16) =54*16/6561=864/6561=96/729.
+
+So, f''(a)= -64/729 +96/729=32/729>0. So, concave up, therefore min at a=9/2.
+
+So, the minimum occurs when a=9/2. Now, let me find b and c. We have c=4, and b= -3 -2a= -3 -2*(9/2)= -3 -9= -12.
+
+So, a=9/2, b=-12, c=4. Therefore, the equation of the parabola is \( y = (9/2)x^2 -12x +4 \).
+
+Now, let me verify if this is correct by checking the discriminant when a=9/2. D=4a^2 -4a +9=4*(81/4) -4*(9/2) +9=81 -18 +9=72. So, D=72, which is positive, so two real roots, which is consistent.
+
+Also, the length of the segment is L= sqrt(D)/a= sqrt(72)/(9/2)= (6 sqrt(2))/(9/2)=6 sqrt(2)*2/9=12 sqrt(2)/9=4 sqrt(2)/3. If I plug a=9/2 into L= sqrt(4a^2 -4a +9)/a= sqrt(72)/ (9/2)=6 sqrt(2)/ (9/2)= same as above.
+
+So, everything checks out. Therefore, the equation of the parabola when the length of the segment it cuts on the x-axis is the shortest is \( y = (9/2)x^2 -12x +4 \).
+
+Wait, let me write it in LaTeX format: \( y = \frac{9}{2}x^2 - 2x + 4 \).
+
+But let me double-check the steps to ensure no mistakes. First, found c=4. Then, using the point (2,-2), got -3=2a +b. Then, wrote the quadratic equation, found discriminant D=4a^2 -4a +9. Then, x-intercepts, computed distance between them as sqrt(D)/a. Then, defined f(a)=sqrt(D)/a, converted to squared function f^2(a)=D/a^2=4 -4/a +9/a^2. took derivative, found critical point a=9/2, verified it's a minimum. Then, computed b= -3 -2a= -12, c=4. Yep, all steps seem correct.
+
+Another way to think about it: the length of the segment on the x-axis is twice the x-coordinate of the vertex when the parabola cuts the x-axis at two points symmetric around the vertex. Wait, no, actually, the two x-intercepts are symmetric around the vertex's x-coordinate, which is -b/(2a). So, the distance between them is 2*(distance from vertex to either intercept)=2*(|vertex x - x1|). But maybe this is complicating things.
+
+Alternatively, I know that for a parabola cutting the x-axis at two points, the length of the segment is related to the discriminant. But my initial approach seems correct. So, I think the answer is correct.
+
+Another sanity check: when a is very small, the parabola is wide and cuts the x-axis near the y-intercept (0,4), so the segment length is close to 4. When a is very large, the parabola is narrow and cuts the x-axis further away, so the segment length increases. At some intermediate a, the segment length should be minimized. Which is what we found at a=9/2. So, yes, this makes sense.
+
+Therefore, the final answer is \( y = \frac{9}{2}x^2 - 2x + 4 \).
+
+---
+
+Wait, let me just confirm the algebra when converting f^2(a)=4 -4/a +9/a^2. Then f^2(a)=4 -4/a +9/a^2. Taking derivative: f^2'(a)=0 -4/-a^2 + -9/(a^3)=4/a^2 -9/(a^3). Setting equals zero:4/a^2 -9/a^3=0=>4/a^2=9/a^3=>4a=9=>a=9/4. Wait, wait, wait, hold on, this contradicts my previous result. Did I make a mistake?
+
+Wait, no, no矛盾，让我重新计算f^2(a)=4 -4/a +9/a^2。它的导数是 f^2'(a)=0 +4/a^2 -18/(a^3). 设置为零：4/a^2 -18/(a^3)=0=>4/a^2=18/a^3=>4a=18=>a=18/4=9/2。对，之前正确。因为当f^2'(a)=4/a^2 -18/(a^3)=0，乘a^3：4a -18=0=>4a=18=>a=4.5=9/2。所以我之前正确，没有矛盾。之前可能另一种计算方式混淆了。所以确认a=9/2。
+
+所以，最终答案正确。
+
+另一个检查：当a=9/2，代入b= -3 -2*(9/2)= -3 -9= -12，正确。c=4，正确。所以没错。
+
+所以，最终答案是 \( y = \frac{9}{2}x^2 - 2x + 4 \).
+
+Wait, let me write it with integer coefficients: multiply through by 2 to eliminate fraction: 2y=9x^2 -4x +8=>9x^2 -4x +8 -2y=0. But perhaps not necessary. The original form is acceptable.
+
+所以在 LaTeX格式下：\boxed{y = \frac{9}{2}x^2 - 2x + 4}
+
+但可能题目要求不需要乘以2，直接保留分数，所以保持原来形式：\boxed{y = \frac{9}{2}x^2 - 2x + 4}
+
+另一种表示：\boxed{y = \frac{9}{2}x^2 - 2x + 4}
+
+或者，可以写成整数系数，乘以2：2y=9x^2 -4x +8，但可能不是 required。所以原来的形式OK。
+
+所以，最终答案是 \( y = \frac{9}{2}x^2 - 2x + 4 \).
+
+ another way:或许可以写成分数更简的形式，但已经 simplest form 是这个了。
+
+所以， boxed{y = \frac{9}{2}x^2 - 2x + 4}
+
+```latex
+\boxed{y = \frac{9}{2}x^2 - 2x + 4}
+``
+```<｜end▁of▁sentence｜>

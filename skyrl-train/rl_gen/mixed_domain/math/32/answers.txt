@@ -1,0 +1,447 @@
+-3+2 \sqrt {3}
+Okay, so I have this problem where the line \( y = ax + 1 \) intersects the parabola \( y^2 = 4x \) at points \( A \) and \( B \). There are two parts: part (I) is to find the range of the real number \( a \), and part (II) is to find the specific value of \( a \) such that the circle with diameter \( AB \) passes through the focus \( F \) of the parabola.
+
+First, I need to recall some basic facts about the parabola \( y^2 = 4x \). The standard form of a parabola that opens to the right is \( y^2 = 4px \), where \( p \) is the distance from the vertex to the focus. Comparing, I see that \( 4p = 4 \), so \( p = 1 \). Therefore, the focus \( F \) of the parabola is at \( (1, 0) \).
+
+Next, to find the points of intersection between the line and the parabola, I can substitute \( y \) from the line equation into the parabola equation. So, substituting \( y = ax + 1 \) into \( y^2 = 4x \) gives:
+
+\[ (ax + 1)^2 = 4x \]
+
+Expanding the left side:
+
+\[ a^2x^2 + 2ax + 1 = 4x \]
+
+ bringing all terms to one side:
+
+\[ a^2x^2 + 2ax + 1 - 4x = 0 \]
+
+ combine like terms:
+
+\[ a^2x^2 + (2a - 4)x + 1 = 0 \]
+
+ This is a quadratic equation in \( x \). For the line and the parabola to intersect at two distinct points, the discriminant of this quadratic must be positive. The discriminant \( D \) of \( Ax^2 + Bx + C = 0 \) is \( D = B^2 - 4AC \).
+
+ Here, \( A = a^2 \), \( B = 2a - 4 \), and \( C = 1 \). So,
+
+\[ D = (2a - 4)^2 - 4(a^2)(1) \]
+\[ D = 4a^2 - 16a + 16 - 4a^2 \]
+\[ D = -16a + 16 \]
+
+ For the discriminant to be positive:
+
+\[ -16a + 16 > 0 \]
+\[ -16a > -16 \]
+\[ a < 1 \]
+
+So, the range of \( a \) is all real numbers less than 1. That takes care of part (I).
+
+Now, part (II) is more involved. I need to find the value of \( a \) such that the circle with diameter \( AB \) passes through the focus \( F(1, 0) \).
+
+First, I need to find the coordinates of points \( A \) and \( B \). Since they are the intersections of the line and the parabola, their \( x \)-coordinates are the solutions to the quadratic equation \( a^2x^2 + (2a - 4)x + 1 = 0 \).
+
+ Let me denote the solutions as \( x_1 \) and \( x_2 \). Then, the corresponding \( y \)-coordinates are \( y_1 = a x_1 + 1 \) and \( y_2 = a x_2 + 1 \).
+
+ The circle with diameter \( AB \) has its center at the midpoint of \( AB \) and radius half the distance between \( A \) and \( B \).
+
+ To find if \( F \) lies on this circle, the distance from \( F \) to the center of the circle must be equal to the radius.
+
+ Alternatively, another approach is to use the property that if \( F \) lies on the circle with diameter \( AB \), then \( \angle AFB \) is a right angle. However, I think using the distance formula might be more straightforward.
+
+ Let me proceed step by step.
+
+ First, find the coordinates of \( A \) and \( B \). As above, the quadratic equation is \( a^2x^2 + (2a - 4)x + 1 = 0 \). Let me solve for \( x \):
+
+\[ x = \frac{-(2a - 4) \pm \sqrt{D}}{2a^2} \]
+\[ x = \frac{-2a + 4 \pm \sqrt{-16a + 16}}{2a^2} \]
+\[ x = \frac{-2a + 4 \pm 4\sqrt{-a + 1}}{2a^2} \]
+\[ x = \frac{-a + 2 \pm 2\sqrt{-a + 1}}{a^2} \]
+
+ So, the \( x \)-coordinates of \( A \) and \( B \) are \( x_1 = \frac{-a + 2 + 2\sqrt{-a + 1}}{a^2} \) and \( x_2 = \frac{-a + 2 - 2\sqrt{-a + 1}}{a^2} \).
+
+ The corresponding \( y \)-coordinates are \( y_1 = a x_1 + 1 \) and \( y_2 = a x_2 + 1 \).
+
+ Now, the midpoint \( M \) of \( AB \) has coordinates:
+
+\[ M_x = \frac{x_1 + x_2}{2} \]
+\[ M_y = \frac{y_1 + y_2}{2} \]
+
+ From the quadratic equation, we know that \( x_1 + x_2 = -\frac{B}{A} = -\frac{2a - 4}{a^2} = \frac{4 - 2a}{a^2} \).
+
+ So,
+
+\[ M_x = \frac{4 - 2a}{2a^2} = \frac{2 - a}{a^2} \]
+
+ For \( y \)-coordinate:
+
+ \( y_1 + y_2 = a(x_1 + x_2) + 2 \)
+\[ = a \cdot \frac{4 - 2a}{a^2} + 2 \]
+\[ = \frac{4a - 2a^2}{a^2} + 2 \]
+\[ = \frac{4a - 2a^2 + 2a^2}{a^2} \]
+\[ = \frac{4a}{a^2} \]
+\[ = \frac{4}{a} \]
+ So,
+
+\[ M_y = \frac{2}{a} \]
+
+ Therefore, the midpoint \( M \) is \( \left( \frac{2 - a}{a^2}, \frac{2}{a} \right) \).
+
+ The radius of the circle is half the distance between \( A \) and \( B \). Let me find the distance \( AB \).
+
+ The distance between \( A \) and \( B \) can be found using the coordinates:
+
+\[ AB = \sqrt{(x_1 - x_2)^2 + (y_1 - y_2)^2} \]
+
+ But since \( y = ax + 1 \), \( y_1 - y_2 = a(x_1 - x_2) \).
+
+ So,
+
+\[ AB = \sqrt{(x_1 - x_2)^2 + a^2(x_1 - x_2)^2} \]
+\[ = \sqrt{(1 + a^2)(x_1 - x_2)^2} \]
+\[ = \sqrt{1 + a^2} \cdot |x_1 - x_2| \]
+
+ Now, \( |x_1 - x_2| \) can be found from the quadratic formula:
+
+\[ |x_1 - x_2| = \sqrt{(x_1 + x_2)^2 - 4x_1x_2} \]
+\[ = \sqrt{\left( \frac{4 - 2a}{a^2} \right)^2 - 4 \cdot 1 \cdot \frac{1}{a^2}} \]
+\[ = \sqrt{\frac{(4 - 2a)^2}{a^4} - \frac{4}{a^2}} \]
+\[ = \sqrt{\frac{16 - 16a + 4a^2 - 4a^2}{a^4}} \]
+\[ = \sqrt{\frac{16 - 16a}{a^4}} \]
+\[ = \sqrt{\frac{16(1 - a)}{a^4}} \]
+\[ = \frac{4\sqrt{1 - a}}{a^2} \]
+
+ Therefore,
+
+\[ AB = \sqrt{1 + a^2} \cdot \frac{4\sqrt{1 - a}}{a^2} \]
+\[ = \frac{4\sqrt{1 + a^2} \cdot \sqrt{1 - a}}{a^2} \]
+
+ So, the radius \( R \) is half of this:
+
+\[ R = \frac{2\sqrt{1 + a^2} \cdot \sqrt{1 - a}}{a^2} \]
+
+ Now, the circle with center \( M \) and radius \( R \) should pass through \( F(1, 0) \). Therefore, the distance from \( M \) to \( F \) should be equal to \( R \).
+
+ Let me write this condition:
+
+\[ \sqrt{(M_x - 1)^2 + (M_y - 0)^2} = R \]
+
+ Squaring both sides:
+
+\[ (M_x - 1)^2 + M_y^2 = R^2 \]
+
+ Now, let me compute each term.
+
+ First, \( M_x = \frac{2 - a}{a^2} \), so \( M_x - 1 = \frac{2 - a}{a^2} - 1 = \frac{2 - a - a^2}{a^2} \)
+
+ \( M_y = \frac{2}{a} \), so \( M_y^2 = \frac{4}{a^2} \)
+
+ \( R^2 = \left( \frac{2\sqrt{1 + a^2} \cdot \sqrt{1 - a}}{a^2} \right)^2 = \frac{4(1 + a^2)(1 - a)}{a^4} \)
+
+ Now, putting it all together:
+
+\[ \left( \frac{2 - a - a^2}{a^2} \right)^2 + \frac{4}{a^2} = \frac{4(1 + a^2)(1 - a)}{a^4} \]
+
+ Let me simplify each term.
+
+ First, the left side:
+
+\[ \left( \frac{2 - a - a^2}{a^2} \right)^2 = \frac{(2 - a - a^2)^2}{a^4} \]
+\[ = \frac{( -a^2 - a + 2 )^2}{a^4} \]
+Let me expand the numerator:
+
+\[ (-a^2 - a + 2)^2 = (a^2 + a - 2)^2 \]
+\[ = a^4 + 2a^3 + a^2 - 4a^2 - 4a + 4 \]
+\[ = a^4 + 2a^3 - 3a^2 - 4a + 4 \]
+
+ So, the left side becomes:
+
+\[ \frac{a^4 + 2a^3 - 3a^2 - 4a + 4}{a^4} \]
+
+ The right side is:
+
+\[ \frac{4(1 + a^2)(1 - a)}{a^4} \]
+\[ = \frac{4(1 - a + a^2 - a^3)}{a^4} \]
+\[ = \frac{4 - 4a + 4a^2 - 4a^3}{a^4} \]
+
+ Now, putting it all together:
+
+\[ \frac{a^4 + 2a^3 - 3a^2 - 4a + 4}{a^4} = \frac{4 - 4a + 4a^2 - 4a^3}{a^4} \]
+
+ Since the denominators are the same, we can equate the numerators:
+
+\[ a^4 + 2a^3 - 3a^2 - 4a + 4 = 4 - 4a + 4a^2 - 4a^3 \]
+
+ Let me bring all terms to the left side:
+
+\[ a^4 + 2a^3 - 3a^2 - 4a + 4 - 4 + 4a - 4a^2 + 4a^3 = 0 \]
+
+ Combine like terms:
+
+\[ a^4 + (2a^3 + 4a^3) + (-3a^2 - 4a^2) + (-4a + 4a) + (4 - 4) = 0 \]
+\[ a^4 + 6a^3 - 7a^2 + 0a + 0 = 0 \]
+\[ a^4 + 6a^3 - 7a^2 = 0 \]
+
+ Factor out \( a^2 \):
+
+\[ a^2(a^2 + 6a - 7) = 0 \]
+
+ So, either \( a^2 = 0 \) or \( a^2 + 6a - 7 = 0 \).
+
+ \( a^2 = 0 \) implies \( a = 0 \), but we need to check if this is valid in the original problem. If \( a = 0 \), the line is \( y = 1 \), which is a horizontal line. Let's see if it intersects the parabola \( y^2 = 4x \). Substituting \( y = 1 \), we get \( 1 = 4x \), so \( x = 1/4 \). So, there is one point of intersection, which is \( (1/4, 1) \), but the problem states that they intersect at two points \( A \) and \( B \). Therefore, \( a = 0 \) is not valid because it gives only one point of intersection, not two. So, we discard \( a = 0 \).
+
+ Now, solve \( a^2 + 6a - 7 = 0 \):
+
+ Using the quadratic formula:
+
+\[ a = \frac{-6 \pm \sqrt{36 + 28}}{2} \]
+\[ a = \frac{-6 \pm \sqrt{64}}{2} \]
+\[ a = \frac{-6 \pm 8}{2} \]
+
+ So, two solutions:
+
+\[ a = \frac{-6 + 8}{2} = \frac{2}{2} = 1 \]
+\[ a = \frac{-6 - 8}{2} = \frac{-14}{2} = -7 \]
+
+ Now, we need to check these solutions in the context of the problem.
+
+ First, \( a = 1 \). Let's see if this is valid. If \( a = 1 \), the line is \( y = x + 1 \). Let's find the points of intersection with the parabola \( y^2 = 4x \).
+
+ Substituting \( y = x + 1 \) into \( y^2 = 4x \):
+
+\[ (x + 1)^2 = 4x \]
+\[ x^2 + 2x + 1 = 4x \]
+\[ x^2 - 2x + 1 = 0 \]
+\[ (x - 1)^2 = 0 \]
+So, \( x = 1 \), and \( y = 2 \). Wait, this gives a double root, so both points \( A \) and \( B \) are the same point \( (1, 2) \). But the problem states that they intersect at two distinct points \( A \) and \( B \). Therefore, \( a = 1 \) is not valid because it results in a single point of intersection, not two distinct points.
+
+ Now, let's check \( a = -7 \).
+
+ If \( a = -7 \), the line is \( y = -7x + 1 \). Let's find the points of intersection with the parabola \( y^2 = 4x \).
+
+ Substituting \( y = -7x + 1 \) into \( y^2 = 4x \):
+
+\[ (-7x + 1)^2 = 4x \]
+\[ 49x^2 - 14x + 1 = 4x \]
+\[ 49x^2 - 18x + 1 = 0 \]
+
+ Let's compute the discriminant:
+
+\[ D = (-18)^2 - 4 \cdot 49 \cdot 1 \]
+\[ D = 324 - 196 \]
+\[ D = 128 \]
+
+ Since \( D > 0 \), there are two distinct real roots. Therefore, \( a = -7 \) is a valid solution.
+
+ Now, let's verify if the circle with diameter \( AB \) passes through \( F(1, 0) \) when \( a = -7 \).
+
+ First, find the points \( A \) and \( B \).
+
+ Using the quadratic equation for \( x \):
+
+\[ 49x^2 - 18x + 1 = 0 \]
+
+ Solving for \( x \):
+
+\[ x = \frac{18 \pm \sqrt{128}}{98} \]
+\[ \sqrt{128} = 8\sqrt{2} \]
+\[ x = \frac{18 \pm 8\sqrt{2}}{98} \]
+\[ x = \frac{9 \pm 4\sqrt{2}}{49} \]
+
+ So, the \( x \)-coordinates are \( x_1 = \frac{9 + 4\sqrt{2}}{49} \) and \( x_2 = \frac{9 - 4\sqrt{2}}{49} \).
+
+ The corresponding \( y \)-coordinates are \( y_1 = -7x_1 + 1 \) and \( y_2 = -7x_2 + 1 \).
+
+ Let's compute \( y_1 \) and \( y_2 \):
+
+\[ y_1 = -7 \cdot \frac{9 + 4\sqrt{2}}{49} + 1 = -\frac{63 + 28\sqrt{2}}{49} + 1 = -\frac{63}{49} - \frac{28\sqrt{2}}{49} + 1 \]
+\[ = -\frac{9}{7} - \frac{4\sqrt{2}}{7} + 1 = -\frac{9}{7} + \frac{7}{7} - \frac{4\sqrt{2}}{7} \]
+\[ = -\frac{2}{7} - \frac{4\sqrt{2}}{7} \]
+
+ Similarly,
+
+\[ y_2 = -7 \cdot \frac{9 - 4\sqrt{2}}{49} + 1 = -\frac{63 - 28\sqrt{2}}{49} + 1 = -\frac{63}{49} + \frac{28\sqrt{2}}{49} + 1 \]
+\[ = -\frac{9}{7} + \frac{4\sqrt{2}}{7} + 1 = -\frac{9}{7} + \frac{7}{7} + \frac{4\sqrt{2}}{7} \]
+\[ = -\frac{2}{7} + \frac{4\sqrt{2}}{7} \]
+
+ So, the points \( A \) and \( B \) are:
+
+\[ A = \left( \frac{9 + 4\sqrt{2}}{49}, -\frac{2}{7} - \frac{4\sqrt{2}}{7} \right) \]
+\[ B = \left( \frac{9 - 4\sqrt{2}}{49}, -\frac{2}{7} + \frac{4\sqrt{2}}{7} \right) \]
+
+ Now, the circle with diameter \( AB \) has its center at \( M \), which we earlier found to be \( \left( \frac{2 - a}{a^2}, \frac{2}{a} \right) \). For \( a = -7 \):
+
+\[ M_x = \frac{2 - (-7)}{(-7)^2} = \frac{9}{49} \]
+\[ M_y = \frac{2}{-7} = -\frac{2}{7} \]
+
+ So, the center \( M \) is \( \left( \frac{9}{49}, -\frac{2}{7} \right) \).
+
+ The radius \( R \) is half the distance between \( A \) and \( B \). Let's compute the distance \( AB \):
+
+\[ AB = \sqrt{(x_1 - x_2)^2 + (y_1 - y_2)^2} \]
+
+ We already computed \( x_1 - x_2 = \frac{4\sqrt{1 - a}}{a^2} \) earlier, but let's use the specific values for \( a = -7 \):
+
+\[ x_1 = \frac{9 + 4\sqrt{2}}{49}, \quad x_2 = \frac{9 - 4\sqrt{2}}{49} \]
+\[ x_1 - x_2 = \frac{8\sqrt{2}}{49} \]
+
+\[ y_1 - y_2 = \left( -\frac{2}{7} - \frac{4\sqrt{2}}{7} \right) - \left( -\frac{2}{7} + \frac{4\sqrt{2}}{7} \right) \]
+\[ = -\frac{2}{7} - \frac{4\sqrt{2}}{7} + \frac{2}{7} - \frac{4\sqrt{2}}{7} \]
+\[ = -\frac{8\sqrt{2}}{7} \]
+
+ So,
+
+\[ AB = \sqrt{\left( \frac{8\sqrt{2}}{49} \right)^2 + \left( -\frac{8\sqrt{2}}{7} \right)^2} \]
+\[ = \sqrt{\frac{128}{2401} + \frac{128 \cdot 2}{49}} \]
+\[ = \sqrt{\frac{128}{2401} + \frac{256}{49}} \]
+\[ = \sqrt{\frac{128}{2401} + \frac{12544}{2401}} \]
+\[ = \sqrt{\frac{12672}{2401}} \]
+\[ = \frac{\sqrt{12672}}{49} \]
+\[ \sqrt{12672} = \sqrt{16 \cdot 792} = 4\sqrt{792} \]
+\[ \sqrt{792} = \sqrt{36 \cdot 22} = 6\sqrt{22} \]
+\[ So, \sqrt{12672} = 4 \cdot 6 \sqrt{22} = 24\sqrt{22} \]
+\[ Therefore, AB = \frac{24\sqrt{22}}{49} \]
+
+ So, the radius \( R = \frac{12\sqrt{22}}{49} \).
+
+ Now, let's compute the distance from \( M \) to \( F(1, 0) \):
+
+\[ M = \left( \frac{9}{49}, -\frac{2}{7} \right) \]
+\[ F = (1, 0) \]
+
+\[ MF = \sqrt{\left( 1 - \frac{9}{49} \right)^2 + \left( 0 - \left( -\frac{2}{7} \right) \right)^2} \]
+\[ = \sqrt{\left( \frac{40}{49} \right)^2 + \left( \frac{2}{7} \right)^2} \]
+\[ = \sqrt{\frac{1600}{2401} + \frac{4}{49}} \]
+\[ = \sqrt{\frac{1600}{2401} + \frac{196}{2401}} \]
+\[ = \sqrt{\frac{1796}{2401}} \]
+\[ = \frac{\sqrt{1796}}{49} \]
+\[ \sqrt{1796} = \sqrt{4 \cdot 449} = 2\sqrt{449} \]
+\[ So, MF = \frac{2\sqrt{449}}{49} \]
+
+ Now, let's check if \( MF = R \):
+
+\[ R = \frac{12\sqrt{22}}{49} \]
+\[ MF = \frac{2\sqrt{449}}{49} \]
+
+ Are these equal? Let's compute \( \sqrt{22} \) and \( \sqrt{449} \):
+
+\[ \sqrt{22} \approx 4.690 \]
+\[ \sqrt{449} \approx 21.194 \]
+
+ So,
+
+\[ R \approx \frac{12 \cdot 4.690}{49} \approx \frac{56.28}{49} \approx 1.148 \]
+\[ MF \approx \frac{2 \cdot 21.194}{49} \approx \frac{42.388}{49} \approx 0.865 \]
+
+ These are not equal, which suggests that there might be a miscalculation. Let me revisit the steps.
+
+ Wait, perhaps I made an error in computing \( AB \). Let me recalculate \( AB \):
+
+\[ AB = \sqrt{(x_1 - x_2)^2 + (y_1 - y_2)^2} \]
+
+We have:
+
+\[ x_1 - x_2 = \frac{8\sqrt{2}}{49} \]
+\[ y_1 - y_2 = -\frac{8\sqrt{2}}{7} \]
+
+So,
+
+\[ AB = \sqrt{\left( \frac{8\sqrt{2}}{49} \right)^2 + \left( -\frac{8\sqrt{2}}{7} \right)^2} \]
+\[ = \sqrt{\frac{128}{2401} + \frac{128 \cdot 2}{49}} \]
+\[ = \sqrt{\frac{128}{2401} + \frac{256}{49}} \]
+\[ = \sqrt{\frac{128}{2401} + \frac{12544}{2401}} \]
+\[ = \sqrt{\frac{12672}{2401}} \]
+\[ = \frac{\sqrt{12672}}{49} \]
+\[ \sqrt{12672} = \sqrt{16 \times 792} = 4\sqrt{792} \]
+\[ \sqrt{792} = \sqrt{36 \times 22} = 6\sqrt{22} \]
+\[ So, \sqrt{12672} = 4 \times 6 \sqrt{22} = 24\sqrt{22} \]
+\[ Therefore, AB = \frac{24\sqrt{22}}{49} \]
+
+ So, the radius \( R = \frac{12\sqrt{22}}{49} \)
+
+ Now, computing \( MF \):
+
+\[ M = \left( \frac{9}{49}, -\frac{2}{7} \right) \]
+\[ F = (1, 0) \]
+\[ MF = \sqrt{\left(1 - \frac{9}{49}\right)^2 + \left(0 - \left(-\frac{2}{7}\right)\right)^2} \]
+\[ = \sqrt{\left(\frac{40}{49}\right)^2 + \left(\frac{2}{7}\right)^2} \]
+\[ = \sqrt{\frac{1600}{2401} + \frac{4}{49}} \]
+\[ = \sqrt{\frac{1600}{2401} + \frac{196}{2401}} \]
+\[ = \sqrt{\frac{1796}{2401}} \]
+\[ = \frac{\sqrt{1796}}{49} \]
+\[ \sqrt{1796} = \sqrt{4 \times 449} = 2\sqrt{449} \]
+\[ So, MF = \frac{2\sqrt{449}}{49} \]
+
+ Now, let me check if \( R = MF \):
+
+\[ R = \frac{12\sqrt{22}}{49} \]
+\[ MF = \frac{2\sqrt{449}}{49} \]
+
+ Are these equal? Let's compute the numerical values:
+
+\[ \sqrt{22} \approx 4.690 \]
+\[ \sqrt{449} \approx 21.194 \]
+\[ R \approx \frac{12 \times 4.690}{49} \approx \frac{56.28}{49} \approx 1.148 \]
+\[ MF \approx \frac{2 \times 21.194}{49} \approx \frac{42.388}{49} \approx 0.865 \]
+
+ These are not equal, which suggests that there might be an error in the approach. Let me revisit the condition.
+
+ Alternatively, perhaps the circle with diameter \( AB \) passing through \( F \) implies that \( \angle AFB \) is a right angle. So, in triangle \( AFB \), \( \angle AFB = 90^\circ \).
+
+ Using the property that in a triangle, if \( \angle AFB = 90^\circ \), then \( AB^2 = AF^2 + BF^2 \).
+
+ Let me compute \( AB^2 \), \( AF^2 \), and \( BF^2 \).
+
+ First, \( AB^2 \):
+
+ From earlier, \( AB = \frac{24\sqrt{22}}{49} \), so \( AB^2 = \frac{576 \times 22}{2401} = \frac{12672}{2401} \)
+
+ Now, \( AF^2 \):
+
+ \( A = \left( \frac{9 + 4\sqrt{2}}{49}, -\frac{2}{7} - \frac{4\sqrt{2}}{7} \right) \)
+ \( F = (1, 0) \)
+
+ So,
+
+\[ AF^2 = \left(1 - \frac{9 + 4\sqrt{2}}{49}\right)^2 + \left(0 - \left(-\frac{2}{7} - \frac{4\sqrt{2}}{7}\right)\right)^2 \]
+\[ = \left(\frac{40 - 4\sqrt{2}}{49}\right)^2 + \left(\frac{2 + 4\sqrt{2}}{7}\right)^2 \]
+\[ = \frac{(40 - 4\sqrt{2})^2}{2401} + \frac{(2 + 4\sqrt{2})^2}{49} \]
+\[ = \frac{1600 - 320\sqrt{2} + 32}{2401} + \frac{4 + 16\sqrt{2} + 32}{49} \]
+\[ = \frac{1632 - 320\sqrt{2}}{2401} + \frac{36 + 16\sqrt{2}}{49} \]
+\[ = \frac{1632 - 320\sqrt{2}}{2401} + \frac{1764 + 392\sqrt{2}}{2401} \]
+\[ = \frac{1632 - 320\sqrt{2} + 1764 + 392\sqrt{2}}{2401} \]
+\[ = \frac{3400 + 72\sqrt{2}}{2401} \]
+
+ Similarly, \( BF^2 \):
+
+ \( B = \left( \frac{9 - 4\sqrt{2}}{49}, -\frac{2}{7} + \frac{4\sqrt{2}}{7} \right) \)
+ \( F = (1, 0) \)
+
+ So,
+
+\[ BF^2 = \left(1 - \frac{9 - 4\sqrt{2}}{49}\right)^2 + \left(0 - \left(-\frac{2}{7} + \frac{4\sqrt{2}}{7}\right)\right)^2 \]
+\[ = \left(\frac{40 + 4\sqrt{2}}{49}\right)^2 + \left(\frac{2 - 4\sqrt{2}}{7}\right)^2 \]
+\[ = \frac{(40 + 4\sqrt{2})^2}{2401} + \frac{(2 - 4\sqrt{2})^2}{49} \]
+\[ = \frac{1600 + 320\sqrt{2} + 32}{2401} + \frac{4 - 16\sqrt{2} + 32}{49} \]
+\[ = \frac{1632 + 320\sqrt{2}}{2401} + \frac{36 - 16\sqrt{2}}{49} \]
+\[ = \frac{1632 + 320\sqrt{2}}{2401} + \frac{1764 - 392\sqrt{2}}{2401} \]
+\[ = \frac{1632 + 320\sqrt{2} + 1764 - 392\sqrt{2}}{2401} \]
+\[ = \frac{3400 - 72\sqrt{2}}{2401} \]
+
+ Now, \( AB^2 = \frac{12672}{2401} \)
+
+ \( AF^2 + BF^2 = \frac{3400 + 72\sqrt{2}}{2401} + \frac{3400 - 72\sqrt{2}}{2401} = \frac{6800}{2401} \)
+
+ Now, \( AB^2 = \frac{12672}{2401} \) vs \( AF^2 + BF^2 = \frac{6800}{2401} \)
+
+ These are not equal, so the condition \( \angle AFB = 90^\circ \) is not satisfied. Therefore, my initial approach was incorrect.
+
+ Hmm, so perhaps the circle with diameter \( AB \) passing through \( F \) implies something else. Let me think differently.
+
+ If the circle with diameter \( AB \) passes through \( F \), then \( F \) lies on the circle, which means that \( \angle AFB \) is a right angle. So, triangle \( AFB \) is right-angled at \( F \).
+
+ Therefore, \( AF^2 + BF^2 = AB^2 \)
+
+ But as we saw, this condition does not hold for \( a = -7 \). So, perhaps I made a mistake in calculating \( AF^2 \) and \( BF^2 \).
+
+ Let me recalculate \( AF^2 \):
+
+ \( A = \left( \frac{9 + 4\sqrt{2}}{49}, -\frac{2}{7} - \frac{4\sqrt{2}}{

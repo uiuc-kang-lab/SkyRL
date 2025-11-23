@@ -1,0 +1,384 @@
+0
+Okay, so I have this problem where I need to determine if all passengers followed the seating recommendation rules in a bus. The bus has n seats numbered from 1 to n, and passengers board following specific rules. 
+
+Let me try to understand the problem step by step. The rules are:
+
+1. If there are no occupied seats, the passenger can sit in any free seat.
+2. Otherwise, a passenger can sit in a free seat only if at least one of the neighboring seats (i-1 or i+1) is occupied.
+
+So, for each passenger, after they sit down, I need to check if their seat meets this condition. If any passenger didn't follow the rule, the answer is "NO"; otherwise, it's "YES".
+
+The input is an array 'a' where a_i is the seat number occupied by the i-th passenger. I need to process this array and check each step to see if the rule was followed.
+
+Hmm. So, for each seat in 'a', I need to check the previous and next seats in the array to see if they're occupied. Because the passengers are boarding in order, the seats in 'a' are in the order they were taken.
+
+Wait, but each passenger takes a seat, and the next passenger can only sit in a free seat with at least one neighbor occupied. So, for each new seat, I need to see if it's adjacent (in the seat numbers) to any already occupied seat.
+
+Wait, no. Because the seats are numbered, but the passengers could have taken seats in any order, not necessarily in a way that is sequential. So, for each a_i, I need to check if the seat is adjacent to any of the previously taken seats (a_1 to a_{i-1}).
+
+So, for each i from 1 to n:
+
+- Check if a_i is already occupied. If so, it's invalid, but the problem says that no passenger sits in an already occupied seat, so this won't happen.
+- For the current a_i, check if either a_i - 1 or a_i + 1 is present in the set of previously taken seats (a_1 to a_{i-1}).
+- If neither is present, then the current passenger didn't follow the rule, so the answer is "NO".
+
+Wait, that makes sense. Because when a passenger comes to sit, they can only sit if at least one neighbor is occupied. So, for each new seat, we need to see if it's adjacent to any already taken seats.
+
+So, the approach is:
+
+1. For each test case, read n and the array a.
+2. For each seat in a in order:
+   a. Check if this seat is already taken (can't happen, but the problem says it's guaranteed that no passenger sits in an already occupied seat, so we don't have to worry about that).
+   b. Check if the left or right seat (i-1 and i+1) is in the previously taken seats.
+   c. If neither is, then return "NO" for the test case.
+3. If all passengers pass this check, return "YES".
+
+So, the steps are clear. Now, how to implement this efficiently.
+
+The key is, for each a_i, determine if a_i-1 or a_i+1 is present in the set of previously taken seats (a_1 to a_{i-1}).
+
+So, for each i from 1 to n-1 (since the first passenger can sit anywhere), we check if a_i is adjacent to any of the previous seats.
+
+Wait, but for i=1, there are no previous seats, so a_1 can sit anywhere. So, no problem.
+
+Let me think about the example given:
+
+n=5, a=[5,4,2,1,3]
+
+Let's process each step:
+
+1. First passenger sits in 5. No previous seats, so okay.
+2. Second passenger sits in 4. Check if 4 is adjacent to any previous seat (5). 5 is adjacent to 4? 5 is 4+1, so yes. So, 4 is adjacent to 5, which is occupied. So, okay.
+3. Third passenger sits in 2. Check previous seats: 5 and 4. Are 1 or 3 in the previous seats? No. So, 2 is not adjacent to any of the previous seats. So, this is invalid. So, the answer is NO.
+
+Which matches the example.
+
+Another example: n=3, a=[1,2,3]
+
+First passenger sits in 1. Second in 2. Now, when passenger 2 sits, check if 2 is adjacent to 1. Yes, 1 is occupied. So, okay. Third passenger sits in 3. Check if 3 is adjacent to any of 1 or 2. 2 is adjacent to 3? 3-2=1, so yes. So, all okay.
+
+Another example: n=4, a=[2,1,4,3]
+
+Let's see:
+
+1. Passenger 1 sits in 2. No previous, so okay.
+2. Passenger 2 sits in 1. Check if 1 is adjacent to 2? Yes, 2-1=1. So, okay.
+3. Passenger 3 sits in 4. Check previous (2 and 1). 4-1=3, which is not in previous. 4+1=5, which is not in previous. So, 4 is not adjacent to any previous. So, invalid. So, answer is NO.
+
+So, the approach is correct.
+
+Now, the plan is:
+
+For each test case:
+
+- Initialize a set of taken seats.
+- For each i from 0 to n-1 (assuming 0-based index):
+   - current_seat = a[i]
+   - if current_seat is 1, then previous is 0, which is not possible. So, it's okay.
+   - else:
+      - check if current_seat -1 is in taken or current_seat +1 is in taken.
+      - if neither, then return NO for the test case.
+- If all pass, return YES.
+
+Wait, but in code, how to implement this efficiently?
+
+Because for each a_i, we need to check if (a_i-1) is in the taken set or (a_i+1) is in the taken set.
+
+So, the steps in code:
+
+Read t test cases.
+
+For each test case:
+
+   Read n.
+
+   Read the array a as a list of integers.
+
+   taken = set()
+
+   valid = True
+
+   for i in range(n):
+
+       seat = a[i]
+
+       # Check if the seat is already taken (but input says no passenger sits in an already occupied seat, so this is not necessary)
+
+       # Check if seat-1 or seat+1 is in the taken set.
+
+       if (seat -1) in taken or (seat +1) in taken:
+
+           continue
+
+       else:
+
+           valid = False
+
+           break
+
+       # Also, if seat is 1, then seat-1 is 0, which is not in the seats (1-based). So, for seat 1, we need to check if 2 is in taken.
+
+       # Wait, no. Because for seat 1, seat-1 is 0, which is invalid. So, for seat 1, the only possible neighbor is 2.
+
+       # Similarly, for seat n, the only possible neighbor is n-1.
+
+       # So, in code, for seat 1, check if 2 is in taken.
+
+       # For seat n, check if n-1 is in taken.
+
+       # So, the general approach is, for each seat, check if (seat-1) is in taken or (seat+1) is in taken.
+
+       # So, the code doesn't need any special cases.
+
+       # So, the code can be written as:
+
+       if (seat - 1) in taken or (seat + 1) in taken:
+
+           continue
+
+       else:
+
+           valid = False
+
+           break
+
+   if valid:
+
+       print("YES")
+
+   else:
+
+       print("NO")
+
+Wait, but that's not correct. Because for seat 2, for example, when seat is 2, the code will check if 1 or 3 is in taken. If either is, then it's okay. If neither, then it's invalid.
+
+Yes, that's correct.
+
+So, the code should be:
+
+Read t.
+
+For each test case:
+
+   Read n.
+
+   Read the array a.
+
+   taken = set()
+
+   valid = True
+
+   for seat in a:
+
+       if (seat - 1) in taken or (seat + 1) in taken:
+
+           continue
+
+       else:
+
+           valid = False
+
+           break
+
+       # Also, for the first seat, since taken is empty, seat -1 is 0, which is not in taken.
+
+       # So, seat 1: check if 2 is in taken. But taken is empty, so not.
+
+       # So, seat 1 would fail, but according to the rules, the first passenger can sit anywhere.
+
+       # Wait, no. The first passenger can sit anywhere, so no problem.
+
+       # So, the code is correct.
+
+   print("YES" if valid else "NO")
+
+Wait, but wait. The first passenger can sit anywhere. So, the code is correct.
+
+Another test case:
+
+n=2, a=[1,2]
+
+First passenger sits in 1. Second sits in 2. Check: for 2, is 1 in taken? Yes. So, okay.
+
+Another test case: n=2, a=[2,1]
+
+First passenger sits in 2. Second sits in 1. Check: for 1, is 2 in taken? Yes. So, okay.
+
+So, code works.
+
+Another test case: n=3, a=[1,3,2]
+
+Passenger 1: sits in 1. No problem.
+
+Passenger 2: sits in 3. Check if 2 is in taken. No, because taken is {1}. So, 3-1=2 is not in taken. So, 3 is not adjacent to any taken seat (1 and 3's neighbors are 2 and 4, but 4 is beyond n). So, 2 is not in taken, so 3 is not adjacent to any taken seat. So, passenger 2's seat is 3, and 3-1=2 is not in taken (taken is {1} at this point). So, 3 is not adjacent to any taken seat. So, the code would mark this as invalid.
+
+So, the code correctly returns "NO" for this case.
+
+So, the code seems to handle all cases correctly.
+
+Now, let's think about the implementation.
+
+In Python, for each test case, read n, then read a as a list of integers.
+
+Then, create a set called taken, initialized as empty.
+
+Loop through each seat in a:
+
+   if (seat-1) in taken or (seat+1) in taken:
+
+       continue
+
+   else:
+
+       valid = False
+
+       break
+
+So, if any seat fails, set valid to False and break the loop.
+
+After processing all seats, if valid is still True, print YES, else NO.
+
+This should work.
+
+Now, let's test this logic against the examples.
+
+First example:
+
+n=5, a=[5,4,2,1,3]
+
+Processing:
+
+5: taken is empty. So, okay.
+
+4: check 3 or 5. 5 is in taken. So, okay.
+
+2: check 1 or 3. taken is {5,4}. Neither 1 nor 3 is in taken. So, invalid. So, valid is set to False, loop breaks. Output is NO.
+
+Second example:
+
+n=3, a=[1,2,3]
+
+1: okay.
+
+2: check 1 (present) or 3 (present? At this point, taken is {1}. So, 2-1=1 is present. So, okay.
+
+3: check 2 or 4. 2 is present. So, okay. So, output is YES.
+
+Another test case: n=4, a=[2,1,4,3]
+
+1: okay.
+
+2: check 1 or 3. 1 is present. So, okay.
+
+4: check 3 or 5. 3 is not in taken (taken is {2,1}), 5 is beyond n. So, 4 is not adjacent to any taken seat. So, invalid. Output is NO.
+
+Another test case: n=2, a=[1,2]. 
+
+1: okay.
+
+2: check 1 or 3. 1 is present. So, okay. Output YES.
+
+Another test case: n=2, a=[2,1]. 
+
+2: check 1 or 3. 1 is present. So, okay.
+
+1: check 0 or 2. 0 is invalid, but 2 is present. So, okay. Output YES.
+
+So, code seems to handle all these cases.
+
+Now, coding this in Python.
+
+Read t.
+
+For each test case:
+
+   read n.
+
+   read a as list of integers.
+
+   taken = set()
+
+   valid = True
+
+   for seat in a:
+
+       if (seat -1) in taken or (seat +1) in taken:
+
+           continue
+
+       else:
+
+           valid = False
+
+           break
+
+   print("YES" if valid else "NO")
+
+Wait, but wait. What about when seat is 1? Then seat-1 is 0, which is not in the set. So, for seat 1, we need to check if 2 is in taken. Because for seat 1, the neighbor is 2.
+
+Similarly, for seat n, we need to check if n-1 is in taken.
+
+So, the code as written is correct.
+
+So, the code is correct.
+
+Testing it with the sample input.
+
+Now, let's write the code.
+
+The code will read t, then for each test case:
+
+Read n.
+
+Read the list of a.
+
+Then, for each seat in a, check if (seat-1) or (seat+1) is in taken.
+
+If any of those is not in taken, mark as invalid.
+
+So, the code is as written.
+
+I think this should work.
+</think>
+
+To solve this problem, we need to determine if all passengers followed the recommended seating rules in a bus. The bus has `n` seats numbered from 1 to `n`, and passengers board following specific rules. The goal is to check if each passenger sat in a seat that meets the recommendation.
+
+### Approach
+1. **Problem Analysis**: The rules state that a passenger can sit in a free seat if at least one of the neighboring seats (left or right) is occupied. If a passenger sits in a seat with no occupied neighbors, they did not follow the rule.
+2. **Intuition**: For each passenger, after they sit down, we need to check if their seat is adjacent (in terms of seat numbers) to any of the previously occupied seats. If not, they did not follow the rule.
+3. **Algorithm**: 
+   - For each test case, read the number of seats `n` and the array `a` which contains the seat numbers in the order passengers boarded.
+   - Use a set to keep track of the occupied seats.
+   - For each seat in the array `a`, check if the seat is adjacent to any previously occupied seat. If not, mark the test case as invalid.
+4. **Complexity**: The algorithm runs in O(n) time for each test case, where `n` is the number of seats. This is efficient given the constraints.
+
+### Solution Code
+```python
+import sys
+
+def main():
+    t = int(sys.stdin.readline())
+    for _ in range(t):
+        n = int(sys.stdin.readline())
+        a = list(map(int, sys.stdin.readline().split()))
+        taken = set()
+        valid = True
+        for seat in a:
+            if (seat - 1) in taken or (seat + 1) in taken:
+                continue
+            else:
+                valid = False
+                break
+        print("YES" if valid else "NO")
+
+if __name__ == "__main__":
+    main()
+```
+
+### Explanation
+- **Reading Input**: The code reads multiple test cases. For each test case, it reads the number of seats `n` and the array `a` which indicates the seat numbers in the order passengers boarded.
+- **Tracking Occupied Seats**: A set `taken` is used to keep track of the seats that have been occupied.
+- **Checking Adjacency**: For each seat in the array `a`, the code checks if the seat is adjacent to any previously occupied seat. If not, the test case is marked invalid.
+- **Output**: After processing all seats for a test case, the result is printed as "YES" if all passengers followed the rules, otherwise "NO".
+
+This approach ensures that we efficiently check each seat in linear time, making the solution both optimal and easy to understand.<｜end▁of▁sentence｜>

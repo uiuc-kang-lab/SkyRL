@@ -1,0 +1,942 @@
+0
+Okay, so I've got this problem to solve. Let me read through it carefully and understand what's being asked.
+
+The problem is about a game character with two attributes: Strength and Intelligence. Both start at zero. The player gets a list of records which are either acquisition points or attribute checks. The goal is to maximize the number of attribute checks passed by spending the points wisely.
+
+Let me break down the input:
+
+- The first line has two integers n and m. n is the number of records, and m is the number of points to spend.
+- The second line has n integers, which are the records. Each record is either 0 (acquisition), a positive number (check, Intelligence check), or a negative number (check, Strength check).
+
+So, each record is either an acquisition (0) or a check (positive or negative). The order of records is fixed, and we can't change the order. We need to decide which records to spend points on to level up our attributes as much as possible, thereby passing as many checks as possible.
+
+Hmm. The key is to find the optimal way to assign the points to either Strength or Intelligence so that the maximum number of checks are passed.
+
+Let me think about the approach. Since the order of records matters, but we can't reorder them, we need an efficient way to process them.
+
+First, I think we can process the records in order, keeping track of the current levels of strength and intelligence. For each record, if it's an acquisition (0), we can choose to spend it on either strength or intelligence. If it's a check, then we need to see if spending it would pass, which depends on the current level.
+
+Wait, but the checks are either Intelligence or Strength. So, for each check, we need to see if the corresponding attribute is at least the absolute value of the check.
+
+So, the plan is:
+
+1. Initialize strength and intelligence levels to zero.
+2. For each record in the order given:
+   a. If it's an acquisition (0), we can choose to spend it on either strength or intelligence. We need to decide which choice allows us to pass more future checks.
+   b. If it's a check, we can only pass it if the corresponding attribute is at least the required level. So, for a positive check (r_i > 0), we need strength >= r_i. For a negative check (r_i < 0), we need intelligence >= |r_i|.
+
+The challenge is to choose, for each acquisition, whether to spend it on strength or intelligence in such a way that as many future checks as possible are passed.
+
+This sounds like a dynamic programming problem. Because for each step, the choice affects future possibilities, and we need to track the state in a way that allows us to make optimal choices.
+
+Let me think about the state. At any point, we can have a certain strength and intelligence level. The DP state could be (s, i), representing the current strength and intelligence levels. For each state, we can track the maximum number of passes possible up to that point.
+
+But with m up to 2e6, this approach is impossible because the state space would be too large.
+
+Wait, that's a problem. So, we need a smarter way.
+
+Let me think differently. Since the order of the records is fixed, perhaps we can process them in order, and for each record, decide whether to spend it on strength or intelligence in a way that optimizes the number of passes.
+
+But how?
+
+Another idea: For each record, if it's an acquisition, we have a choice. If it's a check, we can only pass it if we have the required level.
+
+So, perhaps we can precompute for each record whether it can be passed if we spend it on strength or intelligence, and then decide which choice gives the best overall outcome.
+
+But this is a greedy approach and might not work, but perhaps it's a starting point.
+
+Wait, let's think about what's optimal. Since each check can be passed only if certain conditions are met, perhaps the optimal strategy is to maximize the number of checks passed by choosing for each acquisition whether to increase strength or intelligence in a way that allows as many future checks as possible to pass.
+
+This sounds like a problem that could be solved with a greedy approach, but I'm not sure. Alternatively, it could be modeled as a problem where we need to find the maximum number of checks that can be passed by optimally assigning each acquisition to strength or intelligence.
+
+Let me think about the possible states. After processing k records, the strength and intelligence levels are s and i. For the next record, which is r_{k+1}, if it's an acquisition, we can choose to add 1 to s or i. Then, for any subsequent checks, we have to see if the current s or i is sufficient.
+
+So, the DP approach can be something like this:
+
+- dp[k][s][i] = maximum number of passes after processing the first k records, with strength s and intelligence i.
+
+But with m up to 2e6, this is impossible because the state space is way too big.
+
+So, that's not feasible. We need a different approach.
+
+Alternative approach: Since each record is either an acquisition or a check, and the order is fixed, perhaps we can process them in order, and for each acquisition, decide whether to allocate it to strength or intelligence in a way that maximizes the total passes.
+
+But how to model this without considering all possible states.
+
+Wait, perhaps we can precompute for each possible strength and intelligence level, what's the maximum number of passes. But again, that's too big.
+
+Another idea: For each record, if it's a check, we can compute the maximum possible s and i that would allow it to be passed. Then, for each acquisition, choose the option that gives the best possible outcome.
+
+But I'm not sure.
+
+Let me think about the problem differently. Let's model the problem as a sequence of decisions: for each acquisition, decide whether to spend it on strength or intelligence. The goal is to maximize the number of passes of the checks.
+
+Each check can be passed only if the corresponding attribute is at least the required level.
+
+So, for each check, if it's a positive check ( Intelligence), we need to have strength >= r_i. If it's a negative check (Strength), we need intelligence >= |r_i|.
+
+So, the problem is to assign each acquisition to strength or intelligence in such a way that the maximum number of these conditions are satisfied.
+
+Hmm. So, the problem is similar to scheduling tasks where each task has a set of constraints, and we want to maximize the number of satisfied constraints.
+
+This sounds like a problem that can be modeled with a greedy approach or dynamic programming, but with constraints on the order of processing.
+
+Wait, perhaps we can precompute for each record whether it's a check and, if so, the required level. Then, for each acquisition, we can choose to add to strength or intelligence, and for each choice, see how it affects the number of passes.
+
+So, the DP state could be the current strength and intelligence levels. For each record, we process it, and if it's an acquisition, we have two choices: increase strength or increase intelligence. For each choice, we update the DP state and keep track of the maximum passes.
+
+But with m up to 2e6, even this approach is impossible because the state space is too big.
+
+So, I need to find a way to model this without tracking every possible state.
+
+Wait, maybe the optimal strategy is to assign each acquisition to the attribute (strength or intelligence) which gives the best immediate gain, considering future possibilities. But I'm not sure.
+
+Alternatively, perhaps we can model the problem as follows: for each record, if it's an acquisition, we can choose to spend it on strength or intelligence. The goal is to maximize the total number of passes.
+
+Each time we spend an acquisition on strength, it may allow us to pass more intelligence checks in the future. Similarly, spending on intelligence allows us to pass more strength checks.
+
+So, the decision for each acquisition depends on which option leads to more passes overall.
+
+But how to model this decision without considering all possibilities.
+
+Another approach: Let's precompute for each possible strength and intelligence level, what's the maximum number of passes possible. But again, this is impossible.
+
+Wait, perhaps we can model this as a problem where for each step, the choice is to allocate the current acquisition to strength or intelligence, and update the possible maximum passes.
+
+But again, with m up to 2e6, this is not feasible.
+
+Wait, another thought: what's the maximum number of checks we can pass? It can't exceed the number of checks (n), but we might be able to pass all of them.
+
+But how to determine that.
+
+Let me think about the process.
+
+We start with s = 0, i = 0.
+
+For each record in order:
+
+- If it's an acquisition (0), we can allocate it to s or i. So, for each possible allocation, we can compute the new s and i, and then process the next records.
+
+But again, with m up to 2e6, this is not feasible.
+
+So, perhaps we can find a way to process the records in a way that allows us to make optimal choices without considering all possible states.
+
+Another idea: For each record, if it's a check, we can compute the minimal required strength or intelligence. For example, if it's an Intelligence check, we need s >= r_i. So, for each such check, if we can get s to be at least r_i, we can pass it.
+
+Similarly for strength checks.
+
+So, perhaps the optimal strategy is to, for each acquisition, choose the attribute (s or i) that allows the maximum number of future passes.
+
+But again, this is a greedy approach, which might not be optimal.
+
+Wait, but perhaps the optimal strategy is to, for each acquisition, spend it on the attribute that can help pass the most future checks.
+
+But this is a greedy approach and may not always yield the optimal result.
+
+So, perhaps a better approach is to model this as a problem where we can precompute for each possible s and i, the maximum number of passes possible.
+
+But again, this is not feasible.
+
+Wait, perhaps we can model it as a two-pointer approach. Since the order of records is fixed, perhaps we can find for each record whether it's better to spend it on strength or intelligence, based on the current s and i.
+
+Let me think about this. For each record, if it's an acquisition, we have to decide to add 1 to s or i. If it's a check, we can only pass it if the corresponding attribute is >= the required level.
+
+So, perhaps for each record, we can calculate whether it's better to spend it on strength or intelligence, considering the current state.
+
+But again, without considering all possibilities, this is tricky.
+
+Wait, perhaps we can precompute for each record whether it's a check and, if so, the required level. Then, for each such record, we can calculate how much it contributes to the maximum passes.
+
+Let me think about the initial state: s = 0, i = 0.
+
+So, the first record is either an acquisition or a check.
+
+If it's an acquisition, we have to choose s or i to add 1. Then, for the next records, we can process them.
+
+So, for each record, if it's a check, we can determine if the current s or i is sufficient. If not, it's impossible to pass, but the problem says that you can spend the points, so perhaps all checks can be passed.
+
+Wait, the problem statement says that you can spend points, so it's possible to pass all checks. But the problem is to find the maximum number of passes.
+
+So, for each check, if the corresponding attribute is at least the required level, it's passed. So, for each record, if it's a check, we can compute the required level, and if the current s or i is >= that, then we pass it, and move on.
+
+So, the problem is to assign each acquisition to s or i in a way that as many of these checks are passed as possible.
+
+So, perhaps the approach is:
+
+1. Process each record in order.
+
+2. For each record, if it's an acquisition, decide whether to add to s or i.
+
+3. For each record that is a check, determine if the current s or i is sufficient, and update the counts accordingly.
+
+But the question is, how to make the optimal choice for each acquisition.
+
+Hmm. So, perhaps for each acquisition, we can choose to add to s or i, whichever will allow us to pass more future checks.
+
+But how to model this.
+
+Wait, perhaps for each acquisition, we can calculate the potential gain of adding to s versus adding to i, and choose the option that gives the higher gain.
+
+But how to calculate the potential gain.
+
+Alternatively, perhaps we can model the problem as a dynamic programming where the state is (current s, current i), and for each record, we transition to new states based on whether we add to s or i.
+
+But again, with m up to 2e6, this is impossible.
+
+So, I'm stuck. Maybe I need to think differently.
+
+Let me think about the constraints.
+
+Each check can be passed only if the corresponding attribute is at least the required level.
+
+So, for each check, if it's an Intelligence check (r_i > 0), we need s >= r_i.
+
+If it's a Strength check (r_i < 0), we need i >= |r_i|.
+
+So, for each check, the required attribute is fixed.
+
+So, the problem is to assign each acquisition to s or i, such that as many checks as possible are satisfied.
+
+So, perhaps the approach is to process all the records, and for each, decide whether to spend it on s or i, in a way that allows the maximum number of checks to be passed.
+
+But how.
+
+Let me think about the possible options for each acquisition.
+
+Each acquisition is either a check or not. Wait, no: the records are exactly m= n records, each is either 0, positive, or negative. So, the number of acquisition records is m = n, but the problem says that the second line contains n integers, which are the records. So, the number of acquisition records is the number of 0s, which is m.
+
+So, the number of acquisition records is m, and the number of check records is n - m.
+
+Wait, no, the second line has n integers, which are the records. So, n is the number of records, which is equal to m's value. Because the first line says 1 <= m < n <= 2e6. So, n is larger than m.
+
+Wait, I'm getting confused. Let me re-read the input description.
+
+The first line contains two integers n and m (1 ≤ m < n ≤ 2e6) — the number of records in the list and the total number of points you'll get during the game.
+
+The second line contains n integers r_1, r_2, ..., r_n (−m ≤ r_i ≤ m), where r_i = 0, it's an acquiring record, and positive or negative is a check.
+
+So, the number of records is n, and m is the number of 0s. So, the number of acquiring records is m, and the number of checks is n - m.
+
+So, in the list, there are m acquiring records (0s) and n - m check records (positive or negative).
+
+So, the plan is:
+
+- We have m acquiring records and (n - m) check records.
+
+- We need to assign each acquiring record to either s or i, and each check record to the corresponding attribute.
+
+The goal is to maximize the number of check passes.
+
+So, the problem is to assign each acquiring record to s or i, and assign each check record to the corresponding attribute.
+
+Now, the problem is, given all these assignments, what is the maximum number of checks that can be passed.
+
+So, how to model this.
+
+Perhaps, for each check, if it's an Intelligence check (r_i > 0), we can only pass it if s >= r_i. Similarly, for a Strength check, i >= |r_i|.
+
+So, the approach is to assign each acquiring record to s or i, such that as many checks as possible are satisfied.
+
+So, the problem reduces to choosing for each acquiring record whether to allocate it to s or i, such that the maximum number of checks are satisfied.
+
+So, the question is, for each acquiring record, which of the two options (s or i) allows for more passes in the future.
+
+But again, without considering all possibilities, it's challenging.
+
+Wait, perhaps we can model this as a problem where for each record, if it's a check, we can compute whether spending it on s or i would allow us to pass it, and then choose the option that gives the maximum gain.
+
+So, let's think about processing the records in order.
+
+Initially, s = 0, i = 0.
+
+We have a list of records, which is in order.
+
+For each record in the list:
+
+- If it's an acquisition (0), we can choose to spend it on s or i.
+
+- If it's a check, we can only pass it if the corresponding attribute is sufficient.
+
+So, the steps are:
+
+1. For each record, decide whether to assign it to s or i.
+
+2. For each decision, update the current s or i.
+
+3. For any check, if the current s or i is sufficient, increment the pass count.
+
+The goal is to maximize the total passes.
+
+But how to model this decision.
+
+Wait, perhaps the optimal strategy is to, for each acquisition, spend it on the attribute that allows the maximum number of future passes. But how to model this.
+
+Alternatively, perhaps it's better to process the records and, for each, decide whether to spend it on s or i based on which option would allow the maximum number of passes in the future.
+
+But again, this is a dynamic programming problem, which is impossible with m up to 2e6.
+
+Hmm.
+
+Another idea: Since the order of the records is fixed, perhaps we can precompute for each record whether it's a check and, if so, the required level. Then, for each such check, we can compute whether it's possible to pass it, and then decide which attribute to allocate the current acquisition to.
+
+Wait, perhaps we can process the records in order, and for each acquisition, decide whether to allocate it to s or i, based on which would allow the maximum number of passes in the remaining records.
+
+But this is a recursive approach.
+
+Wait, perhaps this can be modeled using a greedy approach.
+
+For each acquisition, allocate it to the attribute (s or i) that allows the current accumulated strength or intelligence to be as high as possible, thus maximizing the chances of passing future checks.
+
+But that's a heuristic and may not be optimal.
+
+Alternatively, perhaps for each acquisition, the optimal choice is to allocate it to the attribute that, when added, allows the current s or i to be as high as possible, thus making future checks easier to pass.
+
+But I'm not sure.
+
+Let me consider an example.
+
+Suppose we have:
+
+m = 2, n = 4.
+
+Records: [0, 0, 5, -3]
+
+So, the first two are acquiring (0), the third is a check (5), the fourth is a check (-3, so |r_i| is 3, so check for strength).
+
+So, initial s=0, i=0.
+
+Processing first record: 0. Can choose s or i.
+
+Case 1: choose s.
+
+s becomes 1.
+
+Check 3: 5 is positive, so need s >=5. Current s is 1, so no pass.
+
+Case 2: choose i.
+
+i becomes 1.
+
+Check 3: 5 > 1, no pass.
+
+So, in this case, choosing either option doesn't allow the third check to pass.
+
+Now, the fourth record is -3. So, we need i >= 3.
+
+Current i is 1 or 0.
+
+In case 1: i is 1, which is less than 3. So, can't pass.
+
+In case 2: i is 1, same.
+
+So, no passes.
+
+Wait, but maybe another approach.
+
+Wait, in the third record, we have a check for intelligence. So, if we have i >=5, we can pass it.
+
+So, let's see:
+
+After first two records, if we spend both on i.
+
+s=0, i=2.
+
+Third record is 5: need i >=5, current i is 2. Can't pass.
+
+Fourth record is -3: need i >=3. Current i is 2, can't pass.
+
+So, no passes.
+
+Alternatively, if we spend the first two on s.
+
+s=2, i=0.
+
+Third record: 5 needs s >=5. Current s is 2, can't pass.
+
+Fourth record: -3 needs i >=3, current i is 0, can't pass.
+
+So, again, no passes.
+
+Hmm. So, the maximum passes in this case is zero.
+
+But maybe that's not the best approach.
+
+So, perhaps the maximum passes are zero.
+
+Another example:
+
+n=3, m=1.
+
+Records: [0, 3, -2].
+
+So, s=0, i=0.
+
+First record is 0: can choose s or i.
+
+Case 1: choose s.
+
+s becomes 1.
+
+Second record is 3: positive, so need s >=3. Current s is 1. Can't pass.
+
+Third record is -2: need i >=2. Current i is 0. Can't pass.
+
+Total passes: 0.
+
+Case 2: choose i.
+
+i becomes 1.
+
+Second record is 3: need s >=3. Current s is 0. Can't pass.
+
+Third record: -2: need i >=2. Current i is 1. Can't pass.
+
+So, again, zero passes.
+
+Wait, but what if the second record is 3, and the third is -2.
+
+If we spent the first record on i, then i becomes 1.
+
+Second record is 3: need s >=3, current s is 0. Can't pass.
+
+Third record is -2: need i >=2, current i is 1. Can't pass.
+
+So, zero passes.
+
+Another example:
+
+n=3, m=1.
+
+Records: [0, 2, -1].
+
+So, m=1, n=3.
+
+So, first record is 0: can choose s or i.
+
+Case 1: choose s.
+
+s becomes 1.
+
+Second record is 2: positive, so need s >=2. Current s is 1. Can't pass.
+
+Third record is -1: need i >=1. i is 0. Can't pass.
+
+Total passes: 0.
+
+Case 2: choose i.
+
+i becomes 1.
+
+Second record is 2: need s >=2. s is 0. Can't pass.
+
+Third record is -1: need i >=1. i is 1. Pass.
+
+So, total passes: 1.
+
+So, in this case, choosing i for the first record allows passing the third check.
+
+So, the maximum passes is 1.
+
+So, the optimal choice is to allocate the first record to i.
+
+So, this suggests that sometimes, it's better to allocate an acquisition to the attribute that is needed for a check.
+
+So, the greedy approach of trying to satisfy the most needed checks first may not be optimal.
+
+Hmm. So, this makes it challenging.
+
+Another idea: for each check, determine which attribute it requires, and for each, decide whether the current s or i is sufficient.
+
+So, for each check, if it's an Intelligence check, and s is less than r_i, then assigning the acquisition to s will allow this check to pass.
+
+Similarly, if it's a Strength check, and i is less than |r_i|, then assigning to i will allow it to pass.
+
+So, perhaps the strategy is to process the checks in order, and for each, decide whether to assign the current acquisition to s or i based on which option allows the maximum number of future checks to pass.
+
+But this is a dynamic process.
+
+But again, with m up to 2e6, we can't process each check in isolation.
+
+So, perhaps the solution is to process the records in order, and for each, decide to allocate to s or i based on which option gives the maximum benefit for future passes.
+
+But how to model this.
+
+Another approach: For each record, whether it's an acquisition or a check, we can calculate the required level for that attribute. Then, for each check, we can see whether the current s or i is sufficient, and update the count accordingly.
+
+So, the steps are:
+
+- Initialize s = 0, i = 0, passes = 0.
+
+- For each record in the order they are given:
+
+   a. If the record is an acquisition (0), we have two choices: add to s or i.
+
+   b. If the record is a check (positive or negative), we can only pass it if the corresponding attribute is >= required level.
+
+So, the idea is to process each record, decide to add to s or i, and for each check, see if it can be passed.
+
+But the problem is, for each acquisition, we have a choice that affects future records.
+
+So, perhaps the solution is to process the records, and for each acquisition, decide to add to s or i, whichever allows the current s or i to be as high as possible, thus increasing the chance of passing future checks.
+
+But this is a heuristic and may not be optimal.
+
+Wait, perhaps a better approach is to model this as a two-pointer approach.
+
+Since the order of the records is fixed, perhaps we can process them in order and keep track of the current s and i, and for each record, decide to add to s or i, based on which option allows the maximum number of passes.
+
+So, perhaps for each record, if it's a check, we can compute whether adding to s or i would allow it to be passed, and choose the option that maximizes the number of passes.
+
+But how to model this.
+
+Alternatively, perhaps the optimal strategy is to, for each check, decide whether to spend the current acquisition on s or i, based on which option allows the current s or i to be as high as possible.
+
+But again, this is a heuristic.
+
+Hmm.
+
+Another idea: since the order of the records is fixed, perhaps for each record, if it's a check, we can compute the minimal required value for s or i, and then decide to allocate the current acquisition to s or i in a way that maximizes the chances of passing the next checks.
+
+But I'm not sure.
+
+Perhaps, for each check, the required level is known, and the current s or i is known. So, to pass it, the current s or i must be >= required level.
+
+So, for each check, the decision is to spend it on s or i, whichever is more optimal.
+
+But again, this is a greedy approach.
+
+Let me think about this: for each check, if it's an Intelligence check (r_i > 0), and the current s is less than r_i, then adding to s would allow this check to pass. Similarly, if it's a Strength check, and current i is less than |r_i|, then adding to i would allow it to pass.
+
+So, for each check, if the current s or i is less than the required level, then adding to that attribute would allow the check to pass.
+
+So, perhaps for each check, we can decide whether to allocate the current acquisition to s or i, based on which would allow the maximum number of passes in the future.
+
+But again, without knowing the future, this is difficult.
+
+Hmm.
+
+Perhaps, the solution is to model this as a dynamic programming problem, where for each record, we track the possible s and i values, and the maximum number of passes possible up to that point.
+
+But with m up to 2e6, this is impossible.
+
+So, perhaps, the problem is similar to some kind of interval scheduling, where each acquisition can be assigned to s or i, and the goal is to maximize the number of passes.
+
+Wait, but each check can be passed only if the corresponding attribute is at least the required level.
+
+So, perhaps the problem can be viewed as a bipartite graph, where each acquisition is connected to s or i, and each check is connected to the attribute that can pass it.
+
+But I'm not sure.
+
+Another approach: For each record, whether it's a check or not, process it in order. For each check, determine whether it's possible to pass it, and if so, assign the current acquisition to s or i.
+
+But again, without knowing the future, it's hard.
+
+Wait, perhaps the optimal strategy is to, for each check, assign the acquisition to the attribute that is needed for that check, if possible.
+
+So, for example, if a check is an Intelligence check (r_i positive), and the current s is less than r_i, then we should assign the acquisition to s. Otherwise, assign to i.
+
+But this is a heuristic and may not be optimal.
+
+So, perhaps the solution is to, for each check, if it's an Intelligence check, and s < r_i, then assign to s. Else, assign to i.
+
+If it's a Strength check, and i < |r_i|, assign to i. Else, assign to s.
+
+So, this is a heuristic that may or may not maximize the number of passes.
+
+Let me test this.
+
+In the earlier example where n=3, m=1, records [0, 2, -1].
+
+Processing each record:
+
+Record 0: 0. We can choose s or i.
+
+Let's say we assign to s. Now s=1.
+
+Record 2: 2. Positive, so need s >=2. Current s is 1. Not enough. So, can't pass.
+
+Record 3: -1. Need i >=1. Current i is 0. Can't pass.
+
+Total passes: 0.
+
+But if we had assigned the first record to i:
+
+s=0, i=1.
+
+Record 2: 2 is positive, need s >=2. Current s is 0. Can't pass.
+
+Record 3: -1, need i >=1. Current i is 1. Pass.
+
+Total passes: 1.
+
+So, in this case, the heuristic of assigning to s when possible (if s is less than r_i) but when s is not enough, assign to i when possible (if i is less than r_i) seems to work.
+
+So, perhaps the strategy is:
+
+For each check, if it's an Intelligence check (r_i > 0), and s < r_i, assign to s. Else, assign to i, if i < r_i (but wait, r_i is positive, so i < r_i is the condition).
+
+Wait, no: for an Intelligence check, r_i is positive, so the check is passed if s >= r_i.
+
+So, for a check, if s >= r_i, pass; else, can't pass.
+
+Similarly, for a Strength check, if i >= |r_i|, pass; else, can't pass.
+
+So, for a check, if the current s or i is >= required, pass; else, can't.
+
+So, the strategy is: for each check, if the current s is >= required, pass. Else, if i is >= required, pass.
+
+Else, can't pass.
+
+So, the decision is: if s is >= required, assign to s. Else, assign to i, if i >= required. Else, can't pass.
+
+So, the algorithm would be:
+
+Initialize s = 0, i = 0, passes = 0.
+
+For each record in order:
+
+   if it's an acquisition (0):
+
+      if s >= r_i:
+
+          s += 1
+
+      else:
+
+          if i >= r_i:
+
+              i += 1
+
+          else:
+
+              pass
+
+   else:
+
+      if s >= r_i:
+
+          passes += 1
+
+          s += 1
+
+      else:
+
+          if i >= abs(r_i):
+
+              passes +=1
+
+              i +=1
+
+          else:
+
+              pass
+
+Wait, but this is a greedy approach. For each acquisition, we assign it to s if s is >= r_i, else to i if i is >= r_i, else we can't pass.
+
+So, for an acquisition, we choose the attribute that allows it to pass the check, if possible.
+
+So, let's test this on the previous example:
+
+n=3, m=1, records [0, 2, -1].
+
+Processing:
+
+Record 0: 0.
+
+s is 0, i is 0.
+
+We can assign to s or i.
+
+According to the algorithm, we check if s >= r_i. r_i is 0, so 0 >= 0 is true. So, we assign to s.
+
+s becomes 1.
+
+Record 2: 2.
+
+It's a positive check. s is 1 < 2. So, we can't pass. So, we check if i >= 2. i is 0. So, can't pass.
+
+So, no pass.
+
+Record 3: -1.
+
+It's a negative check. So, |r_i| is 1.
+
+Check s >=1? s is 1, yes. So, pass. s becomes 2.
+
+So, total passes: 1.
+
+Which is correct.
+
+Another test case:
+
+n=3, m=1, records [0, 3, -2].
+
+Processing:
+
+Record 0: 0.
+
+s >=0, so assign to s. s=1.
+
+Record 2: 3.
+
+s is 1 <3. So, check i >=3. i=0. Can't pass.
+
+No pass.
+
+Record 3: -2.
+
+| r_i | is 2.
+
+Check s >=2? s=1. No. Check i >=2? i=0. No. Can't pass.
+
+So, total passes: 0.
+
+Which is correct.
+
+Another test case:
+
+n=3, m=1, records [0, 2, 1].
+
+Processing:
+
+Record 0: 0.
+
+s >=0, assign to s. s=1.
+
+Record 2: 1.
+
+s >=1: yes. Pass. s=2.
+
+Record 3: 1.
+
+s >=1: yes. Pass. s=3.
+
+Total passes: 2.
+
+Which is correct.
+
+Another test case:
+
+n=4, m=2.
+
+Records: [0, 5, -3, -4].
+
+Processing:
+
+s=0, i=0.
+
+Record 0: 0.
+
+s >=0: yes. s=1.
+
+Record 1:5.
+
+s=1 <5. So, check i >=5. i=0. Can't pass.
+
+Record 2: -3.
+
+| r_i | is3.
+
+s >=3? s=1. No. Check i >=3? i=0. No. Can't pass.
+
+Record3: -4.
+
+| r_i | is4.
+
+s >=4? s=1. No. i >=4? i=0. Can't pass.
+
+So, total passes: 1.
+
+Another test case:
+
+n=4, m=2.
+
+Records: [0, 3, -2, -1].
+
+Processing:
+
+Record0: 0.
+
+s >=0: yes. s=1.
+
+Record1:3.
+
+s=1 <3. Check i >=3. i=0. Can't pass.
+
+Record2: -2.
+
+| r_i | is2.
+
+s >=2? s=1. No. i >=2? i=0. No. Can't pass.
+
+Record3: -1.
+
+| r_i | is1.
+
+s >=1? s=1. Yes. Pass.
+
+So, total passes:1.
+
+So, in this case, the algorithm assigned the third record to i, which allowed the fourth record to pass.
+
+So, this seems to work.
+
+So, the algorithm is:
+
+For each record in order:
+
+   if it's an acquisition (0):
+
+      if s >= r_i:
+
+          s +=1
+
+      else:
+
+          if i >= r_i:
+
+              i +=1
+
+          else:
+
+              pass
+
+   else:
+
+      if s >= r_i:
+
+          passes +=1
+
+          s +=1
+
+      else:
+
+          if i >= abs(r_i):
+
+              passes +=1
+
+              i +=1
+
+          else:
+
+              pass
+
+So, this seems to be a correct approach.
+
+So, in code, we can process each record in order, updating s, i, and passes accordingly.
+
+So, the code structure would be:
+
+Read n and m.
+
+Read the list of records.
+
+Initialize s = 0, i = 0, passes =0.
+
+for each record in records:
+
+    if record ==0:
+
+        if s >= record:
+
+            s +=1
+
+        else:
+
+            if i >= record:
+
+                i +=1
+
+            else:
+
+                pass
+
+    else:
+
+        if s >= record:
+
+            passes +=1
+
+            s +=1
+
+        else:
+
+            if i >= abs(record):
+
+                passes +=1
+
+                i +=1
+
+            else:
+
+                pass
+
+At the end, print passes.
+
+So, let's test this with the previous examples.
+
+Example 1:
+
+n=3, m=1.
+
+Records: [0, 2, -1].
+
+Processing:
+
+Record0:0.
+
+s=0>=0: yes. s=1.
+
+Record1:2.
+
+s=1 <2. i=0 <2. So, can't pass.
+
+Record2:-1.
+
+s=1 >=1: yes. pass. s=2.
+
+Total passes:1.
+
+Which is correct.
+
+Another example:
+
+n=4, m=2.
+
+Records: [0,5,-3,-4].
+
+Processing:
+
+Record0:0.
+
+s=0>=0: yes. s=1.
+
+Record1:5.
+
+s=1<5. i=0<5. can't pass.
+
+Record2:-3.
+
+s=1 <3. i=0<3. can't pass.
+
+Record3:-4.
+
+s=1 <4. i=0<4. can't pass.
+
+Total passes:0.
+
+Another example:
+
+n=4, m=2.
+
+Records: [0,5,-2,-1].
+
+Processing:
+
+Record0:0.
+
+s=0>=0: yes. s=1.
+
+Record1:5.
+
+s=1<5. i=0

@@ -1,0 +1,700 @@
+0
+Okay, so I've got this problem to solve, and I'm a bit stuck. Let's try to break it down.
+
+The problem is about an array a that starts with all zeros. Kevin performs some operations on it, which are either prefix or suffix additions. Then, there's this beauty value b that depends on the array a. The beauty is calculated by adding c_i for each a_i that's equal to v. Kevin wants to maximize this beauty by performing some new operations, and we have to do this for each v from 1 to V.
+
+Hmm, right. So for each v, we need to compute the maximum possible beauty after adding any number of new operations. The new operations can be either prefix or suffix adds, and we can choose them optimally.
+
+Wait, but how do the existing operations affect the a array? Because the initial operations have already been performed, and then we can add more. So the a array is the sum of all the existing operations plus any new ones we choose to perform.
+
+So the first thing I think is: for each v, we need to model the a array as a combination of the existing operations plus any new ones. But since the new operations can be any possible prefix or suffix adds, what's the best way to model this?
+
+Let me think about the structure of the a array after all operations. Each operation affects a range of elements. So the a array can be represented as a prefix sum of the operations, but I'm not sure. Alternatively, perhaps it's better to model the a array as a combination of the prefix and suffix operations.
+
+Wait, the prefix add operation increases a_1, a_2, ..., a_x by 1 each. The suffix add increases a_x, a_{x+1}, ..., a_n by 1 each. So, each operation is a range update, either prefix or suffix.
+
+So, the a array can be thought of as the sum of all the individual increments applied to each position. So for each position i, a_i is equal to the number of prefix operations that include i plus the number of suffix operations that include i.
+
+Wait, no. Because a prefix add adds 1 to all elements up to x. So for a prefix add, each position up to x gets +1. Similarly, a suffix add adds 1 to all positions from x to n.
+
+So, the total a_i is the sum of the number of prefix operations that have x >= i plus the number of suffix operations that have x <= i.
+
+Wait, no. Let me think again. Suppose we have a prefix add with x=3. Then, a_1, a_2, a_3 are each increased by 1. So for a_i, the prefix add contributes 1 if i <= x. Similarly, a suffix add with x=3 contributes 1 if i >= x.
+
+So for a_i, the total contributions are the number of prefix adds where x >= i plus the number of suffix adds where x <= i.
+
+Yes, that's correct. So, for each i, a_i is equal to the sum over all prefix adds where x >= i, plus the sum over all suffix adds where x <= i.
+
+So, the problem is to choose a subset of new prefix and suffix adds to maximize the sum for each v of the c_i multiplied by (if a_i equals v, then c_i, else 0).
+
+But the new adds can be any prefix or suffix. So, for each v, we need to compute the maximum possible sum of c_i * (if a_i + new_adds equals v, then c_i, else 0).
+
+Wait, no. The beauty is the sum of c_i for which a_i equals v. So, the initial a_i's are modified by the existing operations and the new ones. So, the new adds can be any prefix or suffix adds, and each of them contributes to the a_i's.
+
+So, for each v, we need to find the maximum possible sum over all i of c_i * (a_i + new adds) equals v? Wait, no. Because a_i is the initial a_i plus the new adds. So, for a given v, the beauty is the sum of c_i for which a_i + new adds equals v.
+
+Wait, no. The beauty is the sum of c_i for which a_i equals v. So, after all the operations (existing and new), a_i is the initial a_i plus the new adds. So, for each i, a_i is the sum of the existing operations' contributions plus any new adds.
+
+So, the beauty is the sum of c_i where a_i equals v.
+
+So, for each v, we need to compute the maximum possible sum over all i of c_i * (a_i = v).
+
+Hmm. But calculating this for each v up to V might be computationally intensive if not handled correctly.
+
+Wait, but V can be up to 2000, and T is up to 1000, but the sum of V^2 over all test cases is 4e6, which is manageable.
+
+So, perhaps for each test case, we can precompute for each v, the maximum possible sum.
+
+But how?
+
+Let me think about the a_i's as a function of the new adds. Let's denote the new adds as new_p (number of prefix adds) and new_r (number of suffix adds).
+
+Wait, no. The new adds can be any prefix or suffix, and their contributions are additive. So, the a_i's are the initial a_i plus the new adds.
+
+Wait, but the new adds can be chosen optimally, so for each v, we can model the a_i's as a_i = initial_a_i + x_i, where x_i is the sum of the new adds' contributions.
+
+But the new adds can be any prefix or suffix. So, the x_i's are determined by the choices of new adds.
+
+Wait, but perhaps the problem can be transformed into finding for each i, the maximum possible x_i (new adds) such that a_i is as close to v as possible, but not exceeding it, but that's not exactly right. Because we can choose to add any x_i, but the sum for each v is the sum of c_i for which a_i equals v.
+
+Wait, no. We can choose any number of new adds, which can be any prefix or suffix. So, for each i, the new add can contribute to x_i in a way that a_i's are as large as possible, but subject to the constraints that the sum for each v is maximized.
+
+Hmm, this seems a bit abstract. Maybe I should model the problem for each v.
+
+Wait, for a given v, the beauty is the sum of c_i where a_i equals v. So, we can model this as:
+
+beauty(v) = sum_{i: a_i + new_adds_i = v} c_i.
+
+But the new_adds_i can be any possible x_i, which is the sum of all the new adds' contributions to a_i.
+
+So, the problem is to choose x_i for each i, such that the sum of c_i for a_i + x_i = v is maximized.
+
+Wait, but x_i depends on the new adds. So, the new adds can be any combination of prefix and suffix adds, and each new add contributes to x_i.
+
+So, for each v, we need to find the maximum sum over i of c_i * (a_i + x_i) equals v.
+
+But how to model x_i?
+
+Wait, perhaps we can model the problem as follows: for each i, the new adds can be any number of prefix and suffix adds that contribute to x_i. So, x_i can be any value >= 0, but it's the sum of any combination of prefix and suffix adds.
+
+But the new adds can be arbitrary, so what's the maximum possible x_i for each i? Well, if we can choose x_i to be as large as possible, then a_i + x_i would be as large as possible. But since we want a_i + x_i = v, perhaps we can't do that for all i, but for each i, we can choose x_i such that a_i + x_i is as large as possible, but not exceeding v, but only if that allows other i's to have a_i + x_i = v.
+
+Wait, this is getting a bit complicated. Let's think differently.
+
+Suppose that for a given v, we can choose any set of new adds such that for each i, a_i + x_i is as large as possible, but not exceeding v, but in a way that allows as many i's as possible to have a_i + x_i = v.
+
+Wait, but perhaps it's better to model this as for each i, the maximum possible a_i + x_i is v, but if multiple i's can reach v, then the sum is maximized.
+
+Wait, no. Because the sum is the sum of c_i for all i where a_i + x_i = v. So, for each i, whether it's included depends on whether a_i + x_i equals v.
+
+So, the problem is to choose x_i for each i such that the sum of c_i for i where a_i + x_i = v is maximized.
+
+Hmm. So, for each i, a_i is fixed (as it's the initial a_i plus any new adds). So, a_i is known. Then, x_i can be any value >=0.
+
+So, for each i, a_i + x_i can be any value >= a_i. So, for a given v, we can choose x_i such that a_i + x_i is as large as possible, but not exceeding v. But if we can't make a_i + x_i = v, then we can't include it in the sum.
+
+Wait, but the sum is the sum of c_i for which a_i + x_i = v. So, for each i, we can choose x_i such that a_i + x_i is as large as possible, but not exceeding v. Then, if a_i + x_i is exactly v, we include c_i. Otherwise, we don't.
+
+So, for each i, the maximum possible contribution to the sum is c_i if a_i <= v, because we can set x_i = v - a_i, which is >=0. So, for each i, if a_i <= v, then the contribution is c_i, because x_i = v - a_i is allowed, and a_i + x_i = v.
+
+Wait, is that possible? Because the operations can be any combination of prefix and suffix adds, so can we achieve x_i = v - a_i for each i?
+
+Wait, no. Because x_i is the sum of new adds. Each new add is a prefix or suffix. So, x_i can't be any value. It's the sum of the new adds' contributions to a_i. So, x_i is the sum of some prefix adds' contributions to i plus some suffix adds' contributions to i.
+
+So, for a given i, x_i is equal to the number of prefix adds with x >= i plus the number of suffix adds with x <= i.
+
+So, the x_i's are constrained by this. So, for each i, x_i can be any integer (since each new add contributes 1 to x_i) as long as it's equal to the sum of certain prefix and suffix adds.
+
+So, for a given v, to maximize the sum, we need to select x_i's such that as many c_i as possible are included, i.e., a_i + x_i = v, and the sum is maximized.
+
+But x_i's are constrained by the fact that they are the sum of prefix and suffix adds. So, we can't just set x_i to any value.
+
+This suggests that for each i, x_i can be any value that can be achieved by the sum of some prefix and suffix adds. So, the x_i's are subject to certain constraints.
+
+Hmm. So, the problem is to choose x_i's such that for each i, x_i can be expressed as the sum of some prefix adds and suffix adds. Then, for each i, a_i + x_i must equal v, or else c_i is not added to the sum.
+
+We need to maximize the sum of c_i where a_i + x_i = v.
+
+Wait, but how can we model this? Because the x_i's are interdependent. For example, a prefix add affects all positions up to x, so any x_i for i <= x is increased. Similarly, a suffix add affects all positions from x onwards.
+
+So, the x_i's are not independent. They are connected by the prefix and suffix adds.
+
+This seems complicated, but perhaps we can find a way to model the x_i's in terms of the existing operations and then find a way to choose the new adds to maximize the sum.
+
+Alternatively, perhaps we can model the x_i's as the sum of all prefix add operations that include i plus the sum of all suffix add operations that include i.
+
+Wait, but each prefix add operation adds 1 to a_1, a_2, ..., a_x. So, for a prefix add with x, the contribution to x is +1, and to all i <=x is +1. Similarly, a suffix add with x contributes +1 to a_x, ..., a_n.
+
+So, for each i, the total contribution from prefix adds is the number of prefix adds with x >=i. Let's call this p_i. Similarly, the contribution from suffix adds is the number of suffix adds with x <=i. Let's call this s_i.
+
+So, x_i = p_i + s_i.
+
+Thus, a_i + x_i = a_i + p_i + s_i.
+
+But for the beauty, we need a_i + x_i = v.
+
+So, for each i, if a_i + p_i + s_i = v, then c_i is added to the sum. So, the sum is sum(c_i for i where a_i + p_i + s_i = v).
+
+We can model p_i and s_i as variables, and the problem is to choose p_i and s_i for each i such that a_i + p_i + s_i is as close to v as possible, but equal to v, and the sum is maximized.
+
+Wait, but p_i and s_i are not independent. They are determined by the prefix and suffix adds.
+
+Each prefix add x contributes 1 to p_i for i=1 to x. So, p_i is the number of prefix adds with x >=i.
+
+Similarly, each suffix add x contributes 1 to s_i for i=x to n. So, s_i is the number of suffix adds with x <=i.
+
+So, p_i is the sum over prefix adds with x >=i. s_i is the sum over suffix adds with x <=i.
+
+But the total p_i is the sum of all prefix adds that have x >=i, and s_i is the sum of all suffix adds that have x <=i.
+
+So, p_i and s_i are related. For example, p_i is the sum of all prefix adds with x >=i, which is the same as the sum of all prefix adds for x >=i. Similarly, s_i is the sum of all suffix adds with x <=i.
+
+So, for each i, p_i is the number of prefix adds with x >=i. So, p_1 is the total number of prefix adds, because x >=1 for all prefix adds. p_2 is the number of prefix adds with x >=2, etc. Similarly, s_1 is the number of suffix adds, s_2 is the number of suffix adds with x <=2, etc.
+
+So, for each i, p_i >= p_{i+1}, because p_i is the sum of prefix adds with x >=i, which includes all the prefix adds with x >=i+1.
+
+Similarly, s_i >= s_{i+1}, because suffix adds with x <=i include those with x <=i-1.
+
+So, p_i is non-increasing as i increases, and s_i is non-increasing as i increases.
+
+This is an important observation. So, for each i, p_i >= p_{i+1}, and s_i >= s_{i+1}.
+
+So, for a given i, p_i can be any value between p_{i+1} and p_i, and s_i can be any value between s_{i+1} and s_i.
+
+But how does this help us?
+
+We need to choose p_i and s_i for each i, such that a_i + p_i + s_i = v, or as close as possible to v, but exactly equal to v.
+
+Wait, because for the beauty, we need a_i + p_i + s_i exactly equal to v.
+
+So, for each i, a_i + p_i + s_i = v.
+
+But p_i and s_i are linked through the prefix and suffix adds.
+
+So, the problem is to choose p_i and s_i for each i, such that p_i is non-increasing, s_i is non-increasing, and for each i, a_i + p_i + s_i = v. Then, the sum of c_i for which this is true is the beauty.
+
+Wait, but this is impossible for all i. Because p_i and s_i are determined by the prefix and suffix adds, which are the same for all i.
+
+So, for example, a prefix add x contributes 1 to all p_i for i <=x. So, all p_i for i <=x are at least 1.
+
+Similarly, a suffix add x contributes 1 to all s_i for i >=x.
+
+So, the p_i's are determined by the prefix adds, and the s_i's are determined by the suffix adds.
+
+So, the p_i's and s_i's are determined by the set of prefix and suffix adds.
+
+So, the problem is to choose a set of prefix adds and suffix adds such that for each i, a_i + p_i + s_i is as close to v as possible, but exactly equal to v.
+
+Wait, no. We need to choose p_i and s_i such that a_i + p_i + s_i = v, and for each i, p_i is the sum of prefix adds with x >=i, and s_i is the sum of suffix adds with x <=i.
+
+But how can we model this?
+
+Alternatively, perhaps we can model the problem as follows:
+
+For each i, the value p_i is the number of prefix adds with x >=i. Similarly, s_i is the number of suffix adds with x <=i.
+
+So, for each i, p_i can be any value between p_{i+1} and p_i, and s_i can be any value between s_{i+1} and s_i.
+
+So, the sum p_i + s_i is the total number of prefix and suffix adds that affect i.
+
+So, for each i, a_i + (p_i + s_i) = v.
+
+Which implies that p_i + s_i = v - a_i.
+
+So, for each i, p_i + s_i must equal v - a_i.
+
+But p_i is non-increasing, and s_i is non-increasing.
+
+So, for each i, p_i >= p_{i+1}, s_i >= s_{i+1}.
+
+So, the sum p_i + s_i must be equal to v - a_i, and p_i and s_i are non-increasing.
+
+So, the problem reduces to finding a sequence of p_i and s_i, such that p_i is non-increasing, s_i is non-increasing, and for each i, p_i + s_i = v - a_i.
+
+Then, the sum of c_i for which a_i + p_i + s_i = v is the beauty.
+
+But how to choose p_i and s_i to maximize this sum.
+
+Hmm. Let's think of this as a problem where for each i, we have p_i + s_i = d_i, where d_i = v - a_i.
+
+We need to choose p_i and s_i such that p_i is non-increasing, s_i is non-increasing, and p_i + s_i = d_i.
+
+The goal is to maximize the sum of c_i where d_i =0, because a_i + p_i + s_i = v implies d_i=0.
+
+So, for each i, if d_i=0, we add c_i.
+
+So, the sum is sum(c_i for i where d_i=0).
+
+So, to maximize this sum, we need to maximize the number of c_i's that are added, i.e., for as many i as possible, d_i=0.
+
+So, for each i, if d_i can be achieved, we can add c_i to the sum.
+
+So, the problem is to find as many i as possible where d_i=0, subject to the constraints that p_i is non-increasing, s_i is non-increasing, and p_i + s_i = d_i.
+
+So, how to model this.
+
+Let me think about the d_i's. For each i, d_i = v - a_i.
+
+So, for each i, d_i can be any value, including negative or positive.
+
+But for the sum to be positive, d_i should be non-negative, because p_i and s_i are non-negative.
+
+Wait, p_i and s_i are the counts of prefix and suffix adds that affect i. So, they are non-negative integers.
+
+So, d_i = p_i + s_i must be >=0.
+
+Thus, for each i, if d_i <0, then it's impossible to have p_i + s_i =d_i, because p_i and s_i are non-negative. So, in such cases, we can't have a_i + p_i + s_i =v, so those i's can't contribute to the sum.
+
+So, for each i, if d_i <0, it's not possible to have a_i + p_i + s_i =v, so we can't include it in the sum.
+
+So, the first step is to compute d_i = v - a_i for each i. If d_i <0, skip. Otherwise, we can proceed.
+
+So, for each i where d_i >=0, we can potentially include it in the sum if p_i + s_i =d_i, and p_i is non-increasing, s_i is non-increasing.
+
+So, the problem is now to find for each i, whether d_i can be achieved, i.e., whether there exists p_i and s_i such that p_i + s_i =d_i, p_i is non-increasing, s_i is non-increasing, and p_i >= p_{i+1}, s_i >= s_{i+1}.
+
+So, how to model this.
+
+Let me think about the constraints on p_i and s_i.
+
+We have p_1 >= p_2 >= ... >= p_n.
+
+s_1 >= s_2 >= ... >= s_n.
+
+And p_i + s_i = d_i for each i.
+
+We need to choose p_i and s_i such that these constraints are satisfied.
+
+So, for each i, p_i can be any value between p_{i+1} and d_i, and s_i can be any value between s_{i+1} and d_i - p_i.
+
+Wait, but since p_i is non-increasing and s_i is non-increasing, the maximum possible p_i is p_{i-1}, and the minimum is 0.
+
+Similarly, for s_i, the maximum is s_{i-1}, and the minimum is 0.
+
+So, for each i, p_i can be between p_{i+1} and min(d_i, p_i_prev), where p_i_prev is p_i for i-1.
+
+But this seems a bit tangled.
+
+An alternative approach is to model p_i and s_i as the maximum possible for each i, given the constraints.
+
+So, for each i, p_i can be as large as possible, but subject to p_i <= p_{i-1}.
+
+Similarly, s_i can be as large as possible, subject to s_i <= s_{i-1}.
+
+So, for each i, the maximum possible p_i is the minimum of p_{i-1} and d_i.
+
+Similarly, the maximum possible s_i is the minimum of s_{i-1} and d_i - p_i.
+
+Wait, but s_i is also constrained by s_i <= s_{i-1}.
+
+So, perhaps the maximum possible p_i is the minimum of p_{i-1} and d_i, and the maximum possible s_i is the minimum of s_{i-1} and d_i - p_i.
+
+But this seems difficult to model.
+
+Alternatively, perhaps the optimal way is to set p_i as large as possible and s_i as large as possible, subject to the constraints.
+
+So, for each i, p_i = min(p_{i-1}, d_i).
+
+s_i = min(s_{i-1}, d_i - p_i).
+
+If d_i is zero, then p_i = p_{i-1}, s_i = s_{i-1}, and we can include c_i.
+
+So, this seems like a feasible approach. Let's try to model this.
+
+So, for each i from 1 to n:
+
+p_i = min(p_{i-1}, d_i)
+
+s_i = min(s_{i-1}, d_i - p_i)
+
+So, for each i, we can compute p_i and s_i based on the previous values.
+
+If d_i is zero, then p_i = p_{i-1}, s_i = s_{i-1}.
+
+So, for each i, if d_i is zero, then we can include c_i in the sum.
+
+Otherwise, if p_i and s_i are positive, then we can include c_i.
+
+So, let's see how this works.
+
+Let's take the sample input to see.
+
+Sample Input:
+
+n=3, m=1, V=2.
+
+c = [1, 2, 3].
+
+The initial a is [0, 0, 0].
+
+The existing operations are a prefix add with x=1.
+
+So, after the initial a, a_1 is 1, a_2 and a_3 are 0.
+
+So, for each i, d_i = v - a_i.
+
+For v=1:
+
+d_1 = 1 - 1 = 0.
+
+d_2 = 1 -0=1.
+
+d_3 =1-0=1.
+
+So, for i=1, d_i=0.
+
+So, p_1 can be at most p_0 (which is infinity, since i=1 is the first). So, p_1 is 0.
+
+s_1 is min(s_0 (0), 0 - 0) = 0.
+
+So, p_1 + s_1 = 0 = d_1.
+
+Thus, i=1 is added to the sum.
+
+For i=2, d_i=1.
+
+p_2 is min(p_1 (0), 1) =0.
+
+s_2 is min(s_1 (0), 1-0)=0.
+
+So, p_2 +s_2 =0 <1. So, cannot include i=2.
+
+For i=3, same as i=2.
+
+So, for v=1, the sum is 1.
+
+Which matches the sample output.
+
+Another sample: v=2.
+
+d_i for i=1 is 2-1=1.
+
+i=2: 2-0=2.
+
+i=3:2-0=2.
+
+So, for i=1, d_i=1.
+
+p_1 can be up to p_0 (infinite) and min(1, p_0). So, p_1=1.
+
+s_1 is min(0, 1 -1) =0.
+
+So, p_1 + s_1 =1 =d_i.
+
+So, i=1 is added.
+
+For i=2, d_i=2.
+
+p_2 is min(p_1 (1), 2) =1.
+
+s_2 is min(s_1 (0), 2-1=1) =0.
+
+So, p_2 + s_2=1 <2. So, can't include i=2.
+
+i=3: same as i=2.
+
+So, sum is 1.
+
+Which matches the sample.
+
+So, this approach seems to work.
+
+So, the algorithm is:
+
+For each test case:
+
+1. Compute d_i = v - a_i for each i.
+
+2. If d_i <0, skip.
+
+3. Else, for each i, compute p_i and s_i as follows:
+
+   p_i = min(p_{i-1}, d_i)
+
+   s_i = min(s_{i-1}, d_i - p_i)
+
+4. If d_i ==0, add c_i to the sum.
+
+5. For all i where d_i >0, check if p_i + s_i ==d_i. If yes, add c_i.
+
+So, in code, the steps are:
+
+For each test case:
+
+- Read n, m, V.
+
+- Read c as a list.
+
+- Read m operations, track the prefix and suffix adds.
+
+- Compute the initial a array.
+
+- For each v in 1..V:
+
+   - Compute d_i =v - a_i for each i.
+
+   - Check if d_i is negative: if yes, i can't contribute.
+
+   - Else, compute p_i and s_i as per the constraints.
+
+   - Sum c_i for which d_i=0, and p_i + s_i =d_i.
+
+So, the key is to compute p_i and s_i for each i, given the previous p and s values.
+
+So, let's think about how to model this.
+
+We can initialize p_prev as infinity (since for i=1, p_1 can be as large as d_1, but for i>1, p_i can be at most p_{i-1}.
+
+Similarly, s_prev is 0 initially.
+
+Wait, no. For i=1, p_1 can be up to d_1, since p_prev is infinity.
+
+Wait, for i=1, p_1 can be any value up to d_1, but since p_prev is infinity, p_1 = min(d_1, p_prev) = d_1.
+
+Similarly, s_1 is min(s_prev (0), d_1 - p_1) = min(0, d_1 -d_1) =0.
+
+So, for i=1, p_1=d_1, s_1=0.
+
+For i>1, p_i = min(p_prev, d_i).
+
+s_i = min(s_prev, d_i - p_i).
+
+So, how to implement this.
+
+In code:
+
+We can represent p_prev and s_prev for each i.
+
+We can initialize p_prev as a very large number (like n+1 or something), and s_prev as 0.
+
+Then, for each i from 1 to n:
+
+   if d_i <0: break, since no more i's can contribute.
+
+   else:
+
+      p_i = min(p_prev, d_i)
+
+      s_i = min(s_prev, d_i - p_i)
+
+      if d_i ==0:
+
+          sum += c[i]
+
+      else:
+
+          if p_i + s_i == d_i:
+
+              sum += c[i]
+
+      p_prev = p_i
+
+      s_prev = s_i
+
+So, this seems manageable.
+
+So, the algorithm is:
+
+For each test case:
+
+1. Read n, m, V.
+
+2. Read c array.
+
+3. Read m operations, track the prefix and suffix adds.
+
+4. Compute initial a as all zeros.
+
+5. For each operation:
+
+   if it's a prefix add x: add 1 to all a_1..a_x.
+
+   if it's a suffix add x: add 1 to all a_x..a_n.
+
+   So, for each operation, we can track the number of prefix adds and suffix adds.
+
+But wait, how to model the initial a array.
+
+Because each prefix add is a certain x, and each suffix add is a certain x.
+
+So, for each i, a_i is equal to the number of prefix adds with x >=i plus the number of suffix adds with x <=i.
+
+Wait, yes. So, for each i, a_i = p_i + s_i, where p_i is the number of prefix adds with x >=i, and s_i is the number of suffix adds with x <=i.
+
+So, to compute a_i, we need to track all the prefix and suffix adds.
+
+So, for each test case, we can model the prefix and suffix adds as two separate variables.
+
+Let me think: for prefix adds, each x increases p_i for i <=x.
+
+So, if we have a list of all prefix adds, we can keep track of the cumulative increases for each prefix add.
+
+Similarly for suffix adds.
+
+So, for example, for prefix adds, we can have a list of x's, and for each x, we can track how many times it has been added.
+
+Then, for any i, p_i is the sum of all prefix adds x where x >=i.
+
+So, for a given i, p_i is the sum of all prefix adds x >=i.
+
+Similarly, s_i is the sum of all suffix adds x <=i.
+
+So, for each test case, we can process the m operations, and for prefix adds, track the sum for each x.
+
+But with x up to 2e5, it's not feasible to store for each x.
+
+So, we need a way to compute p_i for any i quickly.
+
+An alternative approach is to keep track of the prefix adds in a way that allows us to compute p_i quickly.
+
+Wait, perhaps we can keep a list of prefix adds, sorted, and for each i, p_i is the number of prefix adds x >=i.
+
+So, if we have the prefix adds sorted in non-decreasing order, then for any i, p_i is the number of prefix adds x >=i.
+
+But how to compute this quickly.
+
+Hmm, for example, if the prefix adds are [x1, x2, ..., xm], sorted in non-decreasing order.
+
+For a given i, p_i is the number of x in prefix adds where x >=i.
+
+So, this can be computed using binary search.
+
+Similarly, for suffix adds, we can sort them in non-increasing order, and for a given i, s_i is the number of suffix adds x <=i.
+
+So, the plan is:
+
+For each test case:
+
+- Read n, m, V.
+
+- Read c array.
+
+- Read m operations, and for each, track whether it's a prefix or suffix add, and the x.
+
+- Compute prefix adds: for each prefix add x, add to a list.
+
+- Compute suffix adds: for each suffix add x, add to a list.
+
+- Sort the prefix adds in non-decreasing order.
+
+- Sort the suffix adds in non-increasing order.
+
+Then, for each i from 1 to n:
+
+   p_i is the number of prefix adds x >=i.
+
+   s_i is the number of suffix adds x <=i.
+
+   a_i = p_i + s_i.
+
+So, for each i, a_i can be computed as p_i + s_i.
+
+Now, for each v in 1..V:
+
+   compute d_i = v - a_i for each i.
+
+   if d_i <0: no contribution.
+
+   else:
+
+      compute p_i and s_i as per the constraints.
+
+      if d_i ==0: add c_i.
+
+      else: if p_i + s_i ==d_i: add c_i.
+
+So, the code can proceed as follows.
+
+Now, the challenge is to compute p_i and s_i for each i quickly.
+
+So, implementing this, for each test case, we can:
+
+- After reading the prefix and suffix adds, sort them.
+
+- For each i, compute p_i as the number of prefix adds >=i.
+
+   This can be done by binary search.
+
+- Similarly, s_i is the number of suffix adds <=i.
+
+   Which can be done by binary search on the sorted suffix adds.
+
+But wait, for the suffix adds, since they are sorted in non-increasing order, to find the number of adds x <=i, we can perform a binary search for i.
+
+Yes.
+
+So, in code:
+
+Sort prefix adds in non-decreasing order.
+
+Sort suffix adds in non-increasing order.
+
+For i in 1..n:
+
+   p_i = len(prefix_adds) - bisect_left(prefix_adds, i)
+
+   s_i = bisect_right(suffix_adds, i)
+
+   a_i = p_i + s_i
+
+So, this is O(m log m) for sorting, and O(n log m) for each i, which is acceptable for n up to 2e5 and T up to 1000.
+
+So, the code outline is clear.
+
+Now, let's think about the implementation.
+
+First, read t test cases.
+
+For each test case:
+
+Read n, m, V.
+
+Read c as list.
+
+Read m operations, track prefix and suffix adds.
+
+Compute prefix adds and suffix adds.
+
+Sort prefix adds in non-decreasing order.
+
+Sort suffix adds in non-increasing order.
+
+Compute a_i for each i.
+
+Then, for each v from 1 to V:
+
+   compute d_i =v -a_i.
+
+   if d_i <0: skip.
+
+   else:
+
+      compute p_i and s_i as per the constraints.
+
+      if d_i ==0: add c[i] to the sum.
+
+      else:
+
+          if p_i + s_i ==d_i: add c[i] to the sum.
+
+So, the code needs to:
+
+- For each v, process each i.
+
+Which could be O(n) per v, but with V up to 2000, the total is O(n*V) per test case.
+
+Which is acceptable for n up to 2e5, V up to 2e3, and t up to 1e3, as 2e5 * 2000 * 1e3 = 4e11, which is way too big.
+
+Wait, no. Wait, n is up to 2e5, V is up to 2000, t is up to 1e3.
+
+So, for each test case, the total is V * n = 2e5 * 2000 =4e8 operations, which is manageable in Python.
+
+So, the code can proceed.
+
+Now, let's think about the implementation.
+
+Implementing the steps:
+
+First, read the test case.
+
+Read n, m

@@ -1,0 +1,689 @@
+Okay, I need to solve this problem where, given a set of points and an even integer d, I have to find three points that form a Manhattan triangle with all pairwise distances equal to d. If no such triangle exists, I output 0s.
+
+Let me start by understanding the problem. A Manhattan triangle is three points where the Manhattan distance between each pair is exactly d. So, for points A, B, and C, the distances AB, BC, and CA must all be d.
+
+The Manhattan distance between two points (x1, y1) and (x2, y2) is |x1 - x2| + |y1 - y2|. So, for three points to form such a triangle, each pair must have this sum equal to d.
+
+Hmm. How can I approach this? Well, for each point, maybe I can look for other points that are d Manhattan units away from it. Then, for each such pair, I can check if there's a third point that is d away from both.
+
+But wait, the number of points can be up to 2e5, so checking all pairs is O(n^2), which is way too slow. I need a more efficient approach.
+
+Let me think about the properties of such points. Suppose I have three points A, B, C. Then, AB = d, BC = d, and CA = d. So, each pair is d apart.
+
+Let me consider the coordinates of these points. Let's see, for AB = d, the sum of the absolute differences in x and y must be d. Similarly for BC and CA.
+
+Wait, maybe I can model this in terms of equations. Let's say A is (x, y). Then, B must be (x + a, y + b), where |a| + |b| = d. Similarly, C must be (x + c, y + d), where |c| + |d| = d. Then, the distance between B and C must also be d, which gives |c - a| + |d - b| = d.
+
+Hmm, this seems a bit abstract. Maybe I can find a pattern or specific condition that the points must satisfy.
+
+Another approach: For a given point A, look for points B such that the Manhattan distance from A to B is d. Then, for each such B, look for points C such that the Manhattan distance from B to C is d, and also from A to C is d. If such a C exists, then A, B, C form the triangle.
+
+But even this approach might be expensive because for each point, there could be a lot of B's to check.
+
+Wait, let's think about the Manhattan distance. The Manhattan distance is the sum of the absolute differences. So, for two points to have a Manhattan distance of d, perhaps their x and y coordinates are such that one is shifted in a way that the sum is d.
+
+Let me think about the possible configurations. For example, if I have two points, one could be (x, y) and the other is (x + d, y), but then the Manhattan distance is d. Alternatively, it could be (x, y + d), (x - d, y), or (x, y - d). But those are specific cases. There might be other possibilities where, for example, one point is shifted in x by a and in y by b, such that a + b = d.
+
+Wait, no. Because a + b = d is not the case. The Manhattan distance is |a| + |b| = d. So a and b can be any integers (or real numbers, but in this problem, I think they are integers) where the sum of their absolute values is d.
+
+So, for a point A, any point B that is d Manhattan units away from A must satisfy |Bx - Ax| + |By - Ay| = d.
+
+So, for each point A, I need to find other points B such that this condition holds.
+
+Once I have such a B, I need to find a point C such that both AB and AC are d, and BC is also d.
+
+Hmm, but how do I efficiently find such a C?
+
+Alternatively, perhaps I can find a way to represent the points in terms of their coordinates and find a pattern.
+
+Wait, let's think about the Manhattan distance equation. For AB = d, |x_B - x_A| + |y_B - y_A| = d. Similarly for AC and BC.
+
+Let me think about the sum of all three distances. AB + BC + CA = 3d. But since each pair is d, this is 3d. So that's a necessary condition.
+
+But I'm not sure if that helps.
+
+Another idea: For points A, B, and C, the sum of their x-coordinates in some way must relate to d. Or perhaps the sum of the x and y differences.
+
+Wait, let's consider the points A, B, C.
+
+We have AB = d, BC = d, CA = d.
+
+So, AB^2 = (x_A - x_B)^2 + (y_A - y_B)^2 = d^2.
+
+Similarly, BC^2 = (x_B - x_C)^2 + (y_B - y_C)^2 = d^2.
+
+And CA^2 = (x_C - x_A)^2 + (y_C - y_A)^2 = d^2.
+
+Adding these three equations, we get:
+
+(x_A - x_B)^2 + (y_A - y_B)^2 + (x_B - x_C)^2 + (y_B - y_C)^2 + (x_C - x_A)^2 + (y_C - y_A)^2 = 3d^2.
+
+Hmm, that's a bit complicated. Maybe expanding it would help.
+
+Alternatively, perhaps there's a way to find a relation between the coordinates of the points.
+
+Wait, let's consider the sum of the x differences and the sum of the y differences.
+
+Let me denote:
+
+dx_AB = x_B - x_A
+
+dy_AB = y_B - y_A
+
+Similarly,
+
+dx_BC = x_C - x_B
+
+dy_BC = y_C - y_B
+
+dx_AC = x_C - x_A
+
+dy_AC = y_C - y_A
+
+Then, the Manhattan distances give:
+
+|dx_AB| + |dy_AB| = d
+
+|dx_BC| + |dy_BC| = d
+
+|dx_AC| + |dy_AC| = d
+
+And, we have:
+
+dx_AC = dx_AB + dx_BC
+
+dy_AC = dy_AB + dy_BC
+
+So, substituting into the Manhattan distance for AC:
+
+|dx_AB + dx_BC| + |dy_AB + dy_BC| = d.
+
+Similarly, since d is even, perhaps this can help.
+
+Hmm, this seems promising. Let's see.
+
+Let me think about the possibilities for dx_AB and dx_BC.
+
+Case 1: Both dx_AB and dx_BC are positive.
+
+Then, |dx_AB + dx_BC| = dx_AB + dx_BC.
+
+Similarly for dy.
+
+So, (dx_AB + dx_BC) + (dy_AB + dy_BC) = d.
+
+But we know that |dx_AB| + |dy_AB| = d, and same for dy_BC.
+
+Wait, not sure.
+
+Alternatively, perhaps for all three points to form a triangle with all pairwise distances d, the vectors from A to B and from B to C must satisfy certain conditions.
+
+Wait, perhaps the points form a parallelogram, but I'm not sure.
+
+Alternatively, maybe all three points lie on a line, but that's unlikely because Manhattan distance is more complex.
+
+Hmm. Maybe I should think of the points in terms of their coordinates.
+
+Another approach: For each point A, I can look for points B such that B is d Manhattan distance away from A, and then for each such B, look for point C that is d away from both A and B.
+
+So, for each A, iterate through all B's that are d away from A, and for each B, iterate through all C's that are d away from both A and B.
+
+But with n up to 2e5, this approach would be O(n^2), which is way too slow.
+
+So, I need a more efficient way.
+
+Wait, perhaps for each point A, I can find points B such that B is d away from A. Then, for each B, I can find points C that are d away from both A and B.
+
+But again, this would be O(n^2) in the worst case.
+
+Hmm. Maybe the key is to find a way to represent the points in a way that allows checking for the existence of such a triplet quickly.
+
+Wait, another thought: For a triangle to exist, the three points must form a rectangle-like shape, but in Manhattan terms. Like, the sum of the differences in x and y must be d for each pair.
+
+Alternatively, perhaps the three points form a rectangle where the sides are axis-aligned, but that's not necessarily the case.
+
+Wait, no. For example, the Manhattan distance between (0,0) and (1,1) is 2, and between (1,0) and (0,1) is also 2. The distance between (0,0) and (0,1) is 1. So, that's not a triangle.
+
+Hmm.
+
+Another idea: Let's think about the points in terms of their (x + y) and (x - y) coordinates. Because the Manhattan distance can be expressed in terms of these.
+
+Wait, the Manhattan distance between (x1, y1) and (x2, y2) is |x1 - x2| + |y1 - y2|.
+
+Which can be written as max( (x1 + y1) - (x2 + y2), (x2 + y2) - (x1 + y1), (x1 - y1) - (x2 - y2), (x2 - y2) - (x1 - y1) ) ) / something? Not sure.
+
+Wait, let's compute (x1 + y1) - (x2 + y2) = (x1 - x2) + (y1 - y2) = (x1 - x2) - (y2 - y1). Not sure.
+
+Alternatively, perhaps the sum of (x + y) for all three points can be considered.
+
+Wait, perhaps not. Maybe this is getting too complicated.
+
+Let me think differently. Let's consider that for a triangle to exist, the three points must satisfy the following:
+
+AB = BC = CA = d.
+
+So, for each pair, the Manhattan distance is d.
+
+So, for points A, B, C:
+
+|Ax - Bx| + |Ay - By| = d
+
+|Bx - Cx| + |By - Cy| = d
+
+|Cx - Ax| + |Cy - Ay| = d
+
+Hmm. Let's try to add these equations.
+
+Adding all three:
+
+(|Ax - Bx| + |Bx - Cx| + |Cx - Ax|) + (|Ay - By| + |By - Cy| + |Cy - Ay|) = 3d.
+
+But the sum of the absolute differences in x terms could be anything, depending on the order. For example, if Ax <= Bx <= Cx, then |Ax - Bx| + |Bx - Cx| + |Cx - Ax| = 2*(Cx - Ax). Similarly for y.
+
+So, in that case, the x sum is 2*(Cx - Ax) and the y sum is 2*(Cy - Ay), assuming Cx > Ax and Cy > Ay.
+
+So, 2*(Cx - Ax) + 2*(Cy - Ay) = 3d.
+
+Which simplifies to (Cx - Ax) + (Cy - Ay) = 1.5d.
+
+Hmm, but d is even, so 1.5d is 3d/2, which is an integer only if d is even. Since d is even, 3d/2 is an integer, because d is even.
+
+Wait, no. 3d/2 is 3*(2k)/2 = 3k, which is integer.
+
+So, in this case, (Cx - Ax) + (Cy - Ay) = 3k, where k = d/2.
+
+But I'm not sure if this helps.
+
+Alternatively, perhaps I can find a way to represent the points in terms of their (x + y) and (x - y) coordinates. Let's define for a point P, two new variables: s = x + y, t = x - y.
+
+Then, the Manhattan distance between P and Q is |x_p - x_q| + |y_p - y_q|.
+
+Which can be written as |(x_p + y_p) - (x_q + y_q)| + |(x_p - y_p) - (x_q - y_q)| all divided by 2? Wait, no.
+
+Wait, let's compute |x_p - x_q| + |y_p - y_q|.
+
+We can rewrite this as |(x_p + y_p) - (x_q + y_q)| / 2 plus |(x_p - y_p) - (x_q - y_q)| / 2, but that's only if x_p + y_p >= x_q + y_q and x_p - y_p >= x_q - y_q, but that's not always the case.
+
+Hmm, maybe this approach won't help.
+
+Another angle: For a triangle to exist, the three points must form a rectangle when considering their (x + y) and (x - y) coordinates. Because in a rectangle, the opposite sides are equal and the diagonals are equal. But Manhattan distance is not the same as Euclidean, so I'm not sure.
+
+Alternatively, perhaps the three points must form a rectangle where the diagonals have the same Manhattan distance.
+
+Wait, for a rectangle, the Manhattan distance between opposite corners is 2d, where d is the side length.
+
+Wait, no. Let's say a rectangle has length a and width b. Then, the Manhattan distance between (0,0) and (a,b) is a + b. The opposite corner is (a,0) to (0,b), which is a + b as well. So, the diagonals are of length a + b.
+
+Hmm, but in this case, the Manhattan distance between (0,0) and (a,b) is a + b, and between (a,0) and (0,b) is a + b.
+
+So, perhaps if I have points that form such a rectangle, their pairwise Manhattan distances could be equal.
+
+But wait, in a rectangle, all four corners have the same Manhattan distance to their opposite corners, but the other pairs (like adjacent corners) have different distances.
+
+So, for example, in a 2x2 square, the Manhattan distance between (0,0) and (2,0) is 2, between (0,0) and (0,2) is 2, between (0,0) and (2,2) is 4. So, in this case, two pairs have distance 2, and one pair has distance 4. So, no triangle is formed.
+
+Hmm, so that approach might not work.
+
+Another idea: Let's think about the points in terms of their (x + y) and (x - y) values. Let's define for each point P, s = x + y, and d = x - y.
+
+Then, for two points P and Q, the Manhattan distance is |(x_p - x_q)| + |(y_p - y_q)| = |(x_p + y_p) - (x_q + y_q)| / 2 + |(x_p - y_p) - (x_q - y_q)| / 2. Wait, not sure.
+
+Alternatively, the Manhattan distance can be written as (s_p - s_q) + (d_p - d_q) if x_p >= x_q and y_p >= y_q. But this would only be the case in certain quadrants.
+
+This seems complicated. Maybe I should think differently.
+
+Let me try to find a way to represent the points such that for a given point A, I can quickly find points B that are d away from A, and then points C that are d away from both A and B.
+
+So, for each point A, I can precompute all points B that are d Manhattan away from A. Then, for each such B, I can check if there exists a point C that is d away from both A and B.
+
+The steps could be:
+
+1. For each test case, read all the points.
+
+2. For each point A, compute all points B such that |x_A - x_B| + |y_A - y_B| = d.
+
+3. For each such B, compute all points C such that |x_A - x_C| + |y_A - y_C| = d and |x_B - x_C| + |y_B - y_C| = d.
+
+4. If such a C exists, then we have a triangle A, B, C.
+
+But again, this approach is O(n^2), which is not feasible for n up to 2e5.
+
+So, I need a way to find this triplet more efficiently.
+
+Another observation: Since d is even, perhaps the points have to lie on certain lines or satisfy certain parity conditions.
+
+Wait, the Manhattan distance is d, which is even. So, for a point A, the points B that are d away from A must have x and y differences such that their sum is d.
+
+So, for example, if A is (x, y), then B can be (x + a, y + b), where a + b = d.
+
+But a and b can be any integers as long as a + b = d. Or, since the points are integers, a and b must be integers.
+
+Wait, but the points are given as integers, so a and b are integers.
+
+So, for each point A, the possible B's are all points (x + a, y + b) where a + b = d.
+
+But for each such a, b = d - a.
+
+So, for a given A, the B's are all points that are a units to the right and (d - a) units up, or a units up and (d - a) units to the right, or other combinations as long as a + b = d.
+
+Wait, no. Because a and b can be positive or negative, but the sum is d.
+
+So, for example, a could be 3 and b could be (d-3), or a could be -1 and b could be (d+1), but the sum a + b must be d.
+
+Wait, but for a point B to be d Manhattan units away from A, the sum of the absolute differences in x and y must be d.
+
+So, the possible (a, b) for B are all pairs where |a| + |b| = d.
+
+So, for each point A, the B's are all points that are (x + a, y + b) where a and b are integers, and |a| + |b| = d.
+
+So, for each A, I can generate all possible B's by considering all possible a and b such that |a| + |b| = d.
+
+But d can be up to 4e5, so for each A, this could be O(d) possibilities, which is up to 4e5. So, for n=2e5, this is O(2e5 * 4e5) = 8e10 operations, which is way too slow.
+
+So, this approach is not feasible.
+
+Hmm. So, I need another way.
+
+Wait, perhaps the key is to represent the points in a way that allows me to find a triplet efficiently.
+
+Another idea: Let's consider that for a triplet to exist, the three points must form a rectangle in terms of their (x + y) and (x - y) coordinates.
+
+Wait, let's define s = x + y and t = x - y.
+
+Then, for a point P, s_p = x_p + y_p, t_p = x_p - y_p.
+
+For a rectangle in s and t, the four corners would be (s1, t1), (s1, t2), (s2, t1), (s2, t2).
+
+In this case, the Manhattan distance between any two opposite corners would be |s1 - s2| + |t1 - t2|.
+
+Wait, let's compute the Manhattan distance between (s1, t1) and (s2, t2). It's |s1 - s2| + |t1 - t2|.
+
+Similarly, between (s1, t1) and (s1, t2) is |0| + |t1 - t2| = |t1 - t2|.
+
+So, for a rectangle, the Manhattan distance between two adjacent corners is |t1 - t2|, and the Manhattan distance between two opposite corners is |s1 - s2| + |t1 - t2|.
+
+So, if I have three points that form a right-angled triangle, perhaps their (s, t) coordinates would form a right-angled triangle as well.
+
+Wait, I'm not sure. Maybe this is a path to explore.
+
+So, suppose I have three points P, Q, R.
+
+In their (s, t) coordinates, they form a right-angled triangle.
+
+Then, the Manhattan distance between P and Q would be |s_p - s_q| + |t_p - t_q|.
+
+Similarly for Q and R, and P and R.
+
+In this case, the triangle would have all pairwise distances equal to d.
+
+So, this would require:
+
+|s_p - s_q| + |t_p - t_q| = d
+
+|s_q - s_r| + |t_q - t_r| = d
+
+|s_r - s_p| + |t_r - t_p| = d
+
+Hmm, this seems complicated, but perhaps if the (s, t) coordinates form a right-angled isoceles triangle, then their Manhattan distances could be equal.
+
+But I'm not sure.
+
+Alternatively, perhaps if the (s, t) coordinates form a rectangle, then the Manhattan distances between opposite corners are the same, but the adjacent ones are different.
+
+Wait, but that's not helpful for forming a triangle with all pairwise distances equal.
+
+Hmm. Maybe this approach is not helpful.
+
+Another idea: Since d is even, perhaps the points must have a certain parity. For example, the sum of x and y for each point could be even or odd, and this could determine whether a triangle can exist.
+
+Wait, for two points to have a Manhattan distance of d, which is even, the sum of their x and y differences must be even as well. Because |a| + |b| is even.
+
+So, for each point A, the B's that are d away from A must have (a + b) = d, which is even. So, a and b must be both even or both odd.
+
+So, for each point A, the B's are points where x and y differences have the same parity.
+
+Hmm, but I'm not sure how this helps in finding a triplet.
+
+Another thought: For each point, perhaps we can group points based on some criteria, and then for each group, check for possible triangles.
+
+But again, this seems vague.
+
+Let me think about the problem differently. The key is that all three points must be d apart pairwise.
+
+So, for each point A, I can look for a point B that is d away from A, and then look for a point C that is d away from B and also d away from A.
+
+So, the steps are:
+
+1. For each point A, iterate through all points B that are d away from A.
+
+2. For each such B, iterate through all points C that are d away from B.
+
+3. Check if C is also d away from A.
+
+If such a C is found, then we have a triplet.
+
+But again, with n up to 2e5, this approach is O(n^2), which is not feasible.
+
+So, I need a way to find such a triplet in O(n) or O(n log n) time.
+
+Another idea: For a triplet to exist, the three points must form a triangle where all three edges are d. So, perhaps the three points are arranged in such a way that each is a step in a certain direction.
+
+Wait, perhaps the points can be represented as a, b, c, where each is derived from the previous by adding a certain vector.
+
+But I'm not sure.
+
+Wait, let's think about the vectors between the points.
+
+Let me denote vector AB as (dx, dy) = (x_B - x_A, y_B - y_A). Similarly, vector AC is (dx', dy').
+
+Then, the Manhattan distance for AB is |dx| + |dy| = d.
+
+Similarly, for AC, |dx'| + |dy'| = d.
+
+For BC, |dx - dx'| + |dy - dy'| = d.
+
+And, the sum of the three vectors must be zero (since it's a triangle: A + AB = B, B + BC = C, C + CA = A).
+
+So, dx + dx' = 0, dy + dy' = 0.
+
+So, dx' = -dx, dy' = -dy.
+
+So, substituting into BC's Manhattan distance:
+
+|dx - (-dx)| + |dy - (-dy)| = |2 dx| + |2 dy| = 2 (|dx| + |dy|) = 2d.
+
+But BC must be d, so 2d = d implies d=0, which is impossible because d is given as even and at least 2.
+
+So, this suggests that such a triplet cannot exist in this case. Wait, that can't be right because the problem says that for some test cases, a triplet exists.
+
+Hmm, so perhaps this approach is not correct.
+
+Wait, perhaps I made a mistake in the reasoning.
+
+Let me re-calculate.
+
+If AB is (dx, dy), then AC is (-dx, -dy) because A + AB + AC = A.
+
+So, AC is (-dx, -dy).
+
+Then, BC is C - B = (A + AB + AC) - B = A + AB - B + AC = A - B + AC = (-dx, -dy).
+
+So, BC is (-dx, -dy).
+
+So, the Manhattan distance between B and C is | -dx | + | -dy | = dx + dy.
+
+Which, according to the problem statement, must be equal to d.
+
+So, dx + dy = d.
+
+But AB's Manhattan distance is |dx| + |dy| = d.
+
+So, we have two equations:
+
+1. |dx| + |dy| = d
+
+2. dx + dy = d
+
+So, substituting equation 2 into equation 1.
+
+Let me consider the possible cases.
+
+Case 1: dx and dy are both non-negative.
+
+Then, equation 1 becomes dx + dy = d, which is the same as equation 2. So, this is a valid case.
+
+So, in this case, dx + dy = d.
+
+Case 2: dx is positive, dy is negative.
+
+Then, |dx| + |dy| = dx - dy = d.
+
+So, equation 1 becomes dx - dy = d.
+
+Equation 2 is dx + dy = d.
+
+Adding these two equations:
+
+2 dx = 2d → dx = d.
+
+Subtracting them:
+
+-2 dy = 0 → dy = 0.
+
+So, dx = d, dy = 0.
+
+So, in this case, AB is (d, 0).
+
+And AC is (-d, 0).
+
+So, point C is (A.x -d, A.y).
+
+Then, BC is (A.x -d - B.x, A.y - B.y) → (-d, 0).
+
+So, the Manhattan distance BC is d.
+
+So, this is a valid case.
+
+Case 3: dx is negative, dy is positive.
+
+This is similar to case 2, just swapping dx and dy.
+
+So, in this case, dx = -d, dy = 0.
+
+Wait, no. Let me re-calculate.
+
+If dx is negative, dy is positive.
+
+Then, |dx| + |dy| = -dx + dy = d.
+
+Equation 2 is dx + dy = d.
+
+Adding the two equations:
+
+(-dx + dy) + (dx + dy) = 2 dy = 2d → dy = d.
+
+Subtracting equation 2 from the first: (-dx + dy) - (dx + dy) = -2 dx = 0 → dx = 0.
+
+So, dx = 0, dy = d.
+
+So, AB is (0, d), and AC is (0, -d).
+
+So, in this case, point C is (A.x, A.y - d).
+
+So, the Manhattan distance BC is |0| + | -d | = d.
+
+So, this is another valid case.
+
+Case 4: Both dx and dy are negative.
+
+Then, |dx| + |dy| = -dx - dy = d.
+
+Equation 2 is dx + dy = d.
+
+Adding the two equations:
+
+(-dx - dy) + (dx + dy) = 0 = 2d → 0 = 2d → d=0, which is impossible.
+
+So, this case is invalid.
+
+So, in summary, the only valid cases are when either dx and dy are non-negative, or dy is positive and dx is zero, or dx is positive and dy is zero.
+
+Wait, no. Let me re-examine.
+
+In case 2, when dx is positive and dy is negative, and dx + dy = d, then dx = d, dy = 0. That's a valid case.
+
+Wait, no. Let me re-calculate.
+
+If dx is positive and dy is negative.
+
+Then, |dx| + |dy| = dx - dy = d.
+
+Equation 2 is dx + dy = d.
+
+So, equation 1: dx - dy = d.
+
+Equation 2: dx + dy = d.
+
+Adding them: 2 dx = 2d → dx = d.
+
+Substituting back into equation 2: d + dy = d → dy = 0.
+
+So, dy must be zero. So, dy is zero, and dx is d.
+
+So, AB is (d, 0).
+
+AC is (-d, 0).
+
+So, point C is (A.x -d, A.y).
+
+Thus, in this case, point C is to the left of A.
+
+So, the Manhattan distance from B to C is d.
+
+So, for this to form a triangle, B must be (B.x, B.y), which is d away from A in the x-direction, and C must be d away from both A and B.
+
+So, this suggests that the triplet can be found by looking for such points.
+
+So, perhaps the approach is to iterate through each point A, and for each possible dx and dy that satisfy the conditions, check if B and C exist.
+
+But again, this could be time-consuming.
+
+Wait, but for each A, the possible B's are those that are (d, 0) away, or (0, d) away, or (d, 0) and (0, d) away.
+
+Wait, no. Because in the cases above, when dx and dy are non-negative, or when one is zero.
+
+So, perhaps, for a given A, the possible B's are those that are either (A.x + d, A.y) or (A.x, A.y + d), or (A.x - d, A.y) or (A.x, A.y - d), or (A.x + d, A.y - d), etc., depending on the cases.
+
+Wait, perhaps not. Let me think.
+
+In case 1, when dx and dy are non-negative, then B is (A.x + dx, A.y + dy), where dx + dy = d.
+
+So, dx can be any value between 0 and d, and dy = d - dx.
+
+So, for each A, the points B that are d away in this case are all points that are (A.x + k, A.y + (d - k)), where k ranges from 0 to d.
+
+But this is a lot of points to check for each A.
+
+Wait, but perhaps for each A, the points B that are (A.x ± a, A.y ± b), where a + b = d, and a and b are non-negative.
+
+So, for each A, the possible B's are in the four quadrants, but only moving in such a way that the sum of the x and y differences is d.
+
+So, for each A, the possible B's are:
+
+- (A.x + a, A.y + (d - a)), for a in 0 to d.
+
+- (A.x - a, A.y + (d + a)), for a in 0 to d.
+
+- (A.x + (d - a), A.y - a), for a in 0 to d.
+
+- (A.x - (d + a), A.y - a), for a in 0 to d.
+
+Wait, but this might not cover all possibilities.
+
+Alternatively, perhaps for each A, the possible B's are those that are exactly d steps in any direction, but the sum of the x and y steps is d.
+
+So, for each A, the B's are points that are (x + a, y + b), where a and b are integers such that |a| + |b| = d.
+
+So, for each A, we can generate all such B's.
+
+Once we have all B's for a given A, then for each B, we can generate C's that are d away from B, and also d away from A.
+
+But again, this is O(n * d) time, which is too slow.
+
+Hmm.
+
+So, perhaps the key is to find a way to represent the points in a way that allows us to quickly find such triplets.
+
+Wait, another observation: For a triplet to exist, the three points must form a "square" in terms of their Manhattan distances. Because in a square, the Manhattan distances between adjacent corners are equal, and the diagonals are equal.
+
+Wait, for example, a square with points (0,0), (0,1), (1,1), (1,0). The Manhattan distances between adjacent points are 1, and the diagonals are 2. So, in this case, the pairwise distances are not all equal.
+
+So, that's not helpful.
+
+Hmm.
+
+Another idea: Since d is even, perhaps the three points must form a rectangle where both the x and y dimensions are even or something. But I'm not sure.
+
+Alternatively, perhaps the three points must form a right-angled isoceles triangle, but again, this is not directly helpful.
+
+Wait, perhaps the problem can be solved by checking for each point A, whether there are two points B and C such that B is d away from A, C is d away from B, and C is d away from A.
+
+So, the steps are:
+
+For each A:
+
+   collect all B's that are d away from A.
+
+   for each B in B's:
+
+      collect all C's that are d away from B.
+
+      for each C in C's:
+
+          if C is d away from A, then we have a triplet.
+
+So, the question is, how to do this efficiently.
+
+But again, for n=2e5, this is O(n^2), which is not feasible.
+
+So, perhaps I need to find a way to represent the points such that for a given A, the B's can be quickly found, and then the C's can be found quickly.
+
+Wait, another idea: For a given A, the B's are all points (A.x + a, A.y + b), where a + b = d, or a = d, b=0, etc.
+
+So, for a given A, the B's are in four possible directions: right-up, right-down, left-up, left-down.
+
+Wait, but this may not cover all possibilities.
+
+Alternatively, perhaps I can represent the points in terms of their (x + a, y + b) where a + b = d.
+
+So, for each A, the B's are all points (x + a, y + b), where a = d - b, and a and b are non-negative integers, and a + b = d.
+
+So, for each A, the B's are points in the four quadrants, but I'm not sure.
+
+Hmm.
+
+Perhaps, for each A, I can precompute all possible B's by considering the four possible directions: right-up, right-down, left-up, left-down, and then check if those points exist.
+
+So, for each A, the B's are:
+
+1. (A.x + d, A.y) → right direction.
+
+2. (A.x, A.y + d) → up direction.
+
+3. (A.x - d, A.y) → left direction.
+
+4. (A.x, A.y - d) → down direction.
+
+Wait, but this may not cover all possibilities, but it's a start.
+
+So, for each A, I can generate these four points, and check if they exist in the set of points.
+
+If any of these points exist, then for each such B, I can generate C's.
+
+So, for each A, I can check these four B's, and for each B, check if there exists a C that is d away from B and also d away from A.
+
+So, let's think about this approach.
+
+For each test case:
+
+1. Read n and d.
+
+2. Read all n points into a set for O(1) lookups.
+
+3. For each point A in the set:
+
+   a. Generate the four possible B's: (A.x + d, A.y), (A.x, A.y + d), (A.x - d, A.y), (A.x, A.y - d).
+
+   b. For each B in these four:
+
+      i. If B is not in the set, continue.
+
+      ii. Now, generate all possible C's that are d away from B.
+
+      iii. For each C in these C's:
+
+          - If C is not in the set, continue.
+
+          - Check if the distance from C to A is d.
+
+          - If yes, then we have a triplet:

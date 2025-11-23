@@ -1,0 +1,254 @@
+0
+Okay, I need to solve this problem where Robin Hood takes gold from people. Let's read the problem statement carefully.
+
+So, Robin starts with 0 gold. There are n people, each with some gold a_i. For each person, if a_i is greater than or equal to k, Robin takes all of their gold. But if a_i is exactly 0, then he gives 1 gold. But if he has any, he gives 1. Wait, no— the problem says, if a_i is 0, Robin gives 1 gold if he has any. So, if Robin has any gold after processing, he gives 1 from that. So, for each person, the process is:
+
+If a_i >= k: then Robin takes a_i. No gold given.
+
+Else, if a_i is 0: then Robin gives 1 gold. But wait, only if he has any gold after processing. Hmm, wait, no. The problem says, if a_i is 0, Robin will give 1 if he has any. So, for each person, if a_i is less than k, and a_i is 0, then Robin gives 1. But wait, only if he has any gold. Oh, wait, no. Because if a_i is 0, then he doesn't have any, so he doesn't give anything. So, the condition is: if a_i < k, and a_i is 0, then he gives 1. Otherwise, if a_i is 0, and a_i >=k would not apply. Wait, no, because a_i is 0, regardless of k, so regardless of k, if a_i is 0, he gives 1.
+
+Wait, no. Let's see the problem statement again: if a_i is 0, Robin gives 1 gold if he has any. So, if a_i is 0, he gives 1, else, if a_i >=k, he takes all. So, for each person, the process is:
+
+If a_i <k: then check if a_i is 0. If yes, then give 1. Else, no gold given.
+
+If a_i >=k: give 0.
+
+So, for each a_i, the gold given is 0 unless a_i is 0 and a_i <k, in which case, 1 is given.
+
+Wait, no. Because 'a_i is 0' is a condition. So, if a_i is 0, then regardless of k, he gives 1. Because he has any gold? Wait, no. Because if a_i is 0, he has no gold. So, he doesn't give anything. So, the condition is: if a_i is 0, then give 1. Because he has no gold, so no.
+
+So, putting it all together:
+
+For each person i:
+
+if a_i < k: 
+
+   if a_i is 0: give 1
+
+   else: give 0
+
+else:
+
+   give 0
+
+So, the number of people who get gold is the count of people where a_i is 0 and a_i <k, plus the count where a_i >=k (but wait, no, because if a_i is >=k, he takes it, so gives 0). So, only the people with a_i <k and a_i is 0 will contribute to the count.
+
+Wait, let me rephrase:
+
+Each person contributes 1 gold to Robin only if:
+
+1. a_i is 0, and a_i <k. Because he has no gold, so he gives 1.
+
+2. a_i <k, but a_i is not 0. Because he takes all, so gives nothing.
+
+So, the condition is a_i ==0 and a_i <k. So, for each a_i, if a_i is 0 and less than k, then it's a person who gets 1. Otherwise, it's 0.
+
+So, the problem reduces to counting the number of a_i where a_i is equal to 0 and a_i is less than k.
+
+So, the steps are:
+
+For each test case:
+
+- Read n and k.
+
+- Read the list of a_i.
+
+- For each a in a_i, count how many are 0 and a <k.
+
+So, the output is that count.
+
+Wait, but let's test this logic with some examples.
+
+Example 1:
+
+Test case 1:
+
+n=5, k=2
+
+a = [3,0,4,1,2]
+
+So, for each a_i:
+
+3 >=2: no gold.
+
+0 <2: yes, count +=1.
+
+4 >=2: no.
+
+1 <2: yes, count +=1.
+
+2 >=2: no.
+
+Total count is 2.
+
+So, output is 2.
+
+Another example:
+
+Test case 2:
+
+n=3, k=3
+
+a = [0,0,0]
+
+Each a_i is 0, and 0 <3: so count is 3.
+
+Another example:
+
+n=2, k=5
+
+a = [0, 5]
+
+The second a_i is 5 >=5, so no. The first is 0 <5: yes, count is 1.
+
+Wait, no: 0 is less than 5, so count is 1.
+
+Wait, wait, no: in this case, the a_i is 0, which is <k=5, so count is 1.
+
+Another example:
+
+n=4, k=10
+
+a = [0, 0, 0, 0]
+
+All a_i are 0, which is less than 10. So count is 4.
+
+Another case where a_i is 0, but a_i >=k: like a_i=5, k=3. Then condition is a_i is 0 and 0 <3: so yes.
+
+So the approach is correct.
+
+So, the plan is:
+
+Read t test cases.
+
+For each test case:
+
+- Read n and k.
+
+- Read the list a.
+
+- Initialize count to 0.
+
+- Iterate through each a_i in a:
+
+   if a_i is 0 and a_i <k: count +=1.
+
+- Output the count.
+
+Now, considering the constraints:
+
+t can be up to 1e4, n up to 50, which is manageable.
+
+So, the code is straightforward.
+
+Now, let's write the Python code.
+
+We'll read t, then for each test case, read n and k, then the list a.
+
+Then, for each element in a, check if it is zero and less than k.
+
+So, here's the code:
+
+Read t.
+
+For _ in range(t):
+
+   Read n and k.
+
+   Read a as list of integers.
+
+   count = 0
+
+   for num in a:
+
+      if num ==0 and num <k:
+
+          count +=1
+
+   print(count)
+
+Wait, wait: no. Because when num is 0, and num <k, which is true, so yes.
+
+Testing the code with the examples.
+
+Test case 1:
+
+As above, code returns 2.
+
+Another example:
+
+n=5, k=2, a=[3,0,4,1,2]
+
+In code:
+
+3 >=2: no.
+
+0 <2: yes, count 1.
+
+4 >=2: no.
+
+1 <2: yes, count 2.
+
+2 >=2: no.
+
+So, code prints 2.
+
+Another test case:
+
+n=3, k=3, a=[0,0,0]
+
+Each 0 <3: count 3.
+
+Another test case:
+
+n=2, k=5, a=[0,5]
+
+0 <5: count 1.
+
+5 >=5: no.
+
+So, code returns 1.
+
+Another test case: n=4, k=10, a=[0,0,0,0]
+
+Each 0 <10: count 4.
+
+So, code is correct.
+
+So, the code is as written.
+</think>
+
+To solve this problem, we need to determine how many people Robin Hood will take gold from based on their gold holdings. Robin Hood takes all the gold from people who have at least a certain threshold, and gives 1 gold to people who have no gold.
+
+### Approach
+1. **Problem Analysis**: Robin Hood takes all the gold from people whose gold is at least a given threshold `k`. For people with zero gold, he gives 1 gold if he has any gold. Thus, we need to count the number of people whose gold is exactly zero and less than `k`.
+
+2. **Intuition**: For each person, if their gold is zero and less than `k`, they contribute to the count of people who will receive gold. Otherwise, they do not.
+
+3. **Algorithm**:
+   - Read the number of test cases.
+   - For each test case, read the number of people `n` and the threshold `k`.
+   - Read the list of gold values for each person.
+   - Count how many people have zero gold and are below the threshold `k`.
+
+4. **Complexity**: The solution involves iterating through each person for each test case, resulting in a time complexity of O(t * n), which is efficient given the constraints.
+
+### Solution Code
+```python
+t = int(input())
+for _ in range(t):
+    n, k = map(int, input().split())
+    a = list(map(int, input().split()))
+    count = 0
+    for num in a:
+        if num == 0 and num < k:
+            count += 1
+    print(count)
+```
+
+### Explanation
+- **Reading Input**: The code starts by reading the number of test cases. For each test case, it reads the number of people and the threshold `k`, followed by the list of gold values for each person.
+- **Counting Gold**: For each gold value, it checks if the value is zero and less than `k`. If both conditions are met, it increments the count.
+- **Output**: Finally, it prints the count for each test case, which represents the number of people who will receive gold from Robin Hood.
+
+This approach ensures that we correctly identify the people who will receive gold based on the given conditions efficiently.<｜end▁of▁sentence｜>

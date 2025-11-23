@@ -1,0 +1,394 @@
+Okay, I have to solve this problem. Let's read the problem statement carefully.
+
+So, the problem is about an array a that starts with all zeros. Kevin can perform some operations on it. Each operation is either a prefix addition or a suffix addition. These operations increase certain elements of the array by 1. Then, we have an array c which, along with the current state of a, defines the beauty of a. The beauty is calculated as the sum of c_i multiplied by a_i. 
+
+But here's the catch: after m operations, Kevin can perform any number of new operations. Our goal is, for each v from 1 to V, to find the maximum possible beauty when the target value is v, considering all possible new operations.
+
+Hmm. So, the initial state is a = 0. Then, m operations are applied, each adding 1 to a certain prefix or suffix. Then, we can add any new operations, which are also prefix or suffix additions, to maximize the beauty.
+
+The challenge is to model this efficiently, especially because V can be up to 2000 and n and m up to 2e5 each.
+
+Let me think about how to model the current state of the array a after the initial operations. Each operation is a prefix or suffix addition. So, the array a can be represented by two arrays: one for the prefix additions and one for suffix. Or maybe using a difference array approach.
+
+Wait, the way prefix and suffix operations affect the array can be represented as a prefix sum and a suffix sum. For example, let's denote:
+
+- For prefix operations, we can track the number of times each position is added by the prefix operations.
+- For suffix operations, similarly, track the number of times each position is added by the suffix operations.
+
+But how do we represent this in a way that allows us to compute a_i for any i after all initial operations?
+
+An alternative approach is to model the current a_i as the sum of certain prefix and suffix contributions. Let me think.
+
+Suppose we have two arrays:
+
+- P: where P[x] is the number of prefix operations that include position x. So, each prefix op with x adds 1 to P[x] and all P[x'] for x' >= x. Wait, no, because a prefix operation affects all elements up to x. So, if you perform a prefix op at x, then for each j <= x, a_j increases by 1. So, P[x] is the number of prefix operations that are <= x. Then, the total contribution to a_j from prefix operations is the sum of all prefix operations where x >= j. Wait, no. Wait, if a prefix operation is done at x, then for j = 1 to x, a_j increases by 1. So, each a_j is the sum of all prefix operations done at x >= j, but only those where j <= x. Wait, no. Wait, if a prefix operation is done at x, then for j from 1 to x, a_j is increased by 1. So, a_j gets the number of prefix operations where x >= j. Because for j=1, it's increased by any prefix operation that includes it (i.e., x >= 1), which is all prefix operations. For j=2, it's increased by prefix operations at x >= 2. So, P[j] is the number of prefix operations with x >= j.
+
+Similarly, for suffix operations, each S[x] is the number of suffix operations where x is the starting point. So, a_j increases by S[j] for each j >= x. So, the total a_j is the sum of P[j] and S[j], where P[j] is the number of prefix operations with x >= j, and S[j] is the number of suffix operations with x <= j.
+
+Wait, no. Wait, for a suffix operation at x, it affects j from x to n. So, for a particular j, a_j increases by the number of suffix operations that have x <= j. So, S[j] is the number of suffix operations with x <= j.
+
+So, the total a_j is P[j] + S[j], where P[j] is the number of prefix operations with x >= j, and S[j] is the number of suffix operations with x <= j.
+
+So, given that, the initial a is zero. Then, after m operations, we have some P and S arrays. Then, the current a_j is P[j] + S[j]. 
+
+Now, Kevin can perform any number of new operations, which are also prefix or suffix. Let's denote that.
+
+Each new operation is either a prefix addition or a suffix addition. So, for each new operation, we can choose to add 1 to a prefix or suffix. The goal is to maximize the sum of c_i * a_i for all i.
+
+So, the problem is, for each v from 1 to V, find the maximum possible sum by adding any number of new prefix or suffix operations.
+
+Let me think about how to model the effect of the new operations.
+
+Each new operation is a prefix addition or a suffix addition. So, for the new prefix addition at position x, each a_j for j <= x will increase by 1. Similarly for suffix.
+
+So, the new operations can be represented as a set of prefix operations (each contributing to P) and a set of suffix operations (each contributing to S). The challenge is to choose which prefix and suffix positions to add so that the total sum is maximized.
+
+But since V is up to 2000, for each v, we need to compute the maximum possible sum.
+
+Hmm, but how to model this efficiently. Let's think about the initial state after m operations: for each i, a_i is P[i] + S[i]. Then, the new operations will add to some subset of P and S.
+
+Each new prefix addition increases P[x] by 1 for all x >= 1 (since any prefix operation's x >= j for j=1, so adding 1 to P[1], etc.). Similarly, each new suffix addition increases S[x] by 1 for all x <= n.
+
+Wait, no. Wait, a new prefix addition is x, so for each j <= x, a_j increases by 1. So, each new prefix addition at x increases P[x] by 1 (since x >= j for all j <= x). Similarly, each new suffix addition at x increases S[x] by 1 (since x is <= j for all j >= x).
+
+Wait, no. Let's think again.
+
+The initial P[x] is the number of prefix operations with x' >= x. So, if a new prefix operation is added at position x_new, then for all j <= x_new, P[j] increases by 1. So, for j=1, x_new >=1, so P[1] +=1. For j=2, x_new >=2, so P[2] +=1, etc.
+
+Similarly, a new suffix operation at position x_new increases S[j] for all j >= x_new. Because for j >= x_new, the suffix operation affects j.
+
+So, each new prefix operation at x adds 1 to all P[j] for j <= x. Each new suffix operation at x adds 1 to all S[j] for j >= x.
+
+So, the effect of the new operations is to add to P and S in this way.
+
+So, the total a_i after all operations is:
+
+a_i = P[i] + S[i]
+
+where P[i] = original P[i] + new_prefix_additions[i]
+
+where new_prefix_additions[i] is the number of new operations that are prefix additions with x <= i.
+
+Similarly, S[i] = original S[i] + new_suffix_additions[i]
+
+where new_suffix_additions[i] is the number of new operations that are suffix additions with x >= i.
+
+So, the problem is to choose a subset of new operations (each being a prefix or suffix) to maximize the sum over i of c_i * (P[i] + S[i]).
+
+Each new operation is either a prefix or suffix. So, for each v, we need to compute the maximum possible sum.
+
+But since V is up to 2000, we can process each v from 1 to V independently.
+
+So, for each v, the plan is:
+
+1. Compute the initial P and S arrays based on the m operations.
+
+2. For the current a_i = P[i] + S[i], find the best way to add new prefix and suffix operations to maximize the sum of c_i * (P[i] + S[i] + new_prefix_additions[i] + new_suffix_additions[i]).
+
+The new prefix and suffix operations contribute to the a_i's in a certain way. How?
+
+We can model the new prefix and suffix additions as adding to certain ranges in P and S.
+
+Let me think of the new prefix operations as adding a certain amount to the P array. Since each new prefix operation at x affects all P[j] for j <= x, adding t new prefix operations at x's will add t to all P[j] for j <= x. Similarly, adding s new suffix operations at x's will add s to all S[j] for j >= x.
+
+So, the problem is to choose t and s for each x, such that the sum over all i of c_i * (P[i] + S[i] + t[x_i] + s[x_i]) is maximized.
+
+Wait, but each new operation is either a prefix or a suffix. So, for each x, we can choose to add t_x new prefix operations at x, which adds t_x to all P[j] for j <= x. Similarly, for each x, we can choose to add s_x new suffix operations at x, which adds s_x to all S[j] for j >= x.
+
+So, the variables are the t_x and s_x for each x. But since each new operation is either a prefix or suffix, we can't have any overlapping. Because each new prefix operation is at a certain x, and each new suffix is at another x. So, the t and s are for different x's.
+
+So, the problem is to choose for each x (1<=x<=n), how many new prefix operations to add (t_x) and how many new suffix operations (s_x) to add, such that the sum is maximized.
+
+But since t_x and s_x can be any non-negative integers (they can be zero), the problem is to choose these values to maximize the sum.
+
+But this seems computationally heavy, as the variables are potentially unbounded. However, since the problem is to maximize the sum, perhaps the optimal solution can be found by considering the marginal gain of adding more operations at certain x's.
+
+Let me think about the contribution of each new operation. Each new prefix operation at x adds 1 to P[j] for j <= x. Each such operation contributes c_j * 1 to the beauty for each j <= x. So, for each j, adding a new prefix operation at j will add c_j to the beauty, but it's spread across all j <= x where x is the position of the new prefix operation.
+
+Similarly for suffix operations.
+
+Wait, that's an interesting point. So, adding a new prefix operation at x adds 1 to all P[j] for j <= x. So, the contribution to the beauty is c_j for each j <= x.
+
+So, the total contribution of adding t_x new prefix operations at x is t_x * sum_{j=1 to x} c_j.
+
+Similarly, adding s_x new suffix operations at x contributes s_x * sum_{j=x to n} c_j.
+
+Moreover, since each new operation is either prefix or suffix, the t_x and s_x are independent for each x.
+
+So, the overall sum is:
+
+sum_{x=1 to n} [ t_x * sum_{j=1 to x} c_j + s_x * sum_{j=x to n} c_j ]
+
+And our goal is to choose t_x and s_x for each x (non-negative integers) to maximize this sum.
+
+But wait, the initial a_i is P[i] + S[i], and the new operations add t_x to P[i] for i <= x, and s_x to S[i] for i >= x. So, the new a_i is (P[i] + t_x) + (S[i] + s_x) = (P[i] + S[i]) + t_x + s_x.
+
+So, the total beauty is sum (c_i * (original_a_i + t_x + s_x)).
+
+Which can be rewritten as sum (c_i * original_a_i) + sum (t_x * c_i) + sum (s_x * c_i).
+
+But note that for t_x, the contribution to each i is c_i * t_x, and for s_x, it's c_i * s_x.
+
+But since i <= x for t_x, the sum for t_x is t_x multiplied by the sum of c_j for j from 1 to x.
+
+Similarly, for s_x, the sum is s_x multiplied by sum of c_j from j=x to n.
+
+So, the problem reduces to choosing t_x and s_x for each x to maximize the sum of t_x * sum_{j=1 to x} c_j + s_x * sum_{j=x to n} c_j, given that t_x and s_x are non-negative integers.
+
+Wait, but t_x and s_x are the number of new operations. So, they can be any non-negative integers, potentially zero.
+
+Thus, the problem becomes: for each x, collect two terms: the sum of c_j from 1 to x, and the sum from x to n. Let's denote:
+
+left_x = sum_{j=1 to x} c_j
+
+right_x = sum_{j=x to n} c_j
+
+Then, the total gain from adding new operations is sum_x (t_x * left_x + s_x * right_x).
+
+So, the goal is to choose t_x and s_x for each x to maximize this sum, with t_x >=0, s_x >=0.
+
+But wait, the initial a_i is P[i] + S[i], and the new a_i is P[i] + S[i] + t_x + s_x. So, the beauty is sum(c_i * (original_a_i + t_x + s_x)).
+
+Which is sum(c_i * original_a_i) + sum(t_x * c_i) + sum(s_x * c_i).
+
+Which can be written as initial_beauty + sum(t_x * left_x) + sum(s_x * right_x).
+
+So, the problem is to maximize the sum of t_x * left_x + s_x * right_x, since the initial beauty is fixed.
+
+Yes, because the initial beauty is fixed, so we can ignore it in the maximization part.
+
+So, the key is to find t_x and s_x for each x to maximize the sum of t_x * left_x + s_x * right_x.
+
+But how?
+
+Each t_x and s_x is a non-negative integer. So, for each x, we can choose t_x and s_x to maximize the term t_x * l_x + s_x * r_x, where l_x = left_x and r_x = right_x.
+
+Wait, but for each x, the possible t_x and s_x can be any non-negative integers. So, for each x, the maximum possible contribution is unbounded. Because, for example, adding more t_x would add more to the sum, but since t_x is an integer variable, we can choose t_x to be as large as possible. But in reality, the variables are independent, so for each x, the optimal is to choose t_x as large as possible if l_x is positive, and s_x as large as possible if r_x is positive.
+
+But wait, no. Because for each x, the term t_x * l_x + s_x * r_x is a single term. So, to maximize this, for each x, we can choose t_x and s_x such that t_x is as large as possible if l_x is positive, and s_x as large as possible if r_x is positive.
+
+Wait, but for a single x, we can choose t_x and s_x to maximize the term. For example, if l_x is 5 and r_x is 10, then for each x, the maximum contribution is to choose t_x as large as possible. But since t_x can be any non-negative integer, it's better to set t_x to infinity. But in reality, since the variables are not bounded, the maximum contribution for each x is unbounded. Wait, but that's not possible, because the initial a_i's are fixed, and the problem is to choose t_x and s_x to maximize the sum. So, for each x, the optimal is to choose t_x as large as possible if l_x is positive, and s_x as large as possible if r_x is positive. But since t_x and s_x are variables that can be any non-negative integer, we can choose t_x to be as large as possible if l_x is positive, and s_x to be as large as possible if r_x is positive.
+
+Wait, but that's not correct. For example, if l_x is 3 and r_x is 2, then for each x, adding t_x=1 and s_x=1 gives a contribution of 3+2=5. If we set t_x=2, s_x=0, the contribution is 6, which is better. So, for each x, it's better to set t_x as large as possible if l_x is positive, and s_x as large as possible if r_x is positive.
+
+But wait, if l_x is positive, then adding t_x will increase the sum. So, for each x, we can choose t_x to be as large as possible. Similarly, for s_x, if r_x is positive, s_x can be as large as possible.
+
+But in reality, t_x and s_x are variables that can be set to any non-negative integers. So, for each x, the maximum contribution is to set t_x to be as large as possible if l_x is positive, and s_x as large as possible if r_x is positive.
+
+But how do we model this? Because, in the problem, t_x and s_x are variables that can be set to any non-negative integers, but each new operation is either a prefix or suffix. So, the choice of t_x and s_x must be such that for each x, t_x and s_x are non-negative.
+
+Wait, but in the problem, each new operation is either a prefix or a suffix. So, for a given x, you can choose to add any number of prefix operations at x, or any number of suffix operations at x, or a mix. But each prefix operation is a single operation, and each suffix is a single operation.
+
+So, for x, t_x is the number of prefix operations added at x, and s_x is the number of suffix operations added at x.
+
+Thus, for each x, t_x and s_x are non-negative integers. So, the sum is over all x of (t_x * l_x + s_x * r_x), where l_x is the sum from 1 to x of c_j, and r_x is the sum from x to n of c_j.
+
+So, the problem is to choose for each x, t_x and s_x >=0, such that the sum of t_x*l_x + s_x*r_x is maximized.
+
+But wait, for each x, the optimal choice is to set t_x to be as large as possible if l_x > 0, and s_x to be as large as possible if r_x > 0.
+
+Because, for each x, the term t_x*l_x + s_x*r_x is additive. So, for each x, the maximum is achieved when t_x is as large as possible if l_x is positive, and s_x as large as possible if r_x is positive.
+
+Wait, but t_x and s_x are independent for each x. So, for each x, the optimal is to set t_x to be infinity if l_x >0, and s_x to be infinity if r_x>0. But that's not possible because t_x and s_x are variables that can be any non-negative integers.
+
+Wait, no. Because t_x can be any non-negative integer. So, for x where l_x>0, adding more t_x increases the sum. So, for each x, it's better to set t_x as large as possible. But that's not feasible because t_x can be any non-negative integer. So, the maximum possible contribution for x is unbounded. Which is impossible because the problem requires us to compute the maximum sum for each v.
+
+This suggests that the problem is to find for each x, the optimal t_x and s_x such that the sum is maximized. But in reality, for each x, the maximum is achieved when t_x is as large as possible if l_x is positive, and s_x as large as possible if r_x is positive.
+
+But this can't be the case because the problem is to find the maximum sum for each v. So, perhaps I'm misunderstanding the problem.
+
+Wait, perhaps the initial a_i is P[i] + S[i], and the new operations add t_x and s_x for each x. So, the new a_i is (P[i] + s_x) + (S[i] + t_x). So, the beauty is sum (c_i * (P[i] + S[i] + t_x + s_x)).
+
+Which is equal to sum (c_i * (P[i] + S[i])) + sum (c_i * t_x) + sum (c_i * s_x).
+
+So, the first term is the initial beauty. The other terms are sum t_x * c_i + sum s_x * c_i.
+
+Which can be written as sum (t_x * left_x) + sum (s_x * right_x), where left_x is sum_{1..x} c_i, and right_x is sum_{x..n} c_i.
+
+So, the problem is to maximize sum (t_x * l_x + s_x * r_x) for all x.
+
+Each t_x and s_x is a non-negative integer.
+
+But since l_x and r_x can be zero, we can ignore x for which l_x or r_x is zero.
+
+Now, the question is, for each x, what is the best way to choose t_x and s_x to maximize t_x*l_x + s_x*r_x.
+
+Since t_x and s_x can be any non-negative integers, but adding more t_x or s_x increases the sum. So, the maximum is achieved when t_x is as large as possible if l_x>0, and s_x as large as possible if r_x>0.
+
+But that's impossible because t_x and s_x can be any non-negative integers, not limited to 0 or 1. So, the maximum is unbounded, which can't be correct because the problem requires us to output a finite value.
+
+Wait, but that suggests that the initial a_i's are fixed, and the new operations can be any prefix or suffix, but how can the sum be unbounded? That would imply that the maximum is infinity, which is not possible. So, perhaps I'm misunderstanding the problem.
+
+Wait, no. Because each new operation adds 1 to a prefix or suffix. So, the number of new operations is finite, but in this problem, we can perform any number of new operations. So, t_x and s_x can be as large as needed.
+
+Which would imply that for each x, the contribution is t_x*l_x + s_x*r_x, which can be as large as possible. So, the sum can be made infinitely large, which is not possible. So, I must have made a mistake in my reasoning.
+
+Wait, perhaps the initial a_i's are fixed, but the new operations can be added in any way. So, the problem is to find the maximum possible beauty after adding any number of new prefix and suffix operations.
+
+But the beauty is sum (c_i * (P[i] + S[i] + t_x + s_x)), which is initial beauty plus sum (t_x * l_x + s_x * r_x). So, the problem reduces to maximizing sum(t_x * l_x + s_x * r_x) over all x, with t_x and s_x being any non-negative integers.
+
+But this sum can be made as large as desired by setting t_x or s_x to infinity, which is impossible.
+
+So, that suggests that the initial approach is incorrect, and perhaps I'm missing something.
+
+Wait, perhaps each new operation can only be either a prefix or a suffix, but not both. So, for each operation, it's either a prefix or a suffix. So, the new operations are a collection of prefix and suffix operations, each chosen once. But the problem allows any number of new operations, so t_x and s_x are the number of prefix and suffix operations chosen for x.
+
+So, for each x, t_x can be any non-negative integer (number of prefix operations at x), and s_x is any non-negative integer (number of suffix operations at x).
+
+So, the sum is sum(t_x*l_x + s_x*r_x) for all x.
+
+Wait, but this is the same as the sum of t_x*l_x + s_x*r_x for all x. But t_x and s_x are non-negative integers. So, for each x, the maximum contribution is unbounded. So, the sum can be made infinitely large.
+
+But that's not possible because the problem requires us to find the maximum for each v up to V.
+
+So, perhaps I'm misunderstanding the problem. Let me re-read the problem statement.
+
+Ah, right! The problem says that Kevin can perform "an arbitrary number of new operations." So, the new operations can be any combination of prefix and suffix. So, for example, he can add a new prefix operation at x=1, a new prefix at x=2, a new suffix at x=3, etc.
+
+But in terms of the variables t_x and s_x, each new operation contributes to exactly one x. For example, a new prefix at x=2 adds to l_2 (t_x) and to r_3, r_4, etc.
+
+So, the sum is sum(t_x*l_x + s_x*r_x) for all x.
+
+But this can be rewritten as sum(t_x * l_x + s_x * r_x) = sum( t_x * (sum_{i=1 to x} c_i) + s_x * (sum_{i=x to n} c_i) )
+
+Which can be thought of as for each x, the contribution is t_x multiplied by the sum of c_i up to x, plus s_x multiplied by the sum from x to n.
+
+So, for each x, the optimal is to set t_x to infinity if l_x>0, and s_x to infinity if r_x>0. But that's impossible because t_x and s_x are non-negative integers, not infinity.
+
+So, this suggests that the initial approach is wrong. So, I need to find another way.
+
+Wait, perhaps the sum can be represented as the sum of t_x * l_x + s_x * r_x for all x, which is the same as sum(t_x * l_x) + sum(s_x * r_x).
+
+But since l_x is fixed for each x, and s_x is fixed for each x, perhaps the optimal is to assign t_x and s_x as large as possible for the x where l_x is positive, and similarly for r_x.
+
+But since t_x and s_x can be any non-negative integers, including zero or any value, the sum can be made as large as possible.
+
+Which is impossible, because the problem expects a finite answer.
+
+Hmm, this suggests that I'm misunderstanding the problem. Let me re-express the problem.
+
+Wait, the problem says that after the initial operations, Kevin can perform any number of new operations. Each new operation is a prefix or suffix. So, the new operations can be any combination of prefix and suffix. So, each new prefix operation at x adds 1 to all P[j] for j <=x. Each new suffix operation at x adds 1 to all S[j] for j >=x.
+
+So, the new a_i's are (P[i] + S[i]) + (t_x if i <=x for prefix operations at x) + (s_x if i >=x for suffix operations at x).
+
+So, the new a_i is P[i] + S[i] + t_x (for x >=i) + s_x (for x <=i).
+
+Wait, no. For a new prefix operation at x, it adds 1 to all j <=x. So, for each j, t_x is added to P[j] for j <=x. So, the new a_i is P[i] + S[i] + sum(t_x for x >=i) + sum(s_x for x <=i).
+
+Because for j <=i, the prefix operations at j >=i will add to a_j. Similarly, for j >=i, the suffix operations at j <=i will add to a_j.
+
+Wait, no. Let me think again.
+
+Each new prefix operation at x increases P[j] for j <=x by 1. So, for each j, the total number of prefix operations with x >=j is the number of prefix operations at j, j+1, ..., n. So, the total t_j (for prefix operations at j) is added to P[j].
+
+Similarly, each new suffix operation at x increases S[j] for j >=x by 1. So, for each j, the total number of suffix operations with x <=j is the number of suffix operations at x, x+1, ..., n. So, the total s_j (for suffix operations at j) is added to S[j].
+
+So, the new a_i is:
+
+a_i = P[i] + S[i] + (sum of t_j for j >=i) + (sum of s_j for j <=i).
+
+Because for j >=i, the prefix operations at j, j+1, ..., n add to a_i. And for j <=i, the suffix operations at j, j+1, ..., n add to a_i.
+
+Wait, no. Let me clarify.
+
+Each new prefix operation at x adds 1 to P[j] for j <=x. So, for each j, the number of prefix operations at j, j+1, ..., n contributes to P[j]. So, the total added to P[j] is t_j.
+
+Similarly, each new suffix operation at x adds 1 to S[j] for j >=x. So, the total added to S[j] is s_j.
+
+Thus, the new a_i is:
+
+a_i = (P[i] + S[i]) + (sum of t_j for j >=i) + (sum of s_j for j <=i).
+
+So, for each j, t_j is the number of prefix operations added at j, which is added to all P[i] for i <=j. Similarly, s_j is the number of suffix operations added at j, which is added to all S[i] for i >=j.
+
+So, the new a_i is (P[i] + S[i]) + (sum t_j for j >=i) + (sum s_j for j <=i).
+
+So, the beauty is sum (c_i * a_i) = sum (c_i * (P[i] + S[i] + sum t_j (j >=i) + sum s_j (j <=i))).
+
+Which is equal to initial_beauty + sum (c_i * (sum t_j (j >=i) + sum s_j (j <=i))).
+
+So, the problem is to maximize sum (c_i * (sum t_j (j >=i) + sum s_j (j <=i))).
+
+We can factor this as sum (c_i * sum t_j (j >=i) ) + sum (c_i * sum s_j (j <=i)).
+
+Which can be rewritten as sum (t_j * sum c_i for i <=j ) + sum (s_j * sum c_i for i >=j).
+
+So, sum (t_j * l_j) + sum (s_j * r_j), where l_j is sum_{i=1 to j} c_i, and r_j is sum_{i=j to n} c_i.
+
+So, this is the same as before.
+
+So, the problem reduces to, for each x, choosing t_x and s_x (non-negative integers) to maximize t_x * l_x + s_x * r_x.
+
+But each t_x and s_x can be any non-negative integer. So, for each x, t_x can be as large as possible if l_x is positive, and s_x can be as large as possible if r_x is positive.
+
+So, the maximum possible sum is unbounded, which is impossible. So, I must have a mistake in my reasoning.
+
+Wait, but the problem says that the initial a_i is P[i] + S[i], and the new operations add t_x and s_x as above. So, the beauty is sum (c_i * (P[i] + S[i] + sum t_j (j >=i) + sum s_j (j <=i))).
+
+Which is equal to initial_beauty + sum (c_i * (sum t_j (j >=i) + sum s_j (j <=i))).
+
+So, the problem is to maximize sum (c_i * (sum t_j for j >=i) + c_i * (sum s_j for j <=i)).
+
+Which is the same as sum (t_j * l_j) + sum (s_j * r_j), where l_j is sum c_i for i <=j, r_j is sum c_i for i >=j.
+
+So, the sum is the sum of t_j * l_j plus the sum of s_j * r_j.
+
+Each t_j and s_j can be any non-negative integer. So, for each j, the contribution is t_j * l_j + s_j * r_j.
+
+Which for each j, can be as large as possible. So, the sum can be made as large as desired by choosing t_j and s_j to be large.
+
+But this is impossible because the problem expects a finite output.
+
+So, I must be missing something.
+
+Wait, perhaps the problem is to find the maximum possible sum after adding any number of new operations, but each new operation is either a prefix or a suffix. So, the new a_i's are (P[i] + S[i]) + (number of prefix operations >=i) + (number of suffix operations <=i). So, the new a_i is a_i_new = a_i_initial + t_i + s_i, where t_i is the number of new prefix operations at i, and s_i is the number of new suffix operations at i.
+
+So, the beauty is sum (c_i * (a_i_initial + t_i + s_i)).
+
+Which is initial_beauty + sum (c_i * (t_i + s_i)).
+
+So, the problem is to choose t_i and s_i for all i (non-negative integers) to maximize this sum.
+
+So, the objective is to maximize sum (c_i * t_i + c_i * s_i).
+
+Because a_i_initial is fixed.
+
+So, the problem is to choose t_i and s_i for each i, non-negative integers, to maximize sum (c_i * t_i + c_i * s_i).
+
+But wait, t_i and s_i are not independent. Because each new prefix operation at i increases t_i by 1. Similarly, each new suffix operation at i increases s_i by 1.
+
+So, the sum is sum (c_i * t_i + c_i * s_i) = sum (t_i * c_i + s_i * c_i) = sum ( t_i * c_i + s_i * c_i )
+
+Which is the same as sum (t_i * c_i) + sum (s_i * c_i).
+
+So, the problem is to choose t_i and s_i for each i, non-negative integers, to maximize sum ( t_i * c_i + s_i * c_i ).
+
+But each new operation is either a prefix or a suffix. So, for each i, you can perform a prefix or suffix operation at i, or not.
+
+So, for each i, t_i and s_i can be 0, 1, 2, etc.
+
+So, the problem is to choose for each i, t_i and s_i (non-negative integers) to maximize sum ( t_i * c_i + s_i * c_i ), but with the constraint that the total number of operations (prefix and suffix) is arbitrary.
+
+Wait, but the problem says that Kevin can perform any number of new operations. So, t_i and s_i can be any non-negative integers, but for each i, t_i and s_i are chosen independently.
+
+Wait, but no, because each new operation is either a prefix or a suffix. So, for example, if you perform a prefix operation at i, then t_i increases by 1. Similarly, performing a suffix operation at i increases s_i.
+
+So, the sum is sum ( t_i * c_i + s_i * c_i ), where t_i and s_i are non-negative integers.
+
+But in this case, for each i, the contribution is t_i * c_i + s_i * c_i. So, for each i, the maximum is achieved when t_i is as large as possible if c_i is positive, and s_i is as large as possible if c_i is positive.
+
+So, for each i, the optimal is to set t_i and s_i to be as large as possible if c_i is positive.
+
+But since t_i and s_i can be any non-negative integers, this suggests that the sum can be made arbitrarily large by choosing t_i and s_i to be large. Which is impossible.
+
+So, I'm stuck. What's wrong with my approach?
+
+Wait, perhaps I'm misunderstanding the problem. Let me read the problem statement again.
+
+"Each operation is one of the two: prefix addition or suffix addition."
+
+So, each new operation is either a prefix or a suffix. So, for each new operation, you can choose to add it as a prefix or as a suffix. So, the new a_i's are P[i] + S[i] + (number of prefix operations >=i) + (number of suffix operations <=i).
+
+So, the new a_i is P[i] + S[i] + (t_i + s_i), where t_i is the number of prefix operations at i, and s_i is the number of suffix operations at i.
+
+So, the beauty

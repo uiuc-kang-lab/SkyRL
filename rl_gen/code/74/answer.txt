@@ -1,0 +1,654 @@
+0
+Okay, I have this problem to solve. Let me read it carefully and understand what's needed.
+
+So, the problem is about determining, for several queries, whether it's possible to choose 6 distinct sticks from a given range l to r (inclusive) such that they can form two non-degenerate triangles. Hmm.
+
+Wait, non-degenerate triangles. Oh right, a triangle is non-degenerate if the sum of any two sides is greater than the third. So for a set of three sticks a, b, c (sorted as a < b < c), the condition is a < b + c, which is automatically true because since a is the smallest, a must be less than b + c, given that a, b, c are all positive. Wait, no, wait. Wait, for a triangle to be non-degenerate, the sum of any two sides must be greater than the third. So if we have three sticks, the smallest one must be less than the sum of the other two. So for a, b, c sorted, a < b + c. That's correct.
+
+So for each query, I need to check whether there exists a subset of 6 sticks in the range [l, r] such that there are at least two sets of three sticks each that satisfy the triangle condition.
+
+Let me think about how to approach this.
+
+First, for each query, I have to find 6 sticks. So how can I do that efficiently?
+
+Wait, the constraints are n and q up to 1e5. So any O(n) per query is too slow. So I need a way to pre-process the data so that each query can be answered in O(1) or O(log n) time.
+
+Hmm. So the problem is to find whether in the array a[l..r], there exist two triplets, each of which can form a triangle, and each triplet is made of three distinct sticks, and all six sticks are distinct across the two triplets.
+
+Wait, no, wait. The two triplets can share sticks? Or are they required to be entirely distinct? Because the problem says 'choose 6 distinct sticks'. So each triplet must consist of 6 distinct sticks. So both triplets are formed from the same 6 sticks.
+
+Wait, no. Wait, no. Because each triplet is formed from 3 sticks, so two triplets would require 6 sticks. So the 6 sticks must be distinct.
+
+So, the problem reduces to: in the range [l, r], can we find 6 sticks such that there are at least two triplets (each of 3 sticks) that form a triangle.
+
+Wait, but each triplet must be non-degenerate. So for each possible triplet in the 6, it must satisfy the triangle condition.
+
+But how do I check that efficiently?
+
+Let me think about the approach.
+
+For each query, I need to find 6 sticks in [l, r]. The key is that among these 6 sticks, there's at least two disjoint triplets, each of which can form a triangle.
+
+Wait, no. Because the triplet selection doesn't have to be disjoint. For example, maybe two triplets share some sticks. But that would require that each triplet is formed from 3 distinct sticks, but the two triplets may share some.
+
+Wait, but in the problem statement, it's said that the 6 sticks are chosen as 6 distinct. So each triplet is a subset of the 6. But each triplet must form a triangle. So it's possible that the same stick is part of both triplets, but that's allowed as long as each triplet is non-degenerate.
+
+Wait, no. Because each triplet is a triplet of 3 sticks, but the same stick can't be used in more than one triplet, right? Because the 6 sticks are distinct. So each triplet is a subset of the 6, but all 6 are used across both triplets. So each triplet is a subset of the 6, but each element is used exactly once across both triplets.
+
+Wait, no. Wait, the problem says that we have to choose 6 distinct sticks. So each triplet is a distinct subset of the 6. So in the 6 sticks, each is used exactly once in a triplet.
+
+Wait, no, because the two triplets are formed by the 6 sticks. So each of the 6 sticks is part of exactly one triplet. So each triplet is a subset of the 6, and together they make up all 6.
+
+So, for each query, I need to find if there exists a selection of 6 sticks in [l, r], such that in this selection, there are at least two triplets (each of 3 sticks) that can form a triangle.
+
+So the problem is to find whether, in the subarray a[l..r], there's a way to choose 6 sticks such that among them, there are two triplets each satisfying the triangle conditions.
+
+Hmm. So the approach is: for each query, check if there's a way to pick 6 sticks in the range such that two triplets can be formed.
+
+But how?
+
+The straightforward approach is, for each query, to look for at least two triplets in the array a[l..r], but that's computationally expensive.
+
+So I need a way to pre-process the data so that for any given range, I can quickly determine whether such a pair of triplets exists.
+
+Let me think about the possible conditions.
+
+What's the minimal condition for a set of 6 sticks to have two triplets that can form triangles?
+
+Well, let's think about the sticks. For each triplet, the sum of the two smallest must be larger than the largest.
+
+So for a triplet (a, b, c) where a < b < c, we need a < b + c.
+
+But in the context of the 6 sticks, each triplet's a, b, c must satisfy this.
+
+So, for 6 sticks, the way to find two such triplets is to find two groups of three sticks where each group satisfies the triangle condition.
+
+But how to check this quickly.
+
+An alternative approach: perhaps the 6 sticks can be arranged in such a way that the sum of the three smallest is less than the sum of the three largest. Wait, no, that's not directly applicable.
+
+Wait, let me think: the sum of all six sticks is S. For two triplets, each triplet's sum must be such that each triplet's sum is less than S minus the sum of the other triplet, but that doesn't directly help.
+
+Alternatively, perhaps if the three largest sticks are each larger than the sum of the two smallest in their triplet.
+
+Wait, maybe not. Let me think of an example.
+
+Suppose the six sticks are 1, 1, 1, 1, 1, 1. Then any triplet will satisfy the condition, so the answer is yes.
+
+Another example: 2,3,4,5,6,7. Let's see: 2,3,4 form a triangle. 5,6,7 form a triangle. So yes.
+
+What about sticks with varying lengths. Suppose we have six sticks: 1,1,2,2,3,3. Let's see: the triplet 1,2,3: 1<2+3=5, yes. Another triplet: 1,2,3, same. So yes, two triplets can be formed.
+
+But what if the sticks are not in a way that allows two triplets? For example, if the sticks are 1,2,3,4,5,6. Can we form two triplets?
+
+Let's see: the first triplet could be 1,2,3: 1 < 2+3=5. Second triplet could be 4,5,6: 4 <5+6=11. So yes. So two triplets can be formed.
+
+Wait, but perhaps the problem is when the sticks are such that the three largest are too big. For example, let's say the six sticks are 1,1,1,1,1,1e9. Then any triplet will have two 1's and one 1e9. The sum of the two 1's is 2, which is less than 1e9. So the triplet 1,1,1e9 is invalid. So no triplet can be formed. So the answer is no.
+
+So, in this case, the 6 sticks can't form two triplets.
+
+So the question is, for a given set of 6 sticks, can we find two triplets that each satisfy the triangle condition.
+
+Hmm.
+
+So, perhaps the first step is to, for each query, find 6 sticks in [l, r], and then check if there are two triplets among them.
+
+But how to do this efficiently.
+
+Let me think about the sorted array.
+
+Suppose I have all the sticks in a sorted array. For a query [l, r], I can find all sticks in this range, and sort them.
+
+Then, for this sorted array, I need to check if there's a subset of 6 consecutive or non-consecutive sticks that can form two triplets.
+
+Wait, but even if the 6 sticks are in the range, they might not have any two triplets.
+
+So, what's a way to find, in the sorted list, whether there exists two triplets.
+
+Alternative idea: for the 6 sticks, can we find two triplets such that for each triplet, the sum of the two smallest is greater than the largest.
+
+So, perhaps, for the 6 sticks, the sum of the three largest is less than the sum of the three smallest.
+
+Wait, that's not helpful. Because for example, 1,1,1,1,1,1e9: the sum of the three largest is 1e9 +1 +1 = 1e9+2, which is much larger than the sum of the three smallest, which is 3. So that condition is not met.
+
+But in this case, the triplet 1,1,1e9 is invalid.
+
+So, the sum of the three largest doesn't directly help.
+
+Alternative approach: perhaps, in the 6 sticks, the two smallest must be such that their sum is greater than the third in each triplet.
+
+Wait, but the two triplets are from the same 6 sticks.
+
+So, perhaps, the two smallest sticks in the 6 must be such that their sum is greater than the third, but this is just for one triplet.
+
+Wait, no. Because the two triplets must each satisfy that the sum of their two smallest is greater than the largest.
+
+Wait, but if in the 6 sticks, the two smallest are a and b, then for a triplet that includes a, b, and c, the condition is a < b + c.
+
+But, if I have two triplets, each involving a and b, then each triplet would require that a < b + c1 and a < b + c2, where c1 and c2 are the other sticks in the triplet.
+
+But that's a bit tricky.
+
+Alternatively, perhaps the minimal condition is that the sum of the three smallest sticks is less than the sum of the three largest. Because then, each triplet can be formed.
+
+Wait, let's see:
+
+sum of the 6 sticks is S.
+
+If sum of the three smallest is less than sum of the three largest, then for each triplet, the condition can be satisfied.
+
+Wait, no. For example, consider 1,1,1,1,1,999. The sum of the three smallest is 3, sum of the three largest is 1+1+999=1001. So 3 < 1001, which is true. So for each triplet, the sum of the two smallest (1 and 1) is 2, which is less than the largest (999). So each triplet is valid.
+
+But in the earlier example, 1,1,1,1,1,1e9, the sum of the three smallest is 3, sum of the three largest is 1+1+1e9 = 1e9 + 2, which is larger than 3. So 3 < 1e9+2 is true, but the triplet 1,1,1e9 is invalid. So the condition sum of three smallest < sum of three largest is necessary but not sufficient.
+
+So that condition is necessary but not sufficient.
+
+Hmm. So that approach is not enough.
+
+Alternative idea: perhaps for the 6 sticks, at least two of the sticks are large enough that they can form a triplet with any two others.
+
+But how?
+
+Wait, let's think about the sticks. For a triplet, the two smaller sticks must be such that their sum is greater than the largest.
+
+So, in a group of 6 sticks, to have two triplets, perhaps the two smallest sticks in the group are such that their sum is greater than the third smallest, and the two largest sticks are such that their sum is greater than the fourth largest.
+
+Wait, not sure.
+
+Alternatively, perhaps the 6 sticks should contain at least two pairs of sticks that are large enough.
+
+Wait, for example, in a group of six, if there are two sticks larger than the sum of the two smallest sticks, then each triplet can include one of them and the two smallest.
+
+Wait, let's see: Let's say the two smallest are a and b (a < b). If there are two sticks in the group that are larger than a + b, say c and d, then each triplet can be formed as a, b, c and a, b, d. Wait, no, because the triplet would consist of a, b, c, which is valid. But the triplet a, b, d is also valid. So in this case, we have two triplets.
+
+But wait, what if the two largest sticks are each larger than the sum of a and b? Well, that's possible, but then each triplet can be formed by combining a, b, c and a, b, d.
+
+So, in this case, yes, there are two triplets.
+
+But what if the sticks are arranged such that the two largest are not each larger than a + b.
+
+Wait, for example, six sticks: 1, 2, 3, 4, 5, 6.
+
+The two largest are 5 and 6, which are larger than 1+2=3. So each triplet can be formed.
+
+Another example: 1,2,3,4,5,10. Then 10 is larger than 1+2=3. So each triplet can be formed.
+
+But what if the sticks are 1,2,3,4,5,6.
+
+Wait, the two largest are 5 and 6, which are larger than 1+2=3. So yes, two triplets can be formed.
+
+Another case: 1,2,3,4,5,7.
+
+Same as above.
+
+So, in this scenario, any group of 6 sticks where the two largest are larger than the sum of the two smallest, can form two triplets.
+
+But what about the case where the two largest are not larger than the sum of the two smallest?
+
+For example, 1,3,4,5,6,7.
+
+Wait, the two smallest are 1 and 3. 1+3=4, which is equal to the third stick. So the triplet 1,3,4 is not valid because 1 < 3+4 is 7, which is true. So it's valid. But what about the triplet 3,4,5? 3 < 4+5=9, yes. So each triplet is valid. So even though the two largest are 6 and 7, which are larger than 1+3=4, but the triplet 3,4,5 is valid.
+
+So, in this case, the condition holds.
+
+Wait, but what if the two largest are not larger than the sum of the two smallest, but some other triplet is not valid.
+
+For example, 1, 2, 3, 4, 5, 6.
+
+In this case, the two largest are 5 and 6, which are larger than 1+2=3. So each triplet can be formed.
+
+Another example: 1,2,3,4,5,10.
+
+The two largest are 5 and 10, which are larger than 1+2=3. So each triplet can be formed.
+
+But what about a case where the two largest are not larger than the sum of the two smallest, but some triplet is not valid?
+
+Let me see. Suppose the sticks are 1,2,3,4,5,10.
+
+Yes, the two largest are 5 and 10, which are larger than 1+2=3. So two triplets can be formed.
+
+Another example: 1,2,3,4,5,6.
+
+Yes, two triplets.
+
+Wait, perhaps the condition is that the two largest sticks are larger than the sum of the two smallest, or that the two largest are both larger than the sum of the two smallest.
+
+Wait, no. Because in the example I had earlier, 1,2,3,4,5,6, the two largest are 5 and 6, which are larger than 1+2=3. So yes.
+
+What about 1,2,3,4,5, 10.
+
+Yes, two triplets.
+
+But what about 1,2,3,4,5, 4.
+
+Wait, the two smallest are 1 and 2. 1+2=3. So the two largest are 4 and 5. 4 is not larger than 3. So the triplet 1,2,4 is invalid. So in this case, the two largest (4 and 5) are not larger than 1+2=3. So the triplet 1,2,4 is invalid. So the two largest sticks are not enough.
+
+So in this case, the answer would be no.
+
+So perhaps, the condition is that either:
+
+1. The two smallest sticks in the 6 are such that their sum is greater than the third smallest. Or,
+
+2. There are two sticks in the 6 that are larger than the sum of the two smallest.
+
+But I'm not sure.
+
+Wait, let's think about the first condition. Suppose in the 6 sticks, the first three are a, b, c, and a < b < c. If a + b > c, then the triplet a, b, c is valid.
+
+But in this case, the triplet is valid. But we need two such triplets.
+
+So, the two triplets would be a, b, c and another triplet, say, d, e, f. But if the other triplet is also a, b, c, then it's same as the first. So, perhaps the two triplets can be formed if the two smallest are such that a + b > c, and the two largest are such that d + e > f.
+
+Wait, perhaps not.
+
+Alternatively, perhaps the two triplets can be formed if the two largest sticks in the group are each larger than the sum of the two smallest.
+
+Wait, that makes sense. Because then, each triplet can include one of the largest sticks and two smallest, which would satisfy the triangle condition.
+
+So, in this case, for the 6 sticks, if the two largest sticks are each larger than the sum of the two smallest, then we can form two triplets.
+
+But what about cases where the two largest are not larger than the sum of the two smallest, but other triplets are valid.
+
+For example, sticks 1,2,3,4,5,6.
+
+The two largest are 5 and 6. 5 is larger than 1+2=3, 6 is larger than 1+2=3. So two triplets can be formed.
+
+Another example: sticks 1,2,3,4,5,10.
+
+The two largest are 5 and 10. 5 is larger than 1+2=3, 10 is larger than 1+2=3. So two triplets can be formed.
+
+Another example: sticks 1,2,3,4,5,7.
+
+The two largest are 5 and 7. 5 is larger than 1+2=3, 7 is larger than 1+2=3. So two triplets can be formed.
+
+But wait, what about a case where the two largest are not each larger than the sum of the two smallest, but there exists two triplets elsewhere.
+
+For example, sticks 1,2,3,4,5,6.
+
+Each triplet is possible.
+
+Another example: sticks 1,2,3,4,5,6.
+
+Wait, but what about a case where the two largest are not each larger than the sum of the two smallest, but two triplets exist.
+
+Like, sticks 1,2,3,4,5,6.
+
+Wait, that's the same as before.
+
+Another example: sticks 1,2,3,4,5,100.
+
+Yes, two triplets can be formed.
+
+But what about sticks 1,2,3,4,5,6,100. But in that case, the 6 sticks would include 1,2,3,4,5,6, so the two largest are 5 and 6, which are each larger than 1+2=3. So two triplets can be formed.
+
+So, perhaps the condition is: in the 6 sticks, the two largest sticks are each larger than the sum of the two smallest.
+
+Because then, each triplet can be formed by taking the two smallest and one of the largest.
+
+So, if that's the case, the problem reduces to, for a query [l, r], does the 6 sticks in that range include two pairs of sticks such that each pair is larger than the sum of the two smallest in the range.
+
+So, the approach is:
+
+For each query [l, r], find the 6 sticks in a[l..r], and check if there are two pairs of sticks such that each pair is larger than the sum of the two smallest in the 6 sticks.
+
+But how to do this efficiently.
+
+Alternatively, perhaps the problem can be solved by checking whether the 6 sticks contain at least two pairs where each pair is larger than the sum of the two smallest in the 6.
+
+But that seems computationally expensive.
+
+Wait, but perhaps the minimal condition is that the 6 sticks include at least two pairs of sticks where each pair is larger than the sum of the two smallest in the 6.
+
+Wait, but how to compute this.
+
+Alternative idea: in the 6 sticks, the two largest must be each larger than the sum of the two smallest.
+
+Because then, each triplet can be formed by taking the two smallest and one of the largest.
+
+So, if in the 6 sticks, the two largest are each larger than the sum of the two smallest, then two triplets can be formed.
+
+So, perhaps, the condition is that in the 6 sticks, the sum of the two smallest is less than the third in both triplets.
+
+Wait, perhaps the two largest must be larger than the sum of the two smallest.
+
+Because then, each triplet can be formed by combining the two smallest with the largest.
+
+So, for the 6 sticks, if the sum of the two smallest is less than the third smallest, and the sum of the two smallest is less than the third largest, then two triplets can be formed.
+
+But wait, perhaps the two largest are each larger than the sum of the two smallest.
+
+So, for the 6 sticks, the two largest are each larger than the sum of the two smallest.
+
+In that case, each triplet can be formed as follows:
+
+Triplet 1: smallest, second smallest, largest.
+
+Triplet 2: smallest, second smallest, largest.
+
+So, two triplets are formed.
+
+But wait, that's not correct. Triplet 1 is a, b, c, and triplet 2 is a, b, d (assuming d is the largest). So yes, two triplets.
+
+So, the condition is that the two largest are each larger than the sum of the two smallest.
+
+So, in the 6 sticks, the two largest must each be larger than the sum of the two smallest.
+
+So, the steps for each query would be:
+
+1. Find the 6 sticks in the range [l, r].
+
+2. Sort these 6 sticks.
+
+3. Check whether the two largest are each larger than the sum of the two smallest.
+
+If yes, then the answer is YES. Otherwise, NO.
+
+Wait, but is that the only condition?
+
+Because in some cases, even if the two largest are not each larger than the sum of the two smallest, there may still be two triplets.
+
+For example, consider sticks 1,2,3,4,5,6.
+
+The two largest are 5 and 6, which are larger than 1+2=3.
+
+So, condition holds. So answer is YES.
+
+What about sticks 1,2,3,4,5,6,7.
+
+The two largest are 6 and 7.
+
+6 > 1+2=3, but 7 is not larger than 1+2=3.
+
+So, condition doesn't hold.
+
+But, can we form two triplets?
+
+Yes: triplet 1,2,3; triplet 4,5,6.
+
+Wait, no. Triplet 4,5,6 is valid, but triplet 1,2,3 is also valid. So yes, there are two triplets.
+
+Wait, but in this case, the two largest are 6 and 7. 6 is not larger than 1+2=3, so the condition fails.
+
+But two triplets can be formed.
+
+So, my initial condition is not sufficient.
+
+Hmm, so the condition is not correct.
+
+So, that approach is wrong.
+
+So, I need a different way.
+
+Alternative approach: think about the 6 sticks. For each triplet, the two smallest must sum to more than the largest.
+
+So, for a group of 6 sticks, to have two triplets, each triplet must satisfy this condition.
+
+So, perhaps, the minimal way is to find two triplets in the 6 sticks such that each triplet satisfies a < b + c.
+
+So, the approach is to find whether in the 6 sticks, there are two groups of three that satisfy this.
+
+But how to do this efficiently.
+
+Hmm.
+
+Alternative idea: the 6 sticks can be arranged in order as a1, a2, a3, a4, a5, a6.
+
+So, a1 < a2 < a3 < a4 < a5 < a6.
+
+For a triplet to be valid, the sum of the two smallest must be greater than the largest.
+
+So, for a triplet, a2 + a3 > a4.
+
+Similarly, for the second triplet, a2 + a4 > a5, etc.
+
+Wait, but the second triplet could be a1, a2, a5. So a1 + a2 > a5.
+
+But that's a different condition.
+
+So, perhaps, the two triplets can be formed as follows:
+
+Triplet 1: a1, a2, a4. So a2 + a1 > a4.
+
+Triplet 2: a3, a4, a5. So a3 + a4 > a5.
+
+But wait, that requires a4 > a3. Which is true because a3 < a4 < a5 < a6.
+
+So, a3 + a4 > a5.
+
+But wait, a3 + a4 could be more than a5.
+
+So, perhaps the condition is that a2 + a1 > a4 and a3 + a4 > a5.
+
+But how to find such a pair.
+
+Wait, but for the 6 sticks, we can have multiple ways to choose triplets, but we need to find two non-overlapping triplets that satisfy the condition.
+
+This seems complicated.
+
+Alternative idea: perhaps the two triplets can be formed by choosing a pair a1, a2, a4 and a3, a4, a5. But then, a4 is part of both, which is not allowed.
+
+So, that's not a valid way.
+
+So, perhaps, the two triplets must consist of non-overlapping sticks.
+
+But with 6 sticks, it's challenging.
+
+Alternative approach: perhaps, in the 6 sticks, the two smallest are a1 and a2. Then, for a triplet, a1 and a2 can only form a triplet if a3 > a1 + a2.
+
+Similarly, for another triplet, perhaps a4 > a1 + a3, but that's not correct.
+
+Alternatively, perhaps the two triplets can be formed from a1, a2, a4 and a1, a3, a4.
+
+But a4 is part of both, which is invalid.
+
+So, perhaps, we need to find two triplets that do not share any sticks.
+
+But for 6 sticks, perhaps the way to do it is to have two triplets that each include a1 and a2, but without overlapping.
+
+But that's not possible because the two triplets would share a1 and a2.
+
+So, perhaps, the two triplets must include a different pair.
+
+Hmm.
+
+Alternatively, perhaps the two triplets can be formed as a1, a2, a4 and a3, a5, a6.
+
+But then, a5 and a6 are in the second triplet.
+
+Wait, but a5 is less than a6, so the triplet a3, a5, a6 is a triplet if a3 + a5 > a6.
+
+But that's not necessarily the case.
+
+This is getting complicated.
+
+Alternative idea: perhaps the two triplets can be formed by taking a1, a2, a4 and a3, a5, a6.
+
+But how to determine this quickly.
+
+Alternatively, perhaps the two triplets can be formed by a1, a3, a4 and a2, a5, a6.
+
+But I'm not sure.
+
+This seems too vague.
+
+Perhaps, the problem is to find whether, in the sorted list of 6 sticks, there exists two triplets such that the sum of the two smallest in each triplet is greater than the largest.
+
+But I'm not sure.
+
+Wait, perhaps the minimal condition is that the sum of the two smallest in the 6 sticks is greater than the third smallest. And also, the sum of the two smallest in the 6 sticks is greater than the third largest.
+
+Wait, no. Because if the two smallest are a and b, then the third smallest is c. For a triplet a, b, c, a + b > c.
+
+Similarly, the third largest is d. So for another triplet, a + b > d.
+
+But d is the largest, so a + b > d is impossible unless a and b are very large.
+
+Hmm.
+
+Alternative idea: perhaps the two largest sticks in the 6 are each larger than the sum of all other sticks.
+
+But that's not correct. For example, 1,2,3,4,5,6. The two largest are 5 and 6. 5 is not larger than 1+2=3. So that fails.
+
+But in this case, the two triplets can be formed: 1,2,3 and 4,5,6.
+
+Wait, but in this case, the two largest are 5 and 6, which are larger than 1+2=3.
+
+So, the condition holds.
+
+So, perhaps, the condition is that the two largest are each larger than the sum of the two smallest.
+
+In this case, 5 is larger than 1+2=3, and 6 is larger than 1+2=3.
+
+So, the condition holds, and two triplets can be formed.
+
+So, perhaps the condition is that the two largest are each larger than the sum of the two smallest.
+
+So, in this case, the answer is yes.
+
+But in the earlier case where the two largest are 5 and 6, and the two smallest are 1 and 2, the condition holds.
+
+So, perhaps the condition is that in the 6 sticks, the two largest are each larger than the sum of the two smallest.
+
+So, the algorithm would be:
+
+For each query [l, r], extract the 6 sticks in this range. Sort them. Check whether the two largest are each larger than the sum of the two smallest.
+
+If yes, output YES. Else, NO.
+
+But wait, earlier example where the two largest are 5 and 6, and the two smallest are 1 and 2. Then, the condition holds, and two triplets can be formed.
+
+Another example: 1,2,3,4,5,6.
+
+The two largest are 5 and 6. 5 is not larger than 1+2=3, so condition fails.
+
+Wait, no. 5 is 5, which is larger than 3. 6 is larger than 3. So condition holds, so output is YES.
+
+Wait, but wait, in 1,2,3,4,5,6, the two largest are 5 and 6.
+
+The two smallest are 1 and 2.
+
+So, 5 is larger than 1+2=3: yes.
+
+6 is larger than 1+2=3: yes.
+
+So, condition holds, so output is YES.
+
+So, according to this condition, the output is YES.
+
+But, in this case, the two triplets can be formed:
+
+Triplet 1: 1,2,3: 1+2=3, which is equal to 3. So invalid.
+
+Wait, wait no. 1+2 is not greater than 3. So this triplet is invalid.
+
+Wait, so what's the actual situation.
+
+Wait, in the 6 sticks 1,2,3,4,5,6:
+
+Each triplet must have a sum of two smaller sticks greater than the largest.
+
+So, triplet 1,2,3: 1+2=3 is not greater than 3. So invalid.
+
+Triplet 1,2,4: 1+2=3 <4: invalid.
+
+Triplet 1,3,4: 1+3=4=4: invalid.
+
+Triplet 2,3,4: 2+3=5>4: valid.
+
+Triplet 2,3,5: 2+3=5>5: 5 is not larger than 5. So invalid.
+
+Triplet 2,4,5: 2+4=6>5: valid.
+
+Triplet 3,4,5: 3+4=7>5: valid.
+
+So, in this case, there are multiple triplets:
+
+Triplet 2,3,4: valid.
+
+Triplet 2,4,5: valid.
+
+Triplet 3,4,5: valid.
+
+So, two triplets can be formed.
+
+So, even though the two largest are 5 and 6, which are larger than 1+2=3, the condition holds, and the answer is YES.
+
+So, the condition is correct.
+
+So, the approach is:
+
+For each query [l, r], extract the 6 sticks in a[l..r]. Sort them. Check if the two largest are each larger than the sum of the two smallest.
+
+If yes, output YES. Else, NO.
+
+So, the code can be written as follows.
+
+But wait, let's see another example where the condition holds but the two triplets can't be formed.
+
+Wait, let's think of a case where the two largest are larger than the sum of the two smallest, but no two triplets can be formed.
+
+Is such a case possible?
+
+Let me think of an example.
+
+Suppose the 6 sticks are [1, 2, 3, 4, 5, 6]. The two largest are 5 and 6, which are each larger than 3 (1+2). So condition holds.
+
+But the two triplets are 2,3,4 and 4,5,6.
+
+Wait, wait no. 2,3,4: 2+3=5>4: valid.
+
+4,5,6:4+5=9>6: valid.
+
+So, two triplets can be formed.
+
+Another example: sticks [1, 2, 3, 4, 5, 10].
+
+Two largest:5 and 10. 5>3, 10>3. So condition holds.
+
+Triplet 1,2,3: valid.
+
+Triplet 4,5,10:4+5=9<10: invalid.
+
+Wait, so in this case, the triplet 4,5,10 is invalid. So, only one triplet can be formed. So the answer is NO.
+
+So, the condition is not sufficient.
+
+Wait, but according to our earlier approach, the condition holds, so the answer would be YES. But in reality, only one triplet is valid.
+
+So, our approach is incorrect.
+
+So, the condition is necessary but not sufficient.
+
+Hmm. So, this suggests that the condition is necessary but not sufficient.
+
+So, what's the problem here?
+
+In the 6 sticks [1,2,3,4,5,10], two largest are 5 and 10, which are larger than 1+2=3. So condition holds.
+
+But the triplet 4,5,10 is invalid because 4+5=9 <10.
+
+So, the two triplets are 1,2,3 and 4,5,10. The second triplet is invalid. So, only one triplet is valid.
+
+So, the condition is necessary, but not sufficient.
+
+So, how can we handle this?
+
+In this case, the answer is NO.
+
+So, the initial approach is incorrect.
+
+So, what's the problem.
+
+We need a way to check whether at least two triplets exist, not just whether two triplets are possible.
+
+So, perhaps, the approach is to find whether there are at least two triplets in the 6 sticks, each satisfying the condition.
+
+But how.
+
+Alternative idea: for a group of 6 sticks, the two triplets can be formed if and only if the following two conditions are met:
+
+1. The two smallest are such that a + b > c, where a < b < c.
+
+2. The two smallest are such that a + b > d, where d is the largest.
+
+But that

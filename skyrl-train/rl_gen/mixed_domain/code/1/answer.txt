@@ -1,0 +1,823 @@
+Okay, I need to solve this problem. Let's read it carefully.
+
+We have an array a = [1, 2, ..., n], where n is odd. We need to choose an odd positive integer m and split a into m subarrays, each of odd length. The median of all these subarray medians must be equal to k. I have to find such a split and output it.
+
+Wait, the median of the medians should be k. So, for example, if I have two subarrays, their medians' median should be k. But wait, no, the problem says the median of the array formed by the medians is k. So if I have m subarrays, their medians are taken, and then the median of those m medians is k.
+
+Hmm. So, for m subarrays, each has an odd length. The median of all their medians must be k.
+
+I need to find an m and a way to split the array into m such subarrays.
+
+Let me think about the constraints.
+
+First, n is odd, and k is between 1 and n.
+
+Let me think about the minimal m. What is the minimal number of subarrays needed?
+
+Well, the median of the medians can be influenced by the number of subarrays. For example, if m is 1, then the median is simply the median of the entire array, which is (n+1)/2. So if k is not equal to (n+1)/2, then m=1 is not a solution.
+
+So for m=1 to be possible, k must be (n+1)/2.
+
+So first, I should check if k is the median of the entire array. If yes, then m=1 is possible.
+
+Otherwise, I need to split into more subarrays.
+
+Wait, what if m is 3? Or 5? Let's think.
+
+Wait, perhaps the minimal m is 1, but only if k is the median of the entire array. Otherwise, perhaps m has to be at least 2 or more.
+
+Alternatively, maybe I can construct the subarrays in a certain way to achieve the desired median.
+
+So, the key is to arrange the subarrays such that when I collect their medians, their median is k.
+
+Let me think about the problem step by step.
+
+Let me consider the case when m=1. Then, the median is the median of a, which is (n+1)/2. So if k is that value, m=1 is acceptable.
+
+If m is 1 and k is not this value, then no solution.
+
+So, for other cases, perhaps m has to be more than 1.
+
+But how?
+
+Let me try to construct the subarrays.
+
+Idea: To have as many subarrays as possible contribute to a certain median, and ensure that when we take the median of all medians, it's k.
+
+Wait, maybe the most straightforward way is to have one of the subarrays have a median equal to k, and all others can be single elements, but wait, no. Because each subarray's length must be odd, but the subarrays can be of length 1. But then, if m is large, the medians could be anything. Hmm, but perhaps the strategy is to have exactly one subarray with a median of k, and the rest arranged in such a way that the overall median is k.
+
+Wait, for example, if m is 3: subarrays b1, b2, b3. The medians are m1, m2, m3. The median of m1, m2, m3 is k. So, at least one of them must be k, and the other two can be on either side of k. Or perhaps all three are k, but that would require each subarray's median to be k, which is possible.
+
+Wait, but how to arrange the splitting.
+
+Alternatively, perhaps the optimal approach is to have as many subarrays as possible with a median of k, but also ensuring that the median of all medians is k.
+
+Hmm, perhaps it's better to have two subarrays: one that has a median of k, and the other of a certain value. But then the median of the two medians would be between the two medians. So, if both are k, then the overall median is k. If one is k and the other is, say, less than k, then the overall median is k.
+
+Wait, for example: two subarrays, one with median k, and the other with median m. Then the overall median is the median of k and m. So, if the other median is >=k, the overall median is k. If it's <k, then the overall median is k only if m < k and k < m? Wait, no. Wait, the overall median is the middle of the two medians. So if one is k and the other is less than k, then the median is less than k, which is not desired. So to have the overall median k, the two medians must be such that at least one is k, and the other is on the same side.
+
+Wait, let's see:
+
+Case 1: two subarrays, b1 has median k, b2 has median m.
+
+The overall median is the median of [k, m]. So, the two possible scenarios:
+
+- If m >=k, then the median is k (since k is the middle of the two). So overall median is k.
+
+- If m <k, then the median is m, which is less than k, so overall median is m, which is not desired.
+
+So, to have the overall median k, when m=2, both subarrays must have a median of k, because if one has a median of k and the other less than k, the overall median would be less than k.
+
+Alternatively, if both have a median of k, then the overall median is k.
+
+So for m=2, it's possible only if both subarrays have a median of k. But how to arrange that.
+
+Wait, but each subarray is a consecutive part of the array. So for a subarray to have a median of k, it must contain at least one k in the middle position.
+
+But the array is sorted, so the subarrays can be arranged in a way that ensures that their medians are equal to k.
+
+So, for example, the subarrays can be arranged around the k-th element in the array.
+
+Wait, perhaps the minimal m is 2.
+
+But wait, in the array [1,2,3,4,5], the median is 3. So if I split into two subarrays: [1,2,3] and [4,5]. The medians are 2 and 4. The median of these two is 3, which is k=3. So m=2 is possible.
+
+So for this case, m=2 is acceptable.
+
+But how to generalize this?
+
+Wait, perhaps the minimal m is 2 if k is not the overall median, but in some cases, m could be 2.
+
+So, the plan is to find a way to split the array into two subarrays such that their medians are k, or arrange the subarrays so that the overall median is k.
+
+Wait, but how to split the array into two subarrays, each of which has a median of k.
+
+Let me think: in the array a (which is [1, 2, ..., n]), the median is k.
+
+If I can split the array into two parts: the first part is up to some position p, and the second part is from p+1 to n.
+
+I need the median of the first part to be k, and the median of the second part to be k.
+
+But wait, what's the median of the first part?
+
+The first part is from a_1 to a_p. The length of the first part is p elements. So for the median to be k, the length p must be such that p is odd. Which it is, since m=2 is even, but wait, no. Wait, m is the number of subarrays. In this case, m=2, so each subarray has an odd length.
+
+Wait, no, in the case of m=2, each subarray has an odd length, but the sum of their lengths is n, which is odd. So, for two subarrays, each must have odd length. So, their lengths are l1 and l2, both odd, and l1 + l2 =n.
+
+So, for m=2, each subarray has length l1 and l2, both odd.
+
+So, for the first subarray, from a_1 to a_p, length l1.
+
+Its median is the middle element. So, for the median to be k, the position of k in the array must be the middle of the first subarray.
+
+Similarly, in the second subarray.
+
+Wait, but the overall array is 1-based. Let me think: in the first subarray, the elements are a_1 to a_p. So the median is at position (l1 +1)/2.
+
+Similarly for the second subarray, the median is at position l1 + (l2 +1)/2.
+
+Wait, that's the position in the original array.
+
+So, for the first subarray's median to be k, the position of k in the first subarray must be the middle one. So, in the first subarray, the position of k must be (l1 + 1)/2. Similarly for the second subarray.
+
+But the position of k in the entire array is fixed, it's at position k.
+
+So, for the first subarray, the position of k in the first subarray is some position, say, s. Then s must be equal to (l1 +1)/2.
+
+Similarly, the second subarray's position of k must be equal to l1 + (l2 +1)/2.
+
+So, for the first subarray, the position of k is s = (l1 +1)/2.
+
+For the second subarray, the position of k is s2 = l1 + (l2 +1)/2.
+
+But s2 must be k's position in the entire array, which is k.
+
+So, for the second subarray, s2 must be k.
+
+So:
+
+s2 = l1 + (l2 +1)/2 = k.
+
+But s2 is also the position of k in the second subarray. So, the second subarray starts at p+1 and ends at n.
+
+The position of k in the second subarray is k - (p+1) +1 = k - p.
+
+So, s2 = k - p.
+
+But s2 must equal to l1 + (l2 +1)/2.
+
+So:
+
+k - p = l1 + (l2 +1)/2.
+
+But l1 is the length of the first subarray, which is p. Because the first subarray is from 1 to p, so length is p.
+
+Wait, no. Wait, the length of the first subarray is p. So l1 = p.
+
+But l2 = n - p.
+
+So substituting:
+
+k - p = p + ( (n - p) + 1 ) / 2.
+
+Simplify:
+
+k - p = p + (n - p +1)/2.
+
+Multiply both sides by 2 to eliminate denominator:
+
+2(k - p) = 2p + (n - p +1).
+
+2k - 2p = 2p + n - p + 1.
+
+Simplify right side: 2p + n -p +1 = p + n +1.
+
+So:
+
+2k - 2p = p + n +1.
+
+Bring all terms to left:
+
+2k - 2p - p -n -1 = 0.
+
+2k - 3p -n -1 = 0.
+
+Rearranged:
+
+3p = 2k - n -1.
+
+So:
+
+p = (2k -n -1)/3.
+
+Wait, but p must be an integer, and it must be a position within the array. Also, since l1 = p must be odd (since it's the length of the subarray, which is odd), and the same for l2 (n - p must be odd).
+
+So, let's compute p:
+
+p = (2k - n -1) / 3.
+
+But p must be a positive integer, and 1 <= p <=n.
+
+So, let's see what conditions must hold.
+
+First, 2k -n -1 must be divisible by 3, and the result should be a positive integer.
+
+Also, p must be <=n -1, because the first subarray has to have at least length 1.
+
+Wait, no, because the first subarray can have length 1 as well. So, for example, if p=1, then l1=1, which is odd.
+
+So, the condition is:
+
+- 2k -n -1 must be divisible by 3.
+
+- (2k -n -1) /3 must be a positive integer.
+
+- The resulting p must satisfy 1 <= p <= (n-1), because if p is n, then the second subarray has length 0, which is invalid.
+
+Wait, because the second subarray's length is n-p, which must be >=1. So, p <=n-1.
+
+So, let's compute p as (2k -n -1)/3.
+
+But for p to be positive:
+
+2k -n -1 >0.
+
+So, 2k > n +1.
+
+Which implies k > (n+1)/2.
+
+So, if k is greater than the median, then this p is positive.
+
+Otherwise, if k is less than or equal, then p is <=0, which is invalid.
+
+So, for m=2 to be possible, k must be > (n+1)/2.
+
+Wait, but when m=2, is it possible to have the medians of the two subarrays be k?
+
+In that case, what's the condition on k?
+
+We have:
+
+p must be (2k -n -1)/3.
+
+So, let's see for the sample input.
+
+Sample Input 1:
+
+Let me take the sample input from the problem statement.
+
+Wait, no sample input is given. But let's think of a small test case.
+
+Test Case 1:
+
+n=5, k=3.
+
+Because n=5 is odd, the median is 3. So, if m=1, then the median is 3, which is k. So, m=1 is a solution.
+
+But if I choose m=2, then I need to split into two subarrays, each of odd length. Let's see.
+
+Compute p:
+
+p = (2*3 -5 -1)/3 = (6-5-1)/3=0/3=0. Which is invalid, because p must be at least 1.
+
+So, for m=2, it's not possible.
+
+So, in this case, the solution is m=1.
+
+Another test case: n=7, k=4.
+
+Median is 4, so m=1 is a solution.
+
+Another test case: n=7, k=3.
+
+p = (6 -7 -1)/3 = (-2)/3. Not valid. So m=2 is not possible.
+
+Wait, but what about m=3?
+
+Wait, perhaps I can split the array into three parts, each with median 3.
+
+But the overall median of the three medians is 3.
+
+Wait, let's think: the medians are 3, 3, 3. The median of these is 3.
+
+So, that works.
+
+So, for m=3, can I split the array into three parts each with median 3.
+
+How?
+
+The array is [1,2,3,4,5,6,7].
+
+We need to split it into three subarrays, each of odd length.
+
+The first subarray could be [1,2,3], median 2. No, that's not 3.
+
+Wait, perhaps the first subarray is [1,2,3], but that's length 3; median is 2, which is less than k=3.
+
+Alternatively, perhaps arrange the subarrays so that each has a median of 3.
+
+For example:
+
+First subarray is [1,2,3], median 2: no.
+
+Alternatively, the first subarray could be [1,2,3,4,5], median is 3.
+
+The second subarray [6,7], but wait, length is 2, which is even. So no, that's invalid.
+
+So, the second subarray must have an odd length. So, perhaps split into [1,2,3,4,5], [6], [7].
+
+Then, medians are 3, 6,7. The median of 3,6,7 is 6, which is not 3. So that's not desired.
+
+Hmm, this suggests that m=3 might not be possible in this case.
+
+Wait, perhaps a different approach.
+
+Wait, let's think about the desired overall median.
+
+We have m subarrays, each with median x_i. The overall median is the median of the x_i's.
+
+We want that median to be k.
+
+So, for example:
+
+If there are two x_i's, then their median is the average of the two if they are in order. Wait, no, it's the middle value. So, if the two x_i's are 2 and 4, the median is 3.
+
+So, in this case, the overall median is 3.
+
+So, for m=2, we need both x_i's to be such that their median is k.
+
+In the test case where n=7 and k=3, can we split into two subarrays, each with median 3.
+
+What's the first subarray?
+
+Let's see: what subarrays can have a median of 3.
+
+The subarray [1,2,3] has median 2.
+
+The subarray [2,3,4] has median 3. So, that's a candidate.
+
+So, the first subarray is [2,3,4], length 3.
+
+Then, the second subarray is [1,5,6,7], length 4, which is even. Not allowed.
+
+Wait, no, because the second subarray must have an odd length.
+
+Hmm, maybe the second subarray is [1,2,3,4], but that's length 4. Not allowed.
+
+Alternatively, the second subarray can be [5,6,7], median 6.
+
+But then the x_i's are 3 and 6. The median is 4.5, which is not k=3. So that's not desired.
+
+Hmm.
+
+Alternatively, perhaps a different split.
+
+First subarray is [2,3,4], median 3.
+
+Second subarray is [1,2,3,4], but that's even length, which is invalid.
+
+Wait, perhaps the second subarray is [5,6,7], but that's median 6.
+
+No, that won't help.
+
+Alternatively, perhaps the first subarray is [1,2,3], median 2.
+
+The second subarray is [4,5,6,7], but that's even length. No.
+
+Hmm, maybe m=2 is not possible here, but m=3 is.
+
+So, for m=3, perhaps split into [1,2,3], [4,5,6], [7]. Each has median 2, 5, 7. So the medians are 2,5,7. The overall median is 5, which is not k=3.
+
+Not helpful.
+
+Alternatively, another approach: can I arrange the subarrays so that each has a median of 3, and the overall median is 3.
+
+Wait, if I have one subarray with median 3, and two others with medians less than 3. Then, the overall median is 3. But if the other two medians are less than 3, then the two medians would be 3 and 2, for example. The median of these two is 2.5, which is less than 3. So that's not desired.
+
+Alternatively, if one of the other medians is 3, then the overall median is 3.
+
+But then, the medians are 3, 3, 3. So their median is 3.
+
+So, to do that, we need at least two subarrays with median 3.
+
+Wait, but how to arrange that.
+
+In the array [1,2,3,4,5,6,7], the first subarray could be [1,2,3], median 2.
+
+Second subarray [4,5,6], median 5.
+
+Third subarray [7], median 7. 
+
+The medians are 2,5,7. The median of these is 5. So that's not desired.
+
+Hmm, maybe this approach isn't working.
+
+Alternative idea: perhaps for m=3, the two subarrays with medians are 3, and the third is such that the overall median is 3.
+
+Wait, but how.
+
+Wait, perhaps the first subarray is [1,2,3], median 2. The second subarray is [4,5,6], median 5. The third is [7], median 7.
+
+The medians are 2,5,7. The overall median is 5, which is not 3.
+
+Hmm.
+
+Another approach: perhaps the first subarray is [2,3,4], median 3. The second is [5,6,7], median 6. The third is [1], median 1.
+
+The medians are 3,6,1. The overall median is 3, which is desired.
+
+So, the split would be [2,3,4], [5,6,7], [1]. Each subarray has an odd length.
+
+Then, the medians are 3,6,1. The median of these is 3, which is k=3.
+
+So yes, this works.
+
+So, for n=7, k=3, m=3 is possible.
+
+So, this suggests that when k is not the median, but for some cases, m=3 is possible.
+
+So, the initial approach of m=2 is not always possible, but for m=3, it can be possible.
+
+So, perhaps the strategy is:
+
+- If k is the median of the entire array, then m=1.
+
+- Else, check if it's possible to split the array into m=2 or m=3 subarrays, and choose the minimal m.
+
+Wait, but what about larger m?
+
+For example, m=4: could that be possible? Maybe, but perhaps m=2 is possible in some cases.
+
+So, perhaps the way to proceed is to first check if m=1 is possible (k is the median). If not, check if m=2 is possible. If not, check m=3, etc.
+
+But for large n, trying all m up to n is not feasible.
+
+So, perhaps, the minimal m is either 1 or 3.
+
+Wait, but let's think about the general case.
+
+When m is 1, it's only possible when k is the median.
+
+Else, perhaps m=2 can be possible only if certain conditions are met.
+
+But perhaps for some cases, m=2 is possible.
+
+Wait, for example:
+
+n=9, k=5.
+
+Median is 5.
+
+So, m=1 is possible.
+
+But if k is 4, which is less than 5.
+
+So, m=2 is possible?
+
+Let me compute p.
+
+p = (2*4 -9 -1)/3 = (8-9-1)/3 = (-2)/3 → -0.666, which is negative. So invalid.
+
+So, m=2 is not possible.
+
+So, for this case, need to find m=3.
+
+So, perhaps the minimal m is 1 if k is the median, else if m=2 is not possible, then m=3.
+
+But wait, is m=3 always possible?
+
+Let me think.
+
+When k is not the median, perhaps m=3 is always possible.
+
+Wait, for the test case n=7, k=3, m=3 works.
+
+What about another example: n=5, k=2.
+
+Median is 3. So, m=1 is impossible.
+
+Check m=2: p = (2*2 -5-1)/3 = (4-5-1)/3 = (-2)/3 → invalid.
+
+So, m=3.
+
+So, what is the split?
+
+We need to split into 3 subarrays, each with odd length, such that their medians are 2, 3, and 2. Because the overall median of these is 2.
+
+Wait, let's see:
+
+First subarray: [1,2,3], median 2.
+
+Second subarray: [4,5], but wait, length is 2, which is even. So, can't do that.
+
+Alternatively, the second subarray is [4,5,6], but wait, n=5, so no.
+
+Wait, perhaps the second subarray is [4,5], but again, length 2 invalid.
+
+Hmm, perhaps this approach is getting complicated.
+
+Alternative idea: to have two subarrays with medians 2 and 3, and third subarray with median 2.
+
+Wait, but how?
+
+Wait, the subarrays must have odd lengths.
+
+For example:
+
+First subarray: [1,2,3], median 2.
+
+Second subarray: [3,4,5], median 4.
+
+Third subarray: [ ]? No.
+
+Wait, perhaps this isn't the right approach.
+
+Another idea: for m=3, the first subarray is [1,2,3], median 2.
+
+The second subarray is [3,4,5], median 4.
+
+The third subarray is [ ]? No, can't do.
+
+Alternatively, perhaps the second subarray is [4,5], but again, no.
+
+Wait, perhaps I'm approaching this wrong.
+
+Let me think about the general approach.
+
+So, to find if m=2 is possible, the condition is p = (2k -n -1)/3 must be a positive integer.
+
+If that's the case, then m=2 is possible.
+
+Else, m=3 is possible.
+
+Because, for m=3, perhaps we can construct the subarrays such that two of them have a median of k, and the third has a median that doesn't affect the overall median.
+
+Wait, let me think for m=3.
+
+We can have two subarrays with median k, and the third subarray can be any subarray.
+
+Then, the medians of the three subarrays are k, k, and some x. The overall median is the median of [k, k, x], which is k if x >=k, since the two k's are at positions 1 and 2, and x is >=k.
+
+Wait, no. The three medians are k, k, and x. The sorted order is [x, k, k] if x <k. Or [k, x, k] if x >k.
+
+Wait, no, the three medians are k, k, x. So, when sorted, they are:
+
+If x <k: [x, k, k].
+
+If x >k: [k, k, x].
+
+If x ==k: [k, k, x], but x can't be equal, as all elements are distinct.
+
+So, the median of these three is k.
+
+So, in this case, the overall median is k.
+
+But wait, for m=3, the three subarrays can be arranged such that two have median k, and the third has a median that is also k. Or perhaps one has a higher median.
+
+Wait, no, the third subarray's median doesn't matter as long as the overall median is k.
+
+So, the approach would be:
+
+If m=3 is possible, then we can split the array into three subarrays, two of which have median k, and the third can be any subarray.
+
+So, for m=3, the question is whether it's possible to have two subarrays with median k.
+
+But wait, how?
+
+Because, in the array [1,2,3,4,5], the median is 3.
+
+To have two subarrays each with median 3.
+
+For example:
+
+Subarray 1: [1,2,3], median 2. No, that's not 3.
+
+Wait, no. So, how can I split the array into two subarrays each with median 3.
+
+Wait, the first subarray could be [3], which has median 3.
+
+The second subarray could be [4,5], but that's even length, so no.
+
+Alternatively, the second subarray could be [2,3,4,5], but that's even length.
+
+Hmm, perhaps it's not possible to have two subarrays each with median 3 in the array [1,2,3,4,5].
+
+So, for m=3, perhaps it's not possible.
+
+But this is getting a bit stuck.
+
+Perhaps, for the problem, the approach is as follows:
+
+- First, check if k is the median of the entire array. If yes, then m=1 is the solution.
+
+- Else, check if m=2 is possible. Compute p = (2k -n -1)/3. If p is a positive integer, then m=2 is possible, and we can construct the subarrays accordingly.
+
+- If m=2 is not possible, then check whether m=3 is possible. Or perhaps, it's always possible for m=3, but I'm not sure.
+
+Wait, let's think about the general case.
+
+Suppose m=3 is possible.
+
+We can always split the array into three subarrays such that two of them have the same median, which is k, and the third has a median that doesn't affect the overall median.
+
+But in this case, the overall median will be k.
+
+But wait, in the earlier test case, n=7, k=3.
+
+We can split into three subarrays:
+
+First: [2,3,4] → median 3.
+
+Second: [5,6,7] → median 6.
+
+Third: [1] → median 1.
+
+The medians are 3,6,1. The overall median is 3.
+
+Yes, this works.
+
+So, this approach works for m=3.
+
+So, perhaps, for m=3, the minimal way is to split the array into three parts, each with a median of k, and the third part can have any median.
+
+But how to construct such a split.
+
+Wait, for m=3, perhaps the first subarray is [k], which is the median. Then, the second subarray can be [k+1, k+2, ..., k+2m], but this is getting complicated.
+
+Alternatively, perhaps the first subarray is [k], the second is [k+1, k+2, ..., 3k], but I'm not sure.
+
+Wait, perhaps another approach is to have the first subarray be [a, a+1, ..., b], which has median k. The second subarray be [c, c+1, ..., d], which also has median k. The third subarray is the remaining part.
+
+But how to choose a, b, c, d such that the first two subarrays have median k.
+
+But this seems complicated.
+
+Alternatively, perhaps for m=3, it's always possible to arrange the split in such a way.
+
+So, the plan is:
+
+1. Check if k is the median of the entire array.
+
+   - If yes, then m=1 is the solution.
+
+2. Else, check if m=2 is possible.
+
+   - Compute p = (2k -n -1)/3.
+
+   - If p is a positive integer, then m=2 is possible.
+
+3. Else, check if m=3 is possible. Since m=3 is always possible (as per the earlier example), then m=3 is the solution.
+
+Wait, but is m=3 always possible?
+
+In the earlier test case, n=7, k=3.
+
+We had p=0, which is invalid for m=2.
+
+So, for m=3, perhaps it's possible.
+
+But, how to construct the split.
+
+Another approach: always try m=3.
+
+But how?
+
+Wait, perhaps the first subarray is the first 3 elements: [1,2,3]. Its median is 2.
+
+The second subarray is the next 3 elements: [4,5,6], median 5.
+
+The third subarray is [7], median 7.
+
+The medians are 2,5,7. The overall median is 5, which is not k=3.
+
+So, this approach doesn't work.
+
+Hmm.
+
+Another idea: perhaps the first subarray is [k, k+1, k+2], so median is k+1.
+
+No, not helpful.
+
+Alternatively, perhaps the first subarray is [2k-1, 2k, 2k+1], but that may not be necessary.
+
+Alternatively, perhaps the first subarray is [k], the second is [k+1, k+2, ..., 2k], and the third is [2k+1, ..., n].
+
+But how to ensure that the second subarray has a median of k.
+
+Wait, for the second subarray, the median is k. So, the length of the second subarray must be odd, and the middle element must be k.
+
+So, the second subarray starts at position p+1 and ends at n.
+
+The middle position is p + (length+1)/2 = p + (l2 +1)/2.
+
+Which must correspond to the element k.
+
+So, for the second subarray to have a median of k, the middle element must be k.
+
+So, for the second subarray, the middle element is k.
+
+The second subarray starts at position s = p+1.
+
+Its length is l2 = n - p.
+
+So, the middle position is s + (l2 +1)/2.
+
+Which must equal to k.
+
+So, s + (l2 +1)/2 = k.
+
+But s = p+1.
+
+l2 = n - p.
+
+So:
+
+p+1 + (n - p +1)/2 = k.
+
+Simplify:
+
+p +1 + (n -p +1)/2 = k.
+
+Multiply all terms by 2:
+
+2(p +1) + n -p +1 = 2k.
+
+Simplify:
+
+2p + 2 +n -p +1 = 2k → p +3 + n = 2k → p = 2k -n -3.
+
+But p must be >=1, and s = p+1 must be <=n.
+
+So, p >=1 → 2k -n -3 >=1 → 2k >=n +4.
+
+Also, p+1 <=n → p <=n-1 → 2k -n -3 <=n-1 → 2k <=2n +2 → k <=n+1, which is always true since k <=n.
+
+So, for the second subarray to have a median of k, p must be 2k -n -3, and p must be >=1.
+
+So, for the second subarray to have a median of k, p=2k -n -3.
+
+But also, the first subarray's length must be odd.
+
+The first subarray starts at 1 and has length p.
+
+p must be odd.
+
+So, 2k -n -3 must be odd.
+
+Which implies that 2k -n -3 is odd.
+
+So, 2k is even, n is even or odd.
+
+Wait, 2k is even, n is some value.
+
+So, 2k -n -3 is even minus n minus 3.
+
+So, 2k is even, n can be even or odd.
+
+But for 2k -n -3 to be odd, n must be even.
+
+Because even minus even is even, even minus odd is odd.
+
+So, for 2k -n -3 to be odd, n must be even.
+
+Wait, let's see:
+
+If n is even, then even (2k) - even (n) -3 (odd) → even - even is even, even - 3 is odd.
+
+So, 2k -n -3 is odd.
+
+So, if n is even, p can be 2k -n -3, which is odd.
+
+If n is odd, then n is odd, so 2k -n is even or odd?
+
+Hmm, 2k is even, n is odd.
+
+So, even minus odd is odd.
+
+Then, 2k -n -3 is even (even) minus odd (n) minus 3 (odd).
+
+So, even - odd is odd.
+
+Odd -3 is even.
+
+So, 2k -n -3 is even if n is odd.
+
+So, to have p as odd, for the first subarray:
+
+If n is even, p is odd.
+
+If n is odd, p is even.
+
+But p must be >=1 and <=n.
+
+So, for the second subarray to have a median of k, p must be 2k -n -3, and p must be >=1.
+
+Also, the first subarray length p must be odd.
+
+So, for m=2, it's possible only if:
+
+- n is even, and p=2k -n -3 is >=1 and odd.
+
+OR
+
+- n is odd, and p=2k -n -3 is even and >=1.
+
+But also, the first subarray must be of odd length, and the second subarray must be of odd length.
+
+So, for example, in the test case where n=7 (odd), k=3.
+
+Check if p=2*3 -7 -3=6-7-3= -4. Which is invalid.
+
+So, for m=2, it's not possible.
+
+So, for m=3, perhaps we can proceed.
+
+But how.
+
+Wait, perhaps for m=3, the first two subarrays have a median of k, and the third subarray is arranged such that its median doesn't affect the overall median.
+
+But how to arrange that.
+
+Alternatively, perhaps the approach is:
+
+- Split

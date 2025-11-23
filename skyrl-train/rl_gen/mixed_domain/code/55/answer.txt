@@ -1,0 +1,554 @@
+Okay, so I've got this problem to solve, and I need to figure out the earliest time when all the apartment's lights are turned on. Let's see the problem statement again to make sure I understand it.
+
+We have an apartment with n rooms, each with a light that starts off. There are chips installed in each room at different times. Each chip is installed at time a_i, and each chip affects the light's status every k minutes. So the chip at time a_i turns the light on for k minutes, then off for k, then on, and so on.
+
+The goal is to find the earliest time when all the rooms have their lights on. If it's impossible, we return -1.
+
+Hmm, so for each room, the light will be on at some times. We need all of them to be on at the same time.
+
+Let me think about how the light in a room behaves. The light starts off. Then, at a_i, it turns on for k minutes, so it's on from a_i to a_i + k. Then at a_i +k, it turns off, and so on.
+
+So for a given a_i, the light is on in the intervals [a_i + m*k, a_i + (m+1)*k) for each integer m >=0.
+
+So for each room i, the times when the light is on can be represented as a union of intervals starting at a_i, and every k minutes after that.
+
+The problem is to find a time T such that for every room i, T is in one of these intervals for i.
+
+And we need the smallest such T.
+
+If for any room, the intervals never include T, then the answer is -1.
+
+So how can we model this?
+
+Let me think about each room's possible on intervals. For each i, T must be >= a_i + m_i *k for some integer m_i >=0, and T < a_i + (m_i+1)*k.
+
+So for all i, T must be >= a_i + m_i *k and < a_i + (m_i+1)k.
+
+We need to find the smallest T that satisfies this for all i.
+
+But this seems a bit tricky. How do we find such a T?
+
+One approach is to find for each room the earliest time it can turn on, and see if there's a common time when all can be on.
+
+Wait, but that's not exactly right. Because each room has multiple intervals, and we need the earliest T that is in all of them.
+
+So perhaps for each room i, the earliest possible on time is a_i, then a_i +k, a_i + 2k, etc. But we need the T to be >= a_i + m_i*k for all i, and T must be in one of these intervals for each i.
+
+Wait, but how?
+
+Another idea is to find the maximum of all the a_i's. Because if T is equal to the maximum a_i, then for all rooms, T is >= a_i, but is T in the interval for each room?
+
+Not necessarily. For example, say room 1 is installed at a_1=5, k=3. Then the intervals are 5-8, 8-11, etc. So T=5 is on, T=8 is on, but T=9 is not.
+
+So the maximum a_i is 5, and that's the earliest possible T. But if another room's a_i is larger, say 6, then T=6 is the earliest.
+
+Wait, but if the maximum a_i is 6, then T=6 is acceptable, because for room 1, 6 is in [5,8), and for room 2, 6 is in [6,9), which is [6,9).
+
+So the earliest T is the maximum of all a_i's. But wait, no. Because what if for some room, the maximum a_i is too early, and the other rooms' intervals don't include that T.
+
+Wait, no. Because for any room i, a_i is the earliest time it can be on. So the maximum a_i is the earliest time T that is >= all a_i's. Because for T to be >= a_i for all i, the earliest possible T is the maximum a_i.
+
+But then, for each room i, T must be in one of the intervals [a_i, a_i +k), [a_i +k, a_i +2k), etc.
+
+Wait, but T is equal to the maximum a_i. So for each i, T is >= a_i, so the first interval is [a_i, a_i +k). So T would be in that interval if T >= a_i and T < a_i +k.
+
+But if T is the maximum a_i, then it's possible that T is >= a_i +k. For example, if a_i is 5 and k is 3. Then a_i +k is 8. If T is 8, then for room i, T is 8, which is >= a_i, but 8 is not in [5,8). It's exactly 8, which is the end. So it's not included.
+
+So in this case, T must be >= a_i, and T < a_i +k. So for T to be >= a_i and < a_i +k, it must be in the first interval of room i.
+
+So for T to be the maximum a_i, we need that T < a_i +k for all i.
+
+Otherwise, for some i, T is >= a_i +k, which is the end of its interval, so T is not in that room's interval.
+
+So the maximum a_i is T, but only if T < a_i +k for all i.
+
+Otherwise, it's impossible.
+
+So the earliest T is the maximum a_i, but only if for all i, a_i +k > T.
+
+Wait, no. Because T is the maximum a_i, so for each i, a_i <= T.
+
+So a_i +k >= a_i (since k is positive). So T is a_i +k is >= a_i, and T is a_i +k.
+
+Wait, no, T is the maximum a_i, so for some i, a_i = T.
+
+So for that i, T is equal to a_i. So in its interval, T is in [a_i, a_i +k) if T < a_i +k.
+
+Which is T < T +k. Which is always true, since k>0.
+
+So for that i, the interval includes T.
+
+So for other rooms j, a_j <= T, and T = a_j +k would be in their interval, but if T is exactly a_j +k, then it's the end of their interval. So T is not in their interval.
+
+So for T to be the maximum a_i, but for all j, a_j +k > T.
+
+Wait, but T is a_i, and for j != i, a_j <= a_i.
+
+So for j != i, a_j +k <= a_i +k.
+
+But T is a_i, so a_j +k <= a_i +k.
+
+But T is the maximum a_i, so a_i is the largest. So for j != i, a_j < a_i.
+
+So a_j +k < a_i +k.
+
+So T is a_i. So for j, a_j +k < a_i +k = T +k.
+
+So T is a_i, and for j, a_j +k < T +k.
+
+So for j, their interval is [a_j, a_j +k), which is up to T +k, but T is a_i, which is >= a_j. So a_j +k could be <= T +k.
+
+Wait, for j, a_j <= T, so a_j +k <= T +k.
+
+So T is a_i, which is >= a_j.
+
+So for j, the interval is [a_j, a_j +k). T is a_i, which is >= a_j.
+
+So T is in [a_j, a_j +k) if a_i < a_j +k.
+
+Which is always true, because a_i is the maximum.
+
+So for j, a_j <= a_i. So a_i +k is >= a_j +k. Wait, no: a_i >= a_j, so a_i +k >= a_j +k.
+
+So for j, T = a_i >= a_j. So T is in [a_j, a_j +k) if and only if a_i < a_j +k.
+
+Which is equivalent to a_i - a_j < k.
+
+So for each j, a_i - a_j < k.
+
+Which would mean that T = a_i is in the interval of j.
+
+So for T to be the maximum a_i, and for all j, a_i - a_j <k, then T is in all j's intervals.
+
+So the earliest possible T is the maximum a_i, provided that for all j, a_i - a_j <k.
+
+Otherwise, it's impossible.
+
+So the steps are:
+
+1. For each test case, compute the maximum a_i, call it T.
+
+2. For all other a_j, check if a_i - a_j <k.
+
+   If any a_j is >= a_i -k, then T is not in j's interval.
+
+   So the answer is -1.
+
+3. Else, T is the answer.
+
+Wait, but wait:
+
+If T is the maximum a_i, then for any j, a_j <= T.
+
+So a_i - a_j is >= 0.
+
+So the condition is a_i -a_j <k.
+
+Which is equivalent to a_j > a_i -k.
+
+So for all j, a_j must be > a_i -k.
+
+Which can be rewritten as a_j +k > a_i.
+
+So for each j, a_j +k > a_i.
+
+Wait, that's right.
+
+So, for T to be the maximum a_i, and for all j, a_j +k > a_i, then T is the answer.
+
+Otherwise, if any j has a_j +k <= a_i, then T is not in j's interval.
+
+So the algorithm is:
+
+For each test case:
+
+- Find the maximum a_i, T.
+
+- For all j, check if a_j +k > T.
+
+   If all j satisfy this, then answer is T.
+
+   Else, answer is -1.
+
+Wait, that's a neat condition. So the steps are:
+
+Compute T = max(a).
+
+For each j, if a_j +k <= T, then it's impossible.
+
+So the answer is T if all a_j > T -k.
+
+Else, it's impossible.
+
+So let's test this with some examples.
+
+Example 1:
+
+Test case 1:
+
+n=2, k=3.
+
+a = [4, 5]
+
+T =5.
+
+Check for j=1: a_j=4. 4 +3 =7 >5? Yes.
+
+j=2:5+3=8>5? Yes.
+
+So answer is 5.
+
+Which is correct, because both rooms are on at 5.
+
+Another example:
+
+n=2, k=3.
+
+a = [5, 8]
+
+T=8.
+
+Check j=1:5+3=8 <=8? Yes. So T=8 is not in j=1's interval.
+
+So answer is -1.
+
+Another example:
+
+n=3, k=2.
+
+a = [3,4,5].
+
+T=5.
+
+Check j=1:3+2=5 <=5? Yes. So condition fails.
+
+So answer is -1.
+
+Another example:
+
+n=3, k=4.
+
+a = [1,5,6].
+
+T=6.
+
+Check j=1:1+4=5 <6? Yes. So 5 <6, which is true. So 5 <6, which is true.
+
+j=2:5+4=9>6: yes.
+
+j=3:6+4=10>6: yes.
+
+So all j satisfy a_j +4 >6.
+
+So answer is 6.
+
+Which makes sense: for room 1, 6 is in [1,5), [5,9), etc. So at 6, it's in the first interval.
+
+Room 2: 6 is in [5,9), yes.
+
+Room3:6 is in [6,10), yes.
+
+So all are on.
+
+Another test case:
+
+n=1, k=5.
+
+a = [10].
+
+T=10.
+
+No other rooms, so answer is 10.
+
+Yes.
+
+Another test case:
+
+n=3, k=5.
+
+a = [2, 7, 8].
+
+T=8.
+
+Check j=1: 2+5=7 <8? No, 7 <8 is yes.
+
+j=2:7+5=12>8: yes.
+
+j=3:8+5=13>8: yes.
+
+So condition is satisfied. So answer is 8.
+
+Yes: room1 is on at 8 (7 <8 <12), room2 is on at 7 <8 <12, room3 is on at 8.
+
+So all are on.
+
+Another test case where condition is not satisfied.
+
+n=2, k=3.
+
+a = [4,5].
+
+T=5.
+
+Check j=1:4+3=7>5: yes.
+
+j=2:5+3=8>5: yes.
+
+So answer is 5.
+
+Yes, as before.
+
+Another case where j has a_j +k <= T.
+
+n=2, k=3.
+
+a = [5,5].
+
+Wait, but a_i's must be distinct, as per the problem statement. So this is not a valid input.
+
+So the approach is:
+
+For each test case, compute T = max(a).
+
+For each i in a, check if a_i +k > T.
+
+If all do, then T is the answer.
+
+Else, it's -1.
+
+So the code can be structured as:
+
+Read t test cases.
+
+For each test case:
+
+   Read n, k.
+
+   Read a as a list.
+
+   T = max(a)
+
+   possible = True
+
+   for each x in a:
+
+       if x +k <= T:
+
+           possible = False
+
+           break
+
+   if possible:
+
+       print(T)
+
+   else:
+
+       print(-1)
+
+Wait, yes. That's the plan.
+
+Now, let's test it against some examples.
+
+Let's see.
+
+Test case where T is the maximum, but some a_j +k is <= T.
+
+For example:
+
+n=2, k=2.
+
+a = [3, 3]. Wait, but the problem says a_i are distinct. So this is invalid.
+
+Another test case:
+
+n=2, k=2.
+
+a = [3, 2].
+
+T=3.
+
+Check a_j +k for j=1: 3+2=5>3: yes.
+
+j=2:2+2=4>3: yes.
+
+So answer is 3.
+
+Yes, because for j=1, T is in [3,5), and for j=2, T is in [2,4). So yes.
+
+Another test case where one j has a_j +k <= T.
+
+n=2, k=2.
+
+a = [3, 2].
+
+Wait, same as before.
+
+Another test case:
+
+n=2, k=2.
+
+a = [3, 3]. Again, not allowed.
+
+Another test case:
+
+n=3, k=2.
+
+a = [5, 3, 4].
+
+T=5.
+
+Check each a_i:
+
+5 +2=7>5: yes.
+
+3+2=5 <=5: yes.
+
+So condition fails. So answer is -1.
+
+Yes, because for j=2, a_j=3, 3+2=5 <=5, so T=5 is not in j=2's interval.
+
+So the answer is -1.
+
+So the code seems to handle this correctly.
+
+So the code would be:
+
+Read t.
+
+For each test case:
+
+   Read n, k.
+
+   Read a list.
+
+   T = max(a).
+
+   possible = True
+
+   for x in a:
+
+       if x +k <= T:
+
+           possible = False
+
+           break
+
+   if possible:
+
+       print(T)
+
+   else:
+
+       print(-1)
+
+Yes, that's the plan.
+
+Now, let's write the code.
+
+We need to handle multiple test cases, and for each, process the a_i.
+
+In Python, this can be done as follows.
+
+Read t.
+
+For each t:
+
+   Read n, k.
+
+   Read a as list of integers.
+
+   T = max(a)
+
+   flag = True
+
+   for x in a:
+
+       if x +k <= T:
+
+           flag = False
+
+           break
+
+   if flag:
+
+       print(T)
+
+   else:
+
+       print(-1)
+
+Yes, that should do it.
+
+Testing this with the examples I thought of should work.
+
+Another test case: n=1, k=10.
+
+a = [5].
+
+T=5.
+
+Check a_j +k =5+10=15>5: yes.
+
+So answer is 5.
+
+Yes.
+
+Another test case: n=3, k=1.
+
+a = [1,2,3].
+
+T=3.
+
+Check each x:
+
+1+1=2<=3: yes.
+
+So condition fails. So answer is -1.
+
+Yes, because for x=1, T=3 is not in [1,2).
+
+So, the code should handle all these correctly.
+</think>
+
+To solve this problem, we need to determine the earliest moment when all apartment rooms have their lights turned on. Each room's light is controlled by a chip that turns the light on for `k` minutes and then off for `k` minutes, repeating this cycle. The goal is to find the earliest time `T` such that all rooms have their lights on.
+
+### Approach
+1. **Identify the Maximum Time**: The earliest time `T` when all rooms can potentially have their lights on is the maximum time `a_i` at which a chip is installed. This is because for `T` to be the earliest time, it must be the latest chip installation time.
+2. **Check Feasibility**: For each room, check if `T` falls within its on interval. The on interval for a room `i` starts at `a_i` and continues every `k` minutes. Thus, `T` must be greater than `a_i` and less than `a_i + k` for all rooms.
+
+### Solution Code
+```python
+def main():
+    import sys
+    input = sys.stdin.read().split()
+    idx = 0
+    t = int(input[idx])
+    idx += 1
+    for _ in range(t):
+        n, k = int(input[idx]), int(input[idx+1])
+        idx += 2
+        a = list(map(int, input[idx:idx+n]))
+        idx += n
+        T = max(a)
+        possible = True
+        for x in a:
+            if x + k <= T:
+                possible = False
+                break
+        if possible:
+            print(T)
+        else:
+            print(-1)
+
+if __name__ == "__main__":
+    main()
+```
+
+### Explanation
+1. **Reading Input**: The input is read in one go for efficiency, especially given the constraints.
+2. **Processing Each Test Case**: For each test case, we read the number of rooms `n` and the interval `k`. We then read the list of chip installation times `a`.
+3. **Determine Earliest Time**: The earliest possible time `T` is the maximum value in `a`. We then check if `T` is within the on interval for all rooms.
+4. **Feasibility Check**: For each room, if `T` is not within its on interval (i.e., `a_i + k <= T`), it is impossible for all rooms to have their lights on at `T`, and we return `-1`.
+
+This approach ensures that we efficiently determine the earliest time or determine if it is impossible for all rooms to have their lights on.<｜end▁of▁sentence｜>

@@ -1,0 +1,847 @@
+Okay, so I've got this problem to solve. Let's read it carefully.
+
+The problem is about defeating a boss in a video game. The boss has h health points, and I have n attacks. Each attack has a certain amount of damage and a cooldown. The cooldown means that after using this attack, I can't use it for the next c_i turns. Each turn, I can use all the attacks that are not on cooldown. If all are on cooldown, I do nothing that turn. I need to find out how many turns it will take to reduce the boss's health to zero or less.
+
+Hmm. So the initial state is that all attacks are not on cooldown. Each turn, I can choose to use any subset of the attacks that aren't on cooldown. The goal is to minimize the number of turns.
+
+First, I think about the approach. The key is to model the usage of attacks over time, considering their cooldowns. Since each turn I can use all available attacks, the problem becomes figuring out the optimal time to use each attack to maximize damage per turn.
+
+Wait, but the order in which I use the attacks might matter. But since all attacks that are not on cooldown can be used in a single turn, perhaps it's optimal to use all of them at once. That way, I can maximize the damage each turn.
+
+So, the problem reduces to scheduling the attacks such that each attack uses as much of the remaining health as possible, considering their cooldowns.
+
+Let's think about how to model this. For each attack, it's on cooldown for c_i turns starting from its current turn. So, each attack's next use is x + c_i, where x is the current turn.
+
+Each turn, I can choose to use any set of attacks that are not on cooldown. So, the strategy would be to use as many attacks with higher damage first, because using them earlier when they have less cooldown allows me to do more damage in each turn.
+
+Wait, but if an attack has a high damage, using it now gives more damage in the same turn. So, perhaps the optimal approach is to always use the attack with the highest remaining health first.
+
+Yes, that makes sense. So, the plan is:
+
+1. For each test case, sort the attacks in descending order of a_i.
+2. Simulate each turn, using as many high-damage attacks as possible without being on cooldown.
+3. Keep track of the remaining health and the current turn.
+
+But how to efficiently simulate this? Because for each turn, I might have to check all attacks to see if they are still active (not on cooldown). But with n up to 2e5, a naive simulation would be too slow.
+
+So, I need a more efficient approach.
+
+Let me think about the events that happen over time. Each attack has a cooldown, so each attack becomes active again after c_i turns. So, the timeline can be represented as a series of events where each attack's next activation is known.
+
+But tracking this for each turn is tricky. Instead, perhaps I can model the problem by considering the maximum number of attacks that can be used in each turn, given the current state.
+
+Wait, but the order in which I use the attacks affects the cooldowns. For example, if I use a high-damage attack now, it becomes active for the next c_i turns. So, in the next turn, I can use it again.
+
+So, the key is to schedule the attacks in such a way that in each turn, I use the highest remaining a_i attacks that are not on cooldown.
+
+Hmm. So, perhaps I can represent the state of each attack as the current turn. For each attack, if the current turn is <= (current turn + c_i - 1), then it's active.
+
+Wait, no. Because the attack becomes active at the next turn after its cooldown. So, the next time I can use it is turn x + c_i.
+
+So, for each attack, the next activation is x + c_i, where x is the current turn. So, if the next activation is within the next, say, m turns, then the attack can be used in those turns.
+
+So, in a given turn, the set of active attacks is those whose next activation is in the same turn or the next. So, for each attack, if (current turn + 1) - c_i <= current turn, then it's active. Wait, no. Let's think.
+
+An attack is active if the current turn is <= (current turn + c_i - 1). Because the cooldown is c_i turns, so after c_i turns, it can be used again. So, the attack can be used in the current turn or the next c_i - 1 turns.
+
+Wait, perhaps the condition is: if (current turn) <= (current turn + c_i - 1). Which is always true. Oh, that can't be right.
+
+Wait, no. Let me think again. The cooldown is c_i, meaning that after using the attack, you can't use it for the next c_i turns. So, the next time you can use it is turn x + c_i.
+
+So, in the current turn x, if I use this attack, it becomes active for the next c_i turns, i.e., from x + 1 to x + c_i.
+
+So, in the next x+1, x+2, ..., x + c_i, this attack is active.
+
+So, during the current turn x, if I decide to use this attack, it becomes active for the next c_i turns.
+
+Thus, in the current turn, I can use any attack whose next activation is in the current turn. So, for an attack with c_i = 2, in the current turn, it's active because in the next turn, it can be used again.
+
+So, for each attack, in the current turn, it's active if (current turn + 1) - c_i <= current turn.
+
+Wait, that's not correct. Because if c_i is 2, then the next activation is current turn + 2. So, in the current turn, the attack is not active yet. It's active in the next two turns.
+
+So, for the current turn, the attack is not active, but in the next two turns, it will be.
+
+So, the condition is: if the current turn is <= (current turn + c_i - 1). Which is always true. So, every attack is active in the current turn.
+
+Wait, that can't be right because if c_i is 1, then the attack can be used again in the same turn. So, the condition is that the attack can be used in the current turn x, and then again in x+1, x+2, etc., for c_i turns.
+
+So, for an attack with c_i = 1, in the current turn, it's active, because in the next turn (x+1), it can be used again.
+
+So, the condition for an attack being active in the current turn is (current turn + 1) <= x + c_i, but x is the current turn, so x is the current turn. Wait, this is getting confusing.
+
+Maybe it's better to model the attack's active periods. For each attack i, it is active in turns from x to x + c_i - 1, where x is the turn when it was last used.
+
+Wait, no. Because the cooldown is c_i, meaning you can't use it for the next c_i turns. So, if you use it at turn x, the next possible use is at x + c_i.
+
+So, the attack is active in turn x, and in the next c_i - 1 turns after x.
+
+Wait, no. Because if you use it at x, then you can't use it in x+1, x+2, ..., x + c_i.
+
+So, the attack is active in x, and then inactive for the next c_i turns.
+
+So, in terms of when the attack can be used, it's active in turn x, and then inactive. So, for turn x, it's active. For turns x+1 to x + c_i - 1, it's inactive. For turn x + c_i, it's active again.
+
+So, in the current turn x, the attack is active if x - c_i + 1 <= 0 or something? No, that's not right.
+
+Wait, perhaps it's better to model the attack's active period as [x, x + c_i - 1]. So, in the current turn x, the attack is active if x is within [x, x + c_i - 1], which is always true. But this doesn't make sense because if c_i is 1, then the attack can be used again in the same turn.
+
+Wait, maybe the active period is [x, x + c_i). So, in the current turn x, it's active, and then inactive for the next c_i turns.
+
+So, for an attack i, if I use it in turn x, then in turns x+1, x+2, ..., x + c_i, it's not active.
+
+So, the attack is active in turn x, and then inactive for the next c_i turns.
+
+So, in the current turn x, the attack is active, so I can use it.
+
+So, in each turn, I can use all attacks that are active, i.e., whose active period includes the current turn.
+
+So, the problem is to find, for each turn, which attacks are active and use them, adding their damage to the health, until health <=0.
+
+So, the approach is:
+
+1. For each test case, process the attacks.
+
+2. For each attack, determine the best time to use it to maximize damage per turn.
+
+But how?
+
+Wait, perhaps the optimal strategy is to use the attacks with the highest a_i as much as possible, since they contribute more damage.
+
+So, the plan is:
+
+- Sort the attacks in descending order of a_i.
+
+- Simulate each turn, using as many of the highest a_i attacks as possible, without overlapping their cooldowns.
+
+Wait, but using a higher a_i attack now will make it active for the next c_i turns, so in the next turn, it can be used again.
+
+So, the idea is to use the highest a_i attacks first, as they can be used in multiple turns.
+
+So, the simulation can proceed by keeping track of the current turn, and for each turn, determine which attacks are still active and unused, and use the highest a_i ones.
+
+But how to efficiently find which attacks are active and unused in each turn.
+
+So, the steps could be:
+
+- Sort the attacks in descending order of a_i.
+
+- For each test case, initialize current turn to 0.
+
+- remaining_health = h.
+
+- while remaining_health > 0:
+
+   - find all attacks that are not yet used, and whose active period includes the current turn.
+
+   - among these, select the ones with the highest a_i.
+
+   - sum their a_i, subtract from remaining_health.
+
+   - increment current turn by the number of attacks used.
+
+But the problem is, how to find which attacks are active and unused.
+
+Wait, for each attack, we can track when it becomes active again. So, for each attack, the next activation is current turn + c_i.
+
+So, for each attack, if the current turn is <= (current turn + c_i - 1), then it's active.
+
+Wait, no. Because the attack's active period is [current turn, current turn + c_i - 1]. So, for the current turn x, it's active if x >= x and x <= x + c_i -1, which is always true.
+
+Wait, no. Wait, the active period starts at x, and ends at x + c_i - 1. So, in the current turn x, the attack is active. In the next c_i -1 turns, it's inactive.
+
+So, for each attack, during the current turn x, it's active.
+
+So, in the current turn, all unused attacks that are active can be used.
+
+So, the algorithm is:
+
+Sort the attacks in descending order of a_i.
+
+current_turn = 0
+
+remaining_health = h
+
+while remaining_health > 0:
+
+   max_damage = 0
+
+   max_attacks = 0
+
+   for each attack in sorted list:
+
+       if attack is not used, and current_turn <= current_turn + c_i - 1:
+
+           if attack's a_i is higher than current max_damage:
+
+               max_damage = attack's a_i
+
+               max_attacks = 1
+
+           elif attack's a_i == max_damage:
+
+               max_attacks += 1
+
+       else:
+
+           continue
+
+   if max_damage > 0:
+
+       used_attacks = 0
+
+       damage_used = 0
+
+       for _ in range(max_attacks):
+
+           damage_used += max_damage
+
+           remaining_health -= damage_used
+
+           if remaining_health <=0:
+
+               break
+
+           current_turn +=1
+
+           used_attacks +=1
+
+       # if we didn't break, continue to next iteration
+
+   else:
+
+       # no attacks can be used, which is impossible since h>0
+
+       break
+
+So, this approach would simulate each turn, using as many high a_i attacks as possible, in each turn, until the health is reduced to zero.
+
+But wait, this approach could be O(t * n * h), which is not feasible given the constraints (t is up to 1e4, n up to 2e5, h up to 2e5). So, for each test case, the inner loop could be O(n^2), which is way too slow.
+
+So, we need a more efficient way to compute how many attacks can be used in each turn, without iterating through all attacks each time.
+
+Hmm. Let's think about this.
+
+Each turn, the number of attacks that can be used is equal to the number of active, unused attacks with the highest a_i.
+
+So, the idea is to keep track of the maximum a_i, and how many can be used in the current turn.
+
+But how to do this efficiently.
+
+Wait, perhaps we can track the current maximum a_i, and the number of attacks that can be used at that a_i.
+
+We can keep a priority queue (max-heap) of the a_i's, but considering that each attack's next activation is x + c_i.
+
+So, for each attack, when it's used, it becomes available for x + c_i onwards.
+
+So, the process is:
+
+- Initially, all attacks are available.
+
+- For each turn, select the maximum a_i that is still available (i.e., whose next activation is in the current turn or the next one, but not in the previous).
+
+- Use as many as possible of these maximum a_i attacks in the current turn.
+
+But again, how to do this efficiently.
+
+Another approach: since each attack's next activation is x + c_i, we can model the problem as a series of events where each attack becomes available after c_i turns.
+
+So, for each attack i, the next activation is at current_turn + c_i.
+
+Thus, the problem becomes scheduling the usage of the highest a_i attacks in such a way that in each turn, we select the maximum a_i that is still available (i.e., whose next activation is in the current turn or in the next turn, but not before).
+
+Wait, no. Because the next activation is x + c_i, which is the next turn after the current one. So, in the current turn x, the attack is active and can be used.
+
+So, for each attack, it's active in turn x, and then inactive for the next c_i -1 turns.
+
+So, in the current turn x, it's active, so can be used.
+
+Thus, the process is:
+
+- For each turn x, collect all attacks that are active (i.e., whose next activation is >= x+1, because after x, the attack becomes active again).
+
+Wait, no. Because after using it in x, the next activation is x + c_i, so for x + 1 to x + c_i -1, it's inactive.
+
+So, in x + c_i, it's active again.
+
+So, in the current turn x, the attack is active, and the next activation is x + c_i.
+
+So, in the current turn x, the attack is active.
+
+Thus, for the current turn x, the attack is active, and can be used.
+
+So, the problem is, for each turn, collect all the attacks that are active (i.e., whose next activation is in the current turn x), and use as many as possible of the highest a_i attacks.
+
+Wait, but how to find which attacks are active in the current turn x.
+
+Wait, the next activation of attack i is x + c_i. So, in the current turn x, the attack is active if x + c_i > x. Which is always true, as c_i >=1.
+
+Wait, no. Because if c_i is 1, then the next activation is x + 1, which is the next turn. So, in x, the attack is active.
+
+Yes.
+
+So, for any attack i, in any turn x, it's active.
+
+Wait, that can't be right. Because if c_i is 1, then in turn x, you can use it, and in x+1, you cannot. So, in turn x, it's active.
+
+So, for any attack i, it's active in every turn except if it's been used before.
+
+So, the initial approach is correct: each attack is active in every turn except those where it's been used.
+
+So, in the current turn x, all unused attacks are active.
+
+So, the simulation approach can be:
+
+- Sort the attacks in descending order of a_i.
+
+- For each test case, process the turns, using as many high a_i attacks as possible each turn.
+
+So, the question is, how to find, for each turn, how many attacks with a_i equal to the current maximum are available.
+
+Let me think about the simulation steps.
+
+Initialize:
+
+current_turn = 0
+
+remaining_health = h
+
+max_a = 0
+
+count_max = 0
+
+for each attack in sorted list:
+
+    if a_i > max_a or (a_i == max_a and count_max ==0):
+
+        max_a = a_i
+
+        count_max = 1
+
+    else:
+
+        count_max +=1
+
+So, we can have a max-heap that keeps track of the highest a_i, and how many are available.
+
+Then, in each turn:
+
+- While the top of the heap has a_i == max_a and count_max >0:
+
+   use one attack per turn.
+
+So, the number of attacks used per turn is the number of max_a attacks available.
+
+Wait, but that's not correct because each attack can be used multiple times in different turns.
+
+Wait, no. Because each attack can be used in multiple turns, as long as it's active. So, for example, attack i is active in turn x, x+1, etc.
+
+So, in each turn, the number of attacks used is the number of max_a attacks that are still available.
+
+So, the idea is:
+
+- For each test case, sort the attacks in descending order of a_i.
+
+- Use a max-heap to track the highest a_i, and how many are available.
+
+- For each turn:
+
+   - While the top of the heap has a_i == max_a and count >0:
+
+       use one attack (damage is a_i)
+
+       subtract from remaining_health.
+
+       if remaining_health <=0, break.
+
+       increment current_turn.
+
+   - Repeat until remaining_health <=0.
+
+Wait, but how to efficiently find the number of max_a attacks available.
+
+Wait, perhaps we can track the number of max_a attacks remaining.
+
+So, in the initial step, count_max is the number of attacks with a_i == max_a.
+
+Then, for each turn, we can use min(count_max, remaining_health // max_a) attacks.
+
+Wait, but that's not correct because each attack can be used multiple times in different turns, but each time, it's using a different turn.
+
+Wait, no. Each attack can be used in multiple turns, as long as it's active.
+
+So, each attack can be used once per turn, but only if it's still active.
+
+So, for example, if you have two attacks, both a_i=10, c_i=1, h=20.
+
+Then, in turn 0, use both, h becomes 0. So, 2 turns.
+
+So, the process is:
+
+current_turn =0, remaining_health=20.
+
+max_a is 10, count_max=2.
+
+So, in turn 0, use 2 attacks, h becomes 0. So, done.
+
+So, the algorithm is:
+
+max_a = 0
+
+count_max = 0
+
+for each attack in sorted list:
+
+    if a_i > max_a:
+
+        max_a = a_i
+
+        count_max =1
+
+    elif a_i == max_a:
+
+        count_max +=1
+
+So, the initial state is max_a=0, count_max=0.
+
+Wait, no. Because initially, all attacks are active.
+
+So, perhaps the initial state is to have all attacks available, so max_a is the maximum a_i, and count_max is n.
+
+Then, in each turn, subtract the max_a as much as possible, until remaining_health is <=0.
+
+But that's only if all attacks are used each turn. Which is not the case.
+
+So, this approach is incorrect.
+
+Hmm. So, I think I need a different approach.
+
+Alternative idea: each attack can be used multiple times, but each use is in a separate turn, and the attack becomes active again after c_i turns.
+
+So, for an attack with a_i=10, c_i=2, it can be used in turns 0, 2, 3, 4, etc.
+
+Wait, no. Because in turn 0, it's active. Then, in turn 1, it's inactive. In turn 2, it's active again.
+
+So, in each turn, if the current_turn is <= (current_turn + c_i -1), it's active.
+
+Wait, perhaps the way to model this is to track for each attack, the next turn after which it becomes active again.
+
+So, for attack i, it's active in current_turn, current_turn +1, ..., current_turn + c_i -1.
+
+So, in the current_turn, it's active.
+
+So, during each turn, all attacks that are active are used.
+
+Thus, the problem is to, for each turn, collect all active attacks, select the ones with the highest a_i, and use as many as possible.
+
+But the question is, how to efficiently compute this for each turn.
+
+So, let's think of the attacks as being in a list, and for each attack, we can determine the next turn after which it's active again.
+
+So, for each attack, the active period is [current_turn, current_turn + c_i -1].
+
+So, during turn x, the attack is active if x >= x and x <= x + c_i -1, which is always true.
+
+Wait, that's not correct. Because for x = current_turn, x + c_i -1 is the last turn it's active.
+
+So, for example, if c_i is 2, then in current_turn x, the attack is active for x and x+1.
+
+So, in turn x, the attack is active.
+
+In turn x+1, it's not.
+
+In turn x+2, it's active again.
+
+So, the attack is active in x, x+1, x+2, etc., as long as it's within the next c_i turns.
+
+So, in each turn, the attack is active.
+
+So, the initial approach is correct.
+
+Thus, for each turn, all unused attacks are active, so we can use as many as possible of the highest a_i.
+
+So, the simulation approach is:
+
+- Sort the attacks in descending order of a_i.
+
+- Keep track of how many are still available (i.e., not used).
+
+- For each turn:
+
+   - While the top attack in the sorted list has a_i == max_a and count >0:
+
+       use it (add a_i to damage, subtract from health).
+
+       if health <=0, break.
+
+   - If health <=0, break.
+
+But wait, this would be O(n) per turn, which is too slow.
+
+So, we need a way to find how many of the top a_i attacks can be used in a single turn.
+
+So, let's think about the sorted list. The first few attacks are the highest a_i.
+
+So, in each turn, as long as the top attack's a_i is equal to the current max, we can use it.
+
+So, the number of attacks we can use in a turn is the number of top a_i attacks that are still available.
+
+So, the algorithm would be:
+
+Sort the attacks in descending order of a_i.
+
+Initialize:
+
+current_turn =0
+
+remaining_health = h
+
+max_a = 0
+
+count_max =0
+
+for i in 0 to n-1:
+
+    if a_i > max_a:
+
+        max_a = a_i
+
+        count_max =1
+
+    elif a_i == max_a:
+
+        count_max +=1
+
+So, the initial max_a is the highest a_i.
+
+Then, in each turn:
+
+   while count_max >0 and remaining_health >0:
+
+       damage = min(max_a, remaining_health)
+
+       remaining_health -= damage
+
+       current_turn +=1
+
+       if remaining_health <=0:
+
+           break
+
+       # Now, if we used all max_a attacks, we need to find the next max_a.
+
+       if remaining_health ==0:
+
+           break
+
+       # Now, we need to find how many of the top a_i's can be used.
+
+       # So, we have to find how many a_i's are equal to max_a, and are still available.
+
+       # Because the max_a's may have been used in previous turns.
+
+       # So, perhaps we can't just assume that the top a_i's are the same as before.
+
+Hmm, this complicates things.
+
+So, perhaps the initial approach is not sufficient.
+
+Alternative idea: use a priority queue (max-heap) that keeps track of the attacks in order of their a_i, and for each attack, track how many are available.
+
+So, for each test case:
+
+Sort the attacks in descending order of a_i.
+
+Create a max-heap, and for each attack, push it into the heap.
+
+Also, keep a count of how many are available.
+
+Then, in each turn:
+
+   while the top of the heap is max_a and count >0:
+
+       use one attack (add a_i to damage, subtract from h).
+
+       count -=1
+
+       if h <=0: break
+
+       current_turn +=1
+
+   else:
+
+       break
+
+So, this way, in each turn, we use as many as possible of the highest a_i available.
+
+This approach should be O(n log n) per test case, which is acceptable given the constraints.
+
+Let's see:
+
+Each test case:
+
+- Sort the attacks, O(n log n)
+
+- For each attack, push into the heap: O(n log n)
+
+- For each turn, we may pop from the heap until we can't anymore.
+
+The number of pops per test case is equal to the number of turns, which is O(h / a_avg). Since a_avg is at least 1, the number of turns is O(h), which is 2e5 per test case, and with t=1e4, it's 2e9 operations, which is way too slow.
+
+Wait, no. Wait, t is up to 1e4, but sum of h and n across test cases is 2e5 each. So, for each test case, h can be up to 2e5, and the number of turns is h / (average a_i) which is up to 2e5 / 1 = 2e5. So, 1e4 test cases with 2e5 turns each is 2e9 operations, which is way too slow.
+
+So, we need a more efficient approach.
+
+Hmm.
+
+Alternative approach: since each attack can be used multiple times, but each time in a separate turn, and each time after c_i turns.
+
+So, perhaps the number of turns is the maximum between the time needed to use all attacks once, and the time needed to use them multiple times.
+
+Wait, not sure.
+
+Another idea: the total number of turns is the maximum between the time needed to use all attacks once (when c_i is 1) and the time needed to use them multiple times (when c_i is larger).
+
+So, the worst case is when all attacks have c_i=1, and each turn can use all n attacks. So, h / a_i is the maximum number of turns.
+
+So, for a_i=1 and h=2e5, it's 2e5 turns, which is way too slow.
+
+So, we need a way to compute the number of turns without simulating each one.
+
+Hmm.
+
+Wait, perhaps the maximum number of turns is the maximum between:
+
+1. The time to use all attacks once, which is the maximum a_i multiplied by the number of attacks with a_i equal to that maximum.
+
+2. The time to use all attacks multiple times, which depends on the sum of a_i divided by the sum of c_i.
+
+Wait, not sure.
+
+Alternatively, think about the worst case where all attacks have a_i=1 and c_i=1.
+
+Then, each turn can use 1 attack, so the time is h turns.
+
+Which is too slow.
+
+So, the simulation approach is not feasible for such cases.
+
+Thus, I need a mathematical approach.
+
+Let me think about the problem again.
+
+Each attack can be used multiple times, but each time in a separate turn, and each time after c_i turns.
+
+So, the total number of times an attack can be used is determined by the sum of 1 + floor((h - x) / a_i) / (c_i +1), but I'm not sure.
+
+Alternatively, perhaps the total number of uses for each attack i is:
+
+sum_{k=0}^{K} floor( (h - k * a_i) / (a_i * (c_i + 1)) )
+
+Wait, not sure.
+
+Another idea: for each attack, the number of times it can be used is the number of turns where it is active.
+
+So, for attack i, the number of uses is the number of turns x where x <= x + c_i -1, i.e., x <= x + c_i -1, which is always true. So, in all turns up to the point where h is reduced.
+
+Wait, no. Because each use of the attack takes one turn, and the next use is after c_i turns.
+
+So, the attack can be used in turn x, x + c_i, x + 2*c_i, etc.
+
+So, the number of times attack i can be used is the number of times x + k * c_i <= T, where T is the total number of turns.
+
+But T is the total number of turns required to reduce h to zero.
+
+So, the total number of uses for attack i is the number of times x is such that x + k * c_i <= T, and the sum of a_i's in these uses is >= a_i * (number of uses).
+
+Wait, this seems complicated.
+
+Alternative approach: for each attack, the maximum number of times it can be used is the minimum between:
+
+- the number of turns required for h to drop to zero, which is h // a_i if we can use it all at once.
+
+- or, the number of times it can be used as per the cooldown.
+
+Wait, but each time it's used, it adds a cooldown of c_i turns.
+
+So, the number of times attack i can be used is the maximum k such that k <= T, and k <= (h + a_i -1) // a_i, and k <= (h + a_i -1) // (a_i * (c_i + 1)).
+
+Wait, I'm not confident.
+
+Alternatively, perhaps the maximum number of times attack i can be used is the minimum between the maximum possible using it all at once, and the maximum possible considering the cooldown.
+
+So, for attack i:
+
+max_k = h // a_i
+
+But considering the cooldown, the maximum k is the maximum number of uses where each use is spaced by at least c_i turns.
+
+So, the minimal k is 0, and the maximal k is the maximum number such that all uses are at positions x, x + c_i, x + 2*c_i, etc.
+
+So, the total number of turns is the sum of the positions of all uses.
+
+So, the problem is to find the minimal T such that:
+
+sum_{k=0}^{k_max-1} (x + k*c_i) <= T
+
+But x is the first use's turn.
+
+Wait, this seems complicated.
+
+Another approach: For each attack, the maximum number of uses is floor((h + a_i - 1) / a_i). Because in each turn, it can be used once, as long as it's active.
+
+But considering the cooldown, it's possible that some uses are forced to be spaced by c_i turns.
+
+So, for attack i, the minimal number of uses is:
+
+ceil( (h) / (a_i + (c_i)* (k-1)) ) 
+
+Wait, I'm not sure.
+
+Alternatively, think of the minimal number of uses needed, considering the cooldown.
+
+Each use of attack i takes one turn, and requires that the next use is at least c_i turns later.
+
+So, the earliest possible uses are x, x + c_i, x + 2*c_i, etc.
+
+So, the total number of turns required is the sum of the positions of all uses.
+
+So, the minimal T is the sum of x, x + c_i, x + 2*c_i, ..., x + (k-1)*c_i.
+
+We need to find x and k such that sum <= T, and sum is minimized.
+
+But this seems complicated.
+
+Alternatively, perhaps the total number of uses for attack i is the maximum possible is floor( (h) / a_i ), and the minimal possible uses is floor( (h + c_i -1) / (a_i + c_i) ).
+
+Wait, I'm not sure.
+
+Perhaps, for each attack, the minimal number of uses is the maximum between:
+
+- the number of uses you can make without considering cooldown: h // a_i.
+
+- the number of uses you can make considering cooldown: h // (a_i + (c_i - 1)).
+
+Wait, perhaps that's a way to model it.
+
+So, the minimal number of uses is max( h // a_i, h // (a_i + (c_i -1)) )
+
+Because when you have a cooldown of c_i-1, you can make a_i + c_i -1 per use, so the number of uses is h // (a_i + c_i -1).
+
+Wait, that makes sense.
+
+So, for each attack i, the minimal number of uses is:
+
+min_k = max( h // a_i, h // (a_i + (c_i - 1)) )
+
+So, the attack can be used at least min_k times.
+
+So, the total number of turns is the sum of all the uses, but considering that each use is spaced by c_i turns.
+
+So, the total number of turns is sum_{k=1 to K} (x + (k-1)*c_i) <= T.
+
+Wait, but x is the first turn.
+
+This is getting complicated.
+
+So, perhaps the minimal T is the maximum between:
+
+- the time required to use all attacks once (if c_i=1).
+
+- the time required to use all attacks multiple times.
+
+But I'm not sure.
+
+So, given the time constraints, perhaps the best approach is to implement the simulation, but find a way to compute how many attacks can be used per turn without iterating each turn.
+
+So, here's an alternative plan:
+
+- Sort the attacks in descending order of a_i.
+
+- For each test case:
+
+   - Compute the maximum number of turns needed, which is the maximum between:
+
+      a) The time to use all n attacks once: if c_i=1 for all i.
+
+      b) The time to use attacks multiple times, which depends on the sum of a_i and the sum of c_i.
+
+   - But this is vague.
+
+Alternatively, perhaps the number of turns is the maximum between:
+
+   1. The number of turns required if all attacks are used once: this is the maximum between (h // a_i) for all i, but if c_i=1.
+
+   2. The number of turns required if all attacks are used multiple times: which is h / (sum a_i) * (c_i + 1) ?
+
+Wait, not sure.
+
+Alternatively, perhaps the number of turns is the maximum between:
+
+   a) The number of turns needed to use all the highest a_i attacks once.
+
+   b) The number of turns needed to use all the attacks multiple times.
+
+So, the total number of turns is the maximum of these two.
+
+So, the simulation can be done in O(n log n) time per test case.
+
+So, let's proceed with the simulation approach, but optimize it to compute how many attacks can be used per turn.
+
+So, the steps are:
+
+For each test case:
+
+1. Read h, n, a, c.
+
+2. Sort the attacks in descending order of a_i.
+
+3. Initialize current_turn = 0, remaining_health = h, max_a = 0, count_max =0.
+
+4. For each attack in the sorted list:
+
+   if a_i > max_a:
+
+       max_a = a_i
+
+       count_max = 1
+
+   elif a_i == max_a:
+
+       count_max +=1
+
+5. Now, in each turn, use as many as possible of the highest a_i attacks.
+
+   So, while count_max >0:
+
+       while remaining_health >0:
+
+           if count_max ==0:
+
+               break
+
+           damage = min(max_a, remaining_health)
+
+           remaining_health -= damage
+
+           current_turn +=1
+
+           if remaining_health <=0:
+
+               break
+
+           # Now, check if we can use another attack.
+
+           if remaining_health ==0:
+
+               break
+
+           # Now, find how many of the top a_i's are still available.
+
+           # Since the max_a may have been used, we need to find the next max_a.
+
+           # So, we need to find how many of the top a_i's are still available.
+
+           # So, perhaps we can keep a pointer to the current max_a.
+
+           # So, for each attack

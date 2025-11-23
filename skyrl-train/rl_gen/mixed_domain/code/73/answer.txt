@@ -1,0 +1,714 @@
+Okay, I need to solve this problem where Vlad can score points by selecting certain segments on a strip of cells. Each cell has a number and a direction ('L' or 'R'). The goal is to find the maximum possible score by performing any number of operations, where each operation selects a segment l to r such that s_l is 'L' and s_r is 'R'. When we select such a segment, we add the sum of a_l to a_r to the score, and also replace all cells from l to r with '.' so they can't be used in any future operations.
+
+Hmm, so the key is to choose segments in a way that maximizes the total points, without overlapping in a way that prevents future operations from being possible. Because once a segment is chosen, the cells in it are blocked, so any future segments must not include those cells.
+
+Let me think about the approach. It feels like a greedy problem. Maybe I can process the cells from left to right, and whenever I find an 'L' followed by an 'R', I can take the maximum possible segment that includes this 'L' and 'R' pair, perhaps.
+
+Wait, but the 'L' is at some position l and 'R' is at r. So the segment must start at or before l, end at or after r. So the optimal way might be to choose the largest possible segment that includes this 'L' and 'R' pair, but I'm not sure.
+
+Alternatively, maybe I can model this as selecting a sequence of non-overlapping segments where each segment starts with 'L' and ends with 'R', and the segments are as large as possible.
+
+Wait, let's think of the structure. Each operation must select a segment where s_l is 'L' and s_r is 'R'. So the segment is a 'L' followed by an 'R'. So the operation can be thought of as taking a 'L' at position l and an 'R' at position r, and taking any segment that starts at or before l and ends at or after r, as long as the s_l is L and s_r is R.
+
+So the idea is to find all possible pairs (l, r) where s_l is L and s_r is R, and then select segments that cover as much as possible, but without overlapping with other segments.
+
+Wait, but the segments can't overlap because once a cell is blocked, it's gone. So if I choose a segment l to r, then any other segment must be entirely to the left of l or entirely to the right of r.
+
+So this seems like a problem where I can process the string from left to right, and whenever I encounter an 'L', I look for the next 'R' to the right. Then, the optimal segment is the one that includes this 'L' and 'R' and is as long as possible, but also ensuring that it doesn't overlap with any other segments.
+
+Wait, but that's not necessarily the case. Because sometimes, it's better to wait for a larger segment that starts before the current 'L' and ends after the current 'R', capturing more points.
+
+Hmm, this is a bit tricky. Let me think of some examples.
+
+Take the example given:
+
+3 |5|1|4|3|2
+
+s = L R L L L R
+
+So the initial state is all L's except the last which is R.
+
+The first operation is choosing l=1, r=2. So this adds 3+5=8. Now, cells 1 and 2 are blocked.
+
+Then, the next operation is choosing l=3, r=6. Adds 1+4+3+2=10, total 18.
+
+So in this case, the segments are non-overlapping, and the sum is 18.
+
+Another example: suppose we have a string like L R L R. So s = L R L R.
+
+The first possible segment is l=1, r=2 (sum 5). Then, the next possible is l=3, r=4 (sum 9). Total is 14.
+
+Alternatively, if we choose l=1, r=4, sum is 5+9=14 as well. So same result.
+
+Wait, but in this case, the sum is the same whether you choose the two small segments or one big segment.
+
+So the key is to find a way to select segments that cover as much as possible, without overlapping, and each starts with L and ends with R.
+
+Another example: Suppose the string is L L R R.
+
+So s = L L R R.
+
+Possible segments:
+
+- l=1, r=2: sum 5. Then, can't choose any more because the remaining cells are blocked.
+
+- Or, l=1, r=3: sum 5+3=8. Then, can't choose any more.
+
+- Or, l=2, r=3: sum 3+3=6.
+
+- Or, l=1, r=4: sum 5+3+3+3=14.
+
+Wait, no, s[4] is R, so l=1, r=4 is allowed.
+
+Wait, in this case, the maximum would be choosing l=1, r=4, which gives 5+3+3+3=14.
+
+So the strategy is to find all possible 'L' followed by 'R' pairs, and then select the maximum possible sum that can be covered by a single segment, but not overlapping with any other selected segments.
+
+Wait, but the problem is that when you choose a segment, it blocks a range, so you can't choose any other segments that overlap with it.
+
+Hmm, so the approach is to process the string, and for each 'L' followed by 'R', consider the maximum possible segment that starts at or before the 'L' and ends at or after the 'R', and then greedily take the largest possible segment.
+
+Wait, but how do we do that efficiently, especially for large n (up to 2e5)?
+
+Let me think of the algorithm:
+
+Initialize a variable to keep track of the current sum, and a variable to track the current position.
+
+We can iterate through the string, and whenever we find an 'L', we look for the next 'R' to the right. The segment can start anywhere from the current position to the current 'L', and end anywhere from the next 'R' to the end. So, the maximum possible segment is from the current 'L' to the farthest 'R' that can be chosen.
+
+Wait, but choosing a larger segment might miss some 'R's that could have been used.
+
+Alternatively, when we find an 'L' at position i, we can look for the farthest 'R' at position j, and then the maximum sum we can get from this 'L' is the sum from i to j, but also, we can't include any cells between i and j that are 'L's before i or 'R's after j. So, perhaps the best is to take the maximum possible j for this i, and then include all cells from i to j, as long as s_i is L and s_j is R.
+
+So, the steps could be:
+
+1. Iterate through the string from left to right.
+
+2. Whenever an 'L' is found at position i, record it.
+
+3. Then, look for the farthest 'R' j that comes after i.
+
+4. The segment from i to j is a candidate, and the sum is the sum of a[i] to a[j].
+
+5. The maximum of all such segments is the answer.
+
+Wait, but this might not be optimal because there might be other segments that start before i and end after j, but include some 'R's that are not the farthest.
+
+For example, suppose we have a string like L R R R R.
+
+The first 'L' is at position 1, and the first 'R' is at position 2.
+
+So the segment from 1 to 2 is sum a1 + a2.
+
+But another option is to take the entire string as a single segment, sum all a's.
+
+Which is better?
+
+Depends on the values of a's.
+
+So, in this case, if a1 is 1 and a2 is 10, and the rest are 1, then taking the first two gives 11, while taking all gives 13, which is better.
+
+So, the approach of choosing the maximum j for each i may not be optimal.
+
+Hmm, so the greedy approach of choosing the farthest possible R for each L may not yield the optimal result.
+
+So, perhaps we need a different approach.
+
+Another idea: The maximum possible score is the sum of all a's where s_i is L and s_j is R, for any i <= j, but we can't select overlapping segments. So, the problem is similar to selecting non-overlapping intervals, each starting with 'L' and ending with 'R', and maximizing the sum of their a's.
+
+In this case, the standard approach for such interval selection problems is to use dynamic programming.
+
+So, let's model it with DP:
+
+Let dp[i] be the maximum score achievable up to position i.
+
+Then, for each position i, if s[i] is 'L', we can consider adding a new segment starting at i. Then, we can look for the farthest j where s[j] is 'R' and j >= i. Then, dp[j] would be the maximum of dp[i] + sum(a[i..j]) and the current dp[j].
+
+Wait, but this might not capture all possibilities because there might be other 'L's before i that could be used to form a longer segment, which could lead to a higher sum.
+
+Alternatively, perhaps the DP approach can be as follows:
+
+We can keep track of the last position where an 'L' was found. For each position, if the current cell is 'L', we can see if we can form a segment by finding the farthest 'R' after it, and then update the last 'L' position to that 'R'.
+
+But I'm not sure.
+
+Alternatively, perhaps it's better to process the string and for each 'L', find the farthest 'R' that can be used to form a segment, and then choose the maximum possible sum for that segment, but also considering previous 'L's.
+
+Wait, perhaps another approach is to precompute for each position the farthest 'R' that comes after it. Then, for each 'L' at position i, the maximum possible j is the farthest 'R' after i.
+
+Then, the sum from i to j is the maximum possible for this i, but when we choose this segment, it blocks all positions from i to j, so any future segments must be to the left of i or to the right of j.
+
+So, the problem reduces to selecting a set of non-overlapping intervals, each of which is [i, j], where i is an 'L' and j is an 'R', and each interval is as large as possible.
+
+So, the approach would be to process the string from left to right, and whenever an 'L' is found, find the farthest 'R' that can be used to form a segment, and then choose that segment, adding its sum to the total. Then, skip all positions from i to j, and continue processing.
+
+This is a greedy approach that works because by choosing the largest possible segment, we maximize the sum, and then prevent any overlap, allowing us to process the remaining parts.
+
+So, the steps are:
+
+1. For each test case, process the string.
+
+2. Iterate through the string, keeping track of the current position.
+
+3. Whenever an 'L' is found at position i:
+
+   a. Find the farthest 'R' j such that j >= i.
+
+   b. The sum of a[i..j] is added to the total.
+
+   c. The current position is set to j+1, so that any further segments can start after j.
+
+4. Continue until the end of the string.
+
+This approach is greedy and should work because by taking the largest possible segment at each step, we ensure that we're maximizing the sum, and the non-overlapping condition is maintained.
+
+So, the key is, for each 'L', find the farthest 'R' after it, and take the segment from i to j.
+
+Now, the task is to implement this efficiently.
+
+So, for each test case:
+
+- Read n, a, s.
+
+- Initialize total_score to 0.
+
+- Initialize current_position to 0.
+
+- While current_position < n:
+
+   - If s[current_position] is 'L':
+
+      - Find the farthest j >= current_position where s[j] is 'R'.
+
+      - If no such j exists, break.
+
+      - Compute the sum of a[current_position..j].
+
+      - Add this sum to total_score.
+
+      - Set current_position = j + 1.
+
+   - Else:
+
+      - current_position += 1.
+
+So, the main challenge is, for each 'L' at position i, find the farthest j >= i where s[j] is 'R'.
+
+How to do this efficiently?
+
+We can precompute for each position the farthest 'R' that comes after it.
+
+We can create an array 'farthest_R' where farthest_R[i] is the farthest j where s[j] is 'R' and j >= i.
+
+We can compute this array by iterating from the end of the string to the beginning.
+
+For example:
+
+Initialize farthest_R as an array of size n, filled with -1.
+
+Set a variable far = n-1 (assuming 0-based or 1-based? Let's think in 0-based for easier implementation.)
+
+Then, for i from n-1 down to 0:
+
+   if s[i] == 'R':
+
+      far = i
+
+   farthest_R[i] = far
+
+So, for each position i, farthest_R[i] gives the farthest j >= i where s[j] is 'R'.
+
+Once this array is built, for each 'L' at i, we can quickly find j = farthest_R[i].
+
+So, the steps in code would be:
+
+Read t test cases.
+
+For each test case:
+
+   Read n.
+
+   Read a as a list.
+
+   Read s as a string.
+
+   Compute the farthest_R array.
+
+   Initialize total = 0.
+
+   current = 0.
+
+   while current < n:
+
+      if s[current] == 'L':
+
+          j = farthest_R[current]
+
+          if j == -1:
+
+              break
+
+          # compute sum from current to j.
+
+          sum_ = sum(a[current:j+1])
+
+          total += sum_
+
+          current = j + 1
+
+      else:
+
+          current += 1
+
+   print(total)
+
+Wait, but in the example given in the problem statement:
+
+The first operation is l=1, r=2, which is 3+5=8. Then, the next operation is l=3, r=6, which is 1+4+3+2=10.
+
+So, the farthest_R for current=0 (1-based, but in 0-based it's 0) is j=1.
+
+Then, current is set to 2.
+
+At current=2, which is 'L', j is farthest_R[2], which is 5 (since s[5] is 'R' in 0-based, which is position 5 in the string, which is the 6th character in 1-based, but in the example, it's the 4th in 1-based, which is 3.
+
+Wait, I'm getting confused with 0-based and 1-based indices.
+
+Let me reindex the example:
+
+n=6.
+
+s = 'L R L L L R' → in 0-based, it's index 0 to 5.
+
+So, s[0] = 'L', s[1] = 'R', s[2] = 'L', s[3] = 'L', s[4] = 'L', s[5] = 'R'.
+
+So, the farthest_R array is computed as:
+
+Starting from the end.
+
+i=5: s[5] is 'R', so far =5.
+
+i=4: s[4] is 'L', so far remains 5.
+
+i=3: s[3] is 'L', far remains 5.
+
+i=2: s[2] is 'L', far remains5.
+
+i=1: s[1] is 'R', so far=1.
+
+i=0: s[0] is 'L', so far remains 1.
+
+So, farthest_R array is:
+
+index: 0 1 2 3 4 5
+
+value: 1 1 5 5 5 5
+
+So, for current=0 (s[0] is 'L'), j is 1.
+
+Sum is a[0] + a[1] =3+5=8.
+
+current is set to 2.
+
+At current=2 (s[2] is 'L'), j is 5.
+
+Sum is a[2]+a[3]+a[4]+a[5] =1+4+3+2=10.
+
+Total is 18.
+
+Which matches the example.
+
+So, this approach works for this case.
+
+Another test case: s = 'L L R R'.
+
+n=4.
+
+s = 'L', 'L', 'R', 'R'.
+
+farthest_R:
+
+i=3: R, far=3.
+
+i=2: R, far=2.
+
+i=1: L, far remains 2.
+
+i=0: L, far remains2.
+
+So, for current=0 (s[0] is L), j=2.
+
+Sum is a[0]+a[1]+a[2] = LLL.
+
+Then, current is 3.
+
+s[3] is R, so current increments to 4, loop ends.
+
+Total is sum of a[0-2].
+
+Another test case: s = 'L R L R'.
+
+n=4.
+
+s = 'L','R','L','R'.
+
+farthest_R:
+
+i=3: R, far=3.
+
+i=2: L, far=3.
+
+i=1: R, far=1.
+
+i=0: L, far=1.
+
+So, for current=0 (L), j=1.
+
+Sum is a[0] + a[1] = L R.
+
+current is 2.
+
+s[2] is L, so current increments to 3.
+
+s[3] is R, current increments to4.
+
+Total is a[0]+a[1].
+
+Which is correct.
+
+So, this approach seems to work.
+
+So, the plan is:
+
+1. For each test case, compute the farthest_R array.
+
+2. Iterate through the string, and whenever an 'L' is found, find the farthest 'R' to the right.
+
+3. Take the sum from current to j, add to total, and set current to j+1.
+
+This should handle all test cases correctly.
+
+Now, implementing this in Python.
+
+Edge cases:
+
+- All 'L's, no 'R's: cannot perform any operations, score is 0.
+
+- No 'L's: also 0.
+
+- All 'R's: same as above.
+
+- Mix of 'L's and 'R's, some can form segments.
+
+So, in code:
+
+Read t.
+
+For each t:
+
+   Read n.
+
+   Read a as list of integers.
+
+   Read s as string.
+
+   Compute farthest_R.
+
+   Initialize current = 0.
+
+   total =0.
+
+   while current < n:
+
+      if s[current] == 'L':
+
+          j = farthest_R[current]
+
+          if j == -1:
+
+              break
+
+          sum_ = sum( a[current:j+1] )
+
+          total += sum_
+
+          current = j +1
+
+      else:
+
+          current +=1
+
+   print(total)
+
+But wait, what about if current is beyond n? No, since the loop is while current <n.
+
+Now, for the sum, in Python, sum(a[current:j+1]) is correct.
+
+But wait, in Python, a[current:j+1] is from current (inclusive) to j+1 (exclusive), so yes, it's correct.
+
+So, the code should be something like this.
+
+Testing this with the example:
+
+Sample input:
+
+3
+5
+3 5 1 4 3 2
+L R L L L R
+
+Which should output 18.
+
+Another test case:
+
+3
+3
+L R L
+L R L
+
+What's the output?
+
+The first 'L' is at 0, j is 1. Sum is 3+5=8.
+
+Then, the next 'L' is at 2, which is 'L', but j is farthest_R[2] which is 2 (since s[2] is 'L', no, wait, no. s[2] is 'L' in this case.
+
+So, current is 2.
+
+s[2] is 'L', so current increments to3, loop ends.
+
+Total is 8.
+
+Another test case:
+
+n=2
+
+a = [1,2]
+
+s = 'L R'
+
+So, sum is 3.
+
+Another test case:
+
+n=2
+
+a = [1,2]
+
+s = 'R L'
+
+Cannot perform any operations, so output is 0.
+
+Another test case:
+
+n=4
+
+a = [1,2,3,4]
+
+s = 'L R R L'
+
+So, farthest_R for current=0 is 1.
+
+sum is 1+2=3. current is 2.
+
+At current=2, s[2] is 'R', so current increments to3.
+
+s[3] is 'L', current increments to4.
+
+Total is 3.
+
+Wait, but what about the segment from 2 to 3? s[2] is 'R', s[3] is 'L' → can't form a segment. So, the only segment is 0-1.
+
+So, code correctly adds 3.
+
+Another test case:
+
+n=5
+
+a = [1,2,3,4,5]
+
+s = 'L R L R R'
+
+So, farthest_R:
+
+i=0: R, j=1.
+
+i=1: R, j=1.
+
+i=2: L, j remains 1.
+
+i=3: R, j=3.
+
+i=4: R, j=4.
+
+So, current=0 → j=1 → sum 3.
+
+current is 2.
+
+s[2] is L, current increases to3.
+
+s[3] is R → j=3.
+
+sum is a[3] + a[4] =4+5=9.
+
+Total is 3+9=12.
+
+So, code would correctly sum 12.
+
+So, the code seems to handle these cases.
+
+Now, let's write the code.
+
+First, read t.
+
+Then, for each test case:
+
+Read n.
+
+Read a as list of integers.
+
+Read s as a string.
+
+Compute the farthest_R array.
+
+Initialize current=0.
+
+total=0.
+
+Loop:
+
+if s[current] is 'L', find j as farthest_R[current], add a[current:j+1], set current to j+1.
+
+Else, current +=1.
+
+So, the code:
+
+t = int(input())
+for _ in range(t):
+    n = int(input())
+    a = list(map(int, input().split()))
+    s = input().strip()
+    farthest_R = [0] * n
+    far = -1
+    for i in range(n-1, -1, -1):
+        if s[i] == 'R':
+            far = i
+        farthest_R[i] = far
+    current = 0
+    total = 0
+    while current < n:
+        if s[current] == 'L':
+            j = farthest_R[current]
+            if j == -1:
+                break
+            total += sum(a[current:j+1])
+            current = j + 1
+        else:
+            current += 1
+    print(total)
+
+Wait, but wait: in the farthest_R array, for i=0, if s[0] is 'L', then j is farthest_R[0], which could be 1, but in the example above, that's correct.
+
+Yes, I think this code should handle all the cases correctly.
+
+Let me test it against the example given.
+
+Sample Input:
+
+3
+5
+3 5 1 4 3 2
+L R L L L R
+
+The code computes:
+
+farthest_R is as computed before.
+
+current starts at 0.
+
+s[0] is 'L' → j=1.
+
+sum 3+5=8.
+
+current becomes 2.
+
+s[2] is 'L' → j=5.
+
+sum a[2:6] =1+4+3+2=10.
+
+current becomes 6, loop ends.
+
+Total is 18, correct.
+
+So, the code should work.
+
+Another test case:
+
+n=3
+
+a = [1,2,3]
+
+s = 'L L R'
+
+farthest_R is:
+
+i=2: R, far=2.
+
+i=1: L, far=2.
+
+i=0: L, far=2.
+
+So, current=0: j=2.
+
+sum 1+2+3=6.
+
+current becomes 3, loop ends.
+
+Total is 6.
+
+Yes.
+
+So, the code should be correct.
+</think>
+
+To solve this problem, we need to maximize the score by performing operations on a strip of cells where each cell contains a positive integer and a direction ('L' or 'R'). The goal is to select segments of cells such that each segment starts with 'L' and ends with 'R', and the segments do not overlap.
+
+### Approach
+1. **Identify Segments**: For each 'L' encountered, find the farthest 'R' to the right. This forms the longest possible segment starting with 'L' and ending with 'R'.
+2. **Greedy Selection**: Use a greedy approach to select the largest possible segment starting from each 'L'. This ensures that we maximize the score by considering the largest possible segment each time.
+3. **Efficient Calculation**: Precompute the farthest 'R' for each position using an array. This allows us to quickly determine the farthest 'R' for any starting position, reducing the time complexity.
+
+### Solution Code
+```python
+t = int(input())
+for _ in range(t):
+    n = int(input())
+    a = list(map(int, input().split()))
+    s = input().strip()
+    farthest_R = [0] * n
+    far = -1
+    for i in range(n-1, -1, -1):
+        if s[i] == 'R':
+            far = i
+        farthest_R[i] = far
+    current = 0
+    total = 0
+    while current < n:
+        if s[current] == 'L':
+            j = farthest_R[current]
+            if j == -1:
+                break
+            total += sum(a[current:j+1])
+            current = j + 1
+        else:
+            current += 1
+    print(total)
+```
+
+### Explanation
+1. **Reading Input**: The input consists of multiple test cases. For each test case, we read the number of cells, the list of integers, and the string indicating the directions.
+2. **Precompute Farthest 'R'**: We create an array `farthest_R` where each index `i` contains the farthest index `j` such that the character at `j` is 'R' and `j >= i`.
+3. **Greedy Segment Selection**: Using a loop, we iterate through the string. For each 'L' encountered, we use the precomputed `farthest_R` to find the farthest 'R' and calculate the sum of the segment from the current position to this farthest 'R'.
+4. **Update Current Position**: After processing a segment starting at `current`, we update `current` to the position right after the farthest 'R' to ensure the next segment starts after the current one ends.
+5. **Output the Result**: The total score is accumulated and printed for each test case.
+
+This approach ensures that we efficiently find the maximum possible score by always choosing the largest possible segment starting from each 'L', thus maximizing the score while avoiding overlaps.<｜end▁of▁sentence｜>

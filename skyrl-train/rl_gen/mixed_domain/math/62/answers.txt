@@ -1,0 +1,99 @@
+2
+Okay, so I have this polynomial q(x) = Ax^5 - Bx^3 + Cx - 2, and when it's divided by x - 2, the remainder is -6. I need to find the remainder when q(x) is divided by x + 2.
+
+Hmm, I remember the Remainder Theorem, which states that the remainder when a polynomial q(x) is divided by x - a is q(a). So when divided by x - 2, the remainder is q(2) = -6.
+
+Let me calculate q(2):
+
+q(2) = A*(32) - B*(8) + C*(2) - 2 = 32A -8B +2C -2 = -6
+
+So, 32A -8B +2C = -4 --> Let me note this as equation (1).
+
+Now, I need to find the remainder when q(x) is divided by x + 2, which is q(-2) by the Remainder Theorem.
+
+So q(-2) = A*(-32) - B*(-8) + C*(-2) -2 = -32A +8B -2C -2
+
+So, q(-2) = -32A +8B -2C -2
+
+Hmm, I need to find this value. But I only have one equation (equation1): 32A -8B +2C = -4
+
+Maybe I can express everything in terms of equation1.
+
+Let me rearrange equation1:
+
+32A -8B +2C = -4
+
+I can divide both sides by 2: 16A -4B +C = -2 --> let me call this equation (2)
+
+Now, looking at q(-2) = -32A +8B -2C -2
+
+Let me see if I can express this in terms of equation2.
+
+Notice that -32A +8B -2C = -2*(16A -4B +C) = -2*(from equation2)
+
+From equation2, 16A -4B +C = -2
+
+So, -2*(16A -4B +C) = -2*(-2) = 4
+
+Therefore, -32A +8B -2C = 4
+
+So, q(-2) = 4 -2 = 2
+
+Wait, let me double check:
+
+q(-2) = -32A +8B -2C -2
+
+=-2*(16A -4B +C) -2
+
+From equation2, 16A -4B +C = -2
+
+So, -2*(-2) -2 =4 -2=2
+
+Yes, so q(-2)=2
+
+Therefore, the remainder when q(x) is divided by x +2 is 2.
+
+Wait, let me just go through again to ensure no mistakes.
+
+q(2) =32A -8B +2C -2 = -6 -->32A -8B +2C= -4
+
+Divide by2:16A -4B +C= -2=> equation2
+
+q(-2)= -32A +8B -2C -2
+
+= -2*(16A -4B +C) -2
+
+From equation2,16A -4B +C= -2
+
+So, -2*(-2) -2=4-2=2
+
+Yes, correct.
+
+So the answer is 2.
+</think>
+
+Given the polynomial \( q(x) = Ax^5 - Bx^3 + Cx - 2 \), we know that when it is divided by \( x - 2 \), the remainder is -6. Using the Remainder Theorem, we have:
+
+\[ q(2) = 32A - 8B + 2C - 2 = -6 \]
+\[ 32A - 8B + 2C = -4 \quad \text{(Equation 1)} \]
+
+We need to find the remainder when \( q(x) \) is divided by \( x + 2 \), which is \( q(-2) \):
+
+\[ q(-2) = -32A + 8B - 2C - 2 \]
+
+From Equation 1, we can express \( 16A - 4B + C \) as:
+
+\[ 16A - 4B + C = -2 \quad \text{(Equation 2)} \]
+
+Now, substituting into \( q(-2) \):
+
+\[ q(-2) = -2(16A - 4B + C) - 2 \]
+\[ q(-2) = -2(-2) - 2 \]
+\[ q(-2) = 4 - 2 \]
+\[ q(-2) = 2 \]
+
+Therefore, the remainder when \( q(x) \) is divided by \( x + 2 \) is:
+
+\[
+\boxed{2}
+\]<｜end▁of▁sentence｜>

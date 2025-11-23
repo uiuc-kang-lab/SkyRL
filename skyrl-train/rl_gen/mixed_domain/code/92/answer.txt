@@ -1,0 +1,596 @@
+Okay, I have to solve this problem where I need to find a Manhattan triangle. Let's try to understand the problem step by step.
+
+So, the Manhattan distance between two points is |x1 - x2| + |y1 - y2|. A Manhattan triangle is three points where each pair has the same distance d. So, for three points A, B, C, the distance between A and B is d, between B and C is d, and between C and A is d.
+
+The input gives me n points and a value d, which is even. I need to find three points that form such a triangle or output that none exists.
+
+Hmm, the first thing I think is that for each point, I can look for another point that is exactly d Manhattan distance away. Then, for each such pair, I can look for a third point that's also d away from both. But with n up to 2e5, a naive approach would be O(n^2), which is too slow.
+
+Wait, but maybe there's a smarter way. Since the Manhattan distance is involved, perhaps we can represent each point in a certain way that allows us to find pairs quickly.
+
+Let me think about the Manhattan distance. For a point (x, y), the Manhattan distance d implies that the other point must satisfy |x1 - x2| + |y1 - y2| = d.
+
+I remember that the Manhattan distance can be transformed by some coordinate transformations. For example, if I represent a point (x, y) as (a, b), where a = x + y and b = x - y. Then, the Manhattan distance between two points (a1, b1) and (a2, b2) is |a1 - a2| + |b1 - b2|. Let's see: a1 - a2 is (x1 + y1) - (x2 + y2) = (x1 - x2) + (y1 - y2). Similarly, b1 - b2 is (x1 - x2) - (y1 - y2). So the Manhattan distance is |(a1 - a2) + (b1 - b2)| + |(x1 -x2) - (y1 - y2)|. Wait, that doesn't seem to simplify things. Maybe another approach is needed.
+
+Alternatively, considering that a Manhattan distance of d can be achieved by points that are d units apart in either the x or y direction, but more generally, it's any combination where the sum is d.
+
+Wait, but another thought: for a given point A, the set of points at distance d from A form a diamond shape. So, for each point, I can generate all possible points at distance d and see if any of them pair with another point.
+
+But again, for n=2e5, this is not feasible.
+
+So, I need a more efficient approach.
+
+Let me think about the problem differently. For a triplet of points to form a Manhattan triangle, all three distances must be equal to d.
+
+Let's denote the three points as P, Q, R.
+
+So, the distance between P and Q is d, between Q and R is d, and between R and P is d.
+
+Let me see if there's a pattern or mathematical condition that these points must satisfy.
+
+Wait, considering the Manhattan distance, the triangle must be such that each side is a Manhattan distance of d.
+
+But perhaps there's a way to represent these points in a way that allows us to find such triplets efficiently.
+
+Another idea: for a triplet P, Q, R, the sum of the Manhattan distances around the triangle must equal 3d. But since each distance is d, this is 3d, which is correct.
+
+Hmm, but that's just the sum. I'm not sure if that helps.
+
+Wait, but for each point, perhaps we can find the other points that are d away, and then check if any of those form a valid triangle.
+
+But again, the issue is the time complexity.
+
+Let me think about the properties of the points. For a Manhattan distance, the Manhattan distance between two points is d. So, for a point (x, y), any other point (x', y') that satisfies |x - x'| + |y - y'| = d is at a distance d.
+
+Now, let's think about how to represent this condition. For a point (x, y), the set of points at Manhattan distance d can be written as (x' = x + a, y' = y + b), where a and b are such that |a| + |b| = d. So, for each point, the other points at distance d form a diamond shape.
+
+But how to find three such points that form a triangle.
+
+Wait, perhaps the points can be represented in a way that makes it easier to find such triplets. For instance, if we can find a point that is at distance d from two other points, and those two other points are also at distance d from each other, then that's a triplet.
+
+So, the approach is:
+
+For each point A, collect all points at distance d from A. Then, for each pair of points B and C in this collection, compute the distance between B and C. If that distance is also d, then we have a triplet.
+
+But for n=2e5, this approach would be O(n * k^2), where k is the number of points at distance d from A. If each A has O(d) points, then for each A, it's O(d^2) operations. But d can be up to 4e5, so that's way too slow.
+
+So, this approach won't work.
+
+Alternative idea: find a way to represent the points such that for a given point A, we can quickly find all points at distance d from A in a way that allows us to find a triplet.
+
+Wait, perhaps using hashing or some other structure. Or maybe, for each point, we can find a point that is at Manhattan distance d, and then check if such a point exists that is also at distance d from another point.
+
+But I'm not seeing an obvious way.
+
+Wait, another approach: the Manhattan distance can be transformed into a grid where each point (x, y) can be mapped to (x + y, x - y). Then, the Manhattan distance between two points P and Q is equal to the L1 distance between their transformed coordinates.
+
+So, two points P and Q have Manhattan distance d if and only if the L1 distance between (x1 + y1, x1 - y1) and (x2 + y2, x2 - y2) is d.
+
+So, the problem becomes finding three points that form a triangle with all sides having L1 distance d.
+
+Wait, but how does this help in finding the triplet?
+
+Alternatively, perhaps we can look for points that are each other's 'mirror' points. Like, for a point (x, y), maybe another point (-x, -y) is also d distance away. But I'm not sure.
+
+Wait, let's think about the triplet (P, Q, R). All pairwise distances are d. So, PQ = QR = RP = d.
+
+Let me consider the sum of the vectors. Maybe some vector relationships can be found here.
+
+But I'm not sure.
+
+Another thought: perhaps the triangle is such that the three points form a rectangle but with certain conditions. Or maybe all three points lie on a line, but that's impossible because Manhattan distance would not form a triangle unless the points are colinear, but for three points on a line, the distances between each pair would have to be equal, which is only possible if the points are in a straight line with equal steps, but that's only possible for two points when d is 2d. Wait, no, for three points on a line, the distances would have to be the same, which is only possible if they are equally spaced. But that's not possible for three points on a line unless d is 0, which it's not.
+
+So, the triangle must form a non-collinear shape.
+
+Hmm.
+
+Wait, what if two points are at (x, y) and (x + a, y + b), and the third is at (x + a + c, y + b + d). Then, the Manhattan distances can be computed.
+
+But I'm not sure.
+
+Alternatively, perhaps the problem can be solved by considering that the Manhattan distance is the sum of the x and y differences. So, for three points to have all pairwise distances equal, perhaps the sum of the differences in x and y must be equal for each pair.
+
+Let me consider point P (x1, y1), Q (x2, y2), R (x3, y3).
+
+Then:
+
+|x1 - x2| + |y1 - y2| = d
+
+|x2 - x3| + |y2 - y3| = d
+
+|x3 - x1| + |y3 - y1| = d
+
+Hmm, adding these equations, we get:
+
+(|x1 -x2| + |y1 -y2|) + (|x2 -x3| + |y2 -y3|) + (|x3 -x1| + |y3 -y1|) = 3d
+
+But not sure if that helps.
+
+Another idea: for each point, find all points that are at Manhattan distance d from it, and then for each pair in that list, check if their Manhattan distance is also d.
+
+But again, for large n, this is not feasible because the number of points per point could be O(d), which is 4e5, leading to O(d^2) operations, which is way too slow.
+
+So, I need a way to find such triplets without checking every pair.
+
+Wait, perhaps there's a way to represent the points in a way that allows us to find a triplet in O(1) or O(log n) time.
+
+Another angle: for a triplet to form a Manhattan triangle, all three pairs must have the same Manhattan distance of d. So, perhaps the points can be arranged such that their coordinates sum or subtract in a certain way.
+
+Wait, let's think about the points in terms of x and y. For the Manhattan distance to be d, the sum of the differences in x and y must be d. So, for each point, the other points in the triplet must have |x - x'| + |y - y'| = d.
+
+But how can we find such points quickly?
+
+Wait, perhaps the points can be represented as (x + y, x - y). Then, the Manhattan distance between two points is the L1 distance in this transformed space.
+
+So, for point P, Q, R in the original space, their transformed points are P', Q', R' respectively.
+
+The distance between P and Q in the original space is |x1 - x2| + |y1 - y2| = |(x1 + y1) - (x2 + y2)| + |(x1 - y1) - (x2 - y2)|.
+
+Which is |P'_x - Q'_x| + |P'_y - Q'_y| = distance between P' and Q' in the transformed space.
+
+So, the distance between P and Q in the original space is equal to the L1 distance between P' and Q' in this transformed space.
+
+So, for all three points, the distance between P and Q is d, so the L1 distance between P' and Q' is d.
+
+Similarly, the distance between Q and R is d, so the L1 distance between Q' and R' is d, and the same for R and P.
+
+So, the transformed points P', Q', R' must form a triangle where each pair has an L1 distance of d.
+
+Wait, but in the transformed space, the L1 distance is d. So, the triplet P', Q', R' must form a triangle with each pair at distance d.
+
+But wait, what's the shape of such a triangle in L1 space? It's a Manhattan triangle as well.
+
+Wait, but in L1 space, the triangle formed by three points where each pair is at distance d is the same as the Manhattan triangle in the original space.
+
+So, the problem reduces to finding three points in the transformed space (each being a point (x+y, x-y)) that form a Manhattan triangle with distance d.
+
+But again, how to find this triplet efficiently.
+
+Hmm, maybe I can precompute for each point in the transformed space, all points that are at distance d from it. Then, for each such pair, check if their distance is also d.
+
+But again, this is O(n * d), which is not feasible for d up to 4e5.
+
+Another idea: perhaps, for the transformed space, the points must form a specific structure. For example, in L1 space, the Manhattan triangle can be found by certain conditions.
+
+Wait, in L1 space, the Manhattan distance between two points is d. So, each pair of points in the transformed space must have a distance of d.
+
+So, how can we find three points in the transformed space that form a triangle with each pair at distance d.
+
+Let me think: in the transformed space, a point A' can be connected to two other points B' and C' such that A'B' and A'C' are each distance d, and B'C' is also distance d.
+
+But how to find such a triplet.
+
+Wait, perhaps if the three points form a "corner" shape, like a right-angled triangle with legs d. Because in that case, each side is d, and the sum of the legs is d (but wait, no, the legs are d, so the hypotenuse would be sqrt(2)*d, but that's not Manhattan distance. So, that approach may not work.
+
+Alternatively, perhaps the three points form a square's diagonal. For example, A' is (0,0), B' is (d, 0), C' is (0, d). Then, the distance between A' and B' is d, between B' and C' is d, and between A' and C' is d. So, that's a Manhattan triangle.
+
+Wait, but in this case, the Manhattan distance between A' (0,0) and B' (d, 0) is |0-d| + |0-0| = d. Similarly for the others. So yes, this forms a triangle.
+
+So, perhaps any three points that form a right-angled triangle in the transformed space, with legs d, and the hypotenuse is sqrt(2)*d, but in terms of Manhattan distance, that's not the case. Wait, no, the Manhattan distance between the right-angled points is d, but their mutual distances are d. So, that's a valid triangle.
+
+But is that the only way to form such a triangle?
+
+Hmm, perhaps not, but it's a way to find a triplet.
+
+So, the strategy could be:
+
+1. For each point P in the transformed space, find all points Q in the transformed space such that the Manhattan distance between P and Q is d.
+
+2. For each such pair (P, Q), check whether there exists a third point R in the transformed space such that:
+
+   a. The Manhattan distance between Q and R is d.
+
+   b. The Manhattan distance between R and P is d.
+
+If such an R exists, then the original points form a Manhattan triangle.
+
+But again, the problem is that for each P, this could take a lot of time, especially if d is large.
+
+So, maybe a better approach is needed.
+
+Alternative idea: for each point P, find all possible points Q that are at distance d from P, and for each such Q, find if there exists a point R that is at distance d from both P and Q.
+
+But again, the challenge is to find R quickly.
+
+Wait, but for a point Q, the set of points at distance d from Q is similar to the set of points at distance d from P. So, perhaps if we can represent this in a way that allows us to find R efficiently.
+
+Wait, perhaps for each point P, we can find a point R such that R is at distance d from both P and Q, where Q is at distance d from P.
+
+But how?
+
+Another thought: for a point R to be at distance d from P and Q, it must lie on the intersection of two Manhattan distance d circles around P and Q. The intersection points are either 0, 1, or 2 points.
+
+So, for each P and Q, we can compute the possible R points, and check if any of them exist.
+
+But again, the problem is finding Q quickly.
+
+Hmm.
+
+Wait, perhaps we can find points in the transformed space that are part of a square or another diamond shape.
+
+Alternatively, think about the problem in terms of the transformed coordinates. Let me denote the transformed coordinates as (a, b) = (x + y, x - y).
+
+So, for a point (a, b), the Manhattan distance to another point (a', b') is |a - a'| + |b - b'|.
+
+We need to find three points (a1, b1), (a2, b2), (a3, b3) such that:
+
+|a1 -a2| + |b1 -b2| = d
+
+|a2 -a3| + |b2 -b3| = d
+
+|a3 -a1| + |b3 -b1| = d
+
+Hmm, but I'm not sure how to exploit this.
+
+Wait, perhaps the three points form a triangle where each pair's transformed coordinates are at Manhattan distance d. So, for each pair, the sum of the differences in a and b is d.
+
+But how to find such triplets.
+
+Wait, another approach: for each point P, find all other points Q such that a + b = a' + b', where a = x + y, b = x - y. So, a + b = 2x, which is twice the x-coordinate. Similarly, a - b = 2y, which is twice the y-coordinate.
+
+So, for two points P and Q, (x1 + y1) + (x2 + y2) = (x1 - y1) + (x2 - y2) ?
+
+Wait, no. Wait, a + b = (x + y) + (x - y) = 2x.
+
+Similarly, a' + b' = x' + y' + x' - y' = 2x'.
+
+So, if two points have the same a + b value, then their x's are the same. Similarly, a' + b' is 2y.
+
+Wait, no. Let me see: a + b is (x + y) + (x - y) = 2x.
+
+So, if two points have the same a + b, their x's are the same. Similarly, a' + b' is (x' + y') + (x' - y') = 2x', so same x if same a' + b'.
+
+Hmm, perhaps that's a way to group points.
+
+Wait, for each point, compute a = x + y, b = x - y.
+
+So, for a point P, a + b = 2x, a - b = 2y.
+
+So, for each point, we can compute a and b.
+
+Now, for two points P and Q, the Manhattan distance between them is |(x1 -x2)| + |(y1 - y2)| = | (x1 + y1) - (x2 + y2) | + | (x1 - y1) - (x2 - y2) | = |a1 - a2| + |b1 - b2|.
+
+So, the Manhattan distance between P and Q is equal to the L1 distance between (a1, b1) and (a2, b2).
+
+Thus, for three points to form a Manhattan triangle, the L1 distance between each pair of transformed points must be d.
+
+So, the problem reduces to finding three points in the transformed space such that each pair's L1 distance is d.
+
+Now, the question is: how to find such triplets efficiently.
+
+Hmm, perhaps the triplet must consist of three points where each pair has a Manhattan distance of d. So, each pair is connected via a diamond shape.
+
+Wait, perhaps the three points must form a right-angled triangle in the transformed space, with legs of length d. So, for example, P is (0,0), Q is (d, 0), R is (0, d). Then, the L1 distance between P and Q is d, between Q and R is d, and between R and P is d.
+
+But this is a Manhattan triangle.
+
+So, is there a way to find such triplets in the transformed space?
+
+Well, in the transformed space, a point (a, b) can form such a triangle with (a - d, b) and (a, b - d). But that's only if these points exist in the input.
+
+So, for each point (a, b), we can look for (a - d, b) and (a, b - d), and check if they exist.
+
+But if the number of points is large, this could be time-consuming.
+
+Alternatively, we can precompute for each point (a, b) the other points that are at distance d, and then for each such pair, see if they form a valid triangle.
+
+But again, this is O(n^2) in the worst case, which is not feasible.
+
+Hmm.
+
+Wait, maybe the triplet is such that all three points are in a square grid configuration. For example, P is (x, y), Q is (x + d, y), R is (x, y + d). Then, each pair has a Manhattan distance of d.
+
+So, perhaps such triplets can be found by checking points that are arranged in this way.
+
+But how to find such triplets efficiently.
+
+Wait, another idea: for each point P, find all points Q that are at distance d from P. For each such Q, compute the point R as (a, b) where a is P.x + d and b is P.y, or vice versa. Then check if such R exists.
+
+But how to compute R quickly.
+
+Alternatively, perhaps for each point P, the possible R points can be found by considering that R has a Manhattan distance d from P, which is |x1 - x2| + |y1 - y2| = d. So, R could be in four possible directions from P: up, down, left, right, but also diagonally.
+
+Hmm.
+
+Wait, perhaps the transformed coordinates can be used to find such triplets.
+
+Let me think about the transformation. For a point (a, b) in the transformed space, the Manhattan distance between it and another point (c, d) is |a - c| + |b - d| = d.
+
+So, for three points (a, b), (c, d), (e, f), we have:
+
+|a - c| + |b - d| = d
+
+|c - e| + |d - f| = d
+
+|e - a| + |f - b| = d
+
+These are three equations that must be satisfied.
+
+Hmm, perhaps this can be rewritten as:
+
+a - c = ±(d - (b - d)) ?
+
+Not sure.
+
+Alternatively, perhaps the three points form a right-angled triangle in the transformed space.
+
+So, for example, (a, b) is connected to (a + d, b) and (a, b + d). Then, the sum of the distances from (a, b) to both is 2d, but that's not helpful.
+
+Wait, but if all three points are at the same distance d from each other, then it's a triangle.
+
+So, perhaps the triplet is such that each pair is connected via a diamond. So, each point is connected to two others, each at a distance d.
+
+But again, I'm not seeing how to exploit this for an efficient solution.
+
+Another idea: for each point P, find all possible points Q that are at distance d from P, and for each such Q, find if there exists a point R such that R is at distance d from both P and Q. If such an R exists, then we have a triplet.
+
+So, the steps would be:
+
+1. For each point P, compute all points Q in the transformed space that are at distance d.
+
+2. For each such Q, compute all points R in the transformed space that are at distance d from Q.
+
+3. For each R, check if the Manhattan distance between R and P is d. If so, then (P, Q, R) is a triplet.
+
+But for n=2e5, this approach is O(n * d^2), which is not feasible.
+
+Hmm, but perhaps for many points, the number of points at distance d is small. So, perhaps for each point P, the number of Q is small, and for each Q, the number of R is also small.
+
+But in the worst case, this is still O(n * k), which is not feasible.
+
+So, I need a smarter way.
+
+Wait, perhaps the problem can be transformed into a graph problem. Each point is a node, and edges are between points that are at distance d. Then, the problem reduces to finding a triangle in this graph.
+
+But again, for n=2e5, the graph is too big.
+
+Hmm.
+
+Another thought: since the problem requires that all three points have a Manhattan distance of d, perhaps the triplet must satisfy certain conditions in the original coordinates.
+
+For example, the Manhattan distance between P and Q is d. So, |x1 -x2| + |y1 - y2| = d. Similarly for the other pairs.
+
+Wait, but how to find such triplets.
+
+Alternatively, perhaps the three points can be arranged in such a way that their x and y coordinates are all either increasing or decreasing in a certain pattern.
+
+But I'm not sure.
+
+Wait, let's think about the sum and difference. For a point (x, y), let a = x + y, b = x - y.
+
+Then, for another point (x', y'), a' = x' + y', b' = x' - y'.
+
+The Manhattan distance between them is |a - a'| + |b - b'| = d.
+
+So, the problem is to find three points where each pair of (a, b) satisfies this condition.
+
+So, for each pair of points, their (a, b) pair must be at a Manhattan distance of d. So, the problem is to find three pairs of points where each pair is connected by a Manhattan distance of d.
+
+So, perhaps the problem can be transformed into finding three such (a, b) pairs.
+
+But again, I'm not seeing a clear way to proceed.
+
+Hmm.
+
+Another idea: for each point (a, b), precompute all points that are at Manhattan distance d away in the transformed space, and for each such pair, check if they form a valid triangle with any other point.
+
+But again, this is O(k) per point, which is not feasible.
+
+Wait, but maybe for each point (a, b), the number of points at Manhattan distance d is limited. For example, in the transformed space, if d is 4e5, then each point can have up to 4e5 points in all four quadrants, but that's not possible.
+
+Wait, no, that's not correct. For a given (a, b), the number of points (a', b') where |a - a'| + |b - b'| = d is O(d), but for large d, this can be up to 4e5 per point, which is again not manageable.
+
+So, let's think differently.
+
+Wait, perhaps the triplet can be found by assuming that one of the points is (x, y), another is (x + d, y), and the third is (x, y + d). Then, all three pairs have Manhattan distance d.
+
+But this is only a specific case, and not all triplets satisfy this.
+
+But perhaps, if such a triplet exists, we can find it quickly.
+
+So, for each point (x, y), check if (x + d, y) and (x, y + d) are present in the set.
+
+If both are present, then the triplet (x, y), (x + d, y), (x, y + d) is a Manhattan triangle.
+
+But the problem is that this is a specific case and may not cover all possible triplets.
+
+So, the plan would be:
+
+For each point (x, y) in the set:
+
+   Check if (x + d, y) is present.
+
+   Check if (x, y + d) is present.
+
+   If both are present, then return the triplet.
+
+But wait, that's assuming that the triplet is of the form (x, y), (x + d, y), (x, y + d). But not all triplets are in this form, so this would miss some triplets.
+
+But this is a way to find some triplets quickly. So, if any such triplet exists, we can find it quickly.
+
+But if no such triplet exists, we proceed to other possibilities.
+
+So, the steps are:
+
+1. For each point (x, y) in the input:
+
+   a. Check if (x + d, y) is present.
+
+   b. Check if (x, y + d) is present.
+
+   c. If both are present, output the triplet.
+
+If no such triplet is found, proceed to other steps.
+
+But this is only a subset of all possible triplets. So, it's possible that the correct triplet is not of this form, but the code will miss it.
+
+But given the time constraints, this might be the best approach.
+
+Alternatively, perhaps the triplet is such that all three points are at (x, y), (x + a, y + b), and (x + c, y + d), where a + b = c + d, etc. But I'm not sure.
+
+Hmm.
+
+Wait, another observation: the Manhattan triangle must consist of three points that form a right-angled triangle with legs of length d. So, for each point, perhaps we can look for points that are d units away in two perpendicular directions.
+
+But again, this is similar to the earlier approach.
+
+So, perhaps the best approach is to:
+
+- For each point (x, y), check if (x + d, y) and (x, y + d) are present.
+
+- If so, output the triplet.
+
+- Else, proceed.
+
+If no such triplet is found, then perhaps check for other types of triplets, like three points that are in a straight line but arranged in a way that their pairwise distances are d.
+
+But again, the problem is how to find these without checking all possible pairs.
+
+Wait, but for the problem statement, the Manhattan triangle must have all three pairwise distances equal to d. So, for each point, the other two points must be at distance d from it, and each other.
+
+So, perhaps, for each point, we can find the set of points at distance d, and then for each pair in that set, check if they are at distance d.
+
+But for n=2e5, this is not feasible.
+
+Hmm.
+
+Wait, perhaps the problem can be transformed into finding three points that are all at distance d from each other, so that their mutual distances are d.
+
+So, for each point, we can find all points that are at distance d, and then for each such point, check if the two points are also at distance d.
+
+But again, this is O(n * k^2), which is too slow.
+
+Wait, but perhaps the key is to realize that in the transformed space, the problem reduces to finding three points that form a right-angled triangle with legs d.
+
+So, for each point, we can look for two other points that are at (d, 0) and (0, d) from it.
+
+But how to compute that.
+
+Alternatively, perhaps the problem can be solved by considering that the Manhattan triangle must have points that are in a certain configuration.
+
+Wait, perhaps the triplet can be found by considering that for each point P, the other two points are in the four possible quadrants relative to P.
+
+But I'm not making progress here.
+
+An alternative idea: since the problem requires that all three pairwise distances are d, perhaps the three points form a rectangle or a square in some way.
+
+Wait, consider three points forming a square. Each side is d. The diagonals would be d√2. But Manhattan distance between opposite corners is 2d. So, that's not helpful.
+
+Wait, another thought: the Manhattan triangle has three edges, each of length d. So, the three edges form a triangle, in which each edge is d units.
+
+So, for the three points, each pair is connected by a line segment of length d in the Manhattan metric.
+
+So, perhaps, the three points form a triangle where each edge is a Manhattan line of length d.
+
+But again, I'm not sure.
+
+Hmm.
+
+Another idea: The number of possible triplets is O(n^3), which is way too big. So, perhaps, a probabilistic approach is needed, but given the time constraints, that's not feasible.
+
+Wait, perhaps the problem can be solved by considering that for each point P, the other two points must be in the set of points at distance d from P, and also at distance d from each other.
+
+But again, the problem is how to find this efficiently.
+
+Alternatively, perhaps the problem can be solved by using hashing. For each point, store all points at distance d in a hash set. Then, for each point P, iterate through the hash set, and for each point Q in the hash set, check if Q is at distance d from P.
+
+But again, for n=2e5, this is O(n * k), which is not feasible if k is large.
+
+Hmm.
+
+Wait, perhaps the key is to note that the Manhattan triangle requires that all three points are at the same distance d from each other. So, perhaps, the problem can be approached by finding three points that form a certain pattern.
+
+But I'm stuck.
+
+Hmm, perhaps I should think about the problem from another angle. Let's think about the Manhattan triangle.
+
+Each pair of points in the triangle must have Manhattan distance d.
+
+So, for three points P, Q, R:
+
+|P.x - Q.x| + |P.y - Q.y| = d
+
+|Q.x - R.x| + |Q.y - R.y| = d
+
+|R.x - P.x| + |R.y - P.y| = d
+
+These can be rewritten as:
+
+(P.x - Q.x) + (P.y - Q.y) = ±d
+
+Similarly for the other pairs.
+
+Hmm, but this doesn't seem to lead anywhere.
+
+Another approach: Let's consider that the Manhattan distance is the L1 distance. So, the Manhattan triangle must be a right-angled triangle with legs of length d. So, the three points must form a right-angled triangle with legs of length d.
+
+So, perhaps, the triplet can be found by checking for such points.
+
+But again, I'm not sure.
+
+Wait, perhaps I can precompute for each point, the four points that are at (d, 0), (0, d), (-d, 0), (0, -d) away. Then, for each pair of points in this precomputed set, check if their distance is d.
+
+But again, for n=2e5, this is not feasible.
+
+Hmm.
+
+Wait, let's think about the problem differently. Given that d is even, perhaps the points can be arranged in a certain way.
+
+Wait, but the problem statement says that d is even, but the triangle can be any shape as long as the pairwise distances are d.
+
+Hmm.
+
+Another idea: for each point (x, y), compute the four points that are at distance d: (x + d, y), (x - d, y), (x, y + d), (x, y - d). For each of these four points, check if they are present in the set.
+
+If any three such points form a triangle, then return them.
+
+But again, this is a specific case and not all triplets are covered.
+
+But perhaps, in the sample input, the triplet is of this form.
+
+So, perhaps, in the sample input, the triplet is (1, 3), (3, 1), (2, 3), with d=2.
+
+Wait, let's compute the Manhattan distances:
+
+- Between (1,3) and (3,1): |1-3| + |3-1| = 2 + 2 =4, which is larger than d=2.
+
+Hmm, so in this case, the triplet is not of this form.
+
+So, my previous approach is not sufficient.
+
+Hmm.
+
+Well, perhaps the problem is difficult to solve for the general case, and perhaps for the given constraints, a brute-force approach is not feasible.
+
+So, perhaps, the problem requires a different approach.
+
+Wait, another angle: the Manhattan distance is the sum of the x and y differences. So, for three points to have all pairwise distances d, each pair must have their x and y differences such that their sum is d.
+
+So, for three points to form a Manhattan triangle, each pair must consist of points where the sum of the differences in x and y is d.
+
+But again, I'm not seeing how to exploit this.
+
+Hmm.
+
+Wait, perhaps for each point, the other points that form a Manhattan triangle with it must be such that their x and y differences are either (d, 0) or (0, d), or (d/2, d/2), etc. But that's not necessarily the case.
+
+Hmm.
+
+Well, perhaps the problem is beyond my current understanding, and I need to find a way to represent the points such that the triplet can be found quickly.
+
+Another idea: perhaps the problem can be transformed into a system of equations.
+
+For three points P, Q, R:
+
+|P.x - Q.x| + |P.y - Q.y| = d
+
+|Q.x - R.x| + |Q.y - R.y| = d
+
+|R.x - P.x| + |R.y - P.y| = d
+
+These three equations must be satisfied.
+
+But solving this system for each possible triplet is not feasible.
+
+Wait, but perhaps each pair of points can be represented as a vector (dx, dy), where dx is the x difference and dy is the y difference. Then, the Manhattan distance is |dx| + |dy|.
+

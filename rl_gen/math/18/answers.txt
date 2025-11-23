@@ -1,0 +1,76 @@
+1
+\sqrt{5}
+Okay, so I have this problem where z is defined as (2 + i)/i, and I need to find the modulus of z, |z|. Hmm, let me recall what the modulus of a complex number is. The modulus of a complex number a + bi is sqrt(a² + b²). So, to find |z|, I first need to simplify z.
+
+Given z = (2 + i)/i. Hmm, dividing by i might be a bit tricky. I remember that dividing by i is the same as multiplying by -i, because 1/i = -i. Let me verify that: i * -i = -i² = -(-1) = 1. Yes, that's correct. So, multiplying numerator and denominator by -i should work.
+
+So, z = (2 + i)/i * (-i)/(-i) = (2 + i)(-i)/ (i*(-i)). Let's compute the denominator first: i*(-i) = -i² = -(-1) = 1. So, the denominator is 1.
+
+Now, the numerator: (2 + i)(-i) = 2*(-i) + i*(-i) = -2i - i². Since i² = -1, this becomes -2i - (-1) = -2i +1 = 1 - 2i.
+
+So, z = (1 - 2i)/1 = 1 - 2i. Okay, so z is 1 - 2i.
+
+Now, to find the modulus of z, |z| = sqrt((1)^2 + (-2)^2) = sqrt(1 + 4) = sqrt(5). So, the modulus is sqrt(5).
+
+Wait, let me verify the steps again to ensure correctness. Starting with z = (2 + i)/i. Multiply numerator and denominator by -i:
+
+Numerator: (2 + i)(-i) = -2i - i² = -2i +1.
+
+Denominator: i*(-i) = -i² =1.
+
+So, z =1 -2i. Yes correct. Alternatively, another way to simplify z is to split the numerator:
+
+z = (2)/i + i/i = 2/i +1. Since 1/i = -i, so 2/i = -2i.所以 z = -2i +1 =1 -2i. Yep, same result.
+
+So, modulus is sqrt(1² + (-2)²)= sqrt(1 +4)= sqrt(5). So, the answer is sqrt(5).
+
+Alternatively, without simplifying z, maybe I can find |z| without finding z explicitly. Let's see.
+
+Given z = (2 + i)/i. So, |z| = |2 + i| / |i|, because |a/b| = |a|/|b|.
+
+We know |i| =1, since i isistant 1 from origin.
+
+And |2 + i| = sqrt(2² +1²) = sqrt(4 +1)= sqrt(5). So, |z| = sqrt(5)/1 = sqrt(5). Same result.
+
+So, either way, answer is sqrt(5). Therefore, the modulus of z is sqrt(5).
+
+我可以-present它如下面所示：
+</think>
+
+Given \( z = \frac{2 + i}{i} \), we need to find the modulus of \( z \), denoted as \( |z| \).
+
+First, we simplify \( z \):
+
+\[ z = \frac{2 + i}{i} \]
+
+Multiply numerator and denominator by \(-i\):
+
+\[ z = \frac{(2 + i)(-i)}{i \cdot (-i)} \]
+
+The denominator simplifies as follows:
+
+\[ i \cdot (-i) = -i^2 = -(-1) = 1 \]
+
+The numerator expands to：
+
+\[ (2 + i)(-i) = 2(-i) + i(-i) = -2i - i^2 \]
+
+Since \( i^2 = -1 \):
+
+\[ -2i - (-1) = -2i + 1 = 1 - 2i \]
+
+Thus, \( z = \frac{1 - 2i}{1} = 1 - 2i \).
+
+Now, we find the modulus of \( z \):
+
+\[ |z| = \sqrt{(1)^2 + (-2)^2} = \sqrt{1 + 4} = \sqrt{5} \]
+
+Alternatively, using the property of modulus for division:
+
+\[ |z| = \left| \frac{2 + i}{i} \right| = \frac{|2 + i|}{|i|} \]
+
+We know \( |i| = 1 \) and \( |2 + i| = \sqrt{2^2 + 1^2} = \sqrt{4 + 1} = \sqrt{5} \):
+
+\[ |z| = \frac{\sqrt{5}}{1} = \sqrt{5} \]
+
+Therefore, the modulus of \( z \) is \(\boxed{\sqrt{5}}\).<｜end▁of▁sentence｜>

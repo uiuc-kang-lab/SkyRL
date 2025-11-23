@@ -1,0 +1,251 @@
+\frac{48}{7}
+Okay, so I have this problem about an ellipse, and I need to find its equation and then solve another part involving chords through the left focus. Let me try to break this down step by step.
+
+First, the ellipse E is given by the equation \(\frac{x^2}{a^2} + \frac{y^2}{b^2} = 1\), where \(a > b > 0\). The left focus is \(F_1\), the right focus is \(F_2\), and the eccentricity \(e = \frac{1}{2}\). So, I know that for an ellipse, the relationship between \(a\), \(b\), and \(e\) is \(e = \frac{c}{a}\), where \(c\) is the distance from the center to each focus. Since \(e = \frac{1}{2}\), that means \(c = \frac{a}{2}\).
+
+Also, for an ellipse, \(c^2 = a^2 - b^2\). So, substituting \(c = \frac{a}{2}\), we get \(\left(\frac{a}{2}\right)^2 = a^2 - b^2\), which simplifies to \(\frac{a^2}{4} = a^2 - b^2\). Rearranging, \(b^2 = a^2 - \frac{a^2}{4} = \frac{3a^2}{4}\). So, \(b = \frac{\sqrt{3}a}{2}\).
+
+Now, the point P is on the ellipse, and we know two things: the inradius of triangle \(PF_1F_2\) is 1, the incenter is \(I\), and the sum of the areas of triangles \(PIF_1\) and \(PIF_2\) is 2.
+
+I need to find the equation of the ellipse, so I need to find \(a\) and \(b\). Since I already have \(b\) in terms of \(a\), I just need to find \(a\).
+
+Let me think about the triangle \(PF_1F_2\). The inradius is 1, so the area of the triangle can be expressed as \(r \times s\), where \(r\) is the inradius and \(s\) is the semiperimeter. So, the area of \(PF_1F_2\) is \(1 \times s = s\).
+
+Also, the sum of the areas of \(PIF_1\) and \(PIF_2\) is 2. Since \(I\) is the incenter, it lies at the intersection of the angle bisectors. The areas of these triangles can be expressed in terms of the inradius and the sides. Specifically, the area of \(PIF_1\) is \(\frac{1}{2} \times PF_1 \times r\), and similarly for \(PIF_2\). So, the sum of these areas is \(\frac{1}{2} \times (PF_1 + PF_2) \times r = \frac{1}{2} \times (2a) \times 1 = a\). But wait, the sum is given as 2, so \(a = 2\). Therefore, \(a = 2\), and \(b = \frac{\sqrt{3} \times 2}{2} = \sqrt{3}\).
+
+So, the equation of the ellipse is \(\frac{x^2}{4} + \frac{y^2}{3} = 1\).
+
+Now, moving on to the second part: through the left focus \(F_1\), draw two perpendicular chords \(AB\) and \(CD\), and find the minimum value of \(|\overrightarrow{AB}| + |\overrightarrow{CD}|\).
+
+First, I need to find the coordinates of the foci. Since \(a = 2\) and \(c = \frac{a}{2} = 1\), the foci are at \((-1, 0)\) and \((1, 0)\). So, \(F_1\) is \((-1, 0)\).
+
+Now, I need to draw two perpendicular chords through \(F_1\). Let's denote these chords as \(AB\) and \(CD\), with \(AB \perp CD\).
+
+I need to find the lengths of \(AB\) and \(CD\) such that their sum is minimized.
+
+To approach this, I can consider the general equation of a chord through \(F_1\) with a given slope. Since the chords are perpendicular, their slopes will be negative reciprocals.
+
+Let me denote the slope of \(AB\) as \(m\), then the slope of \(CD\) will be \(-\frac{1}{m}\).
+
+The equation of chord \(AB\) can be written as \(y = m(x + 1)\), since it passes through \((-1, 0)\). Similarly, the equation of chord \(CD\) will be \(y = -\frac{1}{m}(x + 1)\).
+
+Now, I need to find the points where these chords intersect the ellipse \(\frac{x^2}{4} + \frac{y^2}{3} = 1\).
+
+Let's substitute \(y = m(x + 1)\) into the ellipse equation:
+
+\(\frac{x^2}{4} + \frac{[m(x + 1)]^2}{3} = 1\)
+
+Expanding this:
+
+\(\frac{x^2}{4} + \frac{m^2(x^2 + 2x + 1)}{3} = 1\)
+
+Multiply through by 12 to eliminate denominators:
+
+3x^2 + 4m^2(x^2 + 2x + 1) = 12
+
+Expanding:
+
+3x^2 + 4m^2x^2 + 8m^2x + 4m^2 = 12
+
+Combine like terms:
+
+(3 + 4m^2)x^2 + 8m^2x + (4m^2 - 12) = 0
+
+This is a quadratic in x. Let me denote this as \(Ax^2 + Bx + C = 0\), where:
+
+A = 3 + 4m^2
+
+B = 8m^2
+
+C = 4m^2 - 12
+
+The solutions for x will give me the x-coordinates of points A and B. Similarly, for chord CD, I can do the same substitution with slope \(-1/m\).
+
+However, instead of solving for x, I can use the fact that the length of a chord through a point inside the ellipse can be found using the formula \(2\sqrt{a^2e^2 - d^2}\), where \(d\) is the distance from the center to the chord. But I'm not sure if that's applicable here.
+
+Alternatively, I can use the quadratic to find the roots and then compute the distance between the points.
+
+But perhaps a better approach is to use the fact that the length of the chord can be expressed in terms of the slope m.
+
+Let me recall that for a line \(y = mx + c\) intersecting the ellipse \(\frac{x^2}{a^2} + \frac{y^2}{b^2} = 1\), the length of the chord is given by \(\frac{2\sqrt{a^2b^2(1 + m^2)}}{a^2m^2 + b^2}\). Wait, I'm not sure about that. Let me derive it.
+
+The general formula for the length of a chord intersected by a line \(y = mx + c\) on the ellipse \(\frac{x^2}{a^2} + \frac{y^2}{b^2} = 1\) is:
+
+\(\frac{2\sqrt{a^2b^2(1 + m^2)}}{a^2m^2 + b^2}\)
+
+But I need to verify this.
+
+Alternatively, I can use the distance formula. Let me consider the chord \(AB\) with equation \(y = m(x + 1)\). The points A and B lie on both the ellipse and the line. Let me denote the x-coordinates of A and B as \(x_1\) and \(x_2\). Then, the length of AB is \(\sqrt{(x_1 - x_2)^2 + (y_1 - y_2)^2}\). Since \(y = m(x + 1)\), \(y_1 - y_2 = m(x_1 - x_2)\). So, the length is \(\sqrt{(x_1 - x_2)^2(1 + m^2)} = |x_1 - x_2|\sqrt{1 + m^2}\).
+
+From the quadratic equation, \(x_1 + x_2 = -B/A = -8m^2/(3 + 4m^2)\), and \(x_1x_2 = C/A = (4m^2 - 12)/(3 + 4m^2)\).
+
+The difference \(x_1 - x_2\) can be found using \(\sqrt{(x_1 + x_2)^2 - 4x_1x_2}\).
+
+So, \(x_1 - x_2 = \sqrt{(64m^4)/(3 + 4m^2)^2 - 4(4m^2 - 12)/(3 + 4m^2)}\).
+
+Simplifying inside the square root:
+
+\(\frac{64m^4 - 4(4m^2 - 12)(3 + 4m^2)}{(3 + 4m^2)^2}\)
+
+Let me compute the numerator:
+
+64m^4 - 4*(4m^2 - 12)*(3 + 4m^2)
+
+First, compute (4m^2 - 12)(3 + 4m^2):
+
+= 4m^2*3 + 4m^2*4m^2 - 12*3 - 12*4m^2
+
+= 12m^2 + 16m^4 - 36 - 48m^2
+
+= 16m^4 - 36m^2 - 36
+
+Now, multiply by 4:
+
+4*(16m^4 - 36m^2 - 36) = 64m^4 - 144m^2 - 144
+
+Now, subtract from 64m^4:
+
+64m^4 - (64m^4 - 144m^2 - 144) = 144m^2 + 144
+
+So, the numerator is 144(m^2 + 1), and the denominator is (3 + 4m^2)^2.
+
+Thus, \(x_1 - x_2 = \sqrt{\frac{144(m^2 + 1)}{(3 + 4m^2)^2}} = \frac{12\sqrt{m^2 + 1}}{3 + 4m^2}\).
+
+Therefore, the length of AB is \(|x_1 - x_2|\sqrt{1 + m^2} = \frac{12\sqrt{m^2 + 1}}{3 + 4m^2} \times \sqrt{1 + m^2} = \frac{12(1 + m^2)}{3 + 4m^2}\).
+
+Similarly, for chord CD with slope \(-1/m\), the length will be \(\frac{12(1 + (1/m^2))}{3 + 4(1/m^2)} = \frac{12(1 + 1/m^2)}{3 + 4/m^2} = \frac{12(m^2 + 1)}{3m^2 + 4}\).
+
+So, the lengths of AB and CD are \(\frac{12(1 + m^2)}{3 + 4m^2}\) and \(\frac{12(1 + m^2)}{4 + 3m^2}\), respectively.
+
+Now, I need to find the sum \(S = \frac{12(1 + m^2)}{3 + 4m^2} + \frac{12(1 + m^2)}{4 + 3m^2}\).
+
+Let me factor out 12(1 + m^2):
+
+\(S = 12(1 + m^2)\left(\frac{1}{3 + 4m^2} + \frac{1}{4 + 3m^2}\right)\).
+
+Now, let me compute the sum inside the parentheses:
+
+\(\frac{1}{3 + 4m^2} + \frac{1}{4 + 3m^2} = \frac{4 + 3m^2 + 3 + 4m^2}{(3 + 4m^2)(4 + 3m^2)} = \frac{7 + 7m^2}{(3 + 4m^2)(4 + 3m^2)} = \frac{7(1 + m^2)}{(3 + 4m^2)(4 + 3m^2)}\).
+
+So, \(S = 12(1 + m^2) \times \frac{7(1 + m^2)}{(3 + 4m^2)(4 + 3m^2)} = \frac{84(1 + m^2)^2}{(3 + 4m^2)(4 + 3m^2)}\).
+
+Now, I need to minimize this expression with respect to \(m\). Let me denote \(t = m^2\), where \(t > 0\). Then, the expression becomes:
+
+\(S = \frac{84(1 + t)^2}{(3 + 4t)(4 + 3t)}\).
+
+Let me simplify the denominator:
+
+(3 + 4t)(4 + 3t) = 12 + 9t + 16t + 12t^2 = 12 + 25t + 12t^2.
+
+So, \(S = \frac{84(1 + t)^2}{12t^2 + 25t + 12}\).
+
+Now, I need to find the minimum of this function for \(t > 0\).
+
+Let me denote \(f(t) = \frac{84(1 + t)^2}{12t^2 + 25t + 12}\).
+
+To find the minimum, I can take the derivative of \(f(t)\) with respect to \(t\) and set it to zero.
+
+First, let me compute \(f(t)\):
+
+\(f(t) = 84 \times \frac{(1 + t)^2}{12t^2 + 25t + 12}\).
+
+Let me denote \(u = (1 + t)^2\) and \(v = 12t^2 + 25t + 12\), so \(f(t) = 84 \times \frac{u}{v}\).
+
+The derivative \(f'(t)\) is \(84 \times \frac{u'v - uv'}{v^2}\).
+
+Compute \(u' = 2(1 + t)\).
+
+Compute \(v' = 24t + 25\).
+
+So, \(f'(t) = 84 \times \frac{2(1 + t)(12t^2 + 25t + 12) - (1 + t)^2(24t + 25)}{(12t^2 + 25t + 12)^2}\).
+
+Factor out (1 + t):
+
+\(f'(t) = 84 \times \frac{(1 + t)[2(12t^2 + 25t + 12) - (1 + t)(24t + 25)]}{(12t^2 + 25t + 12)^2}\).
+
+Now, let me compute the expression inside the brackets:
+
+Let me denote \(A = 2(12t^2 + 25t + 12)\) and \(B = (1 + t)(24t + 25)\).
+
+Compute A: \(24t^2 + 50t + 24\).
+
+Compute B: \(24t + 25 + 24t^2 + 25t = 24t^2 + 49t + 25\).
+
+Now, compute A - B: \(24t^2 + 50t + 24 - (24t^2 + 49t + 25) = t - 1\).
+
+So, the expression inside the brackets simplifies to \(t - 1\).
+
+Therefore, \(f'(t) = 84 \times \frac{(1 + t)(t - 1)}{(12t^2 + 25t + 12)^2}\).
+
+Set \(f'(t) = 0\):
+
+The numerator must be zero, so \((1 + t)(t - 1) = 0\).
+
+Since \(t > 0\), \(1 + t > 0\), so \(t - 1 = 0\) implies \(t = 1\).
+
+So, the critical point is at \(t = 1\).
+
+Now, let me check the second derivative or use test points to confirm if this is a minimum.
+
+For \(t < 1\), say \(t = 0.5\), \(f'(t)\) is negative.
+
+For \(t > 1\), say \(t = 2\), \(f'(t)\) is positive.
+
+So, \(t = 1\) is a minimum.
+
+Thus, the minimum occurs at \(t = 1\), so \(m^2 = 1\), hence \(m = \pm 1\).
+
+Now, let's compute the lengths of AB and CD at \(t = 1\).
+
+Length of AB: \(\frac{12(1 + 1)}{3 + 4(1)} = \frac{24}{7}\).
+
+Length of CD: \(\frac{12(1 + 1)}{4 + 3(1)} = \frac{24}{7}\).
+
+So, both lengths are \(\frac{24}{7}\).
+
+Therefore, the sum \(S = \frac{24}{7} + \frac{24}{7} = \frac{48}{7}\).
+
+So, the minimum value of \(|\overrightarrow{AB}| + |\overrightarrow{CD}|\) is \(\frac{48}{7}\).
+
+Wait, but let me double-check the lengths.
+
+At \(m^2 = 1\), so \(m = 1\) or \(m = -1\).
+
+For \(m = 1\):
+
+Length of AB: \(\frac{12(1 + 1)}{3 + 4(1)} = \frac{24}{7}\).
+
+Length of CD: \(\frac{12(1 + 1)}{4 + 3(1)} = \frac{24}{7}\).
+
+So, yes, both are \(\frac{24}{7}\), sum is \(\frac{48}{7}\).
+
+Therefore, the minimum value is \(\frac{48}{7}\).
+
+**Final Answer**
+
+1. The equation of ellipse \(E\) is \(\boxed{\dfrac{x^2}{4} + \dfrac{y^2}{3} = 1}\).
+
+2. The minimum value of \(|\overrightarrow{AB}| + |\overrightarrow{CD}|\) is \(\boxed{\dfrac{48}{7}}\).
+</think>
+
+The ellipse \(E\) is given by the equation \(\frac{x^2}{a^2} + \frac{y^2}{b^2} = 1\) with \(a > b > 0\). The foci are \(F_1\) and \(F_2\) with eccentricity \(e = \frac{1}{2}\). The inradius of \(\triangle PF_1F_2\) is 1, and the sum of the areas of \(\triangle PIF_1\) and \(\triangle PIF_2\) is 2.
+
+1. To find the equation of the ellipse \(E\):
+   - The relationship between \(a\), \(b\), and \(e\) is \(e = \frac{c}{a}\) where \(c = \frac{a}{2}\).
+   - Using \(c^2 = a^2 - b^2\), we get \(\left(\frac{a}{2}\right)^2 = a^2 - b^2\), leading to \(b^2 = \frac{3a^2}{4}\).
+   - The sum of the areas of \(\triangle PIF_1\) and \(\triangle PIF_2\) is 2, leading to \(a = 2\).
+   - Therefore, \(b = \sqrt{3}\).
+   - The equation of the ellipse is \(\frac{x^2}{4} + \frac{y^2}{3} = 1\).
+
+2. To find the minimum value of \(|\overrightarrow{AB}| + |\overrightarrow{CD}|\):
+   - The foci are at \((-1, 0)\) and \((1, 0)\).
+   - The lengths of the chords through \(F_1\) with slopes \(m\) and \(-\frac{1}{m}\) are calculated.
+   - The lengths of the chords are \(\frac{12(1 + m^2)}{3 + 4m^2}\) and \(\frac{12(1 + m^2)}{4 + 3m^2}\).
+   - The sum of these lengths is minimized when \(m^2 = 1\), leading to \(m = \pm 1\).
+   - The minimum value of the sum is \(\frac{48}{7}\).
+
+### Final Answer
+
+1. The equation of ellipse \(E\) is \(\boxed{\dfrac{x^2}{4} + \dfrac{y^2}{3} = 1}\).
+
+2. The minimum value of \(|\overrightarrow{AB}| + |\overrightarrow{CD}|\) is \(\boxed{\dfrac{48}{7}}\).<｜end▁of▁sentence｜>

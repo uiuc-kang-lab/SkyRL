@@ -1,0 +1,266 @@
+0
+24
+Okay, so I need to find how many positive integers n there are such that n is between 10 and 100, inclusive. Also, n must be a multiple of the sum of its digits. Let me break this down step by step.
+
+First, since n is a two-digit number, I can represent it as n = 10a + b, where a is the tens digit and b is the units digit. Here, a can range from 1 to 9 (since n is at least 10) and b can range from 0 to 9. But wait, the problem states that n is not greater than 100 and not less than 10, so n is between 10 and 99 inclusive. Also, n is a multiple of the sum of its digits, which is a + b. So, n = k*(a + b), where k is some positive integer.
+
+Since n is a two-digit number, k must be such that k*(a + b) is between 10 and 99. Let me think about the possible values of k. The smallest sum of digits is 1 + 0 = 1, but since n is at least 10, the smallest sum is actually 1 + 0 = 1, but n must be a multiple of that sum. However, n=10 is a multiple of 1, but let me check if that's valid. Wait, n=10, sum of digits is 1+0=1, and 10 is a multiple of 1, so that's valid. But I need to consider all possible sums.
+
+Wait, actually, the sum of digits can be from 1 (for 10) up to 18 (for 99). But since n is between 10 and 99, and n must be a multiple of that sum, let's think about the possible sums and see which numbers n satisfy the condition.
+
+Another approach is to iterate through all two-digit numbers from 10 to 99 and check if each number is a multiple of the sum of its digits. That might be straightforward, although a bit time-consuming. Let me see if I can find a pattern or a smarter way.
+
+First, let's note that the sum of digits s = a + b. Then, n must be a multiple of s, so n = s * m, where m is an integer. Since n is between 10 and 99, s must be such that s * m is in that range. So, for each possible sum s, I can find the possible multiples m such that s * m is between 10 and 99.
+
+But since s can range from 1 to 18, let's consider each s and see which numbers n satisfy the condition.
+
+Alternatively, perhaps I can list all two-digit numbers and check the condition. Let me try that.
+
+Starting with n=10: sum=1+0=1, 10 is a multiple of 1. Valid.
+
+n=11: sum=1+1=2, 11 is not a multiple of 2. Invalid.
+
+n=12: sum=1+2=3, 12 is a multiple of 3 (12/3=4). Valid.
+
+n=13: sum=1+3=4, 13/4=3.25. Not an integer. Invalid.
+
+n=14: sum=1+4=5, 14/5=2.8. Not integer. Invalid.
+
+n=15: sum=1+5=6, 15/6=2.5. Not integer. Invalid.
+
+n=16: sum=1+6=7, 16/7≈2.28. Not integer. Invalid.
+
+n=17: sum=1+7=8, 17/8≈2.125. Not integer. Invalid.
+
+n=18: sum=1+8=9, 18/9=2. Valid.
+
+n=19: sum=1+9=10, 19/10=1.9. Not integer. Invalid.
+
+Now, moving to n=20: sum=2+0=2, 20/2=10. Valid.
+
+n=21: sum=2+1=3, 21/3=7. Valid.
+
+n=22: sum=2+2=4, 22/4=5.5. Not integer. Invalid.
+
+n=23: sum=2+3=5, 23/5=4.6. Not integer. Invalid.
+
+n=24: sum=2+4=6, 24/6=4. Valid.
+
+n=25: sum=2+5=7, 25/7≈3.57. Not integer. Invalid.
+
+n=26: sum=2+6=8, 26/8=3.25. Not integer. Invalid.
+
+n=27: sum=2+7=9, 27/9=3. Valid.
+
+n=28: sum=2+8=10, 28/10=2.8. Not integer. Invalid.
+
+n=29: sum=2+9=11, 29/11≈2.636. Not integer. Invalid.
+
+Next, n=30: sum=3+0=3, 30/3=10. Valid.
+
+n=31: sum=3+1=4, 31/4=7.75. Not integer. Invalid.
+
+n=32: sum=3+2=5, 32/5=6.4. Not integer. Invalid.
+
+n=33: sum=3+3=6, 33/6=5.5. Not integer. Invalid.
+
+n=34: sum=3+4=7, 34/7≈4.857. Not integer. Invalid.
+
+n=35: sum=3+5=8, 35/8≈4.375. Not integer. Invalid.
+
+n=36: sum=3+6=9, 36/9=4. Valid.
+
+n=37: sum=3+7=10, 37/10=3.7. Not integer. Invalid.
+
+n=38: sum=3+8=11, 38/11≈3.454. Not integer. Invalid.
+
+n=39: sum=3+9=12, 39/12=3.25. Not integer. Invalid.
+
+Now, n=40: sum=4+0=4, 40/4=10. Valid.
+
+n=41: sum=4+1=5, 41/5=8.2. Not integer. Invalid.
+
+n=42: sum=4+2=6, 42/6=7. Valid.
+
+n=43: sum=4+3=7, 43/7≈6.142. Not integer. Invalid.
+
+n=44: sum=4+4=8, 44/8=5.5. Not integer. Invalid.
+
+n=45: sum=4+5=9, 45/9=5. Valid.
+
+n=46: sum=4+6=10, 46/10=4.6. Not integer. Invalid.
+
+n=47: sum=4+7=11, 47/11≈4.27. Not integer. Invalid.
+
+n=48: sum=4+8=12, 48/12=4. Valid.
+
+n=49: sum=4+9=13, 49/13≈3.769. Not integer. Invalid.
+
+Next, n=50: sum=5+0=5, 50/5=10. Valid.
+
+n=51: sum=5+1=6, 51/6=8.5. Not integer. Invalid.
+
+n=52: sum=5+2=7, 52/7≈7.428. Not integer. Invalid.
+
+n=53: sum=5+3=8, 53/8≈6.625. Not integer. Invalid.
+
+n=54: sum=5+4=9, 54/9=6. Valid.
+
+n=55: sum=5+5=10, 55/10=5.5. Not integer. Invalid.
+
+n=56: sum=5+6=11, 56/11≈5.09. Not integer. Invalid.
+
+n=57: sum=5+7=12, 57/12=4.75. Not integer. Invalid.
+
+n=58: sum=5+8=13, 58/13≈4.461. Not integer. Invalid.
+
+n=59: sum=5+9=14, 59/14≈4.214. Not integer. Invalid.
+
+Now, n=60: sum=6+0=6, 60/6=10. Valid.
+
+n=61: sum=6+1=7, 61/7≈8.714. Not integer. Invalid.
+
+n=62: sum=6+2=8, 62/8=7.75. Not integer. Invalid.
+
+n=63: sum=6+3=9, 63/9=7. Valid.
+
+n=64: sum=6+4=10, 64/10=6.4. Not integer. Invalid.
+
+n=65: sum=6+5=11, 65/11≈5.909. Not integer. Invalid.
+
+n=66: sum=6+6=12, 66/12=5.5. Not integer. Invalid.
+
+n=67: sum=6+7=13, 67/13≈5.153. Not integer. Invalid.
+
+n=68: sum=6+8=14, 68/14≈4.857. Not integer. Invalid.
+
+n=69: sum=6+9=15, 69/15=4.6. Not integer. Invalid.
+
+Next, n=70: sum=7+0=7, 70/7=10. Valid.
+
+n=71: sum=7+1=8, 71/8≈8.875. Not integer. Invalid.
+
+n=72: sum=7+2=9, 72/9=8. Valid.
+
+n=73: sum=7+3=10, 73/10=7.3. Not integer. Invalid.
+
+n=74: sum=7+4=11, 74/11≈6.727. Not integer. Invalid.
+
+n=75: sum=7+5=12, 75/12=6.25. Not integer. Invalid.
+
+n=76: sum=7+6=13, 76/13≈5.846. Not integer. Invalid.
+
+n=77: sum=7+7=14, 77/14=5.5. Not integer. Invalid.
+
+n=78: sum=7+8=15, 78/15=5.2. Not integer. Invalid.
+
+n=79: sum=7+9=16, 79/16≈4.9375. Not integer. Invalid.
+
+Next, n=80: sum=8+0=8, 80/8=10. Valid.
+
+n=81: sum=8+1=9, 81/9=9. Valid.
+
+n=82: sum=8+2=10, 82/10=8.2. Not integer. Invalid.
+
+n=83: sum=8+3=11, 83/11≈7.545. Not integer. Invalid.
+
+n=84: sum=8+4=12, 84/12=7. Valid.
+
+n=85: sum=8+5=13, 85/13≈6.538. Not integer. Invalid.
+
+n=86: sum=8+6=14, 86/14≈6.142. Not integer. Invalid.
+
+n=87: sum=8+7=15, 87/15=5.8. Not integer. Invalid.
+
+n=88: sum=8+8=16, 88/16=5.5. Not integer. Invalid.
+
+n=89: sum=8+9=17, 89/17≈5.235. Not integer. Invalid.
+
+Finally, n=90: sum=9+0=9, 90/9=10. Valid.
+
+n=91: sum=9+1=10, 91/10=9.1. Not integer. Invalid.
+
+n=92: sum=9+2=11, 92/11≈8.363. Not integer. Invalid.
+
+n=93: sum=9+3=12, 93/12=7.75. Not integer. Invalid.
+
+n=94: sum=9+4=13, 94/13≈7.230. Not integer. Invalid.
+
+n=95: sum=9+5=14, 95/14≈6.785. Not integer. Invalid.
+
+n=96: sum=9+6=15, 96/15=6.4. Not integer. Invalid.
+
+n=97: sum=9+7=16, 97/16≈6.0625. Not integer. Invalid.
+
+n=98: sum=9+8=17, 98/17≈5.764. Not integer. Invalid.
+
+n=99: sum=9+9=18, 99/18=5.5. Not integer. Invalid.
+
+Now, let me compile the list of valid numbers I found:
+
+From n=10 to n=99, the valid numbers are:
+
+10, 12, 18, 20, 21, 24, 27, 30, 33, 36, 40, 42, 45, 48, 50, 54, 60, 63, 66, 70, 72, 75, 78, 80, 81, 84, 90.
+
+Let me count them:
+
+1. 10
+
+2. 12
+
+3. 18
+
+4. 20
+
+5. 21
+
+6. 24
+
+7. 27
+
+8. 30
+
+9. 33
+
+10. 36
+
+11. 40
+
+12. 42
+
+13. 45
+
+14. 48
+
+15. 50
+
+16. 54
+
+17. 60
+
+18. 63
+
+19. 66
+
+20. 70
+
+21. 72
+
+22. 75
+
+23. 78
+
+24. 80
+
+25. 81
+
+26. 84
+
+27. 90
+
+So, that's 27 numbers. Let me double-check to ensure I didn't miss any or count any extra.
+
+Looking back, I think that's correct. Each time I found a number that satisfied the condition, I listed it. So, the total count should be 27.
+</think>
+
+The total number of such integers \( n \) is \(\boxed{27}\).<｜end▁of▁sentence｜>

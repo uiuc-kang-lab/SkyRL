@@ -1,0 +1,28 @@
+<｜begin▁of▁sentence｜><｜User｜>
+Today, Sakurako was studying arrays. An array $a$ of length $n$ is considered good if and only if:
+
+  * the array $a$ is increasing, meaning $a_{i - 1} < a_i$ for all $2 \le i \le n$;    * the differences between adjacent elements are increasing, meaning $a_i - a_{i-1} < a_{i+1} - a_i$ for all $2 \le i < n$. 
+
+Sakurako has come up with boundaries $l$ and $r$ and wants to construct a good array of maximum length, where $l \le a_i \le r$ for all $a_i$.
+
+Help Sakurako find the maximum length of a good array for the given $l$ and $r$.
+
+Input Format:
+The first line contains a single integer $t$ ($1\le t\le 10^4$)  — the number of test cases.
+
+The only line of each test case contains two integers $l$ and $r$ ($1\le l\le r\le 10^9$).
+
+Output Format:
+For each test case, output a single integer  — the length of the longest good array Sakurako can form given $l$ and $r$.
+
+Tags:
+['binary search', 'brute force', 'math']
+
+Time Limit: 2000 ms
+Memory Limit: 256 MB
+
+Write Python code to solve the problem. Present the code in
+```python
+Your code
+```
+at the end.<｜Assistant｜><think>

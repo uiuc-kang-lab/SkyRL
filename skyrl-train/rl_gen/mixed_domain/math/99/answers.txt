@@ -1,0 +1,549 @@
+-3+2 \sqrt {3}
+Okay, so I have this problem where I need to find the range of a real number \( a \) such that the line \( y = ax + 1 \) intersects the parabola \( y^2 = 4x \) at points \( A \) and \( B \). Then, I also need to find the specific value of \( a \) that makes the circle with diameter \( AB \) pass through the focus \( F \) of the parabola. Hmm, let's break this down step by step.
+
+First, part (I) asks for the range of \( a \). I remember that the line and the parabola can intersect when substituting one equation into the other results in a quadratic equation with real solutions. So, let's substitute \( y = ax + 1 \) into \( y^2 = 4x \).
+
+Substituting, we get:
+\[
+(ax + 1)^2 = 4x
+\]
+Expanding the left side:
+\[
+a^2x^2 + 2ax + 1 = 4x
+\]
+Bringing all terms to one side to form a quadratic equation:
+\[
+a^2x^2 + (2a - 4)x + 1 = 0
+\]
+So, this is a quadratic in terms of \( x \): \( Ax^2 + Bx + C = 0 \), where \( A = a^2 \), \( B = 2a - 4 \), and \( C = 1 \).
+
+For the quadratic equation to have real solutions, the discriminant must be non-negative. The discriminant \( D \) is given by:
+\[
+D = B^2 - 4AC
+\]
+Plugging in the values:
+\[
+D = (2a - 4)^2 - 4(a^2)(1)
+\]
+Expanding \( (2a - 4)^2 \):
+\[
+(2a)^2 - 2 \cdot 2a \cdot 4 + 4^2 = 4a^2 - 16a + 16
+\]
+So, the discriminant becomes:
+\[
+D = 4a^2 - 16a + 16 - 4a^2 = -16a + 16
+\]
+We require \( D \geq 0 \) for real solutions:
+\[
+-16a + 16 \geq 0
+\]
+Solving for \( a \):
+\[
+-16a \geq -16 \\
+a \leq 1
+\]
+So, the range of \( a \) is all real numbers less than or equal to 1. Therefore, part (I) is solved, and \( a \leq 1 \).
+
+Moving on to part (II), we need to find the value of \( a \) such that the circle with diameter \( AB \) passes through the focus \( F \) of the parabola. Let's recall that for the parabola \( y^2 = 4x \), the standard form is \( y^2 = 4ax \), so here, \( 4a = 4 \), meaning the focus \( F \) is at \( (1, 0) \).
+
+So, point \( F \) is \( (1, 0) \). Now, I need to ensure that \( F \) lies on the circle with diameter \( AB \). To do this, I should find the equation of the circle with diameter \( AB \) and then substitute \( F \) into it. Let's outline the steps:
+
+1. Find the coordinates of points \( A \) and \( B \) in terms of \( a \).
+2. Determine the equation of the circle with diameter \( AB \).
+3. Substitute \( F(1, 0) \) into the circle's equation and solve for \( a \).
+
+First, finding \( A \) and \( B \). From part (I), we have the quadratic equation:
+\[
+a^2x^2 + (2a - 4)x + 1 = 0
+\]
+The solutions to this quadratic will give us the \( x \)-coordinates of \( A \) and \( B \). Let's denote them as \( x_1 \) and \( x_2 \).
+
+Using the quadratic formula:
+\[
+x = \frac{-(2a - 4) \pm \sqrt{(2a - 4)^2 - 4(a^2)(1)}}{2a^2}
+\]
+Simplify the numerator:
+\[
+- (2a - 4) = -2a + 4
+\]
+So, the solutions are:
+\[
+x = \frac{-2a + 4 \pm \sqrt{4a^2 - 16a + 16 - 4a^2}}{2a^2}
+\]
+Simplify the discriminant inside the square root:
+\[
+\sqrt{4a^2 - 16a + 16 - 4a^2} = \sqrt{-16a + 16} = \sqrt{16(1 - a)} = 4\sqrt{1 - a}
+\]
+Therefore, the solutions become:
+\[
+x = \frac{-2a + 4 \pm 4\sqrt{1 - a}}{2a^2}
+\]
+Simplify numerator by factoring out 2:
+\[
+x = \frac{2(-a + 2) \pm 4\sqrt{1 - a}}{2a^2} = \frac{(-a + 2) \pm 2\sqrt{1 - a}}{a^2}
+\]
+So, \( x_1 = \frac{(-a + 2) + 2\sqrt{1 - a}}{a^2} \) and \( x_2 = \frac{(-a + 2) - 2\sqrt{1 - a}}{a^2} \).
+
+Now, let's find the corresponding \( y \)-coordinates for points \( A \) and \( B \). Since \( y = ax + 1 \), we have:
+For \( x = x_1 \):
+\[
+y_1 = a \cdot \frac{(-a + 2) + 2\sqrt{1 - a}}{a^2} + 1 = \frac{(-a + 2) + 2\sqrt{1 - a}}{a} + 1
+\]
+Simplify:
+\[
+y_1 = \frac{-a + 2 + 2a\sqrt{1 - a} + a}{a} = \frac{2 + 2a\sqrt{1 - a}}{a}
+\]
+Wait, let me check that again. Maybe I made a miscalculation.
+
+Wait, let's compute \( y_1 \):
+\[
+y_1 = a \cdot \frac{(-a + 2) + 2\sqrt{1 - a}}{a^2} + 1 = \frac{(-a + 2) + 2\sqrt{1 - a}}{a} + 1
+\]
+So, combining terms:
+\[
+y_1 = \frac{-a + 2 + 2a\sqrt{1 - a} + a}{a} = \frac{2 + 2a\sqrt{1 - a}}{a}
+\]
+Similarly, for \( x = x_2 \):
+\[
+y_2 = a \cdot \frac{(-a + 2) - 2\sqrt{1 - a}}{a^2} + 1 = \frac{(-a + 2) - 2\sqrt{1 - a}}{a} + 1
+\]
+Simplify:
+\[
+y_2 = \frac{-a + 2 - 2\sqrt{1 - a}}{a} + 1 = \frac{-a + 2 - 2\sqrt{1 - a} + a}{a} = \frac{2 - 2a\sqrt{1 - a}}{a}
+\]
+So, now we have both \( y_1 \) and \( y_2 \) in terms of \( a \). Let's denote:
+\[
+y_1 = \frac{2 + 2a\sqrt{1 - a}}{a} = \frac{2(1 + a\sqrt{1 - a})}{a}
+\]
+\[
+y_2 = \frac{2 - 2a\sqrt{1 - a}}{a} = \frac{2(1 - a\sqrt{1 - a})}{a}
+\]
+Now, points \( A \) and \( B \) are \( (x_1, y_1) \) and \( (x_2, y_2) \) respectively.
+
+To find the equation of the circle with diameter \( AB \), we can use the general equation of a circle:
+\[
+(x - h)^2 + (y - k)^2 = r^2
+\]
+where \( (h, k) \) is the center and \( r \) is the radius. The center is the midpoint of \( AB \), and the radius is half the distance between \( A \) and \( B \).
+
+So, first, let's find the midpoint \( M \) of \( AB \):
+\[
+M_x = \frac{x_1 + x_2}{2}, \quad M_y = \frac{y_1 + y_2}{2}
+\]
+From the quadratic equation earlier, we know that:
+\[
+x_1 + x_2 = \frac{-2a + 4}{a^2}
+\]
+So,
+\[
+M_x = \frac{-2a + 4}{2a^2} = \frac{-a + 2}{a^2}
+\]
+Similarly, for \( y \)-coordinates:
+\[
+y_1 + y_2 = \frac{2 + 2a\sqrt{1 - a}}{a} + \frac{2 - 2a\sqrt{1 - a}}{a} = \frac{4}{a}
+\]
+Thus,
+\[
+M_y = \frac{4}{2a} = \frac{2}{a}
+\]
+So, the center of the circle is \( \left( \frac{-a + 2}{a^2}, \frac{2}{a} \right) \).
+
+Next, let's find the radius \( r \). The radius is half the distance between \( A \) and \( B \). The distance formula is:
+\[
+AB = \sqrt{(x_1 - x_2)^2 + (y_1 - y_2)^2}
+\]
+Let's compute \( x_1 - x_2 \) and \( y_1 - y_2 \).
+
+From above, \( x_1 = \frac{(-a + 2) + 2\sqrt{1 - a}}{a^2} \) and \( x_2 = \frac{(-a + 2) - 2\sqrt{1 - a}}{a^2} \). So,
+\[
+x_1 - x_2 = \frac{4\sqrt{1 - a}}{a^2}
+\]
+Similarly, for \( y_1 - y_2 \):
+\[
+y_1 - y_2 = \frac{4a\sqrt{1 - a}}{a} = 4\sqrt{1 - a}
+\]
+Wait, let's double-check that.
+
+We have:
+\[
+y_1 = \frac{2 + 2a\sqrt{1 - a}}{a}
+\]
+and
+\[
+y_2 = \frac{2 - 2a\sqrt{1 - a}}{a}
+\]
+Thus,
+\[
+y_1 - y_2 = \frac{4a\sqrt{1 - a}}{a} = 4\sqrt{1 - a}
+\]
+So, \( y_1 - y_2 = 4\sqrt{1 - a} \).
+
+Therefore, the distance \( AB \) is:
+\[
+AB = \sqrt{\left( \frac{4\sqrt{1 - a}}{a^2} \right)^2 + \left( 4\sqrt{1 - a} \right)^2 }
+\]
+Simplify each term:
+First term: \( \left( \frac{4\sqrt{1 - a}}{a^2} \right)^2 = \frac{16(1 - a)}{a^4} \)
+Second term: \( \left( 4\sqrt{1 - a} \right)^2 = 16(1 - a) \)
+
+So, distance squared is:
+\[
+AB^2 = \frac{16(1 - a)}{a^4} + 16(1 - a) = 16(1 - a) \left( \frac{1}{a^4} + 1 \right )
+\]
+Factor out \( 16(1 - a) \):
+\[
+AB^2 = 16(1 - a) \left( \frac{1 + a^4}{a^4} \right )
+\]
+But wait, let me compute it step by step.
+
+Wait, actually, \( AB^2 = \frac{16(1 - a)}{a^4} + 16(1 - a) \). Let's factor out \( 16(1 - a) \):
+
+\[
+AB^2 = 16(1 - a) \left( \frac{1}{a^4} + 1 \right )
+\]
+But to combine the terms inside the parentheses, find a common denominator:
+\[
+\frac{1}{a^4} + 1 = \frac{1 + a^4}{a^4}
+\]
+So,
+\[
+AB^2 = 16(1 - a) \cdot \frac{1 + a^4}{a^4} = \frac{16(1 - a)(1 + a^4)}{a^4}
+\]
+Therefore, the distance \( AB \) is:
+\[
+AB = \sqrt{ \frac{16(1 - a)(1 + a^4)}{a^4} } = \frac{4 \sqrt{(1 - a)(1 + a^4)}}{a^2}
+\]
+Thus, the radius \( r \) is half of this:
+\[
+r = \frac{2 \sqrt{(1 - a)(1 + a^4)}}{a^2}
+\]
+So, the equation of the circle is:
+\[
+\left( x - \frac{-a + 2}{a^2} \right )^2 + \left( y - \frac{2}{a} \right )^2 = \left( \frac{2 \sqrt{(1 - a)(1 + a^4)}}{a^2} \right )^2
+\]
+Simplifying the right side:
+\[
+\left( \frac{2 \sqrt{(1 - a)(1 + a^4)}}{a^2} \right )^2 = \frac{4(1 - a)(1 + a^4)}{a^4}
+\]
+Now, the circle equation becomes:
+\[
+\left( x + \frac{a - 2}{a^2} \right )^2 + \left( y - \frac{2}{a} \right )^2 = \frac{4(1 - a)(1 + a^4)}{a^4}
+\]
+We need this circle to pass through the focus \( F(1, 0) \). So, substitute \( x = 1 \) and \( y = 0 \) into the circle equation:
+
+\[
+\left( 1 + \frac{a - 2}{a^2} \right )^2 + \left( 0 - \frac{2}{a} \right )^2 = \frac{4(1 - a)(1 + a^4)}{a^4}
+\]
+Simplify each term:
+
+First term:
+\[
+1 + \frac{a - 2}{a^2} = \frac{a^2 + a - 2}{a^2}
+\]
+Second term:
+\[
+\left( - \frac{2}{a} \right )^2 = \frac{4}{a^2}
+\]
+So, the left side becomes:
+\[
+\left( \frac{a^2 + a - 2}{a^2} \right )^2 + \frac{4}{a^2}
+\]
+Compute each part:
+
+First part squared:
+\[
+\left( \frac{a^2 + a - 2}{a^2} \right )^2 = \frac{(a^2 + a - 2)^2}{a^4}
+\]
+Second part:
+\[
+\frac{4}{a^2} = \frac{4a^2}{a^4}
+\]
+So, the left side becomes:
+\[
+\frac{(a^2 + a - 2)^2 + 4a^2}{a^4}
+\]
+Set this equal to the right side:
+\[
+\frac{4(1 - a)(1 + a^4)}{a^4}
+\]
+Multiply both sides by \( a^4 \) to eliminate denominators:
+\[
+(a^2 + a - 2)^2 + 4a^2 = 4(1 - a)(1 + a^4)
+\]
+Now, expand and simplify both sides.
+
+First, expand \( (a^2 + a - 2)^2 \):
+\[
+(a^2 + a - 2)^2 = (a^2)^2 + (a)^2 + (-2)^2 + 2(a^2)(a) + 2(a^2)(-2) + 2(a)(-2)
+\]
+Wait, that might be tedious. Alternatively, use the formula \( (x + y + z)^2 = x^2 + y^2 + z^2 + 2xy + 2xz + 2yz \).
+
+Here, \( x = a^2 \), \( y = a \), \( z = -2 \).
+
+So,
+\[
+(a^2 + a - 2)^2 = (a^2)^2 + (a)^2 + (-2)^2 + 2(a^2)(a) + 2(a^2)(-2) + 2(a)(-2)
+\]
+Compute each term:
+- \( (a^2)^2 = a^4 \)
+- \( (a)^2 = a^2 \)
+- \( (-2)^2 = 4 \)
+- \( 2(a^2)(a) = 2a^3 \)
+- \( 2(a^2)(-2) = -4a^2 \)
+- \( 2(a)(-2) = -4a \)
+
+So, adding them all together:
+\[
+a^4 + a^2 + 4 + 2a^3 - 4a^2 - 4a
+\]
+Combine like terms:
+- \( a^4 \)
+- \( 2a^3 \)
+- \( (a^2 - 4a^2) = -3a^2 \)
+- \( -4a \)
+- \( +4 \)
+
+Thus:
+\[
+(a^2 + a - 2)^2 = a^4 + 2a^3 - 3a^2 - 4a + 4
+\]
+Now, add \( 4a^2 \) to this:
+\[
+a^4 + 2a^3 - 3a^2 - 4a + 4 + 4a^2 = a^4 + 2a^3 + ( -3a^2 + 4a^2 ) + (-4a) + 4
+\]
+Simplify:
+\[
+a^4 + 2a^3 + a^2 - 4a + 4
+\]
+So, the left side simplifies to:
+\[
+a^4 + 2a^3 + a^2 - 4a + 4
+\]
+Now, let's compute the right side:
+\[
+4(1 - a)(1 + a^4)
+\]
+First, expand \( (1 - a)(1 + a^4) \):
+\[
+1 \cdot 1 + 1 \cdot a^4 - a \cdot 1 - a \cdot a^4 = 1 + a^4 - a - a^5
+\]
+So,
+\[
+4(1 - a)(1 + a^4) = 4(1 + a^4 - a - a^5) = 4 - 4a + 4a^4 - 4a^5
+\]
+Now, we have the equation:
+\[
+a^4 + 2a^3 + a^2 - 4a + 4 = 4 - 4a + 4a^4 - 4a^5
+\]
+Bring all terms to the left side:
+\[
+a^4 + 2a^3 + a^2 - 4a + 4 - 4 + 4a - 4a^4 + 4a^5 = 0
+\]
+Simplify term by term:
+- \( a^4 - 4a^4 = -3a^4 \)
+- \( 2a^3 \) remains
+- \( a^2 \) remains
+- \( -4a + 4a = 0 \)
+- \( 4 - 4 = 0 \)
+- \( +4a^5 \)
+
+So, the equation becomes:
+\[
+4a^5 - 3a^4 + 2a^3 + a^2 = 0
+\]
+Factor out an \( a^2 \):
+\[
+a^2(4a^3 - 3a^2 + 2a + 1) = 0
+\]
+This gives us two cases:
+1. \( a^2 = 0 \) which implies \( a = 0 \)
+2. \( 4a^3 - 3a^2 + 2a + 1 = 0 \)
+
+Let's consider each case.
+
+Case 1: \( a = 0 \)
+
+If \( a = 0 \), let's check if the circle with diameter \( AB \) passes through \( F(1, 0) \).
+
+From earlier, the quadratic equation becomes \( 0x^2 + (0 - 4)x + 1 = 0 \), which simplifies to \( -4x + 1 = 0 \), so \( x = 1/4 \). Thus, points \( A \) and \( B \) are both at \( x = 1/4 \), so it's a vertical line. The circle with diameter \( AB \) would be a circle with diameter along this vertical line, so its center is at \( (1/4, y_c) \), and radius is \( |y_c - 0| \). Wait, but if \( A \) and \( B \) are both on this vertical line, the circle would be symmetric about this line.
+
+But let's check if \( (1, 0) \) lies on this circle. The center is at \( (1/4, k) \), and since it's a circle with diameter \( AB \), it must pass through both \( A \) and \( B \). If \( A \) and \( B \) are both on \( x = 1/4 \), then the circle would be such that the center is on the perpendicular bisector of \( AB \). However, since \( AB \) is a vertical line, the perpendicular bisector is a horizontal line through the midpoint. But in this case, the midpoint is \( (1/4, y_c) \), so the circle's center is \( (1/4, y_c) \) and radius is the distance from the center to either \( A \) or \( B \).
+
+But the circle equation is:
+\[
+(x - 1/4)^2 + (y - y_c)^2 = r^2
+\]
+Since \( A \) and \( B \) are on this circle, and they are both at \( x = 1/4 \), let's denote \( A = (1/4, y_1) \) and \( B = (1/4, y_2) \). Then, the circle equation becomes:
+\[
+(x - 1/4)^2 + (y - y_c)^2 = r^2
+\]
+For point \( F(1, 0) \) to lie on this circle:
+\[
+(1 - 1/4)^2 + (0 - y_c)^2 = r^2
+\]
+Which simplifies to:
+\[
+(3/4)^2 + y_c^2 = r^2
+\]
+But since \( A \) and \( B \) are on the circle, we can also write:
+\[
+(1/4 - 1/4)^2 + (y_1 - y_c)^2 = r^2 \\
+0 + (y_1 - y_c)^2 = r^2 \\
+\implies (y_1 - y_c)^2 = r^2
+\]
+Similarly for \( B \):
+\[
+(y_2 - y_c)^2 = r^2
+\]
+But since \( A \) and \( B \) are both on the circle, their y-coordinates must satisfy:
+\[
+(y - y_c)^2 = r^2
+\]
+Which means \( y_1 = y_c \pm r \) and \( y_2 = y_c \pm r \). But since \( A \) and \( B \) are distinct points, \( y_1 \neq y_2 \), so one of them is \( y_c + r \) and the other is \( y_c - r \). Therefore, \( y_1 + y_2 = 2y_c \). But looking back at the coordinates of \( A \) and \( B \), we have:
+\[
+y_1 = \frac{2 + 2a\sqrt{1 - a}}{a} = \frac{2(1 + a\sqrt{1 - a})}{a}
+\]
+\[
+y_2 = \frac{2 - 2a\sqrt{1 - a}}{a}
+\]
+So, \( y_1 + y_2 = \frac{4}{a} \). Therefore, \( 2y_c = \frac{4}{a} \implies y_c = \frac{2}{a} \).
+
+From earlier, the center of the circle is \( (1/4, 2/a) \). Then, the radius is:
+\[
+r = \sqrt{(y_1 - y_c)^2} = |y_1 - 2/a|
+\]
+But \( y_1 = \frac{2 + 2a\sqrt{1 - a}}{a} = \frac{2(1 + a\sqrt{1 - a})}{a} \). So,
+\[
+y_1 - 2/a = \frac{2(1 + a\sqrt{1 - a})}{a} - \frac{2}{a} = \frac{2a\sqrt{1 - a}}{a} = 2\sqrt{1 - a}
+\]
+Thus, \( r = |2\sqrt{1 - a}| \).
+
+Now, check if \( F(1, 0) \) lies on the circle:
+\[
+(1 - 1/4)^2 + (0 - 2/a)^2 = (3/4)^2 + (4/a^2) = 9/16 + 4/a^2
+\]
+And \( r^2 = (2\sqrt{1 - a})^2 = 4(1 - a) \).
+
+Set them equal:
+\[
+9/16 + 4/a^2 = 4(1 - a)
+\]
+Multiply both sides by 16a^2 to eliminate denominators:
+\[
+9a^2 + 64 = 64a^2(1 - a)
+\]
+Expand the right side:
+\[
+9a^2 + 64 = 64a^2 - 64a^3
+\]
+Bring all terms to the left:
+\[
+64a^3 + 9a^2 - 64a^2 + 64 = 0
+\]
+Simplify:
+\[
+64a^3 - 55a^2 + 64 = 0
+\]
+Hmm, this seems complicated. Let me check if I made a mistake earlier. Wait, when \( a = 0 \), the original quadratic equation becomes \( -4x + 1 = 0 \), so \( x = 1/4 \). So, points \( A \) and \( B \) are both \( (1/4, y_1) \) and \( (1/4, y_2) \). The circle with diameter \( AB \) is actually a vertical line segment, so the circle is the set of points equidistant from \( A \) and \( B \). But \( F(1, 0) \) is not on this vertical line, so it cannot lie on the circle. Therefore, \( a = 0 \) is not a valid solution.
+
+Wait, maybe I made a mistake in assuming the circle passes through \( F \) when \( a = 0 \). Let me check this again.
+
+If \( a = 0 \), then the line is \( y = 0x + 1 \), which is \( y = 1 \). So, it's a horizontal line crossing the parabola \( y^2 = 4x \) at points where \( y = 1 \). Plugging \( y = 1 \) into the parabola equation:
+\[
+1 = 4x \implies x = 1/4
+\]
+Thus, points \( A \) and \( B \) are both \( (1/4, 1) \). So, the circle with diameter \( AB \) is actually a single point, which can't be. Wait, no, the diameter \( AB \) is a single point, so the circle would just be that point itself, which can't pass through another point. Therefore, \( a = 0 \) is invalid.
+
+So, Case 1: \( a = 0 \) is not a solution.
+
+Now, moving to Case 2: \( 4a^3 - 3a^2 + 2a + 1 = 0 \)
+
+We need to solve the cubic equation:
+\[
+4a^3 - 3a^2 + 2a + 1 = 0
+\]
+Let's try to find rational roots using the Rational Root Theorem. Possible rational roots are \( \pm1 \), \( \pm1/2 \), \( \pm1/4 \).
+
+Test \( a = 1 \):
+\[
+4(1)^3 - 3(1)^2 + 2(1) + 1 = 4 - 3 + 2 + 1 = 4 \neq 0
+\]
+Test \( a = -1 \):
+\[
+4(-1)^3 - 3(-1)^2 + 2(-1) + 1 = -4 - 3 - 2 + 1 = -8 \neq 0
+\]
+Test \( a = 1/2 \):
+\[
+4(1/2)^3 - 3(1/2)^2 + 2(1/2) + 1 = 4(1/8) - 3(1/4) + 1 + 1 = 0.5 - 0.75 + 1 + 1 = 1.75 \neq 0
+\]
+Test \( a = -1/2 \):
+\[
+4(-1/2)^3 - 3(-1/2)^2 + 2(-1/2) + 1 = 4(-1/8) - 3(1/4) - 1 + 1 = -0.5 - 0.75 - 1 + 1 = -1.25 \neq 0
+\]
+Test \( a = -1/4 \):
+\[
+4(-1/4)^3 - 3(-1/4)^2 + 2(-1/4) + 1 = 4(-1/64) - 3(1/16) - 0.5 + 1 = -1/16 - 3/16 - 0.5 + 1 = (-4/16) - 0.5 + 1 = (-0.25) - 0.5 + 1 = 0.25 \neq 0
+\]
+Test \( a = 1/4 \):
+\[
+4(1/4)^3 - 3(1/4)^2 + 2(1/4) + 1 = 4(1/64) - 3(1/16) + 0.5 + 1 = 0.0625 - 0.1875 + 0.5 + 1 = (0.0625 - 0.1875) + 1.5 = (-0.125) + 1.5 = 1.375 \neq 0
+\]
+None of these are roots. So, this cubic doesn't have rational roots. Maybe we can factor it or use the cubic formula.
+
+Alternatively, perhaps I made a mistake in the algebra earlier. Let me double-check the equation.
+
+Earlier, after expanding, we had:
+\[
+4a^5 - 3a^4 + 2a^3 + a^2 = 0
+\]
+Factoring out \( a^2 \):
+\[
+a^2(4a^3 - 3a^2 + 2a + 1) = 0
+\]
+So, we have \( a = 0 \) as a double root, but we saw that \( a = 0 \) doesn't yield a valid circle. So, the other roots are solutions to \( 4a^3 - 3a^2 + 2a + 1 = 0 \).
+
+Since it's a cubic without rational roots, perhaps we can use methods for solving cubics. The general solution for a cubic equation \( ax^3 + bx^2 + cx + d = 0 \) can be found using Cardano's formula. However, that might be complicated. Alternatively, since the equation is \( 4a^3 - 3a^2 + 2a + 1 = 0 \), maybe we can make a substitution to simplify it.
+
+Let me try substituting \( a = t + k \) to eliminate the quadratic term. Alternatively, perhaps use the substitution \( a = z \), but that might not help. Alternatively, maybe use the rational root theorem again, but since none worked, perhaps the cubic is irreducible over rationals, so we need to find its roots numerically or symbolically.
+
+But since this is a problem likely meant to be solved algebraically, maybe I made an error earlier in the calculation. Let me double-check the previous steps.
+
+Wait, when I expanded \( (a^2 + a - 2)^2 \), I think I might have made a mistake. Let's recalculate that step.
+
+Compute \( (a^2 + a - 2)^2 \):
+
+First term: \( a^2 \cdot a^2 = a^4 \)
+
+Outer term: \( a^2 \cdot a = a^3 \)
+
+Inner term: \( a^2 \cdot (-2) = -2a^2 \)
+
+Next, cross terms:
+
+\( a^2 \cdot a = a^3 \) (Wait, no, actually, the expansion is:
+
+\( (a^2 + a - 2)(a^2 + a - 2) = a^4 + a^3 - 2a^2 + a^3 + a^2 - 2a - 2a^2 - 2a + 4 \)
+
+Wait, that's a better way. Let me do that:
+
+Multiply term by term:
+
+- \( a^2 \cdot a^2 = a^4 \)
+- \( a^2 \cdot a = a^3 \)
+- \( a^2 \cdot (-2) = -2a^2 \)
+- \( a \cdot a^2 = a^3 \)
+- \( a \cdot a = a^2 \)
+- \( a \cdot (-2) = -2a \)
+- \( (-2) \cdot a^2 = -2a^2 \)
+- \( (-2) \cdot a = -2a \)
+- \( (-2) \cdot (-2) = 4 \)
+
+Now, combine like terms:
+
+- \( a^4 \)
+- \( a^3 + a^3 = 2a^3 \)
+- \( -2a^2 + a^2 - 2a^2 = (-2 + 1 - 2)a^2 = -3a^2 \)
+- \( -2a - 2a = -4a \)
+- \( +4 \)
+
+So, indeed, \( (a^2 + a - 2)^2 = a^4 + 2a^3 - 3a^2 - 4a + 4 \). Then, adding

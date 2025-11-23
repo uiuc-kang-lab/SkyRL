@@ -1,0 +1,530 @@
+0
+Okay, I have this problem where I need to determine if it's possible to reduce a binary sequence to just [1] using a series of operations. Each operation allows me to select a subarray and replace it with the majority element of that subarray. The majority is 0 if there are more 0s, and 1 if there are more 1s. If counts are equal, it's 0.
+
+Hmm, so the goal is to see if through a series of these operations, I can end up with a single 1. Let's think about how to approach this.
+
+First, some initial observations. If the entire array is already a single 1, then the answer is yes. But if the array is all 0s, then I can't do anything because any operation would replace a subarray with 0. So in that case, the answer is no.
+
+Wait, but what if the array has a mix of 0s and 1s? Then, perhaps with some operations, I can reduce it to just 1.
+
+Let me think about the process. Each operation reduces the length of the array by at least 1. So, for example, if the array is length n, after one operation, it's n-1, and so on, until it's length 1.
+
+The key is to find a way to make the array have at least one 1, because if the array is all 0s, I can't reduce it further. So the first condition is that the array must have at least one 1.
+
+Wait, no. Because even if the array has a 1, but the majority is 0, I can't change it. Like, if I have two 0s and one 1, the majority is 0. So I can't replace that subarray with 0. So, the presence of a 1 is necessary, but the majority in each step matters.
+
+So, the first thing is: if the array doesn't contain any 1s, then it's impossible to make it [1]. So in that case, the answer is no.
+
+So, the first check is: does the array have at least one 1? If not, output no.
+
+Now, assuming there's at least one 1, how can I proceed?
+
+Let me think about the process. Each operation replaces a subarray with the majority. So, the idea is to somehow propagate 1s through the array.
+
+Wait, but how? Because if I have a subarray with majority 0, and that's a part of a larger array with 1s, I can't change it. So perhaps I need to find a way to merge 1s in such a way that their majority becomes 1.
+
+Wait, but the majority is determined by the count of 0s and 1s in the subarray. So, for a subarray to have majority 1, it needs to have more 1s than 0s.
+
+So, perhaps the strategy is to find a way to merge regions where 1s are present, ensuring that in each step, the majority is 1.
+
+But how can I model this? Maybe I can think of the array as a collection of runs of 0s and 1s. Like, for example, a string like "00011100" would be considered as runs of 0s, then 1s, then 0s again.
+
+Wait, perhaps that's a good approach. So, the array can be broken down into consecutive runs of 0s and 1s. For example, the string "1010" would be four runs: 1, 0, 1, 0.
+
+Each run is a consecutive sequence of the same digit. So, for each test case, I can preprocess the string into runs of 0s and 1s, noting their lengths.
+
+Then, the problem reduces to whether, given a sequence of runs (0s and 1s), with the total number of 1s being at least one, can we perform operations to reduce the entire array to a single 1.
+
+Each operation can be applied to any subarray, which can be a run or a combination of runs. But since runs are consecutive, any subarray can be any continuous part of the runs.
+
+Wait, but when you perform an operation on a subarray, you replace it with the majority. So, for example, if I have a run of 0s followed by a run of 1s, and I perform an operation on the entire array, the majority is 1, so the entire array becomes 1. So that's great.
+
+But if the runs are like 0, 1, 0, then what can I do? For example, if the runs are [0,1,0], the total 0s are 2, 1s is 1, so the majority is 0. So the entire array can't be replaced with 0. So, in this case, I can't make it all 0s. But perhaps I can find a way to merge some parts.
+
+Wait, but if I have runs [0, 1, 0], can I do something? For example, I can choose to merge the first two runs (0 and 1). The subarray is 0,1. The majority is 0 (since 0 and 1, counts are equal, so 0). So replacing them with 0. So the array becomes [0,0]. Then, I can replace both with 0. So the final array is [0]. So that's bad.
+
+Alternatively, maybe there's another way. But in this case, it's impossible to get to 1.
+
+Wait, let's think differently. Suppose I have runs [1, 0, 0, 0, 1]. So, the first run is 1, then three 0s, then a 1. So total 1s are 2, 0s are 3. So the majority is 0. So the entire array can't be replaced with 0. So, can I perform operations to get a 1?
+
+Hmm, perhaps not. Because any operation would replace a subarray with 0, but then the array becomes longer, but the majority is 0, so it's hard to get a 1.
+
+So, perhaps the key is to find a way to have a 1 in the runs, and ensure that the number of 1s is sufficient to allow the process to continue.
+
+Wait, but let's think about the runs. Each operation can merge runs, but the majority depends on the runs involved.
+
+Another approach: the process can be thought of as trying to "propagate" 1s through the array. Each time, when a subarray has more 1s than 0s, it can be replaced by 1. So, if I have a 1 in the array, perhaps I can create a situation where a subarray with more 1s is formed.
+
+Wait, but how? Because the initial array may have a single 1, and the rest 0s. Then, the entire array can't be replaced with 1, because the majority is 0. So, that's a problem.
+
+So, the initial condition is that the array has at least one 1. But even with that, it's not sufficient.
+
+Wait, let's think about the example where the array is "1000". The majority is 0, so any operation on the entire array would replace it with 0. So, the final array is 0. So, in this case, it's impossible.
+
+Another example: "101". The entire array has two 1s and one 0. So, the majority is 1. So, the entire array can be replaced with 1 in one operation. So, the answer is yes.
+
+So, the key is that the initial array has at least one 1, and after some operations, the array can be reduced to 1.
+
+So, how can I model this?
+
+Hmm, perhaps the problem can be viewed as whether the array can be reduced to a single 1 by a series of operations, each of which replaces a subarray with its majority.
+
+Another idea: the only way to get a 1 is to have a subarray where the majority is 1. So, perhaps the process is similar to building a tree where each operation allows the merging of certain parts of the array.
+
+Wait, perhaps the solution is to find if the array has at least one 1, and that the number of 1s is greater than or equal to the number of 0s. Or wait, no, because that's not sufficient. For example, if the array is "010", the number of 1s is 1, 0s are 2. So, the majority is 0. So, the entire array can't be replaced with 0. So, in that case, it's impossible.
+
+Wait, but in "010", can I merge the first two elements (0 and 1). The majority is 0, so the array becomes [0,0]. Then, I can merge them to 0. So, the final array is 0. So, in that case, it's impossible.
+
+So, the condition is not just the count of 1s being greater than or equal to 0s, but something more.
+
+Wait, maybe the problem can be reduced to whether the array has a 1 and the maximum run of 1s is at least as long as the minimum run of 0s. Or something like that.
+
+Wait, perhaps not. Let me think differently.
+
+Let me consider the runs. Each run is either 0 or 1. Let's say the runs are r_1, r_2, ..., r_k, where each r_i is the length of the i-th run.
+
+So, for example, "10001" is runs [1, 000, 1], lengths 1, 3, 1.
+
+Now, the process is to merge these runs in such a way that, in each step, the majority of the merged run is 1.
+
+Wait, but each operation can merge any subarray, which could be a combination of runs. So, perhaps the key is to find a way to have a subarray that has more 1s than 0s.
+
+So, perhaps the approach is to see if there's a way to merge runs such that the majority is 1 in the merged runs.
+
+Wait, perhaps the first run is 1, then some 0s, then some 1s.
+
+For example, runs [1,0,1,0,1]. So, the 1s are in runs 1, 3, 5, which are 3 runs. The 0s are 2 runs (run 2 and 4).
+
+So, the number of 1s is 3, 0s is 2. So, the majority is 1. So, perhaps we can merge the entire array to 1.
+
+Wait, but is that possible? Let's see.
+
+The entire array is [1,0,1,0,1]. The majority is 1, so it can be replaced with 1 in one operation. So, the final array is 1. So, yes.
+
+So, in this case, the answer is yes.
+
+Another example: runs [1,0,0,0,1]. The 1s are 2, 0s are 3. So, the majority is 0. So, the entire array can't be replaced with 0. So, can I make it 1?
+
+Hmm, in this case, I have a 1 at the start, then three 0s, then a 1. So, can I perform an operation that reduces this to 1?
+
+Well, if I can merge the first 1 with the three 0s. The subarray is [1,0,0,0]. The majority is 0, since 1 and 3 0s. So, replacing this subarray with 0. Then, the array becomes [0,1]. The majority is 0, so replacing them with 0. So, the final array is 0. So, no.
+
+Alternatively, can I merge the first 1 with the last 1? The subarray is [1,0,0,0,1]. The majority is 0. So, replacing with 0. Then, array is [0]. So, no.
+
+So, in this case, the answer is no.
+
+So, what's the pattern here?
+
+It seems that if the array has a run of 1s that is longer than the sum of all 0s, or something like that, it might be possible.
+
+Wait, let's think about the runs as a list. Suppose the runs are r_1, r_2, ..., r_k.
+
+We need to find a way to merge these runs such that in the end, the merged runs have a majority of 1s.
+
+So, perhaps the problem can be reduced to the following: can the sum of the runs of 1s be greater than or equal to the sum of the runs of 0s?
+
+Wait, no. Because in the example where runs are [1,0,1,0,1], the sum of 1s is 3, sum of 0s is 2. So, 3 >= 2, which is true. So, the answer is yes.
+
+In the example where runs are [1,0,0,0,1], sum of 1s is 2, sum of 0s is 3. So, 2 < 3, which is false. So, the answer is no.
+
+Wait, that seems to fit the examples. So, perhaps the condition is that the sum of the 1s in the runs is >= the sum of 0s.
+
+If that's the case, then the algorithm would be:
+
+1. Check if the array has at least one 1. If not, output no.
+
+2. Split the array into runs of 0s and 1s. For each run, note whether it's 0 or 1, and its length.
+
+3. Calculate the total number of 1s and 0s.
+
+4. If the total number of 1s is >= the total number of 0s, then output yes. Else, no.
+
+Wait, but let's test this hypothesis.
+
+Test case 1: "1010" → runs are 1,0,1,0. So, 2 ones and 2 zeros. So, condition is 2 >= 2 → yes.
+
+Wait, but as I thought earlier, in this case, the entire array can't be replaced with 1. Because the majority is 0. So, this contradicts the hypothesis.
+
+Wait, so the hypothesis is wrong.
+
+Hmm, so what's the correct condition?
+
+Wait, let's think again. The hypothesis is that if the sum of 1s is >= sum of 0s, then it's possible. But in the example "1010", the sum is equal, but the array can't be reduced to 1.
+
+So, that's a problem.
+
+So, the condition is not sufficient.
+
+So, what's the correct condition?
+
+Hmm, perhaps the key is that the array has a 1, and the maximum run of 1s is >= the minimum run of 0s.
+
+Wait, let's test this.
+
+In the "1010" example: runs are 1,0,1,0. Max run of 1 is 1, min run of 0 is 1. So, 1 >=1 → yes.
+
+But in this case, the sum of 1s is 2, sum of 0s is 2. So, condition is equal. So, according to the hypothesis, it's possible.
+
+But in this case, can I reduce it to 1?
+
+Let's see:
+
+The array is [1,0,1,0]. The majority is 0, so replacing the entire array gives 0. So, no.
+
+So, the condition is not sufficient.
+
+Hmm, this suggests that the condition must be more complex.
+
+Alternative approach: let's model the process as a tree. Each operation can merge certain runs, and ultimately, we need to have a single run of 1.
+
+So, perhaps the process is to find a way to merge runs such that the majority of the merged runs is 1.
+
+Wait, but how?
+
+Another idea: perhaps the problem can be solved by checking if there's a way to have a run of 1s that is long enough to 'cover' all the 0s.
+
+Wait, but I'm not sure.
+
+Let me think about the steps needed to reduce the array to 1.
+
+Each operation can replace a subarray with its majority. So, as long as there is a subarray with majority 1, we can perform operations.
+
+So, perhaps the process is to find a way to 'spread' the 1s across the array.
+
+So, perhaps the key is that there exists a run of 1s that is longer than all the 0 runs.
+
+Wait, in the example [1,0,1,0], the 1 runs are length 1, and 0 runs are length 1. So, each 1 run is equal to the 0 runs. So, I can't spread the 1s.
+
+So, the condition is that there exists a run of 1s that is longer than all the 0 runs.
+
+Wait, that could be the case.
+
+So, the algorithm would be:
+
+1. Check if the array has at least one 1.
+
+2. Split into runs.
+
+3. Find the maximum run of 1s (max_ones_run) and the minimum run of 0s (min_zeros_run).
+
+4. If max_ones_run >= min_zeros_run, then output yes. Else, no.
+
+Let's test this.
+
+Test case 1: "1010" → runs are 1,0,1,0. max_ones_run is 1, min_zeros_run is 1. So, 1 >=1 → yes. But earlier analysis shows that it's not possible. So, this is a problem.
+
+Wait, but in this test case, the array can't be reduced to 1. So, the condition is not sufficient.
+
+Hmm, maybe I'm missing something.
+
+Another test case: "10001". Runs are 1,000,1. So, max_ones_run is 1, min_zeros_run is 3. So, 1 <3 → condition is no. So, output is no.
+
+Which is correct, because the entire array can't be replaced by 1.
+
+Another test case: "101". Runs are 1,0,1. So, max_ones_run is 2. min_zeros_run is 1. So, 2 >=1 → yes. And indeed, the array can be reduced to 1.
+
+Another test case: "100101". Runs are 1,00,1,0,1. So, max_ones_run is 1, min_zeros_run is 2. So, 1 <2 → condition is no. So, output is no. Which is correct because the array can't be reduced to 1.
+
+Another test case: "101". Runs are 1,0,1. max_ones_run is 2, min_zeros_run is 1. So, 2 >=1 → yes. Indeed, the array can be reduced to 1.
+
+Another test case: "0101". Runs are 0,1,0,1. max_ones_run is 2, min_zeros_run is 2. So, 2 >=2 → yes. Can we reduce it to 1?
+
+Let's see:
+
+The array is 0,1,0,1.
+
+First, can I perform an operation on the entire array? The majority is 0, since two 0s and two 1s. So, replace with 0. So, array becomes [0]. So, no.
+
+Alternatively, perhaps I can perform operations on different parts.
+
+First, merge the first 0 and 1: [0,1] → majority 0. So array becomes [0,0,1]. Then, merge the first two 0s and 1: majority 0. So array becomes [0]. So, no.
+
+Hmm, so even though the condition is met, it's not possible. So, the condition is not sufficient.
+
+Hmm, this is getting complicated.
+
+Alternative approach: perhaps the problem can be solved by checking if the array contains a 1, and the sum of 1s is greater than or equal to the sum of 0s, but also the maximum run of 1s is at least as large as the maximum run of 0s.
+
+Wait, not sure.
+
+Alternatively, perhaps the process can be thought of as trying to 'merge' 1s into larger regions.
+
+Wait, perhaps the correct condition is that the number of 1s is more than the number of 0s. But in the test case "1000", the number of 1s is 1, 0s is 3. So, 1 <3 → condition is no. So, output is no, which is correct.
+
+In the test case "1010", number of 1s is 2, 0s is 2. So, 2 >=2 → condition is yes. But earlier analysis shows that the array can't be reduced to 1.
+
+So, this approach is also incorrect.
+
+Hmm, this is getting tricky.
+
+Let me think differently. What is the final state we want? We want the array to be [1]. So, the entire array must be reduced to 1.
+
+Each operation can potentially replace a subarray with its majority. So, perhaps the process is to ensure that in each step, the subarray being replaced has a majority of 1s.
+
+So, the key is to find a way to merge regions where the majority is 1.
+
+So, perhaps the process is to find a way to have a subarray that has more 1s than 0s, and then replace it with 1, thus expanding the 1s.
+
+So, the question is whether, given that the array has at least one 1, and the maximum run of 1s is at least as long as the maximum run of 0s.
+
+Wait, let me test this.
+
+Test case: "1010" → runs are 1,0,1,0. Max_ones_run is 1, max_zeros_run is 1. So, condition is 1 >=1 → yes. But earlier analysis shows that it's impossible.
+
+Wait, so this approach is also incorrect.
+
+Hmm, perhaps I need to think differently.
+
+Alternative idea: the process can be viewed as a series of operations that can merge runs. Each time, a subarray with majority 1 is replaced by 1. So, the more 1s we have, the easier it is to merge.
+
+So, perhaps the condition is that there exists a way to have a subarray that, when merged, increases the number of 1s.
+
+Wait, but I'm not sure.
+
+Another approach: let's model the process as a binary tree, where each merge operation can be seen as a node combining two children.
+
+But this might be too abstract.
+
+Alternatively, let's think about the problem in terms of the presence of a 1 and the ability to 'propagate' it through the array.
+
+So, perhaps the process can be thought of as starting with the entire array, and then iteratively merging subarrays with majority 1 to replace them with 1.
+
+If, along the way, we can merge all the 0s into 1s, then the array can be reduced to 1.
+
+So, the question is: can we, through a series of such operations, merge all the 0s into 1s, given that there's at least one 1.
+
+So, the problem reduces to whether the number of 0s is less than or equal to the number of 1s in a way that allows the 0s to be covered by the 1s.
+
+Wait, perhaps.
+
+So, another condition is that the number of 0s is <= the number of 1s.
+
+But in the test case "1010", the number of 0s is 2, number of 1s is 2. So, 2 <=2 → condition is yes. But the array can't be reduced to 1.
+
+So, this condition is also incorrect.
+
+Hmm.
+
+This is getting quite challenging.
+
+Perhaps I should look for an alternative approach.
+
+Another idea: the process of replacing a subarray with its majority is similar to a process where the majority is kept, so the array can only be reduced to 1 if the majority is 1.
+
+Wait, but that's not necessarily the case. For example, in the test case "101", the majority is 1, so it can be reduced to 1.
+
+In the test case "1001", the majority is 0. So, the entire array can't be reduced to 1.
+
+So, the initial condition is that the majority is 1.
+
+Wait, but that's not sufficient because in "10001", the majority is 0, so it can't be reduced to 1.
+
+So, perhaps the correct condition is that the majority is 1, and the array has at least one 1.
+
+Wait, but in the test case "1010", the majority is 0, so it's impossible.
+
+So, the condition is that the majority is 1, and the array contains at least one 1.
+
+Wait, but in that case, the answer is yes if and only if the majority is 1.
+
+But that's not correct because in the test case "101", the majority is 1, so it's yes.
+
+But earlier analysis shows that it's possible.
+
+Wait, in "101", the array can be reduced to 1.
+
+So, perhaps the correct condition is that the majority is 1.
+
+So, the steps are:
+
+1. Check if the array has at least one 1.
+
+2. Check if the majority is 1.
+
+If both are true, output yes. Else, no.
+
+Wait, but let's test this.
+
+Test case 1: "101" → majority is 1. So, yes.
+
+Test case 2: "10001" → majority is 0. So, no.
+
+Test case 3: "1010" → majority is 0. So, no.
+
+Test case 4: "010" → majority is 0. So, no.
+
+Test case 5: "1" → yes.
+
+Test case 6: "0100" → majority is 0. So, no.
+
+Test case 7: "10000" → majority is 0. So, no.
+
+Wait, but in the test case "101", the majority is 1. So, according to this condition, it's yes.
+
+But earlier analysis showed that the array can be reduced to 1.
+
+Yes, because:
+
+Original array is [1,0,1].
+
+First, replace the entire array. The majority is 1, so it becomes 1. So, the array is [1]. So, yes.
+
+So, the condition is correct.
+
+Another test case: "1000".
+
+The majority is 0. So, no.
+
+Another test case: "0001".
+
+Majority is 0. So, no.
+
+Another test case: "0000001".
+
+Majority is 0. So, no.
+
+Another test case: "0011".
+
+Majority is 1. So, yes.
+
+So, the array can be reduced to 1.
+
+Yes.
+
+So, this seems to hold.
+
+So, the condition is:
+
+- The array has at least one 1.
+
+- The majority of the array is 1.
+
+So, the problem reduces to checking these two conditions.
+
+So, the steps for the solution are:
+
+For each test case:
+
+1. Read the string.
+
+2. If the string is empty, output no.
+
+3. Else, count the number of 1s and 0s.
+
+4. If the count of 1s is zero, output no.
+
+5. Else, check if the count of 1s is >= the count of 0s. If yes, output yes. Else, no.
+
+Wait, no. Because the majority is 1 only when the count of 1s is greater than the count of 0s. So, if count_1 >= count_0 +1, then majority is 1.
+
+Wait, no. The majority is 1 if count_1 > count_0. Because in the case where count_1 == count_0, the majority is 0.
+
+So, the correct condition is: count_1 > count_0.
+
+So, the steps are:
+
+- If the array has at least one 1.
+
+- And, the count of 1s is greater than the count of 0s.
+
+Then, output yes.
+
+Else, no.
+
+Let me test this.
+
+Test case 1: "1010".
+
+count_1 is 2, count_0 is 2. So, 2 is not greater than 2 → no.
+
+Which is correct, as the array can't be reduced to 1.
+
+Test case 2: "101".
+
+count_1=2, count_0=1 → 2>1 → yes.
+
+Which is correct.
+
+Test case 3: "1".
+
+count_1=1, count_0=0 → 1>0 → yes.
+
+Correct.
+
+Test case 4: "010".
+
+count_1=1, count_0=2 → 1 not >2 → no.
+
+Which is correct.
+
+Test case 5: "10001".
+
+count_1=2, count_0=2 → 2 not >2 → no.
+
+Which is correct.
+
+Test case 6: "00000000000000000000000000000000000000000000000000000000000000001".
+
+count_1 is 1, count_0 is 255. So, 1>255 is false → no.
+
+Which is correct.
+
+Another test case: "10000".
+
+count_1=1, count_0=4 → 1>4 is false → no.
+
+Which is correct.
+
+Another test case: "1001".
+
+count_1=2, count_0=1 → 2>1 → yes.
+
+Which is correct.
+
+So, this condition seems to hold.
+
+So, the algorithm is:
+
+For each test case:
+
+1. If the string is empty, output no.
+
+2. Else, count the number of '1's and '0's.
+
+3. If the count of '1's is zero → no.
+
+4. Else, if count of '1's > count of '0's → yes.
+
+5. Else → no.
+
+So, this seems to solve the problem.
+
+So, now, the code can be written as:
+
+Read t test cases.
+
+For each test case:
+
+Read n, read s.
+
+count_1 = s.count('1')
+
+count_0 = s.count('0')
+
+if count_1 ==0:
+
+    print('no')
+
+else:
+
+    if count_1 > count_0:
+
+        print('yes')
+
+    else:
+
+        print('no')
+
+Wait, but what about when s is all 0s except one 1?
+
+Like, s = '100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000

@@ -1,0 +1,30 @@
+<｜begin▁of▁sentence｜><｜User｜>
+Alice has just crafted a circuit with $n$ lights and $2n$ switches. Each component (a light or a switch) has two states: on or off. The lights and switches are arranged in a way that:
+
+  * Each light is connected to exactly two switches.    * Each switch is connected to exactly one light. It's unknown which light each switch is connected to.    * When all switches are off, all lights are also off.    * If a switch is toggled (from on to off, or vice versa), the state of the light connected to it will also toggle. 
+
+Alice brings the circuit, which shows only the states of the $2n$ switches, to her sister Iris and gives her a riddle: what is the minimum and maximum number of lights that can be turned on?
+
+Knowing her little sister's antics too well, Iris takes no more than a second to give Alice a correct answer. Can you do the same?
+
+Input Format:
+Each test consists of multiple test cases. The first line contains a single integer $t$ ($1 \le t \le 500$) — the number of test cases. The description of the test cases follows.
+
+The first line of each test case contains a single integer $n$ ($1 \le n \le 50$) — the number of lights in the circuit.
+
+The second line of each test case contains $2n$ integers $a_1, a_2, \ldots, a_{2n}$ ($0 \le a_i \le 1$) — the states of the switches in the circuit. $a_i = 0$ means the $i$-th switch is off, and $a_i = 1$ means the $i$-th switch is on.
+
+Output Format:
+For each test case, output two integers — the minimum and maximum number of lights, respectively, that can be turned on.
+
+Tags:
+['greedy', 'implementation', 'math', 'number theory']
+
+Time Limit: 1000 ms
+Memory Limit: 256 MB
+
+Write Python code to solve the problem. Present the code in
+```python
+Your code
+```
+at the end.<｜Assistant｜><think>

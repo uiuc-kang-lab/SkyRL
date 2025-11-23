@@ -1,0 +1,105 @@
+1
+(-1, 1)
+Alright, let's try to solve this problem step by step. So, we're given that \( f'(x) = (a-1)x^2 + ax + 1 \) is an even function, and we need to find the increasing interval of \( f(x) \).
+
+First, I remember that an even function satisfies the condition \( g(x) = g(-x) \). So, let's apply this to \( f'(x) \).
+
+Given \( f'(x) = (a-1)x^2 + ax + 1 \), let's compute \( f'(-x) \):
+
+\( f'(-x) = (a-1)(-x)^2 + a(-x) + 1 \)
+\( = (a-1)x^2 - ax + 1 \)
+
+Since \( f'(x) \) is even, \( f'(x) = f'(-x) \). So, let's set them equal:
+
+\( (a-1)x^2 + ax + 1 = (a-1)x^2 - ax + 1 \)
+
+Now, let's subtract \( (a-1)x^2 + 1 \) from both sides to simplify:
+
+\( ax = -ax \)
+
+ Bringing all terms to one side:
+
+\( ax + ax = 0 \)
+\( 2ax = 0 \)
+
+This equation must hold for all x, which implies that the coefficient of x must be zero. So, \( 2a = 0 \), which means \( a = 0 \).
+
+Wait, let's double-check this. If \( 2ax = 0 \) for all x, then the only solution is \( a = 0 \). Yes, that's correct.
+
+So, substituting \( a = 0 \) back into \( f'(x) \):
+
+\( f'(x) = (0-1)x^2 + 0*x + 1 \)
+\( = -x^2 + 0 + 1 \)
+\( = -x^2 + 1 \)
+
+So, \( f'(x) = -x^2 + 1 \). Now, we need to find the intervals where \( f(x) \) is increasing. Recall that a function is increasing where its derivative is positive.
+
+So, we need to find where \( f'(x) > 0 \):
+
+\( -x^2 + 1 > 0 \)
+\( 1 - x^2 > 0 \)
+\( x^2 < 1 \)
+
+This inequality holds when \( -1 < x < 1 \). Therefore, \( f(x) is increasing on the interval (-1, 1).
+
+Let me just recap the steps to ensure I didn't make any mistakes:
+
+1. started with \( f'(x) = (a-1)x^2 + ax + 1 \)
+2. computed \( f'(-x) = (a-1)x^2 - ax + 1 \)
+3. set \( f'(x) = f'(-x) \) leading to \( ax = -ax \)
+4. solved for a: \( 2a = 0 => a = 0 \)
+5. substituted a = 0 into f'(x) to get \( -x^2 + 1 \)
+6. found where \( -x^2 + 1 > 0 => x^2 < 1 => -1 < x < 1 \)
+
+Everything seems correct. So, the increasing interval of \( f(x) \) is (-1, 1).
+
+Just to sanity check, let's think about \( f'(x) = -x^2 + 1 \). This is a downward opening parabola with vertex at (0,1), intercepts at x = ±1. So, yes, it is positive between -1 and 1, and negative outside. So, the function is increasing on (-1,1) and decreasing on (-∞, -1) and (1, ∞).
+
+Therefore, the answer should be \( (-1, 1) \).
+
+Wait, the question says "the increasing interval of \( f(x) \)", and since f'(x) is given, and we found where f'(x) > 0, which is (-1,1), so f(x) is increasing there.
+
+Yes, that's correct. So, I think we're done.
+
+Just another thought: the problem mentioned that \( f'(x) \) is an even function, and we used that to find a specific a. So, somehow the fact that f'(x) is even constraints a to be 0, which then allows us to determine the increasing interval. If a hadn't been constrained, perhaps f'(x) wouldn't be even, but in this case, we strictly follow the given condition that f'(x) is even, so a must be 0.
+
+Yep, that makes sense. So, no other value of a would make f'(x) even, because the x term would mess up the evenness. So, only a = 0 satisfies that condition.
+
+Therefore, final answer: \( f(x) \) is increasing on (-1,1).
+
+\boxed{(-1, 1)}
+</think>
+
+Given that \( f'(x) = (a-1)x^2 + ax + 1 \) is an even function, we need to find the increasing interval of \( f(x) \).
+
+An even function satisfies \( g(x) = g(-x) \). Applying this to \( f'(x) \):
+
+\[ f'(-x) = (a-1)(-x)^2 + a(-x) + 1 = (a-1)x^2 - ax + 1 \]
+
+Since \( f'(x) \) is even, we equate \( f'(x) \) and \( f'(-x) \):
+
+\[ (a-1)x^2 + ax + 1 = (a-1)x^2 - ax + 1 \]
+
+Subtracting \( (a-1)x^2 + 1 \) from both sides:
+
+\[ ax = -ax \]
+
+This implies:
+
+\[ 2ax = 0 \]
+
+Thus, \( a = 0 \). Substituting \( a = 0 \) into \( f'(x) \):
+
+\[ f'(x) = -x^2 + 1 \]
+
+To find where \( f(x) \) is increasing, we solve \( f'(x) > 0 \):
+
+\[ -x^2 + 1 > 0 \]
+\[ x^2 < 1 \]
+\[ -1 < x < 1 \]
+
+Therefore, the increasing interval of \( f(x) \) is \( (-1, 1) \).
+
+\[
+\boxed{(-1, 1)}
+\]<｜end▁of▁sentence｜>

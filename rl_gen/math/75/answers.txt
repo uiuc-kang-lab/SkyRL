@@ -1,0 +1,269 @@
+0
+1
+Okay, so I've got this equation to solve: \[(x^{2010} + 1)(x^{2008} + x^{2006} + x^{2004} + \dots + x^2 + 1) = 2010x^{2009}.\] I need to find the number of real solutions. Hmm, that's a bit intimidating with all those high exponents, but let's break it down step by step.
+
+First, I notice that the equation is a product of two polynomials on the left side, equal to 2010 times another polynomial. Maybe I can simplify or find some patterns here. Let me look at each part separately.
+
+The first part is \(x^{2010} + 1\). That's straightforward. The second part is a sum of even-powered terms from \(x^{2008}\) down to \(x^2\), plus 1. Wait, that sum looks like a geometric series. Let me confirm that.
+
+A geometric series has the form \(a + ar + ar^2 + \dots + ar^{n-1}\), where each term is multiplied by a common ratio r. In this case, the first term is \(x^{2008}\), and each subsequent term is multiplied by \(x^{-2}\) because \(x^{2008} \cdot x^{-2} = x^{2006}\), and so on, until we reach \(x^2\). So the common ratio is \(x^{-2}\), and the number of terms can be calculated.
+
+Let me see: starting from \(x^{2008}\) and going down to \(x^2\), each term is \(x^{2}\) less than the previous. So the exponents decrease by 2 each time. The exponents are 2008, 2006, ..., 4, 2. So the number of terms is (2008 - 2)/2 + 1 = 1004 + 1 = 1005 terms. Wait, that can't be right because the sum goes from 2008 down to 2, which is 1004 steps, so 1005 terms. But let me double-check.
+
+Alternatively, the sum can be written as \(x^{2008} + x^{2006} + \dots + x^2 + 1\). If I factor out \(x^2\), it becomes \(x^2(1 + x^{-2} + x^{-4} + \dots + x^{-2006} + x^{-2008})\). Hmm, that's a bit more complicated. Maybe it's better to recognize that the sum is a geometric series with ratio \(x^{-2}\) and 1005 terms.
+
+Wait, but another approach: the sum from \(k=0\) to \(k=1004\) of \(x^{2008 - 2k}\). So the sum is \(\sum_{k=0}^{1004} x^{2008 - 2k}\). That's a geometric series with first term \(x^{2008}\), ratio \(x^{-2}\), and 1005 terms. The sum of such a series is \(a \frac{1 - r^n}{1 - r}\), where a is the first term, r is the ratio, and n is the number of terms.
+
+So applying that formula, the sum is \(x^{2008} \frac{1 - (x^{-2})^{1005}}{1 - x^{-2}}\). Simplifying the denominator, \(1 - x^{-2} = \frac{x^2 - 1}{x^2}\). So the sum becomes \(x^{2008} \frac{1 - x^{-2010}}{\frac{x^2 - 1}{x^2}} = x^{2008} \cdot \frac{x^2(1 - x^{-2010})}{x^2 - 1}\).
+
+Simplifying further, \(x^{2008} \cdot \frac{x^2 - x^{-2008}}{x^2 - 1} = \frac{x^{2010} - 1}{x^2 - 1}\). Wait, that's interesting. So the sum simplifies to \(\frac{x^{2010} - 1}{x^2 - 1}\). Let me check that again.
+
+Starting from the sum \(\sum_{k=0}^{1004} x^{2008 - 2k}\), which is \(x^{2008} + x^{2006} + \dots + x^2 + 1\). The sum formula gives \(x^{2008} \frac{1 - (x^{-2})^{1005}}{1 - x^{-2}}\). The exponent in the numerator becomes \(1 - x^{-2010}\), and the denominator is \(1 - x^{-2} = \frac{x^2 - 1}{x^2}\). So the sum is \(x^{2008} \cdot \frac{x^2(1 - x^{-2010})}{x^2 - 1} = \frac{x^{2010} - x^{2008 - 2010}}{x^2 - 1}\). Wait, that's not correct. Let me recalculate.
+
+Actually, \(x^{2008} \cdot \frac{x^2(1 - x^{-2010})}{x^2 - 1} = \frac{x^{2010}(1 - x^{-2010})}{x^2 - 1} = \frac{x^{2010} - 1}{x^2 - 1}\). Yes, that's correct. So the sum simplifies to \(\frac{x^{2010} - 1}{x^2 - 1}\).
+
+So now, the left side of the equation is \((x^{2010} + 1) \cdot \frac{x^{2010} - 1}{x^2 - 1}\). Notice that \(x^{2010} + 1\) and \(x^{2010} - 1\) are conjugates, so their product is \(x^{4020} - 1\). Therefore, the left side simplifies to \(\frac{x^{4020} - 1}{x^2 - 1}\).
+
+So the equation becomes \(\frac{x^{4020} - 1}{x^2 - 1} = 2010x^{2009}\). Hmm, that's a bit simpler. Now, let's see if we can factor \(x^{4020} - 1\). It's a difference of squares, so it can be written as \((x^{2010} - 1)(x^{2010} + 1)\), but we already did that.
+
+Alternatively, \(x^{4020} - 1 = (x^{2010})^2 - 1 = (x^{2010} - 1)(x^{2010} + 1)\). But we have \(x^{2010} - 1\) in the denominator, so perhaps we can cancel it out. Let me see.
+
+Wait, the left side is \(\frac{x^{4020} - 1}{x^2 - 1}\), which can be written as \(\frac{(x^{2010} - 1)(x^{2010} + 1)}{x^2 - 1}\). But \(x^{2010} - 1\) can be factored further as \((x^{1005})^2 - 1 = (x^{1005} - 1)(x^{1005} + 1)\), and so on. But perhaps a better approach is to recognize that \(x^{4020} - 1 = (x^{2010})^2 - 1 = (x^{2010} - 1)(x^{2010} + 1)\), but we have \(x^2 - 1\) in the denominator, so maybe we can write the left side as \(\frac{(x^{2010} - 1)(x^{2010} + 1)}{x^2 - 1}\).
+
+But perhaps another approach is to note that \(x^{4020} - 1 = (x^2)^{2010} - 1\), which can be factored as \((x^2 - 1)(x^{2008} + x^{2006} + \dots + x^2 + 1)\). Wait, that's interesting because the original equation has \((x^{2010} + 1)(x^{2008} + x^{2006} + \dots + x^2 + 1)\) on the left. So perhaps there's a connection here.
+
+Wait, but we already used that to simplify the left side. So maybe I should consider the equation as \(\frac{x^{4020} - 1}{x^2 - 1} = 2010x^{2009}\). Let me see if I can simplify this further.
+
+Note that \(x^{4020} - 1 = (x^{2010})^2 - 1 = (x^{2010} - 1)(x^{2010} + 1)\), but we have \(x^2 - 1\) in the denominator. So perhaps I can write the left side as \(\frac{(x^{2010} - 1)(x^{2010} + 1)}{x^2 - 1}\). But I'm not sure if that helps directly.
+
+Alternatively, let's consider that \(x^{4020} - 1 = (x^{2010})^2 - 1 = (x^{2010} - 1)(x^{2010} + 1)\), and the denominator is \(x^2 - 1 = (x - 1)(x + 1)\). So perhaps I can write the left side as \(\frac{(x^{2010} - 1)(x^{2010} + 1)}{(x - 1)(x + 1)}\).
+
+But I'm not sure if that's helpful yet. Let's think about the equation:
+
+\(\frac{x^{4020} - 1}{x^2 - 1} = 2010x^{2009}\).
+
+Let me multiply both sides by \(x^2 - 1\) to eliminate the denominator:
+
+\(x^{4020} - 1 = 2010x^{2009}(x^2 - 1)\).
+
+Simplify the right side:
+
+\(2010x^{2009} \cdot x^2 = 2010x^{2011}\), and \(2010x^{2009} \cdot (-1) = -2010x^{2009}\).
+
+So the equation becomes:
+
+\(x^{4020} - 1 = 2010x^{2011} - 2010x^{2009}\).
+
+Let me bring all terms to one side:
+
+\(x^{4020} - 2010x^{2011} + 2010x^{2009} - 1 = 0\).
+
+Hmm, that's a high-degree polynomial. Maybe I can factor it somehow. Let me see if there's a common factor or if I can group terms.
+
+Notice that \(x^{4020}\) can be written as \((x^{2010})^2\), and the other terms have \(x^{2009}\) and \(x^{2011}\), which are close to \(x^{2010}\). Let me see if I can factor out \(x^{2009}\) from some terms.
+
+So, let's rewrite the equation:
+
+\(x^{4020} - 2010x^{2011} + 2010x^{2009} - 1 = 0\).
+
+Group the terms as follows:
+
+\((x^{4020} - 1) + (-2010x^{2011} + 2010x^{2009}) = 0\).
+
+Now, factor each group:
+
+\(x^{4020} - 1 = (x^{2010} - 1)(x^{2010} + 1)\).
+
+And \(-2010x^{2011} + 2010x^{2009} = -2010x^{2009}(x^2 - 1)\).
+
+So the equation becomes:
+
+\((x^{2010} - 1)(x^{2010} + 1) - 2010x^{2009}(x^2 - 1) = 0\).
+
+Hmm, perhaps I can factor out \(x^{2009}\) from the entire equation. Let's see:
+
+\((x^{2010} - 1)(x^{2010} + 1) - 2010x^{2009}(x^2 - 1) = 0\).
+
+Notice that \(x^{2010} - 1 = (x^{1005})^2 - 1 = (x^{1005} - 1)(x^{1005} + 1)\), but I'm not sure if that helps. Alternatively, let's consider factoring out \(x^{2009}\):
+
+\((x^{2009})^2 \cdot (x^{1011} + x^{1009} + \dots + x^9 + 1) - 2010x^{2009}(x^2 - 1) = 0\).
+
+Wait, that's not correct because \(x^{2010} + 1\) is degree 2010, not 1011. Let me correct that.
+
+Actually, \(x^{2010} + 1\) is a single term, so I can't factor it further in that way. Maybe another approach is needed.
+
+Let me consider substituting \(y = x^{1005}\), since 2010 is 2*1005. So \(x^{2010} = y^2\), and \(x^{2009} = y^2 \cdot x^{-1}\), but that might complicate things.
+
+Alternatively, let's consider that \(x^{4020} = (x^{2010})^2\), so maybe we can set \(z = x^{2010}\), then the equation becomes \(z^2 - 1 = 2010x^{2009}(x^2 - 1)\).
+
+But \(z = x^{2010}\), so \(x^{2009} = z \cdot x^{-1}\). So the equation becomes:
+
+\(z^2 - 1 = 2010 \cdot z \cdot x^{-1} \cdot (x^2 - 1)\).
+
+Hmm, that might not be helpful because it introduces \(x^{-1}\), which complicates things further.
+
+Let me think differently. Perhaps I can consider the original equation and see if it can be rewritten in a more manageable form.
+
+We have \((x^{2010} + 1)(x^{2008} + x^{2006} + \dots + x^2 + 1) = 2010x^{2009}\).
+
+Notice that \(x^{2008} + x^{2006} + \dots + x^2 + 1\) is a geometric series with ratio \(x^{-2}\), as we saw earlier, and it sums to \(\frac{x^{2010} - 1}{x^2 - 1}\). So the left side becomes \((x^{2010} + 1) \cdot \frac{x^{2010} - 1}{x^2 - 1} = \frac{x^{4020} - 1}{x^2 - 1}\).
+
+So the equation is \(\frac{x^{4020} - 1}{x^2 - 1} = 2010x^{2009}\).
+
+Now, let's multiply both sides by \(x^2 - 1\) to get rid of the denominator:
+
+\(x^{4020} - 1 = 2010x^{2009}(x^2 - 1)\).
+
+Expanding the right side:
+
+\(2010x^{2009} \cdot x^2 = 2010x^{2011}\), and \(2010x^{2009} \cdot (-1) = -2010x^{2009}\).
+
+So the equation becomes:
+
+\(x^{4020} - 1 = 2010x^{2011} - 2010x^{2009}\).
+
+Let's bring all terms to one side:
+
+\(x^{4020} - 2010x^{2011} + 2010x^{2009} - 1 = 0\).
+
+Hmm, this is a high-degree polynomial, but perhaps we can factor it. Let's see if we can factor out common terms or find a pattern.
+
+Notice that \(x^{4020}\) is \((x^{2010})^2\), and the other terms have \(x^{2009}\) and \(x^{2011}\), which are close to \(x^{2010}\). Let me see if I can factor out \(x^{2009}\) from the entire equation.
+
+So, \(x^{4020} - 2010x^{2011} + 2010x^{2009} - 1 = 0\).
+
+Factor out \(x^{2009}\):
+
+\(x^{2009}(x^{2010} - 2010x^2 + 2010) - 1 = 0\).
+
+Hmm, that's not particularly helpful. Maybe another approach is needed.
+
+Let me consider the substitution \(y = x^{1005}\), since 2010 is 2*1005. Then \(x^{2010} = y^2\), and \(x^{2009} = y^2 \cdot x^{-1}\), but that might not help because of the \(x^{-1}\) term.
+
+Alternatively, let's consider that \(x^{4020} = (x^{2010})^2\), and the equation can be written as:
+
+\((x^{2010})^2 - 2010x^{2009} + 2010x^{2009} - 1 = 0\).
+
+Wait, that's not correct because the middle terms are \(-2010x^{2011} + 2010x^{2009}\), which can be written as \(-2010x^{2009}(x^2 - 1)\).
+
+So, perhaps I can write the equation as:
+
+\((x^{2010})^2 - 2010x^{2009}(x^2 - 1) - 1 = 0\).
+
+But I'm not sure if that helps. Let me think about the possible number of real solutions.
+
+Given the original equation, it's a high-degree polynomial, but perhaps I can analyze it for possible real roots.
+
+First, let's consider the behavior of the function \(f(x) = \frac{x^{4020} - 1}{x^2 - 1} - 2010x^{2009}\).
+
+We need to find the number of real roots of \(f(x) = 0\).
+
+Let's consider the domain of \(f(x)\). The denominator \(x^2 - 1\) is zero when \(x = \pm1\), so \(x \neq \pm1\). Also, \(x^{2009}\) is defined for all real \(x\), but \(x^{2010}\) is always non-negative since it's an even power.
+
+Let me analyze \(f(x)\) for different intervals of \(x\).
+
+First, consider \(x > 1\). In this case, \(x^{4020}\) is very large, so \(f(x)\) tends to infinity. As \(x\) approaches 1 from the right, \(x^2 - 1\) approaches 0 from the positive side, and \(x^{4020} - 1\) approaches 0 as well, but the limit as \(x\) approaches 1 from the right is:
+
+\(\lim_{x \to 1^+} \frac{x^{4020} - 1}{x^2 - 1} = \lim_{x \to 1^+} \frac{4020x^{4019}}{2x} = \frac{4020 \cdot 1}{2} = 2010\).
+
+So as \(x\) approaches 1 from the right, \(f(x)\) approaches \(2010 - 2010 \cdot 1 = 0\).
+
+As \(x\) increases beyond 1, \(f(x)\) increases to infinity because \(x^{4020}\) grows much faster than \(x^{2009}\).
+
+Now, let's consider \(x < -1\). Here, \(x^{4020}\) is still positive, and \(x^{2009}\) is negative because 2009 is odd. So \(f(x)\) is \(\frac{x^{4020} - 1}{x^2 - 1} - 2010x^{2009}\).
+
+As \(x\) approaches -1 from the left, \(x^{4020} - 1\) approaches 0, and \(x^2 - 1\) approaches 0 as well. The limit as \(x\) approaches -1 from the left is:
+
+\(\lim_{x \to -1^-} \frac{x^{4020} - 1}{x^2 - 1} = \lim_{x \to -1^-} \frac{4020x^{4019}}{2x} = \frac{4020 \cdot (-1)}{2 \cdot (-1)} = \frac{-4020}{-2} = 2010\).
+
+So as \(x\) approaches -1 from the left, \(f(x)\) approaches \(2010 - 2010 \cdot (-1) = 2010 + 2010 = 4020\).
+
+As \(x\) becomes very large negative, \(x^{4020}\) is positive and very large, while \(x^{2009}\) is negative and very large in magnitude. So \(f(x)\) becomes dominated by \(\frac{x^{4020}}{x^2} = x^{4018}\), which is positive and very large. Therefore, as \(x\) approaches -∞, \(f(x)\) approaches +∞.
+
+Now, let's consider \(0 < x < 1\). Here, \(x^{4020}\) is very small, approaching 0, and \(x^{2009}\) is positive but small. So \(f(x)\) is approximately \(\frac{0 - 1}{x^2 - 1} - 2010x^{2009}\).
+
+As \(x\) approaches 1 from the left, \(x^{2009}\) approaches 1, so \(f(x)\) approaches \(\frac{-1}{0}\) which is -∞. As \(x\) approaches 0 from the right, \(x^{4020}\) approaches 0, so \(f(x)\) approaches \(\frac{-1}{-1} - 0 = 1\).
+
+So in the interval \(0 < x < 1\), \(f(x)\) decreases from 1 to -∞, so there must be at least one real root in this interval.
+
+Now, let's consider \(x < -1\). As \(x\) approaches -∞, \(f(x)\) approaches +∞, and as \(x\) approaches -1 from the left, \(f(x)\) approaches 4020. So \(f(x)\) decreases from +∞ to 4020 as \(x\) increases from -∞ to -1, but wait, that can't be right because \(f(x)\) is \(\frac{x^{4020} - 1}{x^2 - 1} - 2010x^{2009}\).
+
+Wait, perhaps I made a mistake earlier. Let me re-examine the behavior as \(x\) approaches -1 from the left.
+
+As \(x\) approaches -1 from the left, \(x^{2009}\) approaches -1, so \(2010x^{2009}\) approaches -2010. The term \(\frac{x^{4020} - 1}{x^2 - 1}\) approaches \(\frac{1 - 1}{1 - 1}\), which is 0/0, so we can apply L'Hospital's Rule.
+
+Taking derivatives of numerator and denominator:
+
+Numerator derivative: \(4020x^{4019}\).
+
+Denominator derivative: \(2x\).
+
+So the limit becomes \(\frac{4020x^{4019}}{2x} = \frac{4020x^{4018}}{2} = 2010x^{4018}\).
+
+As \(x\) approaches -1, \(x^{4018}\) is 1 because 4018 is even. So the limit is 2010 * 1 = 2010.
+
+Therefore, as \(x\) approaches -1 from the left, \(f(x)\) approaches \(2010 - (-2010) = 4020\).
+
+As \(x\) approaches -∞, \(x^{4020}\) dominates, so \(\frac{x^{4020}}{x^2} = x^{4018}\), which approaches +∞, and \(2010x^{2009}\) approaches -∞ because \(x^{2009}\) is negative and large in magnitude. But since \(x^{4018}\) grows faster than \(x^{2009}\), the term \(\frac{x^{4020}}{x^2}\) will dominate, so \(f(x)\) approaches +∞.
+
+Wait, but that seems contradictory because as \(x\) approaches -∞, \(x^{4020}\) is positive and very large, and \(x^{2009}\) is negative and very large in magnitude, so \(2010x^{2009}\) is a large negative number. But \(\frac{x^{4020}}{x^2} = x^{4018}\), which is positive and very large. So \(f(x)\) approaches +∞.
+
+Wait, but that can't be right because the term \(\frac{x^{4020}}{x^2}\) is x^{4018}, which is positive and large, and \(2010x^{2009}\) is negative and large in magnitude. So \(f(x)\) = x^{4018} - 2010x^{2009}, which is positive minus a large negative, so overall positive and large.
+
+But as \(x\) approaches -∞, the dominant term is x^{4018}, which is positive and large, so \(f(x)\) approaches +∞.
+
+Wait, but I'm confused because earlier I thought as \(x\) approaches -1 from the left, \(f(x)\) approaches 4020, and as \(x\) approaches -∞, \(f(x)\) approaches +∞. So in this interval, \(f(x)\) decreases from +∞ to 4020 as \(x\) increases from -∞ to -1, but that doesn't make sense because \(f(x)\) should approach 4020 and then increase again. Wait, perhaps I'm mixing up the behavior.
+
+Wait, let me think again. As \(x\) approaches -1 from the left, \(f(x)\) approaches 4020. As \(x\) increases towards 0, \(f(x)\) decreases from 4020 to 1. So in the interval \(0 < x < 1\), \(f(x)\) decreases from 1 to -∞, so there's at least one root there.
+
+Now, what about in the interval \(-1 < x < 0\)? Let's see. As \(x\) approaches 0 from the left, \(x^{4020}\) approaches 0, so \(f(x)\) approaches \(\frac{-1}{-1} - 2010x^{2009}\) which is 1 - 0 = 1. As \(x\) approaches -1 from the right, \(f(x)\) approaches 4020. So in this interval, \(f(x)\) decreases from 4020 to 1 as \(x\) increases from -1 to 0, so no root in this interval.
+
+Similarly, in the interval \(x < -1\), as \(x\) approaches -1 from the left, \(f(x)\) approaches 4020, and as \(x\) approaches -∞, \(f(x)\) approaches +∞. So \(f(x)\) is decreasing from +∞ to 4020 as \(x\) increases from -∞ to -1, but that doesn't imply a root because it's just decreasing, not crossing zero.
+
+Wait, but earlier I thought that as \(x\) approaches -1 from the left, \(f(x)\) approaches 4020, and as \(x\) approaches -∞, \(f(x)\) approaches +∞, so there's no crossing from positive to negative or vice versa, so no roots in this interval.
+
+So, putting it all together, the function \(f(x)\) has at least one root in \(0 < x < 1\), and possibly more in other intervals, but let's check.
+
+Wait, but when \(x > 1\), \(f(x)\) increases from 0 to +∞, so no roots there. When \(x < -1\), \(f(x)\) decreases from +∞ to 4020 as \(x\) increases from -∞ to -1, so no roots there. In the interval \(0 < x < 1\), \(f(x)\) decreases from 1 to -∞, so there's at least one root there.
+
+Now, what about \(x = 1\)? The original equation has \(x^{2008} + ... + 1\) and \((x^{2010} + 1)(...)\), but at \(x=1\), the left side is \((1 + 1)(1 + 1 + ... + 1)\), which is 2 * 1005 = 2010, and the right side is 2010 * 1 = 2010, so \(x=1\) is a solution.
+
+Wait, but earlier I thought that \(x=1\) is not in the domain because \(x^{2009}\) is defined, but actually, \(x=1\) is allowed because \(x^{2009}\) is 1, and \(x^{2010} + 1\) is 2, so the equation holds. So \(x=1\) is a solution.
+
+Similarly, \(x=-1\): Let's check if it's a solution. The left side is \(((-1)^{2010} + 1)((-1)^{2008} + ... + (-1)^2 + 1)\). Since all exponents are even, the terms are all 1, so the left side is (1 + 1)(1 + ... + 1) = 2 * 1005 = 2010.
+
+The right side is 2010 * (-1)^{2009} = 2010 * (-1) = -2010. So 2010 ≠ -2010, so \(x=-1\) is not a solution.
+
+So, so far, we have at least one real root at \(x=1\), and potentially another root in \(0 < x < 1\).
+
+Now, let's check if there are more roots. Let's consider \(x > 1\). As \(x\) increases beyond 1, \(f(x)\) increases from 0 to +∞, so no roots there.
+
+In the interval \(0 < x < 1\), \(f(x)\) decreases from 1 to -∞, so there's at least one root in this interval.
+
+In \(x < -1\), \(f(x)\) decreases from +∞ to 4020, so no roots there.
+
+In \(x < 0\), \(f(x)\) is positive at both ends (\(x\) approaching -∞, \(f(x)\) approaches +∞, and \(x\) approaching 0 from the left, \(f(x)\) approaches 1), so no roots there.
+
+So, in total, we have at least two real roots: one at \(x=1\), and another in \(0 < x < 1\).
+
+Wait, but let me confirm if \(x=1\) is a root. As I checked earlier, both sides equal 2010, so yes, \(x=1\) is a root.
+
+Now, are there any more roots? Let's consider \(x > 1\). As \(x\) approaches 1 from above, \(f(x)\) approaches 0, and as \(x\) increases, \(f(x)\) increases to +∞, so no roots there.
+
+In \(0 < x < 1\), \(f(x)\) goes from 1 to -∞, so it must cross zero at least once, so one root there.
+
+In \(x < -1\), as \(x\) approaches -1 from the left, \(f(x)\) approaches 4020, and as \(x\) approaches -∞, \(f(x)\) approaches +∞, so no roots there.
+
+In \(x < 0\), \(f(x)\) is positive at both ends, so no roots there.
+
+So, total real roots: two.
+
+Wait, but let me check if \(x=1\) is the only root at \(x=1\), or if there's another root there.
+
+Wait, \(x=1\) is a root, but let's see the behavior around \(x=1\). As \(x\) approaches 1 from below, \(f(x)\) approaches 1, and as \(x\) approaches 1 from above, \(f(x)\) approaches 0. So it's a continuous function crossing from 1 to 0, so there's only one root at \(x=1\).
+
+Similarly, in \(0 < x < 1\), \(f(x)\) decreases from 1 to -∞, so it must cross zero exactly once, so another root there.
+
+Therefore, in total, there are two real roots: one at \(x=1\), and one in \(0 < x < 1\).
+
+Wait, but let me check if there are any more roots. Let's consider \(x=0\). At \(x=0\), the left side is (0 + 1)(1 + 0 + ... + 0 + 1) = 1 * 1 = 1, and the right side is 2010 * 0 = 0, so 1 ≠ 0, so \(x=0\) is not a

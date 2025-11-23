@@ -1,0 +1,58 @@
+C) \(\frac{5}{7}\)
+Okay, so I need to determine the value of rem(5/7, 3/4) where rem(x, y) is defined as x - y * floor(x/y). The options are given, so I need to calculate it step by step.
+
+First, let me understand the function rem(x, y). It's similar to the remainder function but adjusted. Instead of just x mod y, which is x - y * floor(x/y), this seems to be the same thing. So essentially, rem(5/7, 3/4) is just 5/7 minus (3/4) times the floor of (5/7)/(3/4).
+
+Let me compute (5/7)/(3/4) first. Dividing by a fraction is the same as multiplying by its reciprocal, so (5/7) * (4/3) = 20/21. Now, I need to find the floor of 20/21. Since 20/21 is approximately 0.952, the floor of that is 0 because floor function returns the largest integer less than or equal to the number.
+
+So, floor(20/21) = 0. Now, plugging back into the rem function: rem(5/7, 3/4) = 5/7 - (3/4)*0 = 5/7 - 0 = 5/7.
+
+Wait, but let me double-check because sometimes these remainder functions can have nuances. The definition given is x - y * floor(x/y), which is indeed the standard remainder formula. So yeah, seems correct.
+
+But let me confirm the calculations again. (5/7)/(3/4) = 20/21 ≈ 0.952, floor is 0, so rem is 5/7 - 0 = 5/7. But let me look at the options again.
+
+The options are:
+A) 5/28
+B) 5/21
+C) 5/7
+D) 12/28
+
+So, C is 5/7, which matches my calculation. But let me ensure that I didn't misinterpret the floor function或者其他 parts.
+
+Another way to think about it: rem(5/7, 3/4) = 5/7 - (3/4)*floor(5/7 / 3/4). As calculated, 5/7 / 3/4 = 20/21, floor is 0, sorem is 5/7.
+
+Wait, but another perspective: sometimes remainder is defined differently, but in this case, the function is clearly defined as x - y * floor(x/y), so my calculation should be correct.
+
+Wait, but let me check if the floor function was applied correctly. floor(20/21) is indeed 0 because 20/21 is less than 1. So yes, correct.
+
+Wait, but let me think about the division again. 5/7 is approximately 0.714, and 3/4 is 0.75. So when I divide 0.714 by 0.75, it's approximately 0.952, which is less than 1, so floor is 0.没错.
+
+Therefore, rem(5/7, 3/4) = 5/7 - 0 = 5/7, which is option C.
+
+Wait, but let me check if the question was asking for rem(5/7, 3/4) or rem(3/4, 5/7). Because sometimes the order matters. But the function is defined as rem(x, y), so it's x minus y times the floor of x/y. So if it were rem(3/4, 5/7), it would be different, but as per the question, it's rem(5/7, 3/4).
+
+So yes, my calculation stands预先计算确认无误。
+</think>
+
+To determine the value of \(\text{rem}(\tfrac{5}{7}, \tfrac{3}{4})\) where \(\text{rem}(x, y) = x - y \left\lfloor \frac{x}{y} \right\rfloor\):
+
+1. Compute \(\frac{5}{7} \div \frac{3}{4}\):
+   \[
+   \frac{5}{7} \div \frac{3}{4} = \frac{5}{7} \times \frac{4}{3} = \frac{20}{21} \approx 0.952
+   \]
+
+2. Apply the floor function to the result:
+   \[
+   \left\lfloor \frac{20}{21} \right\rfloor = 0
+   \]
+
+3. Substitute back into the remainder formula:
+   \[
+   \text{rem}\left(\frac{5}{7}, \frac{3}{4}\right) = \frac{5}{7} - \frac{3}{4} \times 0 = \frac{5}{7} - 0 = \frac{5}{7}
+   \]
+
+Thus, the value is \(\frac{5}{7}\), which corresponds to option C.
+
+\[
+\boxed{\frac{5}{7}}
+\]<｜end▁of▁sentence｜>

@@ -1,0 +1,611 @@
+0
+Okay, I need to solve this problem where Alex can perform an operation on a grid to maximize the size of the largest connected component of '#' cells. The operation is selecting a row and a column, then setting every cell in that row and column to '#'. Hmm.
+
+Let me think about the problem. So, the grid has some '#' and '.' cells. When we perform the operation, all cells in a chosen row and column become '#'. But we can choose to do this once, or not at all. Our goal is to find the maximum possible size of a connected component after this operation.
+
+First, I need to consider all possible row and column pairs. For each possible row r and column c, the operation would set all cells in row r and column c to '#', but excluding the cell (r,c) since it's counted twice otherwise. So, the total number of new '#' cells added is (n-1)*m + (m-1)*n - 1. Wait, no. Let me calculate that again. The row r has m cells, and the column c has n cells. But cell (r,c) is counted in both, so the total is m + n - 1. So, the total new '#' cells added is (m + n - 1). But wait, that's the number of new '#' cells, but the grid was already modified in some way. Hmm, no, because the grid was already given, and the operation replaces some '.' with '#'.
+
+Wait, no. The initial grid has some cells as '#'. When we perform the operation, we set every cell in row r and column c to '#', regardless of their current state. So, the new grid would have all cells in row r and column c as '#', and others as they are.
+
+But the problem is, the operation can be done only once, and we can choose any row and column. So, the resulting grid after the operation is the original grid with row r and column c set to '#'. But we have to find the maximum connected component in this new grid.
+
+Wait, but the operation is optional. So, for each possible row and column, we can create a new grid where those row and column are filled with '#', and then compute the connected components in that grid. The maximum size among all these possibilities is the answer.
+
+But wait, if I compute this for every possible row and column, that's O(n*m) possibilities, each of which is O(nm) to compute the connected components. That's way too slow for n and m up to 1e3 each, since 1e6 * 1e6 is 1e12 operations. So, this approach is not feasible.
+
+We need a smarter way. Let's think about what the maximum possible connected component can be after the operation.
+
+Maybe, the maximum component size is either:
+
+1. The maximum component size in the original grid.
+
+2. The size of a connected component formed by the row and column operation, plus any existing components that are connected to it.
+
+Wait, perhaps the maximum is either in the original grid, or in the modified grid after the operation.
+
+So, maybe the approach is to precompute for each row and column, the size of the connected component formed when that row and column are set to '#'. Then, for each such case, compute the maximum connected component size, and take the maximum between all these possibilities and the original maximum.
+
+That sounds manageable. So, how can I compute, for each row r and column c, the size of the connected component that would be formed by setting row r and column c to '#', and then finding the maximum such size.
+
+But wait, what's the connected component in the modified grid? It's the union of the new row r and column c, plus any existing components connected to them.
+
+But considering all possible r and c is expensive. So, perhaps, we can precompute for each cell whether it's in the row or column, and then find for each such row and column the size of the connected component that would result.
+
+But how?
+
+Alternatively, perhaps we can model this as follows: For each row r and column c, the modified grid's connected components can be broken down into regions. The new row and column set certain cells to '#', and the connected components are formed by their adjacents.
+
+But maybe it's easier to think of the new row and column as adding a new layer around them.
+
+Wait, but the original grid has some connected components, and when we add a row and column, it can connect different regions.
+
+An alternative approach is to consider that when we add row r and column c, the new '#' cells in row r and column c may form a connected component that includes any existing '#' cells in the grid that are adjacent to row r or column c.
+
+So, for each row r and column c, the size of the connected component is:
+
+size = (cells in row r) + (cells in column c) - 1 (because (r,c) is counted twice) + any connected regions in the original grid that are adjacent to row r or column c.
+
+Wait, that's a possibility. But how do we compute that efficiently?
+
+Hmm, perhaps for each cell (i,j), when we add row r and column c, the cell (i,j) becomes part of the connected component. So, the connected component would include all '#' cells in row r, column c, and any that are connected to them via existing '#' cells.
+
+But how to compute this for all r and c efficiently.
+
+Wait, maybe we can precompute for each cell (i,j) the maximum possible size of a connected component that would result from adding row r and column c. But that's still O(nm) for each (r,c), which is too slow.
+
+Alternative idea: For each possible row r, let's precompute for each column c the size of the connected component that would be formed by adding row r and column c. But even this seems expensive.
+
+Wait, perhaps the key is to find for each row r, the maximum connected component that can be formed by adding row r, regardless of column c. Similarly, for each column c, the maximum connected component formed by adding column c, regardless of row r.
+
+Then, for the overall maximum, the maximum of the original grid's maximum component, the maximum for each row r, and the maximum for each column c.
+
+But how?
+
+Wait, maybe for each row r, the row r, when added, can connect to the surrounding columns. So, for row r, any cell in row r that is adjacent to a '#', whether in the same row or in adjacent columns, would contribute to a connected component when the row is added.
+
+But this is getting complicated.
+
+Let me think differently. Let's imagine that when we perform the operation, we are adding a new row and column. So, the new row has m cells, all '#'s. The new column has n cells, all '#'s. However, the cell (r,c) is included in both, so it's counted once.
+
+So, the new connected component is the union of the new row and the new column, plus any other connected regions that were connected to them.
+
+But how to model this.
+
+Perhaps the maximum possible connected component is either:
+
+- The original maximum component.
+
+- The size of (m + n - 1) + any existing connected regions in the original grid that are connected to the new row and column.
+
+Wait, but that's not entirely accurate. Because the original grid may have parts that are connected to the new row and column through their existing cells.
+
+Wait, so when we add row r and column c, the new '#'s are in row r and column c. The connected component will be the union of all the cells in row r, column c, and any existing connected regions that are adjacent to row r or column c.
+
+So, the size would be:
+
+size = (m + n - 1) + (number of connected regions in the original grid that are connected to row r or column c, but not already in row r or column c).
+
+Wait, maybe not. Because, for example, a connected region in the original grid that is connected to row r can now be connected to the new row via one of its cells, and similarly for column c.
+
+So, perhaps the way to compute the size is:
+
+The size is (m + n - 1) plus the size of the connected component in the original grid that is connected to either row r or column c.
+
+Wait, but the connected component in the original grid may already include some cells, which when connected to row r or column c, form a larger connected component.
+
+Alternatively, perhaps the maximum possible size is the maximum of:
+
+1. The original maximum connected component.
+
+2. For each row r, the size of the connected component formed by adding row r, regardless of column c.
+
+3. For each column c, the size of the connected component formed by adding column c, regardless of row r.
+
+But how to compute for each row r the maximum size when adding row r.
+
+Wait, for a given row r, the new row has all cells as '#'. So, the cells in row r and column c are already '#'. The connected component could include all the cells in row r, plus any connected regions in the original grid that are connected to row r or column c.
+
+Hmm, perhaps the maximum in adding row r is the size of the maximum connected region that can be connected to row r via any of its cells.
+
+Wait, maybe it's better to precompute for each cell (i,j) the size of the connected component in the original grid that is connected to row i or column j, but that seems complicated.
+
+Wait, another approach: for each row r, the size of the connected component after adding row r is equal to the number of '#' in row r plus any connected regions in the original grid that are connected to row r. Similarly, for each column c, it's the number of '#' in column c plus any connected regions connected to column c.
+
+Wait, no. Because when you add row r, all the '#' in row r and column c are set to '#', but the original '#' in row r or column c may already be present. So, the connected component would consist of:
+
+- The entire row r, which is m cells.
+
+- The entire column c, which is n cells.
+
+But the cell (r,c) is counted in both, so it's only one cell.
+
+So, the size is m + n - 1 + the number of connected regions in the original grid that are connected to row r or column c, but not already present in row r or column c.
+
+Wait, that's a bit vague. Maybe for each row r, compute the size of the connected component that would result from adding row r. Similarly for each column c.
+
+So, for a given r, the size of the connected component after adding row r is:
+
+size = (m) + (number of '#' in column c) - 1 (since the cell (r,c) is already in row r, but when adding, it's part of row r. Wait, no, because the column c is also being added. Hmm, perhaps not.
+
+Alternatively, when adding row r, the new row r will have all '#'s. The connected component after adding row r is the union of row r, column c, and any connected regions in the original grid that are connected to row r or column c, but not already in row r or column c.
+
+Wait, but this is getting complicated. Let's think about the connected component after adding row r and column c.
+
+The new grid will have:
+
+- All cells in row r as '#'.
+
+- All cells in column c as '#'.
+
+- Any cells in the original grid that were connected to row r or column c.
+
+So, the connected component is the union of row r, column c, and any connected regions in the original grid that are adjacent to row r or column c.
+
+But to compute this, perhaps for each row r, we can precompute the number of connected regions in the original grid that are connected to row r. Similarly for columns.
+
+Wait, perhaps the maximum size when adding row r is (m + n - 1) + the number of connected regions in the original grid that are connected to row r or column c.
+
+Wait, but that's not correct because the connected regions in the original grid may already include some cells that are in row r or column c, so adding row r would cover more.
+
+This is getting a bit stuck. Maybe I should look for a different angle.
+
+Another idea: the maximum possible connected component after the operation can be found by considering all possible row and column pairs, but doing this in a smart way.
+
+Each operation is choosing a row r and column c. The new grid has all cells in row r and column c as '#', and others as their original state.
+
+The size of the largest connected component in this new grid is what we need to find.
+
+The maximum over all possible (r,c) is the answer.
+
+Now, the key is to find, for each possible (r,c), the size of the largest connected component in the new grid. But computing this for each (r,c) is O(nm) per (r,c), which is O(n²m²), which is way too slow.
+
+So, we need a way to compute this for each (r,c) in a way that's manageable.
+
+Let me think about the connected components in the new grid. The new grid is the original grid, but with row r and column c set to '#'.
+
+So, the connected components can be broken down into:
+
+- All connected components in the original grid, except those that are entirely within row r or column c.
+
+- Plus the connected components that are formed by the union of row r and column c.
+
+Wait, no. Because some connected components in the original grid may be connected to row r or column c, so when adding row r and column c, those components become larger.
+
+So, the maximum size would be the maximum of:
+
+1. The original maximum connected component.
+
+2. For each row r, the size of the connected component that would result from adding row r.
+
+3. For each column c, the size of the connected component that would result from adding column c.
+
+So, the plan is:
+
+- Compute the maximum connected component size in the original grid.
+
+- For each row r, compute the size of the largest connected component in the grid after adding row r. This is the size of row r (m) plus any connected components in the original grid that are connected to row r, but not already part of row r or column c.
+
+- Similarly, for each column c, compute the size of the largest connected component after adding column c.
+
+The maximum of all these is the answer.
+
+But how to compute, for each row r, the size of the connected component in the new grid.
+
+Wait, another approach: for each row r, the new grid will have all cells in row r as '#'. So, the connected component for row r is the entire row r. Additionally, any connected regions in the original grid that are connected to row r can now be connected via row r.
+
+So, the size is the size of row r plus the size of the connected component in the original grid that is connected to row r, but not already part of row r or column c.
+
+Wait, but that's not correct because row r and column c are part of the new grid, so any connected regions that were in the original grid must be part of the connected component.
+
+Hmm, perhaps the size is the size of row r plus the size of the connected component in the original grid that is connected to row r or column c.
+
+Wait, but that's not correct either. For example, if the original grid has a connected region that is connected to row r but not to column c, then adding column c would connect it to row r, but the size would be row r's m cells plus that connected region.
+
+So, for each row r, the size would be m + the size of any connected region in the original grid that is connected to row r.
+
+Similarly, for each column c, the size is n + the size of any connected region in the original grid that is connected to column c.
+
+Wait, but the connected regions in the original grid may already include some cells that are in row r or column c. So, when adding row r, those cells are already part of row r, so the connected component size is m plus the size of connected regions in the original grid that are connected to row r but not already part of row r.
+
+Wait, no. Because row r is added, all its cells are '#', so any connected regions in the original grid that are connected to row r will now be connected to row r, hence part of the new connected component.
+
+So, the maximum connected component size after adding row r is m + the maximum connected component size in the original grid that is connected to row r.
+
+But if the original grid has a connected component that is connected to row r but not to column c, then adding column c would connect it to row r, but the size would be m + that connected component.
+
+So, perhaps for each row r, the maximum possible component after adding row r is (m) + the maximum connected component size in the original grid that is connected to row r.
+
+Similarly for columns.
+
+So, the plan is:
+
+1. Compute the original maximum connected component size (let's call it max_original).
+
+2. For each row r, compute the size of the connected component in the original grid that is connected to row r (excluding the row itself). Let's call this max_row[r].
+
+3. For each column c, compute the size of the connected component in the original grid that is connected to column c (excluding the column itself). Let's call this max_col[c].
+
+4. The maximum possible size is the maximum of max_original, max_row[r] for all r, max_col[c] for all c.
+
+Because, when adding row r, the new connected component is m + the size of the connected component in the original grid that is connected to row r. Similarly for columns.
+
+So, the question is: how to compute max_row[r] and max_col[c] for each row r and column c.
+
+Wait, but for each row r, the connected component that is connected to row r is the union of row r and any connected regions in the original grid that are connected to row r. So, for each row r, we can compute the size of the connected component that includes any cell in row r that is part of a connected region connected to row r, but not part of column c.
+
+But wait, for a given row r, the connected component after adding row r is the entire row r, plus any connected regions in the original grid that are connected to row r.
+
+So, perhaps for each row r, we can find the size of the connected component that is connected to row r, which is the size of the connected component in the original grid that includes any cell in row r.
+
+Similarly for columns.
+
+Wait, but how to compute for each row r the size of the connected component that is connected to row r, regardless of which column it's connected to.
+
+Wait, perhaps for each row r, the maximum connected component size is the maximum of the sizes of connected regions in the original grid that include at least one cell in row r.
+
+Similarly, for each column c, it's the maximum of the sizes of connected regions that include at least one cell in column c.
+
+Then, for row r, when we add it, the connected component size is m (the row) plus the maximum connected region size that is connected to row r.
+
+So, the plan is:
+
+- For each row r, find the maximum connected region size in the original grid that is connected to row r. Let's call this max_row_r.
+
+- The size when adding row r is m + max_row_r.
+
+Similarly, for each column c, find the maximum connected region in the original grid that is connected to column c, call it max_col_c. The size when adding column c is n + max_col_c.
+
+Then, the overall maximum is the maximum of all these.
+
+But how to compute for each row r, the maximum connected region size that is connected to row r.
+
+Wait, perhaps for each row r, we can find the maximum size of a connected component in the original grid that includes at least one cell in row r.
+
+Similarly for columns.
+
+So, the steps would be:
+
+1. Precompute for each row r, the maximum connected component size that includes at least one cell in row r.
+
+2. Similarly compute for each column c, the maximum connected component size that includes at least one cell in column c.
+
+3. Then, the maximum possible size is the maximum between the original max, and for each row r, (m + max_row[r]), and for each column c, (n + max_col[c]).
+
+This seems manageable.
+
+So, the key is to compute for each row r, the maximum connected component size that includes at least one cell in row r, and similarly for columns.
+
+How to do that?
+
+We can model each connected component as a node, and for each row, find the maximum size of a component that touches that row.
+
+But that's computationally expensive if done naively.
+
+Alternatively, perhaps we can precompute for each cell, the size of the connected component in the original grid, and for each row, find the maximum such size that is connected to row r. But this might not be straightforward.
+
+Another approach is to perform a BFS for each row r, and track the maximum connected component that includes any cell in row r.
+
+But for n=1e3 and m=1e3, and each BFS being O(m), this would be O(nm) which is acceptable.
+
+Yes, that's manageable.
+
+So, the plan is:
+
+- For each row r in 0..n-1:
+
+   - Perform a BFS starting from all cells in row r that are '#', and track the maximum connected component size.
+
+- Do the same for each column c.
+
+But wait, no. Because for each row r, we want the maximum connected component that is connected to row r. So, perhaps for each row r, the maximum connected component is the maximum of all connected components that are connected to row r.
+
+Wait, perhaps the maximum connected component that includes at least one cell from row r.
+
+So, for each row r, the maximum is the size of the largest connected component in the original grid that touches row r.
+
+Similarly for columns.
+
+So, how to compute for each row r, the maximum connected component size that touches row r.
+
+An efficient way is to run BFS for each row and for each cell, track the component size. Then, for each row r, the maximum component size among all cells in row r is the maximum connected component that includes at least one cell from row r.
+
+Wait, no. Because a connected component could be a large one that starts in row r, but perhaps have multiple branches elsewhere.
+
+Wait, no. Each connected component is a single group of connected cells. So, for row r, any connected component that includes at least one cell from row r is a candidate. So, the maximum such size is the maximum connected component that touches row r.
+
+Alternatively, perhaps for each row, the maximum connected component size that includes any cell in that row.
+
+So, for each row r, the maximum is the maximum size among all connected components that include at least one cell in row r.
+
+So, the approach is:
+
+- For each row r, perform a BFS to find all connected components, and for each cell in row r, find the component size, and track the maximum.
+
+So, for each row r, the maximum connected component size that touches row r is the maximum component size across all cells in row r.
+
+Wait, but that's not correct. Because a connected component could be entirely in row r, so the maximum is just the size of row r itself. But if the connected component is in another row, but connected via other rows, but that's not possible because the connected component is in row r.
+
+Wait, no, because if a connected component is in row r, it's entirely row r, so any cell in row r is part of the same component.
+
+So, for row r, the maximum connected component that touches row r is the size of row r, if all cells in row r are connected.
+
+But perhaps the connected component can be larger if there are cells in other rows connected to it.
+
+Wait, no. Because the connected component is in row r, so any cell in row r is part of the same component. So, the maximum connected component size that touches row r is exactly the size of the connected component that includes any cell in row r.
+
+So, for row r, the maximum is the maximum size of any connected component in the original grid that includes at least one cell in row r.
+
+Similarly for columns.
+
+So, the plan is:
+
+1. Precompute for each row r, the maximum connected component size that includes at least one cell from row r.
+
+2. Similarly, precompute for each column c, the maximum connected component size that includes at least one cell from column c.
+
+3. The maximum possible size is the maximum of:
+
+   a. The original maximum connected component.
+
+   b. For each row r, m + (max_row[r]).
+
+   c. For each column c, n + (max_col[c]).
+
+So, how to implement this?
+
+First, we need to precompute for each row r, the maximum connected component size that is connected to row r.
+
+We can do this by, for each cell (i,j), if it is '#', perform a BFS to find all connected cells, and for each cell in row r, track the maximum component size.
+
+Wait, but that's O(nm) per cell, which is O(nm^2), which is 1e9 for 1e3 rows and columns, which is not feasible.
+
+Alternative approach: For each row r, perform a BFS starting from any cell in row r, and for each cell in the BFS, note the component size. Then, for row r, the maximum component size is the maximum component size encountered during the BFS.
+
+But how to do this efficiently.
+
+Wait, no. Because for each row r, the BFS would process all cells in the connected component, and for each, if it's in row r, we can track the component size.
+
+But I'm not sure.
+
+Wait, perhaps for each cell (i,j), if it is '#', perform a BFS that marks all connected cells, and for each cell in row r, track the maximum component size.
+
+Wait, but that would require for each row r, a separate BFS.
+
+So, the steps would be:
+
+- Initialize a max_row array, where max_row[r] is the maximum connected component size that touches row r.
+
+- For each row r in 0..n-1:
+
+   - Initialize a component size counter.
+
+   - For each cell (i,j) in row r:
+
+      - If cell is '#', perform BFS to find all connected cells.
+
+      - For each cell (x,y) in this BFS, if x == r, update max_row[r] if the component size is larger than current max.
+
+   - So, for row r, the maximum is the maximum component size during this BFS that includes any cell in row r.
+
+Wait, but row r is the starting row, so the component is entirely in row r, so any cell in row r is part of the same component. So, the component size is m, if the entire row is connected.
+
+But if the component is in another row, but connected via other rows, then the component would have other cells in other rows. But since the component is in row r, any cell in row r is part of the same component.
+
+Wait, no. Because row r is the starting row. So, the component includes all connected cells, including any in other rows, but the component is entirely in row r. So, the component size is the size of row r, m, if all are connected.
+
+So, perhaps for each row r, the maximum connected component size that includes any cell in row r is the maximum of the component sizes in the BFS.
+
+But that's not correct because a connected component could be in a different row, but connected via other rows. So, the component is not entirely in row r, but the cell in row r is part of the same component.
+
+Wait, no. Because the BFS starts in row r, so any component found is entirely in row r or adjacent rows. So, if a component is in row r, then all cells in that component are in row r. So, any cell in row r is part of the same component.
+
+So, the size of that component is m, if the entire row is connected.
+
+So, for row r, the maximum connected component size that touches row r is the size of the largest connected component in the original grid that includes any cell in row r.
+
+So, the approach is, for each row r, find the size of the largest connected component that is connected to row r, which can be any connected region in the grid that includes at least one cell in row r.
+
+So, how do we compute this for all rows r.
+
+An alternative approach is to perform a BFS for each row r and track the maximum component size. But that's O(nm) for each row, which is O(n²m) time, which is 1e9 for n=1e3, which is too slow.
+
+Wait, but perhaps we can find a way to compute for all rows in a single pass.
+
+Wait, perhaps a better approach is to precompute for each cell, the size of the connected component it belongs to. Then, for row r, the maximum component size that includes any cell in row r is the maximum of the component sizes of all cells in row r.
+
+Because any cell in row r is part of the same component as row r.
+
+So, for row r, the maximum component size is the maximum component size among all cells in row r.
+
+Similarly for columns.
+
+That's a clever observation.
+
+So, the steps are:
+
+1. Compute the size of the connected component for each cell.
+
+2. For each row r, the maximum component size that touches row r is the maximum component size among all cells in row r.
+
+3. For each column c, the maximum component size that touches column c is the maximum component size among all cells in column c.
+
+4. The overall maximum is the maximum of the original maximum component, the maximum for each row r, and the maximum for each column c.
+
+So, how to compute this.
+
+Compute the component sizes using BFS.
+
+Initialize a matrix component_size, where component_size[i][j] is the size of the component that includes (i,j).
+
+Then, for each row r, the maximum component size is the maximum of component_size[i][j] for all i in 0..n-1, j in 0..m-1, where i == r.
+
+Similarly for columns.
+
+This approach is O(nm) for the BFS, which is acceptable.
+
+So, the steps are:
+
+For each test case:
+
+- Read the grid.
+
+- Compute component_size for each cell using BFS. Each cell has a unique component, so the component_size matrix can be filled with the size of the component it belongs to.
+
+- Compute the original maximum connected component size as the maximum value in component_size.
+
+- For each row r, compute max_row[r] = maximum component_size[i][j] for i == r, j in 0..m-1.
+
+- For each column c, compute max_col[c] = maximum component_size[i][j] for i in 0..n-1, j == c.
+
+- The maximum possible size is the maximum of the original maximum, the max_row[r] for all r, and the max_col[c] for all c.
+
+So, this seems manageable.
+
+Now, let's see with an example.
+
+Sample Input:
+
+For example, let's say grid is:
+
+n=2, m=2.
+
+Grid:
+1 1
+1 1
+
+So, component_size for all cells is 4.
+
+Original max is 4.
+
+For each row r=0 and 1:
+
+max_row[r] is 4.
+
+For each column c=0 and 1:
+
+max_col[c] is 4.
+
+So, the maximum is 4.
+
+Another example:
+
+n=2, m=3.
+
+Grid:
+1 1 0
+1 0 1
+
+So, component_size for each cell:
+
+Row 0: 1 1 0
+Row 1: 1 0 1
+
+So, component 0: cell (0,0), (0,1), (1,0) are connected. So, component size 3.
+
+Cell (1,2) is connected to (1,0). So, that's another component, size 2.
+
+So, component_size is:
+
+(0,0)=3, (0,1)=3, (1,0)=2, (1,1)=1, (1,2)=2.
+
+So, original max is 3.
+
+For row 0: cells (0,0), (0,1) have component size 3, and cell (1,0) has size 2. So, max_row[0]=3.
+
+For row 1: cells (1,0) has size 2, (1,1) size 1, (1,2) size 2. So, max_row[1]=2.
+
+For column 0: cells (0,0) size 3, (1,0) size 2. So, max_col[0]=3.
+
+For column 1: cells (0,1) size 3, (1,1) size 1. So, max_col[1]=3.
+
+So, the maximum is 3 (original), 3 (row 0), 2 (row1), 3 (col0), 3 (col1). So, the maximum is 3.
+
+Now, let's say we perform the operation on row 0.
+
+The new grid will have all row 0 and column 0 as '#'.
+
+So, row 0 is now fully '#', column 0 is all '#'.
+
+So, the connected component size is:
+
+Row 0: 3 cells.
+
+Column 0: 2 cells, but one is already part of row 0. So, adding column 0, which has 2 cells, but one is already part of row 0, so the new component is 3 + 2 -1 =4.
+
+Wait, but according to the approach, the max_row[0] is 3, which is the size of the connected component in the original grid that touches row 0.
+
+But when you add row 0, the connected component becomes 3 + 2 -1 =4.
+
+So, the approach may not capture this.
+
+Hmm, that's a problem.
+
+Wait, in our approach, the max_row[r] is the maximum component size in the original grid that touches row r. So, for row 0, the max_row[r] is 3.
+
+But when you add row 0, the connected component becomes 3 (row 0) plus 2 (column 0) minus 1 (the cell (0,0) is already in row 0), so 4.
+
+So, according to our approach, the maximum possible is 4, but according to our approach, the maximum is the original 3, and the row 0's max_row is 3, which is less than 4.
+
+So, our approach would miss this.
+
+So, the approach is incorrect.
+
+Hmm, this is a problem.
+
+What's the issue?
+
+The issue is that adding row r and column c can connect many other cells, not just those in row r and column c.
+
+So, the approach of considering only the connected components in the original grid is insufficient.
+
+So, how can we compute for each (r, c) the size of the connected component after the operation, which is the union of row r and column c, plus any connected regions in the original grid that are connected to row r or column c.
+
+But this is computationally expensive.
+
+Alternative idea: For each possible row r, compute the size of the connected component after adding row r, which is m + the size of the connected component that is connected to row r, but not part of row r or column c. Wait, but it's not clear.
+
+Another approach: For each row r, find all cells in row r and in any column c that are connected to row r via other rows. Then, the size of the connected component is m + the size of the connected region that's connected to row r but not part of row r or column c.
+
+Wait, but how to compute this for each row r.
+
+This seems computationally expensive.
+
+Alternative idea: For each cell (i,j), if it's '#' and i == r, then it's part of row r. Otherwise, it's part of column c.
+
+The connected component after adding row r is the union of row r, column c, and any connected regions in the original grid that are connected to row r.
+
+But this is again not directly computable.
+
+Wait, perhaps the maximum possible size is the maximum of:
+
+- The original maximum.
+
+- For each row r, m + (the size of the connected component that is connected to row r in the original grid, but not part of row r or column c).
+
+Wait, perhaps not. This seems to be leading us in circles.
+
+Alternative approach: Let's think of the problem as, for each row r, the maximum possible is m plus the maximum connected component in the original grid that is connected to row r and not part of row r or any column.
+
+But how to find this maximum.
+
+Alternatively, for each row r, the maximum possible connected component after adding row r is the size of the connected component that includes row r and any connected regions in the original grid that are connected to row r, but not part of row r or column c.
+
+But since we can choose any column c, perhaps for each row r, the maximum possible is m plus the size of the connected component in the original grid that is connected to row r.
+
+But how to compute this.
+
+Wait, perhaps for each row r, the size of the connected component after adding row r is the size of row r plus the size of the component in the original grid that is connected to row r, but not part of row r or any column.
+
+Wait, but that's not possible, because row r is being added, and any connected regions connected to row r are connected to row r, hence included in the new component.
+
+So, perhaps the size is m + the size of the connected component in the original grid that is connected to row r.
+
+But again, the problem is that the connected components in the original grid can be in any columns, not just the current column.
+
+So, perhaps I'm stuck.
+
+Alternative Idea:
+
+Perhaps, instead of trying to compute it for each possible (r,c), we can precompute for each row r the maximum connected component that includes row r, and for each column c the maximum connected component that includes column c.
+
+Then,

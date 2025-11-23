@@ -1,0 +1,747 @@
+Okay, so I've got this problem to solve, and I'm a bit stuck. Let me try to break it down and see what I can come up with.
+
+The problem is about finding the maximum size of a complex subset of given segments. The definition of a complex subset is a bit tricky. So let me read that again.
+
+A complex subset can be partitioned into subsets where each subset has the same size, and two segments intersect if and only if they are in the same subset. Oh right, intersecting here probably means that they have a non-empty intersection—so their intervals [l_i, r_i] and [l_j, r_j] overlap.
+
+So, the key is to arrange the segments into groups where within each group, any two segments overlap, and each group has the same size. We need to find the largest possible group size.
+
+Hmm. So, the approach is to find the maximum k such that we can partition the segments into k groups, each of size m (so that k*m is the total size of the subset), and each group is a clique in the overlap graph (i.e., every pair of segments in the group overlaps).
+
+Wait, but the problem asks for the maximum subset, meaning the largest possible m or the largest possible k*m. But since k is the number of subsets, and each is size m, the total is k*m. So perhaps, the maximum possible k is the maximum number of non-overlapping groups, but each group must have the same size.
+
+Alternatively, perhaps the problem is to find the maximum m such that the segments can be partitioned into m groups, each group forming a clique in terms of their overlaps.
+
+Wait, but the problem allows any partition into equal-sized subsets. So for example, if there are 12 segments, and they can be divided into 3 subsets of 4 each, then the maximum subset size is 12. But if they can't be divided into 4 subsets of 3 each, then perhaps the maximum is 4*3=12, but that depends on whether each subset of 3 can form a clique.
+
+Wait, no. Because each subset is of size m, and all subsets must have the same size. So m is the size of each group. So the goal is to find the maximum m such that the entire set can be divided into groups of size m, each group being a clique.
+
+Wait, but that's not exactly correct. The subset is a union of such groups, but each group's size is m. So the total size is k*m, where k is the number of groups. So the maximum possible is the maximum k*m such that the segments can be partitioned into k subsets, each of size m, and each subset is a clique.
+
+Alternatively, perhaps for a given m, we can check if it's possible to partition the segments into groups where each group has size m, and within each group, any two segments overlap.
+
+So, the problem reduces to finding the maximum m where such a partition exists.
+
+But how to compute this?
+
+Let me think about the overlapping condition. For a group of size m, all pairs in the group must overlap. So, for any two segments in the group, they must have an intersection.
+
+But how can that be possible? Because if all segments in a group intersect each other, then all of them must lie within some interval. Because if two segments in the group have an intersection, then they must both lie within some common interval. But if every pair in the group overlaps, then all of them must lie within the intersection of all groups.
+
+Wait, not exactly. Because for example, suppose we have three segments: [1,3], [2,4], [3,5]. Each pair overlaps, but all three do not lie in a single interval. Wait, no. Because [1,3] and [2,4] overlap, [1,3] and [3,5] overlap, and [2,4] and [3,5] overlap. So in this case, all three segments can be in the same group.
+
+So, the maximum size of a group is the maximum number of segments that all pairwise overlap.
+
+Wait, but that's only for a group of size 3. For larger groups, it's possible that all segments in the group are contained within a single interval, but overlapping in such a way that any two segments must overlap.
+
+So, the maximum possible k is determined by the maximum number of segments that can be arranged into a clique in the overlap graph. Each such clique can be a group. Then, the maximum subset is the sum of the sizes of such cliques.
+
+But wait, that's incorrect because each group must be a subset of the original segments, and all groups must have the same size. So perhaps the maximum subset is the maximum number of elements such that the segments can be partitioned into groups of the same size, each group being a clique.
+
+So the approach is to find for each possible m (the group size), whether it's possible to partition the segments into m groups, each of size m, and each group is a clique.
+
+But what is the maximum possible m? It's the largest m such that the segments can be partitioned into m groups, each group has exactly m segments, and each group is a clique.
+
+Hmm. How can we model this?
+
+Let me think about the necessary conditions for a group of size m.
+
+Each group must have m segments, all pairwise overlapping. So, the segments in the group must all lie within some interval.
+
+Wait, no. Because, for example, consider three segments: [1,3], [2,4], [3,5]. They all pairwise overlap, but they don't lie within a single interval. So, how is that possible?
+
+Wait, the problem is that each pair of segments in the group must overlap. So, to have a group of size m, all segments must pairwise overlap.
+
+Therefore, all segments in the group must lie within the intersection of all segments in the group.
+
+Wait, no. Because if two segments S1 and S2 overlap, their intersection is non-empty. So, any two segments in the group must have their intervals overlapping, which implies that all segments in the group must lie within the intersection of all possible pairs.
+
+Wait, that's not right. Because if S1 and S2 have an overlapping interval, and S2 and S3 have an overlapping interval, it's possible that S1 and S3 do not overlap. So, the entire group must lie within the intersection of all their pairwise overlaps.
+
+Wait, that might not be possible. Let's see: suppose we have three segments S1, S2, S3. S1 and S2 overlap, S2 and S3 overlap, but S1 and S3 do not. Then, in the group of size 3, S1 and S3 do not overlap. So, the group cannot exist.
+
+But what if S1 and S3 overlap, and S2 and S3 overlap, but S1 and S2 do not? Then, S1 and S2 cannot be in the same group.
+
+So, the group must consist of segments that all pairwise overlap. Therefore, all segments in the group must lie within the intersection of all pairwise overlaps. But that's only possible if all pairwise overlaps are non-empty, and all segments are contained within some common interval.
+
+Wait, no. Because for three segments S1, S2, S3: S1 and S2 overlap (intervals overlap), S2 and S3 overlap, but S1 and S3 do not. Then the group can't be formed.
+
+So, the group must be a set of segments where every pair overlaps, which implies that all segments are contained within the intersection of all the pairwise overlaps.
+
+So, for a group of size m, all segments must lie within the intersection of all possible pairwise overlaps in the group.
+
+Wait, that would imply that all segments in the group are contained within the intersection of the intervals they form with each other.
+
+So, the maximum possible group size is determined by the maximum number of segments that can be arranged in a way that any two of them overlap. But how?
+
+Alternatively, perhaps the problem can be transformed into finding the maximum m such that there exists a set of m segments that all pairwise overlap, and this can be repeated for the remaining segments.
+
+Wait, but that's not necessarily the case. For example, suppose we have a set of segments where some are grouped into m1 groups of size m, and others into m2 groups of size m. But perhaps that's overcomplicating.
+
+Wait, perhaps the maximum subset is equal to the maximum possible m where the segments can be divided into m groups, each of size m, and each group is a clique (i.e., all pairs in the group overlap).
+
+So, the problem reduces to finding the maximum m such that the entire set can be partitioned into m groups, each of size m, and each group is a clique.
+
+So, how can we compute this m?
+
+Hmm.
+
+Let me think about the properties of such a partition.
+
+Each group must have m segments, all pairwise overlapping. So, for the entire collection of segments, each group is a clique of size m.
+
+What is the maximum possible m?
+
+We can note that m can't exceed the maximum number of segments that can be arranged in a group, which is the maximum clique size of the overlap graph.
+
+But wait, the maximum clique in the overlap graph is the maximum number of segments that pairwise overlap. So, for a group to exist, the maximum size of such a clique is the maximum m.
+
+Wait, but the problem requires that the entire set be partitioned into such groups. So, the maximum possible m is the maximum number of segments that can be arranged into a group of size m, and then the remaining can be partitioned into m groups of size m, etc.
+
+This sounds like a problem of finding the maximum m for which the segments can be partitioned into m groups, each of size m, and each group is a clique.
+
+But how to compute this m?
+
+Wait, perhaps the maximum m is the floor of the maximum possible group size divided by m, but I'm not sure.
+
+Let's think of the problem differently. For a given m, can we partition the segments into m groups, each of size m, such that each group is a clique.
+
+What is the condition for this?
+
+Well, any two segments in a group must overlap. So, for a group of size m, all m segments must lie within the intersection of all pairs in the group.
+
+But that's only possible if all m segments are contained within a common interval. Because if any two segments are in the same group, their intersection must be non-empty, and if all are in the same group, their pairwise intersections imply that the entire group is contained within some interval.
+
+Wait, let's see: Suppose all segments in a group are contained within [a, b]. Then, any two segments in the group must overlap. So, the group is a clique.
+
+So, for a group of size m, all m segments must lie within some interval [a, b], and any two of them have overlapping intervals.
+
+But wait, that's not necessarily the case. Because, for example, if two segments in the group are entirely within [a, b], and another is outside, but overlaps with both. So, the group is not a clique.
+
+Wait, no. If all segments in the group are within [a, b], then any two of them will have [a, b] as their intersection, right? Because each is within [a, b], so their intersection is at least [a, b], which is non-empty. So, any two segments in the group will overlap.
+
+Wait, that's correct. So, if all m segments are contained within [a, b], then any two of them will overlap. So, the group is a clique.
+
+Therefore, each group must consist of m segments that are all within some interval [a, b], and any two of them overlap.
+
+So, the problem reduces to finding the maximum m such that the segments can be partitioned into m groups of size m, each group's segments all lie within some interval, and any two segments in the group overlap.
+
+Hmm.
+
+So, how can we model this?
+
+Let me think about the maximum possible m.
+
+We can note that each group must consist of m segments, all within a single interval. So, for each possible interval [L, R], we can count how many segments have both l_i <= R and r_i >= L. Then, for each such interval, the maximum possible m is the maximum count of overlapping segments.
+
+Wait, but that's not necessarily correct.
+
+Alternatively, perhaps for each possible m, we can check whether it's possible to partition the segments into m groups, each of size m, where each group is a clique.
+
+But how?
+
+Another approach is to think about the problem in terms of the maximum clique size and the overall count.
+
+Wait, but the maximum possible m is at most the maximum number of segments that can be arranged into a group of size m, but this depends on how the segments are distributed.
+
+Alternatively, perhaps the maximum possible m is the maximum number of segments that can form a clique, and then the remaining segments can form other cliques of the same size.
+
+Wait, but that might not always be possible.
+
+Wait, let's consider a small example.
+
+Suppose n=4, and the segments are:
+[1, 2], [2,3], [3,4], [4,5].
+Each segment is contained within a consecutive interval. For group size m=2, can we partition into two groups of 2 each, each being a clique.
+
+Group 1: [1,2], [2,3] → overlapping.
+Group 2: [3,4], [4,5] → overlapping.
+
+So yes, m=2 is possible.
+
+Another example:
+
+n=4, segments:
+[1,3], [2,3], [2,4], [3,4].
+
+Each group of size 2 can be:
+Group 1: [1,3], [2,3] → overlapping.
+Group 2: [2,4], [3,4] → overlapping.
+So m=2 is possible.
+
+But if the segments are arranged in a way that for group size m=3, it's impossible.
+
+Let's see: n=6, segments are [1,2], [1,3], [1,4], [2,3], [2,4], [3,4]. Can we partition into two groups of size 3 each, each group being a clique.
+
+Group 1: [1,2], [1,3], [1,4] → all are within [1,4], so overlapping. So group is a clique.
+
+Group 2: [2,3], [2,4], [3,4] → all within [2,4], so overlapping.
+
+So m=3 is possible.
+
+So, in this case, the maximum m is 3.
+
+So, what is the pattern here?
+
+It seems that the maximum possible m is the maximum number of segments that can form a clique, and then the remaining can form another clique.
+
+But how to compute this.
+
+Alternatively, perhaps the maximum m is the largest possible such that the total number of segments can be expressed as k*m, where each group of size m is a clique.
+
+So, the maximum possible m is the maximum possible such that the entire set can be partitioned into groups of size m, each group being a clique.
+
+But how to find this m.
+
+Hmm.
+
+Wait, perhaps we can model the problem as finding the maximum m such that the number of segments that can be grouped into a clique of size m is at least m, and similarly for the remaining segments.
+
+Alternatively, perhaps the maximum m is the floor of (the maximum k) where k is the maximum number of non-overlapping groups, each of size m, and each group is a clique.
+
+But I'm not sure.
+
+Another approach: for the segments to be partitioned into m groups of size m, each group must be a clique.
+
+So, for a group of size m, all m segments must be contained within some interval [a, b], and any two segments in the group must have overlapping intervals.
+
+So, the maximum m is the maximum number such that the segments can be partitioned into m groups, each group is a clique.
+
+Wait, perhaps the maximum m is the maximum size of a clique in the overlap graph, but that's not necessarily the case because the entire graph may not have a clique of that size, but the entire collection can be partitioned into smaller cliques.
+
+Hmm.
+
+Another thought: for each segment, the maximum possible group size m is determined by the number of segments that overlap with it, but that's not sufficient.
+
+Wait, perhaps we can model this as follows.
+
+Each group must consist of segments that all lie within the same interval [a, b]. So, for a group of size m, all m segments must lie within some [a, b], and any two of them must have overlapping intervals.
+
+Which is equivalent to saying that all m segments lie within [a, b], and the maximum of their l_i is <= b and the minimum of their r_i is >= a.
+
+Wait, no. Because if all segments are within [a, b], then their l_i >= a and r_i <= b. So, the maximum l_i is >= a, the minimum r_i is <= b. So, the group is a clique.
+
+So, for a group of size m, all m segments must be contained within some interval [a, b], where a <= min_l and b >= max_r, where min_l is the minimum l_i of the group, and max_r is the maximum r_i of the group.
+
+Wait, no. Because all segments are within [a, b], so a must be <= their l_i and r_i <= b.
+
+Wait, maybe it's better to think that for a group of size m, the group's l_i's are all >= some a, and r_i's are all <= some b, and a <= b.
+
+But how does that help?
+
+Alternatively, perhaps the maximum m is the largest possible such that the segments can be partitioned into m groups, each of which is a clique.
+
+Hmm.
+
+Perhaps the maximum m is the maximum number of segments that can be arranged into a clique of size m, and the remaining can be split into other cliques.
+
+But how to find this.
+
+Wait, perhaps the maximum m is the maximum number of segments that can be arranged into a clique, and the remaining can be partitioned into groups of size m, each of which is a clique.
+
+But I'm not sure.
+
+Another idea: for each segment, the maximum possible group size m is determined by the number of segments that overlap with it. But this is per segment, not per group.
+
+Wait, perhaps the maximum m is the maximum number of segments that can be arranged into a clique, and the remaining can be arranged into other cliques of the same size.
+
+But how to compute this.
+
+Maybe we can precompute for each segment the maximum number of segments that can form a clique including it, and then see what is the maximum m that satisfies the condition that the total number of segments is a multiple of m.
+
+But that might not be feasible.
+
+Alternatively, perhaps we can compute for each possible m, whether the segments can be partitioned into m groups each of size m, each group being a clique.
+
+But with n up to 3e5, we can't check for all possible m in a naive way.
+
+So, what can we do?
+
+Hmm. Maybe the maximum m is the maximum possible such that the number of segments that can form a clique of size m is at least m, and the remaining can also form cliques of size m.
+
+So, let's think: for each m, find the maximum number of segments that can be arranged into a clique of size m. Then, see if the remaining can be split into groups of size m.
+
+But that's computationally expensive.
+
+Alternatively, perhaps the maximum m is the maximum number of segments that can form a clique, and the remaining segments can be arranged into other cliques.
+
+Wait, perhaps the problem is similar to partitioning the segments into m groups of m each, each group being a clique.
+
+In that case, the maximum m is the largest possible such that the entire collection can be partitioned into m cliques, each of size m.
+
+So, how can we compute this.
+
+Wait, perhaps the maximum m is the maximum possible such that for the sorted order of the segments, certain conditions are met.
+
+Another approach: Find all possible m's, and for each m, check if the number of segments that can form a clique of size m is at least m, and the remaining can be arranged into other cliques of size m.
+
+But I'm not sure.
+
+Let me think about the sample input.
+
+Sample Input 1:
+
+n=3, segments:
+[1,2], [2,3], [3,4]
+
+In this case, each group can be size 1. But perhaps m=2 is possible.
+
+Wait, no. Because each group must have size m, and each group is a clique.
+
+Wait, for m=2, we need two groups of 2 segments each, each group being a clique.
+
+Wait, but the first group is [1,2], [2,3], which are overlapping. So they form a clique of size 2.
+
+The second group is [3,4], which is size 1. So, m is 2.
+
+Wait, but 2*2=4, but n is 3. So, that's impossible.
+
+So, in this case, the maximum m is 1.
+
+Wait, but wait.
+
+Wait, perhaps I made a mistake.
+
+In the first group, [1,2], [2,3] can be in a group of size 2.
+
+The second group is [3,4], but since it's size 1, it's allowed.
+
+So, yes, the maximum m is 2.
+
+Wait, but 2 groups, each of size 2: one group of 2, another of 1. That's a total of 3, which is n=3.
+
+So, the maximum m is 2.
+
+So, how to compute that.
+
+In this case, m=2 is possible.
+
+So, perhaps the approach is to find the maximum possible m where the segments can be partitioned into m groups, each of size m, and each group is a clique.
+
+But how to model that.
+
+Another thought: For a group of size m, all the segments must lie within some interval [a, b]. So, for each possible a and b, we can count how many segments have l_i >= a and r_i <= b.
+
+Then, for any a and b, if the count is >= m, then the maximum possible m is the maximum over all such counts.
+
+But again, for each possible a and b, this is O(n^2), which is not feasible.
+
+Hmm.
+
+Wait, but perhaps the maximum m is determined by the number of segments that can be arranged into a clique of size m, and the maximal m such that n is divisible by m.
+
+But how to compute that.
+
+Alternative approach: for each segment, compute the maximum possible group size m, which is the maximum number of segments that can be arranged in a clique (i.e., all pairwise overlapping) that includes this segment. Then, the answer is the maximum m where the total number of segments is a multiple of m.
+
+But that doesn't work because a segment may be part of a clique of size m, but other segments may not allow for that.
+
+For example, consider a group of 3 segments where each pair overlaps, but the maximum group size is 3. Then, each segment is part of a group of 3, so the maximum m would be 3.
+
+But perhaps some segments are part of larger groups and others are part of smaller groups.
+
+Wait, but in that case, the maximum m would be 3.
+
+So, perhaps the approach is to find the maximum m such that for the entire set, there's a way to partition into m groups, each of size m, and each group is a clique.
+
+An alternative way to model this is that the maximum m is the largest possible such that the entire set can be divided into m cliques of size m.
+
+But I'm not sure how to compute that.
+
+Hmm.
+
+Wait, perhaps the problem can be reduced to finding the maximum m such that the total number of segments is divisible by m, and the maximum clique size is at least m.
+
+But this is not necessarily correct. Because, for example, if the maximum clique is m, but the entire set can't be partitioned into m cliques, then it's impossible.
+
+But perhaps the maximum m is the maximum possible such that the number of segments is at least m, and the maximum clique size is at least m.
+
+But I'm not sure.
+
+Another idea: for each possible m, the maximum number of segments that can be arranged into a clique is the maximum size of a clique in the overlap graph.
+
+Once we have that maximum clique size, say, s, then the maximum m is s if n is a multiple of s, else the maximum possible m is the maximum possible divisor of n that is less than or equal to s.
+
+Wait, but that's not necessarily correct. Because the entire set may have a maximum clique size of s, but the rest of the segments can be arranged into other cliques of size m.
+
+For example, suppose n=5, s=3.
+
+Then, the maximum m is 2, because 5/2 is 2.5, which is not an integer. So m=2 is the largest possible.
+
+But perhaps the maximum m is 3 if there are 6 segments, and 3 is a divisor of 6.
+
+Hmm, I think I'm getting stuck.
+
+Let me think of another approach.
+
+What if I sort the segments by their starting points or their ending points.
+
+Wait, perhaps sorting the segments in a certain way can help.
+
+Let me think about the following approach:
+
+1. Sort all segments by their starting points.
+
+2. For each possible m, determine whether it's possible to partition the segments into m groups, each of size m, each group being a clique.
+
+But how to do this efficiently.
+
+Wait, perhaps the maximum possible m is the maximum such that the total number of segments is divisible by m, and the maximum clique size is >= m.
+
+But I'm not sure.
+
+Alternatively, perhaps the maximum m is the maximum number of segments that can form a clique, and the remaining can be arranged into other cliques.
+
+But again, I'm stuck.
+
+Wait, let's think about the problem differently. For a given m, the segments can be partitioned into m groups of size m each, each group being a clique.
+
+So, for each group of m segments, all must lie within some interval [a, b], and all pairwise overlaps.
+
+So, for each group, the maximum l_i is <= b, and the minimum r_i is >= a.
+
+But how can we model this.
+
+Alternatively, for a group, all segments must lie within some interval [a, b].
+
+So, the maximum l_i in the group is >= a, and the minimum r_i is <= b.
+
+So, the group's a is min(l_i) and the group's b is max(r_i).
+
+Thus, for each group, the interval [a, b] is determined by the group.
+
+So, the problem is to partition the segments into m such groups, each with their own [a, b].
+
+The question is, what is the maximum m where such a partition exists.
+
+Hmm.
+
+Another idea: for each possible m, compute the maximum number of segments that can form a clique of size m.
+
+But that's not sufficient because the entire set must be partitioned into m groups, each of size m, and each group is a clique.
+
+So, perhaps the maximum m is the maximum number of segments that can form a clique, and the remaining can be arranged into other cliques of the same size.
+
+Alternatively, perhaps the maximum m is the maximum number of segments that can form a clique, and the total count is a multiple of m.
+
+But again, I'm not sure.
+
+Wait, perhaps the maximum m is the maximum number of segments that can form a clique, and n is at least m, and n is a multiple of m.
+
+But this may not always hold.
+
+Wait, let's take an example.
+
+Suppose n=4, and the segments are [1,3], [2,4], [3,5], [4,6]. All segments are contained within [1,6], so they form a clique of size 4. So m=4 is possible.
+
+But if n=5, and the maximum clique size is 4, then m can't be 5 because 5 is not a multiple of 4.
+
+So, the maximum m would be 4, but 5/4 is 1.25, which is not integer. So, perhaps m is the largest divisor of n that is less than or equal to the maximum clique size.
+
+But how to find that.
+
+Alternatively, the maximum m is the maximum number such that the maximum clique size is >= m, and n is a multiple of m.
+
+Wait, but for n=6 and maximum clique size 3, the maximum m would be 3.
+
+But for n=6, the maximum clique size is 4, then m can be 3 (since 6/3=2, but 4 >=3, so 3 is possible).
+
+Wait, but I'm not sure.
+
+Hmm.
+
+Perhaps the way to proceed is as follows:
+
+Compute s, the maximum clique size of the overlap graph.
+
+Then, for all possible m's that are divisors of n and m <= s, the maximum possible m is the maximum such m.
+
+But how to compute s.
+
+Computing s is the maximum number of segments that all pairwise overlap.
+
+So, to compute s, we can compute the maximum number of segments that all have overlapping intervals.
+
+This can be done by sorting the segments by their l_i, and for each i, find the maximum number of segments j such that r_i >= l_j.
+
+Wait, another approach: for each segment, find the maximum number of segments that overlap with it, but this is per segment, not per group.
+
+Alternatively, perhaps the maximum clique size is the maximum number of segments that have all their intervals overlapping at a single point.
+
+Wait, for example, if all segments have l_i <= x and r_i >= x for some x, then all of them overlap at x.
+
+But the maximum number of such segments is the maximum number of such intervals.
+
+So, the maximum clique size is the maximum number of such overlapping intervals.
+
+So, the way to compute s is to find the maximum number of segments that have their intervals overlapping at a single point.
+
+How to compute this.
+
+This is a standard problem in interval scheduling.
+
+The idea is to find the point x where the maximum number of segments have l_i <= x and r_i >=x.
+
+This is equivalent to finding the point x that is covered by the maximum number of intervals.
+
+So, the maximum clique size s is the maximum number of overlapping segments at any point x.
+
+So, the plan is:
+
+- For each segment, find all possible x's where it's a point where it overlaps with other segments.
+
+But that's O(n^2), which is not feasible.
+
+Instead, the standard approach to find the maximum number of overlapping intervals is as follows:
+
+Sort the segments by their start points.
+
+Then, for each segment, keep track of the end points. For example, for each position in the sorted list, we can keep a list of end points, and for each end point, track how many segments have that end point.
+
+But that's also O(n^2).
+
+Wait, but perhaps the maximum number of overlapping intervals can be found using a sweep line algorithm.
+
+Yes. The approach is:
+
+1. Sort all the segments by their starting points (l_i).
+
+2. Keep a list of the end points (r_i) of the segments.
+
+3. As we sweep through the segments, we track the number of segments currently active (i.e., overlapping with the current segment).
+
+4. The maximum number of active segments is the maximum clique size s.
+
+So, the steps are:
+
+- Sort the segments by l_i.
+
+- Initialize a list to track the end points.
+
+- For each segment in the sorted list:
+
+   a. Add the segment's end point (r_i) to the list.
+
+   b. Remove the previous end point (if it exists) from the list.
+
+   c. Update the current count of active segments.
+
+   d. Keep track of the maximum active count.
+
+This way, the maximum active count is the maximum clique size s.
+
+Once we have s, the next step is to find the maximum possible m.
+
+But m must satisfy that n is divisible by m, and that the maximum clique size s is >= m.
+
+So, the maximum m is the maximum divisor of n such that m <= s and n is a multiple of m.
+
+Wait, but for example, suppose s is 4 and n is 6. Then, the maximum m is 3 because 6/3=2, and 3<=4.
+
+But perhaps s is 4, and n is 8. Then, m can be 4, since 8 is divisible by 4.
+
+So, the plan is:
+
+Compute s.
+
+Find all divisors of n.
+
+For each divisor d, if d <= s and n is divisible by d, then d is a candidate.
+
+The maximum such d is the answer.
+
+Wait, but this isn't entirely correct.
+
+Because the maximum clique size s may not allow for the entire collection to be partitioned into groups of size m, each of which is a clique.
+
+For example, suppose s=3, but n=7. Then the maximum possible m is 3, but 7/3 is 2.333, which is not integer. So, m can't be 3.
+
+So, the maximum m is the maximum divisor of n that is <= s.
+
+So, the steps are:
+
+Compute s.
+
+Find the maximum divisor of n that is <= s.
+
+Return that divisor as the maximum possible m.
+
+Wait, but is this always correct?
+
+Let's think of an example.
+
+Suppose n=4, s=3.
+
+Then, the maximum m is 1, since 4 is not divisible by 2 or 3.
+
+But 4 can be partitioned into two groups of 2, each a clique.
+
+Wait, but s is 3, which is the maximum clique size.
+
+So, in this case, according to the approach, the maximum m is 1, which is correct.
+
+Another example: n=6, s=4.
+
+Possible divisors of 6 are 1,2,3,6.
+
+The maximum d <=4 is 3.
+
+So, the maximum m is 3.
+
+Is this correct?
+
+The maximum m is 3.
+
+Because 6 is divisible by 3, and s=4 >=3.
+
+So, yes.
+
+So, the approach is:
+
+Compute s as the maximum number of overlapping intervals.
+
+Compute all the divisors of n.
+
+For each d in the divisors sorted in descending order, check if d <= s. The first such d is the maximum m.
+
+But wait, what if s is 2, and n is 4.
+
+Divisors of 4 are 4, 2,1.
+
+Check 4: 4>2 → no.
+
+Check 2: 2<=2 → yes. So m=2.
+
+Which is correct.
+
+Another example: n=5, s=3.
+
+Divisors of 5 are 5,1.
+
+Check 5: 5>3 → no.
+
+Check 1: 1<=3 → yes. So m=1.
+
+Which is correct.
+
+Another example: n=6, s=4.
+
+Divisors are 6,3,2,1.
+
+Check 6: 6>4 → no.
+
+Check 3: yes.
+
+So m=3.
+
+Which is correct.
+
+Another example: n=8, s=5.
+
+Divisors: 8,4,2,1.
+
+Check 8>5 → no.
+
+4<=5 → yes. So m=4.
+
+Which is correct because 8/4=2, and each group is 4 segments.
+
+Another example: n=12, s=5.
+
+Divisors of 12:12, 6,4,3,2,1.
+
+Check 12>5 → no.
+
+6>5 → no.
+
+4<=5 → yes. So m=4.
+
+So, the approach seems to work.
+
+So, the steps to solve the problem are:
+
+For each test case:
+
+1. Read n, l, r.
+
+2. Sort the segments by their l_i.
+
+3. Use a sweep line algorithm to compute the maximum number of overlapping intervals, which is s.
+
+4. Compute all the divisors of n.
+
+5. For each divisor d in the list of divisors, sorted in descending order, check if d <= s. The first such d is the maximum m.
+
+6. Output m.
+
+But wait, are there any cases where this approach would fail?
+
+For example, suppose n=6, s=3.
+
+The maximum m is 3. Which is correct.
+
+Another example: n=6, s=4.
+
+The maximum m is 3.
+
+Another example: n=6, s=5.
+
+The maximum m is 3, because 6/3=2, and 3<=5.
+
+Yes.
+
+But what if s is 5, and n is 10.
+
+Divisors of 10 are 10,5,2,1.
+
+Check 10>5 → no.
+
+5<=5 → yes. So m=5.
+
+Which allows 2 groups of 5, each a clique.
+
+But wait, can all 10 segments be partitioned into two groups, each of 5 segments, each group being a clique?
+
+Yes, because s=5. So, yes.
+
+So, the approach seems correct.
+
+But what about the case where s is 4, n=8.
+
+The maximum m is 4.
+
+Which is correct.
+
+Another case: s=4, n=7.
+
+Divisors are 7,1.
+
+Check 7>4 → no.
+
+1<=4 → yes. So m=1.
+
+Which is correct, because we can't form any group of size 2 or 4.
+
+But wait, n=7, s=4.
+
+We can't have any group larger than 1, because the maximum possible m is 1.
+
+So, the approach is correct.
+
+So, the plan is:
+
+Implement the steps as follows.
+
+Now, the code.
+
+First, for each test case, read n, l, r.
+
+Then, sort the segments by l_i.
+
+Then, compute s.
+
+To compute s, use a sweep line algorithm.
+
+Initialize a list to track the end points.
+
+Wait, but for large n (3e

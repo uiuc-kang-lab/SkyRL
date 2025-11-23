@@ -1,0 +1,39 @@
+1
+11
+Okay, so I've got this problem here about Petya buying chocolate eggs, each containing a toy car. The vendor says there are five different kinds, but Petya can't tell which is inside just by looking. The question is, what's the minimum number of eggs Petya needs to buy to be guaranteed to have three cars of the same kind, no matter which kind it is.
+
+Hmm, let me think. This seems like a combinatorics problem, maybe something to do with the pigeonhole principle. The pigeonhole principle is that if you have more pigeons than pigeonholes, at least one pigeonhole has more than one pigeon. But here, we're looking for three cars of the same kind, so it's a bit different.
+
+I remember that when you want to guarantee a certain number in each category, you have to consider the worst-case scenario. So, in this case, Petya wants to make sure that no matter how the cars are distributed among the eggs, he'll have at least three of one kind.
+
+Let me break it down. There are five different toy cars. Let's call them Car 1, Car 2, Car 3, Car 4, and Car 5. Petya is buying eggs one by one, and each time he gets a random car.
+
+The worst case would be that Petya gets as many cars as possible without getting three of any kind. So, he would try to get as many cars as he can without having three of any one kind. That means he would get two cars of each kind, right? Because if he gets two of each, that's five kinds times two, which is ten cars.
+
+But wait, if he gets ten cars, he could have two of each kind. But the question is asking for three cars of the same kind. So, if he gets ten cars, he might have two of each, but he might also have one extra that makes it three in one kind. Or does he?
+
+Wait, no. If he gets two of each kind, that's ten cars, and he doesn't have three of any kind. So, he needs to buy one more to make it eleven cars. But let's think again.
+
+Actually, if he gets ten cars, each kind has two. If he buys one more, that makes eleven cars. Now, since there are only five kinds, by the pigeonhole principle, if you have eleven cars and five kinds, at least one kind must have at least three cars. Because 11 divided by 5 is 2 with a remainder of 1, so one of them must have three.
+
+Wait, but hold on. Let me make sure.
+
+The formula for the minimum number to guarantee at least k items in one category when there are n categories is (k-1)*n + 1. So, here, k is 3 and n is 5. So, (3-1)*5 + 1 = 2*5 + 1 = 11.
+
+So, the minimum number of eggs Petya needs to buy is 11.
+
+But let me verify this. If he buys 10 eggs, he could have two of each kind, so no three of any kind. But if he buys 11, no matter how he distributes them, one kind must have at least three. That's because 11 divided by 5 is 2 with a remainder of 1, so one kind will have 3.
+
+Yes, that makes sense. So, the answer should be 11.
+
+**Final Answer**
+The minimum number of chocolate eggs Petya must buy is \boxed{11}.
+</think>
+
+To determine the minimum number of "Kinder Surprise" chocolate eggs Petya must buy to be guaranteed to have three cars of the same kind, we can use the pigeonhole principle. 
+
+Petya needs to ensure that regardless of which kind of toy car he gets, he will have at least three of one kind. The worst-case scenario is that he gets as many cars as possible without having three of any kind, which means he gets two cars of each kind. Since there are five different kinds of toy cars, this would require buying \(5 \times 2 = 10\) eggs. 
+
+If Petya buys one more egg (making it 11 eggs), by the pigeonhole principle, one of the kinds must have at least three cars. This is because 11 divided by 5 is 2 with a remainder of 1, so one of the kinds will have 3.
+
+Thus, the minimum number of chocolate eggs Petya must buy is \(\boxed{11}\).<｜end▁of▁sentence｜>

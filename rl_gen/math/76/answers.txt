@@ -1,0 +1,76 @@
+1
+4
+Okay, so I need to find the largest positive integer \( n \) such that \(\sin^n x + \cos^n x \ge \frac{2}{n}\) for all real numbers \( x \). Hmm, let me break this down step by step.
+
+First, I know that both \(\sin x\) and \(\cos x\) range between -1 and 1 for all real \( x \). But since we're raising them to the power of \( n \), which is a positive integer, the signs might affect the result. However, because we're adding \(\sin^n x\) and \(\cos^n x\), and both are raised to an even power if \( n \) is even, they will be non-negative. If \( n \) is odd, they could be positive or negative, but since we're adding them, the negative might cancel out. But to be safe, maybe I should consider both cases.
+
+Wait, but the inequality must hold for all real \( x \). So, I need to find the maximum \( n \) such that the minimum value of \(\sin^n x + \cos^n x\) is at least \( \frac{2}{n} \).
+
+Let me think about the behavior of \(\sin^n x + \cos^n x\). When \( x \) is such that \(\sin x = \cos x = \frac{\sqrt{2}}{2}\), which is 45 degrees, then both terms are equal, and their sum is \( 2 \left( \frac{\sqrt{2}}{2} \right)^n \). This might be the minimum or maximum value, I'm not sure yet.
+
+Also, when \( x \) approaches 0 or \( \pi/2 \), one of the sine or cosine terms approaches 0, and the other approaches 1. So, in those cases, \(\sin^n x + \cos^n x\) approaches 1. So, for large \( n \), this sum approaches 1, which is good because we need it to be at least \( \frac{2}{n} \), which becomes smaller as \( n \) increases.
+
+But I need to find the largest \( n \) such that even in the worst case, the sum is at least \( \frac{2}{n} \). So, perhaps the minimum occurs at some other \( x \) value.
+
+Let me consider \( n = 2 \) first, just to see if it works. For \( n = 2 \), \(\sin^2 x + \cos^2 x = 1 \), which is definitely greater than \( \frac{2}{2} = 1 \). So, equality holds here.
+
+For \( n = 3 \), let's see. At \( x = 45^\circ \), \(\sin^3 x + \cos^3 x = 2 \left( \frac{\sqrt{2}}{2} \right)^3 = 2 \cdot \frac{2^{1.5}}{8} = 2 \cdot \frac{\sqrt{2}}{4} = \frac{\sqrt{2}}{2} \approx 0.707 \). Now, \( \frac{2}{3} \approx 0.666 \). So, 0.707 >= 0.666, which holds.
+
+What about \( n = 4 \)? At \( x = 45^\circ \), \(\sin^4 x + \cos^4 x = 2 \left( \frac{\sqrt{2}}{2} \right)^4 = 2 \cdot \frac{4}{16} = 2 \cdot \frac{1}{4} = 0.5 \). Now, \( \frac{2}{4} = 0.5 \), so 0.5 >= 0.5, which holds.
+
+For \( n = 5 \), at \( x = 45^\circ \), \(\sin^5 x + \cos^5 x = 2 \left( \frac{\sqrt{2}}{2} \right)^5 = 2 \cdot \frac{4 \sqrt{2}}{32} = 2 \cdot \frac{\sqrt{2}}{8} = \frac{\sqrt{2}}{4} \approx 0.3535 \). Now, \( \frac{2}{5} = 0.4 \). So, 0.3535 < 0.4, which does not hold. Therefore, \( n = 5 \) is too large.
+
+Wait, but maybe the minimum occurs elsewhere? Let me check \( n = 4 \) again. At \( x = 0 \), \(\sin^4 0 + \cos^4 0 = 0 + 1 = 1 \), which is greater than \( \frac{2}{4} = 0.5 \). At \( x = \pi/4 \), we already saw it's 0.5, which equals \( \frac{2}{4} \). So, perhaps \( n = 4 \) is the largest where the minimum is exactly \( \frac{2}{n} \).
+
+But let me check \( n = 3 \) again. At \( x = 0 \), it's 1 >= 0.666, which holds. At \( x = \pi/4 \), it's 0.707 >= 0.666, which holds. So, maybe \( n = 3 \) also works.
+
+Wait, but the question is to find the largest \( n \) such that the inequality holds for all \( x \). So, if \( n = 4 \) works, and \( n = 5 \) does not, then the answer should be \( n = 4 \).
+
+But let me double-check \( n = 4 \). At \( x = \pi/6 \), \(\sin^4 \pi/6 + \cos^4 \pi/6 = \left( \frac{1}{2} \right)^4 + \left( \frac{\sqrt{3}}{2} \right)^4 = \frac{1}{16} + \frac{9}{16} = \frac{10}{16} = 0.625 \). Now, \( \frac{2}{4} = 0.5 \), so 0.625 >= 0.5, which holds.
+
+At \( x = \pi/3 \), it's the same as \( \pi/6 \), so 0.625 >= 0.5, which holds.
+
+At \( x = \pi/4 \), it's 0.5 >= 0.5, which holds.
+
+So, it seems that \( n = 4 \) is the largest where the inequality holds for all \( x \).
+
+Wait, but let me think about \( n = 3 \) again. At \( x = \pi/6 \), it's 0.707 >= 0.666, which holds. At \( x = \pi/2 \), it's 1 >= 0.6, which holds. So, perhaps \( n = 3 \) also works, but we need the largest \( n \), so \( n = 4 \) is larger.
+
+Wait, but let me check \( n = 4 \) at \( x = \pi/6 \), which is 0.625 >= 0.5, which holds. So, indeed, \( n = 4 \) is the largest where the inequality holds for all \( x \).
+
+Wait, but let me think if there's any \( x \) where \( \sin^n x + \cos^n x \) could be less than \( \frac{2}{n} \) for \( n = 4 \). At \( x = \pi/4 \), it's exactly 0.5, which is equal to \( \frac{2}{4} \). At other points, it's higher, so yes, \( n = 4 \) is the largest.
+
+So, the answer should be \( n = 4 \).
+</think>
+
+To find the largest positive integer \( n \) such that \(\sin^n x + \cos^n x \ge \frac{2}{n}\) for all real numbers \( x \), we analyze the behavior of the function for different values of \( n \).
+
+1. **For \( n = 2 \)**:
+   \[
+   \sin^2 x + \cos^2 x = 1 \ge \frac{2}{2} = 1
+   \]
+   Equality holds.
+
+2. **For \( n = 3 \)**:
+   \[
+   \sin^3 x + \cos^3 x \text{ has a minimum value of } \frac{\sqrt{2}}{2} \approx 0.707 \ge \frac{2}{3} \approx 0.666
+   \]
+   The inequality holds.
+
+3. **For \( n = 4 \)**:
+   \[
+   \sin^4 x + \cos^4 x \text{ has a minimum value of } 0.5 \ge \frac{2}{4} = 0.5
+   \]
+   Equality holds.
+
+4. **For \( n = 5 \)**:
+   \[
+   \sin^5 x + \cos^5 x \text{ has a minimum value of } \frac{\sqrt{2}}{4} \approx 0.3535 < \frac{2}{5} = 0.4
+   \]
+   The inequality does not hold.
+
+Thus, the largest \( n \) for which the inequality holds for all \( x \) is \( n = 4 \).
+
+\[
+\boxed{4}
+\]<｜end▁of▁sentence｜>

@@ -1,0 +1,702 @@
+0
+Okay, so I've got this problem to solve, and I'm a bit stuck. Let me try to break it down.
+
+So, the problem is about an array where Mocha can perform certain operations to make all elements the same. The goal is to find the maximum possible value of this same number after performing some operations.
+
+The operation allowed is choosing a subarray, finding its median, and setting all elements in that subarray to this median. And this can be done multiple times until all elements are the same.
+
+Hmm. So, what's the strategy here? I need to find the maximum possible value that can be achieved by performing these operations.
+
+Let me think about the example given. The initial array is [1,2,3,4,5]. The median of (3,4) is 3, so the array becomes [1,2,3,3,5]. Then, if I choose (1,3), the median is 2, so the array becomes [2,2,2,4,5]. Or maybe there's another way to do it to get a higher number.
+
+Wait, but how do I decide which subarrays to choose? It seems like each operation can potentially increase or decrease the elements. So, the key is to find the largest possible median that can propagate through the array.
+
+I think the maximum possible value is the maximum between the current maximum and the median of the entire array. Because, perhaps, applying the operation to the entire array once will make all elements equal to the median of the array, which could be higher than the current maximum.
+
+Wait, but applying the operation to the entire array once would set all elements to the median of the array. So, the new array would be [median, median, ..., median]. But wait, no—because the median of the array is the middle element if the length is odd. For example, in the array [1,2,3,4,5], the median is 3. So, the new array would be [3,3,3,3,3]. So, the maximum possible value would be 3.
+
+But wait, in the example given, applying a different operation first leads to a higher value. So that approach might not be optimal.
+
+Wait, no. Let me think again. The initial array is [1,2,3,4,5]. The median is 3. So, applying the operation to the entire array once would set all elements to 3, making the array [3,3,3,3,3]. So, maximum is 3.
+
+But the example in the problem statement shows that in the first operation, choosing (3,4) gives a higher value, but that's because the array is being modified in a way that propagates the median.
+
+Wait, no. Let me recalculate. Oh wait, in the example, when we choose (3,4), the subarray is [3,4], median is 3. So, the array becomes [1,2,3,3,5]. Then, if we choose (1,3), the subarray is [1,2,3], median is 2. So, setting all to 2 gives [2,2,2,4,5]. But that's not the maximum.
+
+Hmm, so maybe the maximum is not necessarily the median of the entire array. Or perhaps I'm missing something.
+
+Wait, another approach: perhaps the maximum possible value is the maximum element in the array. But that's not possible unless we can set all elements to that maximum. But how?
+
+Wait, can we ever set all elements to a value higher than the current maximum? No, because the array can only have elements from the original array. So, the maximum possible value is the maximum of the initial array. But can we reach that?
+
+Wait, in the initial array [1,2,3,4,5], the maximum is 5. So, can we turn all elements into 5?
+
+Only if all elements are 5. Which is not possible unless the original array is all 5s. In this case, it's not. So, that's not possible.
+
+Wait, so perhaps the maximum possible value is the maximum between the original maximum and the median of the entire array. Because, by applying the operation to the entire array once, we can set all elements to the median. But wait, that would only be possible if the median is equal to the maximum.
+
+Alternatively, maybe the maximum possible value is the maximum between the current maximum and the median of the entire array.
+
+Wait, but in the example, the initial array's maximum is 5, and the median is 3. So, the maximum possible value would be 5. But in the initial example, Mocha can't reach 5. So, that suggests that this approach is incorrect.
+
+Hmm, so maybe the maximum possible value is the highest possible median that can be achieved across the array. So, perhaps the answer is the maximum of the current array and the maximum median that can be achieved through some operations.
+
+But how do I model this?
+
+Let me think about the operation. Each time, I can choose a subarray, find the median, and set all elements in that subarray to that median. So, the subarray can be any range, and the median is determined by the subarray.
+
+Wait, but each operation affects a range, and the median is the middle element after sorting. So, perhaps the best strategy is to choose the largest possible median that can be applied to a subarray, and then propagate that.
+
+But I'm not sure. Maybe I should think about what the maximum possible value can be.
+
+The maximum possible value is either the maximum element in the array, or the maximum of all possible medians that can be achieved through the operations.
+
+So, perhaps the maximum possible value is the maximum element in the array, unless there exists a way to set all elements to a higher value, which is not possible because the array's maximum is fixed.
+
+Wait, no. Because the array can't have a value higher than the maximum element in the initial array. So, the maximum possible value is at most the maximum of the initial array.
+
+Wait, but wait. Let's think about this. Suppose the initial array has maximum M. Can I reach M? For example, if the array is [5,5,5], then yes. But if the array is [5,4,5], then the maximum is 5. Can I reach 5? Yes, by selecting the entire array, finding the median (5), and setting all to 5.
+
+So, that works.
+
+But what if the array is [5, 4, 3]. Then, the maximum is 5. Can I make all elements 5? No, because the initial array doesn't have 5 as the median of the entire array. Wait, the entire array is [5,4,3]. The median is 4. So, if I select the entire array, set to 4, the array becomes [4,4,4]. Then, the maximum is 4.
+
+But wait, is there a way to reach 5?
+
+Hmm, no. Because the initial array doesn't have a median higher than 4. So, it's impossible.
+
+So, the maximum possible is the maximum between the initial maximum and the median after some operations.
+
+Wait, but in the example where the initial array is [1,2,3,4,5], the maximum is 5. The median of the entire array is 3. So, applying the operation once would set all elements to 3, which is less than 5. So, the maximum is 3.
+
+But wait, the initial array's maximum is 5, but the median is 3. So, the maximum possible is 5 only if we can make all elements 5.
+
+But that's not possible because the initial array doesn't have a median of 5. So, the maximum is 3.
+
+Wait, but in the example given, when they perform the first operation on (3,4), the array becomes [1,2,3,3,5]. Then, applying the operation on (1,3) gives [2,2,2,4,5]. So, the maximum is 5. So, in this case, they managed to get 5 because they first performed operations to create a larger median.
+
+Wait, but how? Because the initial array's median is 3. So, after the first operation, the array's median is 3 again. Then, when you choose a subarray that includes the new 3s, you can set them to 2, but that doesn't help. So, perhaps the way Mocha does it is to first create a larger median.
+
+So, perhaps the maximum possible value is the maximum between the initial maximum and the maximum possible median that can be achieved through the operations.
+
+But how to model this.
+
+Wait, perhaps the maximum possible value is the maximum between the initial maximum and the median of the entire array. Because, in the first example, the initial maximum is 5, and the median is 3, so maximum is 5. But in that example, Mocha couldn't reach 5. So, that approach is incorrect.
+
+Wait, that's confusing. So, what's the correct approach?
+
+Let me think differently. The key is that each operation can only change elements to the median of a subarray. So, perhaps the maximum possible value is the maximum element in the array, but only if it's possible to propagate it through the array.
+
+Wait, but in the example, the initial array's maximum is 5, but the median is 3. So, when you perform the first operation on (3,4), you set that subarray to 3. Then, when you set (1,3) to 2, which is less than 3, but then the array is [2,2,2,4,5]. So, the maximum is 5, but it's not the initial maximum.
+
+So, perhaps the maximum possible is the maximum of all possible medians that can be achieved through the operations. So, to find the maximum, we need to find the largest possible median that can be achieved through any sequence of operations.
+
+But how do we find that.
+
+Alternatively, perhaps the maximum possible value is the maximum among the initial array's maximum and the median of the entire array.
+
+Wait, but in the example, the initial array's maximum is 5, and the median is 3. So, the maximum possible value would be 5, but we can't reach it. So, that approach is wrong.
+
+Hmm.
+
+Alternatively, perhaps the maximum possible value is the maximum of the initial array's maximum and the maximum possible median of any subarray of the array.
+
+Because, to achieve a higher value, you need to have a subarray whose median is higher than the current maximum.
+
+But in the example, the initial array's maximum is 5, but the median is 3, which is lower. So, how can you get 5?
+
+Wait, perhaps not by choosing the entire array. Maybe by choosing a subarray that includes the 5 and other elements.
+
+Wait, let's think. If I have a subarray that includes the 5 and elements that are lower. The median of that subarray would be the middle element. So, if the subarray is [5,4,3], the median is 4. So, setting all to 4. That's lower than 5.
+
+So, perhaps the median of some subarray is higher than the initial maximum.
+
+Wait, but that's impossible because the maximum is the largest element. So, any subarray containing the maximum element will have a median at least as high as the maximum.
+
+Wait, no. For example, if the subarray is [5,5,5], then the median is 5. So, setting all to 5.
+
+But if the subarray is [5,4,5], the median is 5. So, setting all elements to 5.
+
+So, in that case, the maximum can be achieved.
+
+So, perhaps the maximum possible value is the maximum between the initial array's maximum and the maximum median of any subarray.
+
+So, the approach is:
+
+1. Find the maximum element in the array.
+
+2. For each possible subarray, compute its median.
+
+3. Find the maximum median among all possible subarrays.
+
+4. The answer is the maximum between the initial maximum and this maximum median.
+
+Wait, but how to compute the maximum median of any subarray efficiently.
+
+Because for n up to 1e5, we can't compute the median for every subarray.
+
+Hmm, that's a problem.
+
+Wait, but perhaps the maximum median is the maximum of all possible medians of any subarrays. So, to find that, perhaps the maximum median is the maximum element in the array.
+
+Because, for any subarray containing the maximum element, the median is at least the maximum element if the subarray is of odd length, but that's not possible. Wait, no.
+
+Wait, for example, subarray [5,5], median is 5. Subarray [5,5,5] median is 5. Subarray [5,4,5], median is 5. So, in all cases, the median is 5.
+
+So, the maximum possible median is 5.
+
+So, the answer is 5.
+
+But in the example given, the initial array's maximum is 5, and the median is 3. So, the maximum possible value is 5.
+
+Wait, but in the example, the initial array's maximum is 5, but the median is 3. So, how did they reach 5?
+
+Ah, because when they first performed the operation on (3,4), the subarray [3,4] has a median of 3. So, the array becomes [1,2,3,3,5]. So, the maximum is 5, but it's not the initial maximum.
+
+So, the maximum possible value is 5, which is the initial maximum.
+
+Wait, but that's because the initial array's maximum is 5, and after an operation, it remains 5.
+
+So, the maximum possible is 5.
+
+So, perhaps the maximum possible value is the maximum of the initial maximum and the maximum median of any subarray.
+
+So, the algorithm is:
+
+For each test case:
+
+- Find the initial maximum value, M.
+
+- For each subarray, compute its median and find the maximum median.
+
+- The answer is the maximum between M and the maximum median.
+
+So, the problem reduces to finding the maximum median of any subarray.
+
+But how to compute that efficiently.
+
+Hmm. Because for each subarray, we can't compute the median for every possible subarray, which is O(n^2), which is not feasible for n up to 1e5.
+
+So, we need a way to find the maximum median of any subarray in O(n) or O(n log n) time.
+
+What's the maximum possible median of any subarray?
+
+Well, for a given subarray, the median is the element in the middle when the subarray is sorted.
+
+So, the maximum median is the largest possible element that can be the median of some subarray.
+
+For example, in the array [1,2,3,4,5], the maximum median is 3, which is the median of the entire array.
+
+Wait, but in the example, the initial array's maximum is 5, and the maximum median is 3. So, the answer is 5.
+
+So, perhaps the maximum possible value is the maximum between the initial maximum and the maximum median.
+
+So, the steps are:
+
+1. Compute the initial maximum of the array.
+
+2. For all possible subarrays, compute their medians, find the maximum median.
+
+3. The answer is the maximum between the initial maximum and the maximum median.
+
+So, the problem now is how to compute the maximum median of any subarray.
+
+I need to find an efficient way to compute this.
+
+Wait, what's the maximum possible median for any subarray? It's the maximum element in the array, but only if there exists a subarray where the median is that element.
+
+Is that possible?
+
+Yes. For example, in the array [5,4,5], the subarray [5,4,5] has a median of 5, which is the maximum of the array.
+
+So, the maximum median is 5.
+
+So, the answer is 5.
+
+So, the algorithm is to find the maximum between the initial maximum and the maximum median of any subarray.
+
+So, the question is, how to find the maximum median of any subarray.
+
+Wait, but the maximum possible median can be any element in the array, but it's not necessarily the maximum element of the entire array.
+
+For example, in the array [5,4,3], the maximum median is 4 (the median of the entire array). So, the maximum possible value is 5, but we can't reach it because the initial array's maximum is 5, but the median of the entire array is 4. So, perhaps the answer is 5.
+
+Wait, no. Because in that case, the initial array is [5,4,3]. So, the maximum is 5. Can we set all elements to 5?
+
+No, because the initial subarray [5,4,3] has a median of 4. So, after the first operation, the array becomes [4,4,4]. So, the maximum is 4, which is less than the initial maximum of 5.
+
+So, in that case, the maximum possible value is 4.
+
+Wait, but that's not possible because 5 is the maximum element. So, perhaps the maximum possible is the maximum element, but only if the maximum element can be the median of a subarray that includes it.
+
+Wait, for example, if the subarray is [5,5], the median is 5. So, if the array has two 5s, then the maximum median is 5.
+
+So, the maximum possible value is the maximum between the initial maximum and the maximum median.
+
+So, the algorithm is:
+
+Compute the initial maximum.
+
+Compute all possible medians of subarrays and find the maximum.
+
+The answer is the maximum between these two.
+
+So, the key is to find the maximum median of any subarray.
+
+Now, how to compute this efficiently.
+
+Hmm.
+
+I recall that the maximum median of any subarray can be found by considering that for a subarray of size 1, the median is itself. For larger subarrays, the median is the middle element after sorting.
+
+But for a subarray, the median is the element at position (m+1)/2 after sorting, where m is the length of the subarray.
+
+But this seems computationally expensive.
+
+Wait, but perhaps the maximum median is the maximum element in the array, provided that the element can be the median of some subarray.
+
+But is that always possible?
+
+Yes. For example, any element can be the median of a subarray that includes it and has an appropriate number of elements on either side.
+
+Wait, but how.
+
+Alternatively, think about the maximum element in the array.
+
+If the array has an odd length, then the subarray consisting of just that element has a median of itself.
+
+So, in that case, the maximum median is the maximum element.
+
+If the array has even length, perhaps there's a way to create a subarray that includes this maximum and has an odd length, making it the median.
+
+For example, suppose the array length is even, say n=4. The array is [1,3,2,4]. The maximum is 4.
+
+The subarray [3,2,4] has median 3. Not helpful.
+
+But the subarray [1,3,2,4] has a median of (3+2)/2? No, wait, when sorted, it's [1,2,3,4], so the median is the second element, which is 2. So, that's not helpful.
+
+Wait, but maybe the subarray [4,2,3], which is not contiguous. Wait, no, the subarray must be contiguous.
+
+So, perhaps for even n, the maximum element can be part of a subarray where the median is itself.
+
+For example, in the array [5, 4, 3], the subarray [5,4,3] has a median of 4. So, that's not helpful. But the subarray [5,4,5] has a median of 5, which is the maximum.
+
+Wait, but in that case, the subarray is [5,4,5], which is allowed as it's a contiguous subarray.
+
+So, if the array has at least three elements, and the maximum appears at least once, then there exists a subarray that includes it and has more elements on one side, so that the median can be the maximum.
+
+Wait, perhaps not always. For example, if the array is [5,5,5,5], then any subarray will have a median of 5, which is the maximum.
+
+So, in this case, the maximum median is 5.
+
+So, perhaps the maximum median can be the maximum element of the array, provided that the array has at least one element that can be the median of a subarray of any length.
+
+Which is always true, except when the array has only one element.
+
+Wait, but the array has at least two elements.
+
+So, perhaps the maximum median is the maximum element in the array.
+
+Wait, but in the example given earlier where the array is [5,4,5], the maximum is 5. The subarray [5,4,5] has a median of 5.
+
+So, the maximum median is 5.
+
+So, perhaps the maximum median of any subarray is equal to the maximum element of the array.
+
+Because, for any subarray that includes the maximum element, and has an odd or even length, the median can be the maximum.
+
+Wait, let me think about a subarray of length 2.
+
+If the subarray is [5,4], the median is 4.
+
+If the subarray is [4,5], the median is 4.
+
+So, in this case, the maximum median is 5, but it's not possible because the subarray [5,4,5] has a median of 5.
+
+So, the maximum median is 5.
+
+So, the maximum median is the maximum element of the array.
+
+Wait, but in the subarray [5,5], the median is 5.
+
+So, for any subarray that includes the maximum element and has at least one more element, the median can be the maximum.
+
+Wait, no. For example, in the array [5,4,5], the subarray [5] has median 5, but that's a single element.
+
+Wait, but the problem allows choosing any subarray, including single elements.
+
+So, for any subarray that includes the maximum element, the median can be at least that element, depending on the subarray.
+
+So, the maximum median is the maximum element.
+
+Wait, perhaps that's the case.
+
+So, the maximum median of any subarray is the maximum element of the array.
+
+Because, for any subarray that includes the maximum element, the median can be the maximum element.
+
+So, the maximum possible value is the maximum between the initial maximum and the maximum element of the array.
+
+Wait, but the initial array's maximum is the maximum element, so the maximum possible value is the initial maximum.
+
+But in the example given, the initial array's maximum is 5, but the maximum possible value is 5, which is the same.
+
+So, perhaps the maximum possible value is the maximum element of the array.
+
+Wait, but in the example given, Mocha can reach 5. So, that's the correct answer.
+
+Wait, but in the problem statement, the example shows that after some operations, the array becomes [2,2,2,4,5]. So, the maximum is 5. So, the answer is 5.
+
+So, perhaps the maximum possible value is the maximum of the array.
+
+Wait, but that can't be the case in all scenarios.
+
+Wait, let's think of a test case where the maximum is not reachable.
+
+For example, suppose the array is [3,1,3].
+
+The initial maximum is 3.
+
+The median of the entire array is 3. So, the maximum possible value is 3.
+
+But can we reach a higher value?
+
+No, because the initial array's maximum is 3, and any operation can't create a higher value.
+
+So, yes, the answer is 3.
+
+Another example: array [4,3,5].
+
+The initial maximum is 5.
+
+The median of the entire array is 4. So, the maximum possible value is 5.
+
+So, the answer is 5.
+
+Wait, but can we reach 5?
+
+Yes, because the initial array is [4,3,5]. The median is 4. So, if we choose the entire array, set to 4. Then, the array becomes [4,4,4]. So, the maximum is 4, which is less than 5.
+
+So, in this case, the maximum possible value is 4.
+
+But according to the earlier reasoning, the maximum possible value is 5, which is the initial maximum.
+
+So, that's a problem.
+
+Wait, so the earlier reasoning is flawed. Because in this case, the maximum possible value is 4, not 5.
+
+So, my earlier conclusion is incorrect.
+
+So, the maximum possible value is not always the initial maximum. It depends on whether the array can be manipulated to reach a value higher than the initial maximum.
+
+Hmm.
+
+So, what's the correct approach.
+
+So, the problem is to find the maximum possible value of the array after performing some operations. The operations can only set elements to the median of a subarray.
+
+So, in the example [4,3,5], the maximum possible value is the maximum between the initial maximum (5) and the maximum median of any subarray.
+
+So, what is the maximum median of any subarray in this array?
+
+Let's compute the maximum median.
+
+Possible subarrays:
+
+- [4,3]: median is 3.
+
+- [4,3,5]: median is 4.
+
+- [3,5]: median is 3.
+
+So, the maximum median is 4.
+
+So, the maximum possible value is the maximum between the initial maximum (5) and 4, which is 5.
+
+So, the answer is 5.
+
+But wait, in this case, after performing the operation on the entire array, the array becomes [4,4,4]. The maximum is 4, which is less than the initial maximum of 5.
+
+So, how is the maximum possible value 5?
+
+Because the initial array's maximum is 5, but the median of the entire array is 4, which is less than 5.
+
+So, the maximum possible value is 5, but it's not possible to reach it via the operations.
+
+Wait, but how.
+
+Wait, perhaps the initial array's maximum can't be achieved via any operations, but the maximum median of some subarray can be 5.
+
+Wait, but in this case, the subarray [4,3,5] has a median of 4, which is less than 5.
+
+So, perhaps the maximum possible value is 5, but it's not achievable.
+
+So, the answer in this case is 5.
+
+So, the initial reasoning is not correct.
+
+So, the approach is more involved.
+
+Hmm.
+
+So, perhaps the maximum possible value is the maximum element in the array, but only if there exists a subarray that contains it and has a median that is equal to this element.
+
+But in the example [4,3,5], the subarray [4,3,5] has a median of 4, which is less than 5. So, can't reach 5.
+
+So, the maximum possible value is 4 in that case.
+
+Wait, but that's not possible because the initial array's maximum is 5, which is higher than 4.
+
+So, the maximum possible value is 5 only if there's a way to make all elements 5.
+
+But in this case, it's not possible.
+
+So, the maximum possible value is the maximum of the initial maximum and the maximum median of any subarray.
+
+But in the example, the maximum median is 4, which is less than the initial maximum of 5. So, the answer is 5.
+
+Wait, but in that case, the maximum possible value is 5, but you can't reach it.
+
+So, perhaps the maximum possible value is the maximum between the initial maximum and the maximum median.
+
+So, in the example, the maximum is 5, which is the initial maximum.
+
+So, the answer is 5.
+
+But wait, in the example, the maximum median is 4, which is less than 5.
+
+So, the maximum between 5 and 4 is 5.
+
+So, the answer is 5.
+
+So, the problem is to compute the maximum between the initial maximum and the maximum median of any subarray.
+
+But in the example, it's 5.
+
+So, perhaps the correct approach is to compute the maximum of the initial maximum and the maximum median of any subarray.
+
+So, the steps are:
+
+1. Compute the initial maximum, M.
+
+2. For all possible subarrays, compute their medians, find the maximum, say, X.
+
+3. The answer is the maximum between M and X.
+
+So, the problem reduces to efficiently computing X.
+
+But how?
+
+I need an efficient way to find X, the maximum median of any subarray.
+
+Hmm.
+
+I remember that for a subarray of even length, the median is the lower middle element when sorted.
+
+So, for a subarray of length m, the median is the element at index (m-1)//2.
+
+So, for a subarray of length 3, it's index 1.
+
+For length 4, it's index 1 (since (4-1)/2 = 1.5, floor is 1).
+
+Wait, in Python, (m-1)//2 for m=3 is 1.
+
+For m=4, it's (4-1)//2 = 1.
+
+Yes.
+
+So, for a subarray of length m, the median is the element at position (m-1)//2 in its sorted version.
+
+But computing this for every possible subarray is O(n^2), which is not feasible.
+
+So, I need a way to find the maximum median without checking all subarrays.
+
+Hmm.
+
+I recall that the maximum median can be found by considering the maximum element in the array, and checking if there exists a subarray where the median is that element.
+
+But how.
+
+Wait, for a subarray of length m, the median is the element at position floor((m-1)/2).
+
+So, for each possible subarray, the median is determined by its length and the position in the subarray.
+
+So, for a subarray of length m, the median is the element at position (m-1)//2.
+
+Thus, to have the maximum median, we need to find a subarray where the element at (m-1)//2 is as large as possible.
+
+Which brings us back to the original problem.
+
+So, perhaps the maximum median is the maximum element in the array, provided that it can be the median of some subarray.
+
+Which is, for each element in the array, can it be the median of some subarray.
+
+If yes, then the maximum median is that element.
+
+So, the problem becomes: for each element in the array, is there a subarray where the element is at position (m-1)//2 in the sorted subarray.
+
+If yes, then that element can be the median.
+
+So, the maximum median is the maximum element that can be the median of some subarray.
+
+So, how to find that.
+
+Hmm.
+
+Wait, for the maximum element to be the median of a subarray of length m, it must be present in that subarray, and at a position (m-1)//2.
+
+So, for a subarray of length m, the median is in position (m-1)//2.
+
+So, for the maximum element to be the median, it must be in a subarray of length m, where (m-1)//2 is the position of the maximum element in the subarray.
+
+So, for example, in the subarray [5,4,5], the median is the middle element, which is 5. So, for a subarray of length 3, the median is at position 1, which is the maximum element.
+
+So, the maximum element can be the median of a subarray.
+
+Similarly, in a subarray of even length, the median is the lower middle element.
+
+So, if the maximum element is present in the subarray, and it's in a position where it's the lower middle element, then it can be the median.
+
+So, perhaps the maximum median is the maximum element in the array, provided that it can be the median of some subarray.
+
+So, the question is, is there a subarray where the maximum element is the median.
+
+If yes, then the maximum median is the maximum element.
+
+If not, then we have to find the next best.
+
+But how to find this.
+
+Alternatively, the maximum median is the maximum element in the array.
+
+Because for any subarray that includes the maximum element, the median can be the maximum element if the subarray is of odd length and the maximum is in the middle, or for even lengths, perhaps it's possible.
+
+Wait, in the example [4,3,5], the maximum is 5.
+
+The subarray [4,3,5] has a median of 4, which is less than 5.
+
+But the subarray [5] has a median of 5.
+
+So, the maximum median is 5.
+
+But in this case, the maximum possible value is 5.
+
+Wait, no, because the initial array is [4,3,5]. The maximum is 5.
+
+But the median of the entire array is 4, which is less than 5.
+
+So, can we perform operations to make all elements 5.
+
+Wait, no. Because the initial array's maximum is 5, but after an operation, the array becomes [4,4,4], which is less than 5.
+
+So, the maximum possible value is 4.
+
+But according to the earlier reasoning, the maximum between M (5) and X (5) is 5, so the answer would be 5.
+
+But that's incorrect because you can't reach 5.
+
+Wait, so what's wrong here.
+
+Ah, perhaps the maximum possible value is the maximum between M and X, but in cases where M is not reachable via any operations, then X is the maximum.
+
+But in the example, X is 5, but M is 5. So, the maximum is 5. But in reality, you can't reach 5.
+
+So, this suggests that the initial reasoning is incorrect.
+
+Hmm.
+
+So, perhaps the maximum possible value is the maximum between M and X, but only if M can be achieved via some operations.
+
+But how to determine if M can be achieved.
+
+Alternatively, perhaps the maximum possible value is the maximum between M and X, but M can't be achieved unless it's possible to create a subarray where the median is M.
+
+But in the example, M is 5, and the subarray [5] has a median of 5. So, it's possible.
+
+So, in that case, the maximum possible value is 5.
+
+Wait, but in that example, the initial array is [4,3,5]. The median of the subarray [5] is 5. So, applying the operation once, the array becomes [5,3,5]. So, the maximum is 5.
+
+So, the answer is 5.
+
+So, in this case, even though the initial array's maximum is 5, the answer is 5.
+
+So, the initial reasoning is correct.
+
+So, the maximum possible value is the maximum between M and X, where X is the maximum median.
+
+So, in the example where M is 5 and X is 5, the answer is 5.
+
+In the example where M is 5 and X is 4, the answer is 5.
+
+In the example where M is 4 and X is 4, the answer is 4.
+
+So, the algorithm is:
+
+Compute the initial maximum M.
+
+Compute X, the maximum median of any subarray.
+
+The answer is the maximum between M and X.
+
+So, the problem now is to compute X.
+
+But how.
+
+Hmm.
+
+I recall that for a subarray of length m, the median is the element at position (m-1)//2.
+
+So, to find a subarray where the median is the maximum element in the array, we need that in that subarray, the maximum element is at position (m-1)//2.
+
+So, for example, in the subarray [5,4,5], the median is 5, which is the maximum.
+
+In the subarray [5,5], the median is 5, which is the maximum.
+
+So, the maximum median is the maximum element of the array, provided that there exists a subarray where this maximum is at position (m-1)//2.
+
+So, the question is, is there a subarray where the maximum element is at position (m-1)//2.
+
+If yes, then X is the maximum element.
+
+If not, then we need to find the next best median.
+
+But how to find that.
+
+Hmm.
+
+So, perhaps the maximum median is the maximum element in the array, unless all elements are the same, in which case X is the same as M.
+
+So, the steps are:
+
+- Check if all elements are the same. If yes, X is the same as M.
+
+- Else, check if there exists a subarray where the maximum element is at position (m-1)//2.
+
+If yes, X is the maximum element.
+
+Else, X is the next best.
+
+But how to compute this.
+
+Alternatively, perhaps the maximum median is the maximum element in the array, except when all elements are the same.
+
+So, the algorithm is:
+
+Compute the initial maximum M.
+
+Compute the maximum element in the array, call it A_max.
+
+If all elements are the same, then X is A_max.
+
+Else, X is A_max.
+
+So, the answer is the maximum between M and X.
+
+Wait, but in the earlier example where the array is [4,3,5], the maximum is 5, and X is 5. So, the answer is 5.
+
+But in the case where the array is [5,4,5], the maximum M is 5, and X is 5.
+
+So, the answer is 5.
+
+But in the case where the array is [5

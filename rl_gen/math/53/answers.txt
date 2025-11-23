@@ -1,0 +1,78 @@
+0
+\frac{1}{4}
+Okay, so I have this problem where I need to find the analytical expression of the odd function f(x) on the interval (0, +∞). I'm given that on the interval (-∞, 0), the function is defined as f(x) = x(1 + x). 
+
+First, I recall that an odd function has the property that f(-x) = -f(x). This means that the function is symmetric about the origin. So, if I know the function on the negative side, I can use this property to find the function on the positive side.
+
+Given that f(x) = x(1 + x) for x < 0, I can start by expressing f(-x) for x > 0. Let's let x be a positive number, then -x is negative. So, f(-x) = (-x)(1 + (-x)) = (-x)(1 - x). 
+
+Now, since f(-x) = -f(x) for an odd function, we have:
+
+f(-x) = -f(x)
+
+Substituting the expression we just found:
+
+(-x)(1 - x) = -f(x)
+
+Now, let's solve for f(x):
+
+-f(x) = (-x)(1 - x)
+
+Multiply both sides by -1:
+
+f(x) = x(1 - x)
+
+So, simplifying that, f(x) = x(1 - x) for x > 0.
+
+Let me double-check this. If I take a positive x, say x = 1, then f(1) should be equal to -f(-1). 
+
+Given f(-1) = (-1)(1 + (-1)) = (-1)(0) = 0. So, f(1) should be -0 = 0. 
+
+Using my derived expression, f(1) = 1(1 - 1) = 0. Correct.
+
+Another test: let x = 2. Then f(-2) = (-2)(1 + (-2)) = (-2)(-1) = 2. So, f(2) should be -f(-2) = -2.
+
+Using my expression, f(2) = 2(1 - 2) = 2(-1) = -2. Correct.
+
+Okay, so the derived expression seems to hold up несколько test cases. Therefore, I confident that the analytical expression of f(x) on (0, +∞) is f(x) = x(1 - x).
+
+Wait, let me write that correctly. f(x) = x(1 - x) can be expanded as f(x) = x - x^2. But the original form is better perhaps, unless the question asks for a specific form.
+
+The question asks to present the answer in LaTeX format, so either form should be acceptable, but perhaps the factored form is better. So, f(x) = x(1 - x).
+
+Let me just确认 the properties again. Yes, it's an odd function, so f(-x) = -f(x). Let's check for x = 1: f(-1) = 0, and -f(1) = -0 = 0. For x = 2: f(-2) = 2, and -f(2) = -(-2) = 2. Correct.
+
+所以我确信我的答案是正确的。
+</think>
+
+Given that the analytical expression of the odd function \( f(x) \) on \( (-\infty, 0) \) is \( f(x) = x(1 + x) \), we need to find the analytical expression of \( f(x) \) on \( (0, +\infty) \).
+
+An odd function satisfies the property \( f(-x) = -f(x) \). For \( x > 0 \), let \( -x \) be a negative number. Then,
+
+\[
+f(-x) = (-x)(1 + (-x)) = (-x)(1 - x)
+\]
+
+Using the property of odd functions,
+
+\[
+f(-x) = -f(x)
+\]
+
+Substituting the expression for \( f(-x) \),
+
+\[
+(-x)(1 - x) = -f(x)
+\]
+
+Solving for \( f(x) \),
+
+\[
+f(x) = x(1 - x)
+\]
+
+Thus, the analytical expression of \( f(x) \) on \( (0, +\infty) \) is:
+
+\[
+\boxed{x(1 - x)}
+\]<｜end▁of▁sentence｜>

@@ -1,0 +1,476 @@
+Okay, I need to solve this problem where I have to choose a subset of games to maximize the expected value of winnings. Let's try to understand the problem step by step.
+
+So, the casino has n games. Each game has a probability p_i of winning and a reward w_i. The rules for choosing the games are that I can play each game at most once. The key is that if I lose any game, I get nothing. So, the expected value is the probability of winning all chosen games multiplied by the sum of their rewards.
+
+Hmm, the goal is to select a subset of these games so that this expected value is maximized. The constraints are that for each individual game, p_i * w_i ≤ 2e5. That's a given, so I don't have to worry about that in my solution.
+
+So, I need to model this as a dynamic programming problem. Let's think about it.
+
+The expected value for a subset S is the product of p_i/100 for each i in S, multiplied by the sum of w_i for each i in S. Let's denote this as E(S) = (product p_i) * (sum w_i) / (100^k), where k is the size of S.
+
+Wait, but 100^k is the same as (100^k), but perhaps it's better to represent the product and sum in terms of exponents. Wait, perhaps I can model the state as the sum of w_i plus the product of p_i's, but that might not be directly helpful.
+
+Alternatively, let's think about the problem in terms of choosing each game or not. The decision for each game depends on whether including it increases the expected value.
+
+Let me think about the DP approach. Maybe we can model the DP state as the sum of p_i's and the sum of w_i's, but that seems too vague. Alternatively, perhaps the DP state can represent the product of p's and the sum of w's.
+
+Wait, let's define dp[i][s] as the maximum expected value achievable by considering the first i games, with a sum of p's equal to s, and the sum of w's equal to t. But that's probably not feasible because the sum s can be up to 100 * 2e5 = 2e7, which is way too big.
+
+Hmm, that's a problem. So, the state needs to be manageable. Maybe we can find a way to represent this more efficiently.
+
+Wait, another angle: the expected value is (product p_i) * (sum w_i) / (100^k). Let me denote the product of p_i's as P and the sum of w_i as W. So, E = (P * W) / (100^k). But for each subset S, P is the product of p_i's in S, and W is the sum of w_i's in S.
+
+Wait, but for a subset S, the sum of p_i's is the product of (p_i/100) for each i in S. Because each p_i is in the denominator. So, if I have a subset S, then the product of p_i/100 is (product p_i) / (100^k). So, the expected value is (product p_i * sum w_i) / (100^k).
+
+So, E = (P * W) / (100^k), where P is the product of p_i's and W is the sum of w_i's in the subset.
+
+Alternatively, E = (P * W) / (100^k) = W * (P / 100^k).
+
+Hmm, so for each subset, the expected value depends on both P and W.
+
+But how do I model this in a DP? Because for each game, I can choose to include it or not, which affects both P and W.
+
+Let me think about the DP approach. Let's sort the games. Maybe it's better to process them in a certain order, like sorted by p_i or something. Not sure.
+
+Wait, perhaps I can model the DP as follows: for each game, I have two choices: include it or not. If I include it, the P and W will be updated by multiplying the p_i and adding the w_i, respectively.
+
+So, let's think about the DP state as (current product P, sum of w W). Then, for each game, we can choose to include it or not. Wait, but the size of the state space is way too big. Because P can be up to (100)^n, which is way beyond any feasible storage.
+
+So, that's not going to work. We need a better way.
+
+Another approach: Since each game's p_i is at most 100, and the product P is the product of p_i's, which can be up to 100^2e5, which is way too big.
+
+Hmm, so perhaps we can find a way to represent P in terms of the logarithm. Since log(P) is the sum of log(p_i) for each included game. But I'm not sure how that helps with the DP.
+
+Wait, but perhaps for each subset, we can represent the sum of p_i's in terms of their logarithm. But again, the state space would still be too big.
+
+Let me think differently. The expected value is (P * W) / (100^k). So, we can rewrite this as (W) * (P / 100^k). Let me denote k as the size of the subset. So, P is the product of p_i's, and W is the sum of w_i's.
+
+Wait, but 100^k is (100)^k, which is the same as (100 choose k) multiplied by the product. So, perhaps we can think of it as a product over the games in the subset.
+
+Wait, perhaps it's better to precompute for each game, the maximum possible E for subsets that include this game, given certain conditions.
+
+Alternatively, let's think about including a subset S. The expected value is (product p_i) * (sum w_i) / (100^k). Let's denote this as E(S).
+
+We can model this as E(S) = (product p_i) * (sum w_i) / (100^k). Let's denote P as the product of p_i's and W as the sum of w_i's for S.
+
+So, E(S) = P * W / (100^k).
+
+Hmm, but how to maximize this.
+
+Another thought: for a subset S, E(S) is equal to (P * W) / (100^k). Let's note that P is the product of p_i's, which is the same as (product of p_i/100) for each i in S, multiplied by 100^k. So, P = (product (p_i / 100)) * 100^k.
+
+So, E(S) = (product (p_i / 100) * 100^k) * W / 100^k = product (p_i / 100) * W.
+
+Wait, that's a neat simplification! So, E(S) = (product (p_i / 100)) * (sum w_i) for the subset.
+
+So, for a subset S, E(S) is the product of (p_i / 100) for each i in S, multiplied by the sum of w_i for each i in S.
+
+So, the problem reduces to selecting a subset of games to maximize this value.
+
+Ah, that's a big simplification. So, the expected value is the product of (p_i / 100) for the subset, multiplied by the sum of w_i's for the subset.
+
+So, our goal is to maximize product(p_i/100) * sum(w_i) for the subset.
+
+That's a much simpler problem.
+
+So, the problem is now: select a subset of games, and compute for that subset the product of (p_i/100) multiplied by the sum of w_i. We need to choose the subset that maximizes this value.
+
+Now, how can we model this? Let's think about dynamic programming.
+
+We can model the DP state as the sum of w_i and the product of (p_i/100). So, for each step, we can choose to include a game or not.
+
+Wait, but the product can get very large. For example, if a game has p_i=100, then including it adds 1 to the product. So, after including 100 games, the product is 100^k, which could be up to 100^2e5, which is way too big to handle.
+
+So, this approach is not feasible. We need a way to represent the product in a way that doesn't blow up in size.
+
+Hmm, perhaps we can take the logarithm of the product. Since the product is multiplicative, taking the log turns it into a sum. But then, the sum of logs can be very large, but perhaps manageable.
+
+Wait, let's think about it. Let me define for each game i, a value a_i = ln(p_i / 100). Then, the product of (p_i/100) for a subset S is the sum of a_i for i in S. So, the product is e^{sum a_i}.
+
+So, the expected value E(S) = e^{sum a_i} * sum w_i.
+
+So, now, the problem is to select a subset of games to maximize e^{sum a_i} * sum w_i.
+
+Taking the natural log of E(S) gives us sum a_i + sum ln(w_i). But since E(S) is e^{sum a_i} * sum w_i, maximizing E(S) is equivalent to maximizing sum a_i + ln(sum w_i) for the subset.
+
+Wait, no, because the sum a_i is the exponent, which is a multiplicative term, and sum w_i is additive. So, the two terms are not directly additive. Hmm, perhaps this approach isn't the way to go.
+
+Alternatively, perhaps we can model the DP state as the sum of a_i's (the sum of ln(p_i/100)) and the sum of w_i's. But I'm not sure.
+
+Wait, perhaps we can model the DP as follows:
+
+We can sort the games in a certain order. Then, for each game, we decide whether to include it in the subset or not. The state of the DP can be represented by the maximum sum of a_i's and the maximum sum of w_i's for a given sum of a_i's.
+
+Wait, but that's a bit abstract. Let's think about it.
+
+Let's say we have a DP where dp[i][s] represents the maximum possible sum of w_i's for a subset where the sum of a_i's is s. Then, for each game, we can update the DP by considering whether to include it or not.
+
+But the problem is that s can be up to 100 * 2e5 = 2e7, which is manageable with some optimizations. Because 2e7 is a large number, but perhaps with a way to manage it.
+
+Wait, but n is up to 2e5. So, for each game, processing 2e7 states would be 4e12 operations, which is way too much.
+
+So, that approach is not feasible.
+
+Hmm, perhaps we can find a way to represent the DP in a way that's more efficient. Let's think about the structure of the problem.
+
+Each game contributes a certain amount to the sum a_i (which is ln(p_i/100)), and also contributes w_i to the sum of w_i's. So, for each game, including it adds a certain a_i to the sum, and adds w_i to the sum.
+
+So, the problem is to select a subset of games such that the sum of a_i's is as large as possible, but also, the sum of w_i's is as large as possible. But since the two are linked through the subset, it's not clear.
+
+Wait, but we need to maximize the product of (p_i/100) multiplied by the sum of w_i's. So, it's a product multiplied by a sum. So, perhaps the optimal subset is one where including a game increases both the product and the sum in a way that their product is maximized.
+
+But how to model this.
+
+Another approach: Since the product is multiplicative and the sum is additive, perhaps the optimal subset is a combination of including games that have high a_i (since a_i is the log of p_i/100) and also have high w_i.
+
+But this is not necessarily the case, because including a game with a low a_i but high w_i could be better than including one with a higher a_i but low w_i.
+
+Hmm.
+
+Let me think about the problem in terms of the DP. Let's define the DP state as (s, w), where s is the sum of a_i's, and w is the sum of w_i's. But this is a 2D state, which is infeasible for n=2e5.
+
+So, perhaps we can find a way to represent the DP in a way that only keeps track of the maximum w for each s.
+
+Yes! That's a common technique. So, for each possible s, we can keep the maximum w that can be achieved with that s. Then, for each new game, we can update the DP by considering whether to include the game or not.
+
+So, the DP state is a map from s to the maximum w for that s. Initially, the DP is empty. For each game i with a_i and w_i, for each existing state (s, w) in the current DP, we can create a new state (s + a_i, w + w_i). But since we want to keep only the maximum w for each s, for each new s, we only keep the higher w.
+
+So, the steps are:
+
+1. Initialize the DP as an empty dictionary.
+
+2. For each game i:
+   a. Create a temporary dictionary to hold the new states.
+   b. For each s in the current DP:
+      i. Compute new_s = s + a_i
+      ii. new_w = DP[s] + w_i
+      iii. If new_s is not in the temporary DP, or new_w is larger than any existing new_s, then add it.
+   c. Merge the temporary DP into the current DP, but only keeping the maximum w for each s.
+   
+3. After processing all games, the maximum E is the maximum (product of (p_i/100) ) * (sum w_i) for all s, which is the maximum (e^s) * (sum w_i), but wait, no. Because s is the sum of a_i's, which is sum ln(p_i/100). So, e^s is the product of (p_i/100) for the subset. So, the expected value E is e^s * sum_w, where sum_w is the sum of w_i's in the subset.
+
+So, in the DP, for each s, we have the maximum sum_w. So, to find the maximum E, we need to find the maximum of (e^s) * (sum_w) for all s in the DP.
+
+But wait, e^s is the product of (p_i/100) for the subset. So, yes.
+
+So, the approach is to model the DP as a map from s to sum_w, where s is the sum of a_i's, and then, after processing all games, compute the maximum (e^s) * sum_w.
+
+Now, the question is: how to implement this efficiently.
+
+The problem is that the s can be up to 100 * 2e5 = 2e7, which is manageable as a dictionary, but for 2e5 games, each step could take up to 2e7 operations, which is 4e12 operations, which is way too much.
+
+So, this approach is not feasible for n=2e5.
+
+We need a smarter way.
+
+Hmm, perhaps we can find a way to represent the DP in a way that doesn't require checking all possible s's for each game.
+
+Wait, perhaps we can process the games in a certain order, and for each game, update the DP in a way that only keeps the best possible s for each sum.
+
+But I'm not sure.
+
+Alternatively, perhaps we can note that for any subset, the sum of a_i's is additive. So, perhaps the optimal subset is one where including a game i increases the product of (p_i/100) multiplied by the sum of w_i's.
+
+Wait, that's the key. Let's think: for a subset S, adding a new game i, the new E(S) is e^{s + a_i} * (sum_w + w_i). So, whether to include i depends on whether e^{a_i} * w_i is greater than 1.
+
+Because:
+
+e^{s + a_i} * (sum_w + w_i) = e^{s} * e^{a_i} * sum_w + e^{s} * w_i.
+
+We can compare this to e^{s} * sum_w.
+
+If e^{a_i} * w_i > 1, then including i increases the expected value. Otherwise, it's better not to include it.
+
+So, this gives us a way to make a greedy decision: for each game, if e^{a_i} * w_i > 1, include it; else, skip it.
+
+This is a crucial insight. So, the problem reduces to selecting all games where e^{a_i} * w_i > 1.
+
+Because including a game where e^{a_i} * w_i is less than or equal to 1 would not improve the expected value.
+
+So, this is a greedy approach, and it's optimal because each step makes the locally optimal choice.
+
+So, the algorithm is:
+
+1. For each game, compute a_i = ln(p_i / 100). This is because e^{a_i} is p_i/100.
+
+2. For each game, if e^{a_i} * w_i > 1, include it in the subset. Else, skip it.
+
+3. Sum the w_i's of the included games, and multiply by the product of (p_i/100) of the included games.
+
+This would give the maximum expected value.
+
+Wait, but wait: the product of (p_i/100) is e^{sum a_i}, which is e^{sum of a_i's of the included games}.
+
+Yes, because a_i = ln(p_i/100), so sum a_i is ln( (product p_i/100) ). So, e^{sum a_i} is the product.
+
+So, this approach is correct.
+
+So, now, the problem becomes: compute the sum of w_i's for all games where e^{a_i} * w_i > 1, and compute the product of (p_i/100) for those games.
+
+So, the steps to solve the problem are:
+
+- For each game, compute p_i and w_i.
+
+- Compute a_i = ln(p_i / 100). Note that p_i can be up to 100, so p_i/100 can be as low as 0.01. So, a_i can be negative.
+
+- For each game, check if e^{a_i} * w_i > 1. Since e^{a_i} is p_i/100, this condition is equivalent to (p_i/100) * w_i > 1.
+
+So, for each game, if p_i * w_i > 100, then include it in the subset.
+
+Wait, because (p_i/100) * w_i > 1 is equivalent to p_i * w_i > 100.
+
+Yes! So, the condition is p_i * w_i > 100.
+
+So, that's a much simpler condition to check.
+
+So, the algorithm is:
+
+- Include all games where p_i * w_i > 100.
+
+- The expected value is the product of (p_i/100) for each included game, multiplied by the sum of w_i's for each included game.
+
+So, the problem is now reduced to selecting all games where p_i * w_i > 100, and then compute the product and sum.
+
+This is a huge simplification. So, I can process all n games, check if p_i * w_i > 100, and if so, include it in the subset.
+
+So, the code can be written as follows:
+
+Read n.
+
+For each of the n lines:
+
+   read p_i and w_i.
+
+   if p_i * w_i > 100:
+
+       include this game in the subset.
+
+Compute the product of (p_i / 100) for all included games.
+
+Compute the sum of w_i's for all included games.
+
+The expected value is product * sum.
+
+So, this is the solution.
+
+Now, let's test this on the sample input.
+
+Sample Input 1:
+
+n=1
+
+p=100, w=2.
+
+100*2=200>100, so include.
+
+product is 100/100 =1.
+
+sum is 2.
+
+expected value is 1*2=2.
+
+Which matches the sample output.
+
+Another test case:
+
+n=2
+
+Game 1: p=100, w=2 → 100*2=200>100 → include.
+
+Game 2: p=50, w=3 →50*3=150>100 → include.
+
+product is (100/100) * (50/100) = 0.5.
+
+sum is 2+3=5.
+
+expected value is 0.5 *5=2.5.
+
+Another test case:
+
+n=2
+
+Game 1: p=50, w=3 →150>100 → include.
+
+Game2: p=100, w=1 →100*1=100 → not included.
+
+So, expected value is 0.5 *3=1.5.
+
+Wait, but what's the expected value? Let's compute.
+
+The subset is only game 1.
+
+product is 0.5, sum is 3 → 0.5*3=1.5.
+
+Yes.
+
+Another test case:
+
+n=1
+
+p=100, w=1 →100*1=100 → not included.
+
+So, expected value is 1.
+
+But what if p=100 and w=1.0001? Then, p*w=100.01>100, so included.
+
+So, the condition is correct.
+
+So, the code is straightforward.
+
+Now, let's write the code.
+
+Read n.
+
+Initialize product = 1.0, sum_w = 0.0.
+
+For each of the n lines:
+
+   p, w = map(int, input().split())
+
+   if p * w > 100:
+
+       product *= p / 100.0
+
+       sum_w += w
+
+Then, print product * sum_w with sufficient precision.
+
+This should work.
+
+Now, let's test this against the sample input.
+
+Sample Input:
+
+5
+
+100 2 → 200>100 → include.
+
+99 1 → 99*1=99 <100 → exclude.
+
+30 1 →30*1=30 <100 → exclude.
+
+99 2 →99*2=198>100 → include. Product is 100/100 *99/100 = 0.99.
+
+Sum_w is 2+2=4.
+
+So, 0.99 *4 =3.96.
+
+Which matches the sample output of 3.96.
+
+So, the code is correct.
+
+Another test case:
+
+n=2
+
+p=100, w=2 → include.
+
+p=50, w=3 → include.
+
+product is 0.5 *0.5 =0.25.
+
+sum_w is 5.
+
+0.25 *5=1.25.
+
+So, expected value is 1.25.
+
+So, the code would output 1.25.
+
+Yes.
+
+So, the code should handle all cases correctly.
+
+Now, writing the code in Python.
+
+We'll read n, then for each game, compute p*w. If >100, include, accumulate product and sum.
+
+Finally, compute product * sum and print with enough decimal digits.
+
+The code:
+
+n = int(input())
+product = 1.0
+sum_w = 0.0
+for _ in range(n):
+    p, w = map(int, input().split())
+    if p * w > 100:
+        product *= p / 100.0
+        sum_w += w
+print("{0:.10f}".format(product * sum_w))
+
+Wait, but what about the output format? The problem says to output with enough precision, up to 1e-6.
+
+So, using .10f is acceptable, but perhaps we can use more decimal places.
+
+Alternatively, we can print with 10 decimal places, which is more than sufficient.
+
+Testing the code with the sample input:
+
+Sample Input 1:
+
+1
+
+100 2 → included.
+
+product = 1.0 * 100/100 = 1.0.
+
+sum_w=2.
+
+1.0 * 2=2.0 → printed as 2.0000000000.
+
+Which is correct.
+
+Another test case:
+
+n=1
+
+100 1 →100*1=100 → not included.
+
+product remains 1.0.
+
+sum_w is 0.
+
+So, expected value is 0.
+
+So, output is 0.0000000000.
+
+Which is correct.
+
+So, the code seems correct.
+</think>
+
+To solve this problem, we need to maximize the expected value of winnings from a casino game by selecting a subset of games to play. Each game has a probability of winning and a corresponding reward. The goal is to find the subset of games that maximizes the expected value, which is the product of the probabilities of winning all selected games multiplied by the sum of their rewards.
+
+### Approach
+1. **Problem Analysis**: The expected value of winnings is given by the product of the probabilities of winning each selected game multiplied by the sum of their rewards. This can be simplified by recognizing that the product of probabilities can be represented using logarithms, which allows us to convert the problem into a more manageable form.
+
+2. **Key Insight**: For each game, if the product of its probability and reward (p_i * w_i) is greater than 100, including it in the subset will increase the expected value. This is because (p_i / 100) * w_i > 1 implies that including the game increases the expected value.
+
+3. **Algorithm**: 
+   - Read the number of games.
+   - For each game, check if p_i * w_i > 100. If true, include it in the subset.
+   - Compute the product of (p_i / 100) for all included games.
+   - Compute the sum of w_i for all included games.
+   - The expected value is the product of the probabilities and the sum of rewards.
+
+### Solution Code
+```python
+n = int(input())
+product = 1.0
+sum_w = 0.0
+for _ in range(n):
+    p, w = map(int, input().split())
+    if p * w > 100:
+        product *= p / 100.0
+        sum_w += w
+print("{0:.10f}".format(product * sum_w))
+```
+
+### Explanation
+- **Reading Input**: The code reads the number of games and then iterates through each game to check if it should be included in the subset based on the condition p_i * w_i > 100.
+- **Updating Product and Sum**: For each game that meets the condition, the product of probabilities is updated by multiplying with p_i / 100, and the sum of rewards is updated by adding w_i.
+- **Calculating Expected Value**: The expected value is the product of the probabilities and the sum of rewards, which is then printed with a precision of 10 decimal places to ensure accuracy.
+
+This approach ensures that we efficiently select the subset of games that maximizes the expected value while maintaining a time complexity of O(n), which is optimal given the problem constraints.<｜end▁of▁sentence｜>

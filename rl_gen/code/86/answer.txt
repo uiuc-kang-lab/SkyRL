@@ -1,0 +1,749 @@
+0
+Okay, I've got this problem to solve. Let's try to understand it step by step.
+
+So, Alice has an array a that's constructed using the formula a_i = b*(i-1) + c. The array has length n. We need to determine how many operations it takes for this array to become a permutation, which is an array containing each integer from 0 to n-1 exactly once. The operation is to replace the maximum element with the MEX of the array. If there are multiple maximums, we pick the leftmost one.
+
+First, let's clarify what a permutation is here. It's an array of size n with elements 0 to n-1, each exactly once, but not necessarily in order. So for example, [1,2,3] is a permutation for n=3, but [1,1,2] isn't.
+
+The problem is to find the minimum number of operations required to transform a into a permutation. If it's impossible, return -1.
+
+Let me think about the initial array a. It's an arithmetic sequence starting from c, with a common difference b. So, for i from 1 to n: a_i = c + (i-1)*b.
+
+Wait, no: because i starts at 1, the first term is when i=1: a_1 = b*(0) + c = c. Then i=2: b*(1) + c, etc. So the array is c, c + b, c + 2b, ..., c + (n-1)*b.
+
+But wait, wait. Wait, the formula is a_i = b*(i-1) + c. So for i=1: 0*b + c = c. For i=2: 1*b + c = c + b. For i=3: 2b + c, etc. So yes, it's an arithmetic sequence with step b.
+
+Now, the initial array is built this way. But the question is, can this array become a permutation through a certain number of operations? Each operation replaces the current maximum with the MEX of the array.
+
+Hmm. Let's think about what the MEX of the array is. The MEX is the smallest non-negative integer not present in the array.
+
+So, let's first consider the case where the array is already a permutation. If the given array is a permutation, then we don't need any operations, so the answer is 0.
+
+Otherwise, we have to perform operations until it becomes a permutation.
+
+But wait, how can the array become a permutation? The MEX depends on the current elements. So each step, we replace the maximum (if multiple, pick the leftmost) with the MEX of the array.
+
+What's the process? Let's see:
+
+1. Compute the current MEX, let's call it m.
+2. Find the first occurrence of the maximum element in the array (the leftmost maximum).
+3. Replace that maximum with m.
+4. Repeat until the array is a permutation.
+
+But wait, what's the condition for the array to become a permutation? It must have all elements from 0 to n-1 exactly once. So, after some operations, the array should have each number exactly once.
+
+Let's think about the initial array. Suppose the array is already a permutation. Then the answer is 0. Otherwise, we need to perform operations.
+
+But what's the condition for the array to be a permutation? It's when the array contains all integers from 0 to n-1, each exactly once.
+
+So, let's think about the initial array. What's the MEX of the array?
+
+The MEX is the smallest non-negative integer not present in the array. So, if the array contains all numbers from 0 up to (mex-1), but not mex, then mex is the MEX.
+
+Now, the first operation is to replace the maximum element with the MEX of the array.
+
+Wait, but after replacing, the array changes. Then, in the next steps, the MEX might change again.
+
+Hmm. So the process is: for each step, compute the MEX, find the leftmost maximum (the first occurrence of the current maximum), and replace that maximum with the MEX.
+
+We repeat this until the array is a permutation.
+
+So, the problem is to find the number of steps required to reach a permutation.
+
+But given the constraints (n up to 1e18), we can't simulate each step for large n. So we need a mathematical approach.
+
+Let me think about the initial array and the process.
+
+First, let's find the MEX of the initial array. Let me denote it as mex_initial.
+
+What is mex_initial? It's the smallest non-negative integer not present in the array.
+
+The array is an arithmetic sequence starting at c, with step b. So the elements are c, c+b, c+2b, ..., c + (n-1)*b.
+
+The MEX is the smallest non-negative integer not present.
+
+So, let's think about what the MEX would be. The MEX is the smallest integer not in the array.
+
+Let's consider some examples.
+
+Example 1:
+
+n=3, b=2, c=1. The array is [1,3,5]. The elements are 1,3,5. So the MEX is 0.
+
+Wait, that's because 0 is not present. So mex_initial is 0.
+
+In this case, the first operation would replace the maximum (which is 5) with mex_initial, i.e., 0. So the new array is [1,3,0]. Then, the array is [1,3,0], which is a permutation. So the answer is 1.
+
+Wait, no, because in this case, the initial array was [1,3,5], but the MEX is 0. So first step: replace 5 with 0. The array becomes [1,3,0], which is a permutation. So after 1 step.
+
+But let's think about another example.
+
+n=4, b=2, c=0. The array is [0, 2,4,6]. The MEX is 1. So the first operation is to replace the maximum (6) with 1. Now the array is [0,2,4,1]. The next step's MEX is 3 (since 0,1,2,4 are present). So replace the maximum (4) with 3: array becomes [0,2,3,1]. Now the array is [0,2,3,1], which is a permutation. So two steps.
+
+Wait, but in the initial array, after the first step, the array is [0,2,4,1], which is [0,1,2,4]. The MEX is 3. So next, replace 4 with 3. Then the array becomes [0,2,3,1], which is a permutation.
+
+Yes, so in two steps.
+
+But how can we model this for any given n, b, c?
+
+Hmm. Let's think about the process.
+
+Each step, we compute the MEX, find the leftmost maximum element, replace it with the MEX.
+
+But the MEX is the smallest non-negative integer not present in the array. So, the MEX is the mex of the current array after replacement.
+
+Wait, but how does the MEX change after each step?
+
+Let me consider that after some steps, the array may have a certain mex. Then, in the next step, we replace the leftmost maximum with mex. So the array changes.
+
+But perhaps, after some steps, the array becomes a permutation, so the process stops.
+
+But the problem is that for large n, we can't simulate the steps. So we need a way to find the number of steps required.
+
+Hmm. Let's think about the initial array and see what's the MEX.
+
+The initial MEX is the smallest non-negative integer not in the array.
+
+The array is c, c + b, c + 2b, ..., c + (n-1)*b.
+
+So, the elements are all congruent to c mod b, except when b is zero.
+
+Wait, wait: if b is zero, then all elements are c. So the array is [c, c, c, ..., c]. So, the MEX is 0 if c != 0, else 0 as well. Then, in this case, the array is [c] * n. So, if c is zero, the array is all zeros. So, for the array to become a permutation, c must be zero, and n must be 1, but wait, no: n is 1, then the array is [0], which is a permutation. So for n=1, the answer is 0 if c=0, else it's impossible.
+
+But let's get back.
+
+The MEX is the smallest non-negative integer not present in the array.
+
+So, if the array is [c, c + b, c + 2b, ...], then the MEX is the smallest non-negative integer that is not equal to any of these terms.
+
+But wait, if the array contains all numbers from 0 up to mex_initial -1, but not mex_initial, then mex_initial is the MEX.
+
+So, what is mex_initial?
+
+Well, let's find the mex of the initial array.
+
+Case 1: b=0.
+
+If b is zero, then all elements are c. So, the MEX is 0 if c != 0. If c is zero, then the array is all zeros, so the MEX is 0. Wait, but no: the array is n elements all zero. So the MEX is 0 if n is 1? Because for n=1, the array is [0], which is a permutation. For n>1, the array is [0,0,..0], which doesn't contain 1. So the MEX is 1.
+
+Wait, no: the MEX is the smallest non-negative integer not present. So for the array [0,0], the MEX is 1. For the array [0,0,0], the MEX is 1.
+
+So, when b=0:
+
+If c is zero: the array is all zeros. So, the MEX is 1 if n >=1. Because the array has zero, but 1 is missing.
+
+So in this case, mex_initial is 1.
+
+If c is not zero: then the array contains c, and possibly other numbers. So, the MEX is 0 if c is not zero. Because 0 is not in the array.
+
+Wait, for example, n=2, b=0, c=1. The array is [1,1]. MEX is 0, because 0 is not present.
+
+So for b=0:
+
+If c !=0:
+
+- If n=1: array is [c], which is a permutation only if c=0. So, if c is not zero, it's impossible.
+
+Wait no: for n=1, the array is [c], which is a permutation only if c=0. So, for c != 0 and n=1, the initial array is not a permutation, and we have to perform operations.
+
+Wait, but n=1: the initial array is [c]. It's a permutation only if c=0. So, if c is not zero, then the initial array is not a permutation. So, the process will perform some operations.
+
+But let's think through the process.
+
+n=1, b=0, c=1: initial array is [1]. MEX is 0. So, first step: replace 1 with 0. Now the array is [0], which is a permutation. So, 1 step.
+
+Another example: n=1, b=0, c=2: initial array is [2], MEX is 0. Replace 2 with 0: array becomes [0], which is a permutation. 1 step.
+
+So for b=0, if c is not zero, the MEX is 0. So the first step replaces the maximum (2) with 0, but wait, in this case the initial array is [c], so the maximum is c, which is replaced with 0. So the new array is [0], which is a permutation.
+
+So the answer is 1.
+
+But wait, what if c is zero and n=1? Then the array is [0], which is a permutation. So 0 steps.
+
+So, for b=0, the process is:
+
+If c is zero:
+
+- If n=1: 0 steps.
+
+- Else: the array is [0,0,..0]. The MEX is 1. So in the first step, replace the maximum (0) with 1. Now the array is [0,0,..0,1]. The MEX is 2, and so on. Wait, but this can't be right because for n=2, the initial array is [0,0]. MEX is 1.
+
+Replace the maximum (0) with 1: array is [0,1]. The MEX is 2. Next step, replace the maximum (1) with 2. Now array is [0,2]. The MEX is 1. Next step, replace 2 with 1: [0,1]. Hmm, this seems to be an infinite loop.
+
+Wait, that's a problem. So for n>1 and b=0, c=0, the process can't proceed to a permutation because it's stuck in a loop.
+
+Wait, let's see.
+
+n=2, b=0, c=0: the array is [0,0]. MEX is 1.
+
+Replace 0 (the maximum) with 1: array becomes [0,1]. The MEX is 2.
+
+Then, replace 1 (the maximum) with 2: array becomes [0,2]. MEX is 1.
+
+Replace 2 (the maximum) with 1: array becomes [0,1]. Now, MEX is 2. Replace 1 with 2: array becomes [0,2]. This is the same as before. So it's stuck in a loop between [0,1] and [0,2].
+
+So for n>1 and b=0, c=0: it's impossible to reach a permutation.
+
+So for b=0, the answer is -1 in such cases.
+
+So, for the general case, let's think about when b is not zero.
+
+Another case is when b is not zero.
+
+So, the array is an arithmetic sequence with step b, starting at c.
+
+So, the elements are c, c + b, c + 2b, ..., up to (n-1)*b + c.
+
+So, the maximum element is (n-1)*b + c.
+
+The MEX is the smallest non-negative integer not present in the array.
+
+So, the question is: what is the MEX of the initial array.
+
+Hmm. Let's think about the possible MEX.
+
+The MEX is the smallest non-negative integer not present.
+
+So, for the initial array, the MEX is the smallest integer not in {c, c+b, c+2b, ..., c + (n-1)*b}.
+
+Let's denote the MEX as m.
+
+So, the first step is to replace the leftmost maximum (the first occurrence of the maximum element) with m.
+
+Then, in the next step, compute the new MEX, and so on.
+
+Hmm.
+
+But how can we model this process?
+
+Maybe the MEX after each step increases, but I'm not sure.
+
+Alternatively, perhaps after some steps, the array becomes a permutation.
+
+Let me think about some examples.
+
+Example 1:
+
+n=3, b=2, c=1.
+
+Initial array: 1,3,5.
+
+MEX is 0.
+
+Step 1: replace 5 with 0. Array becomes [1,3,0]. Now, the MEX is 2.
+
+Step 2: the maximum is 3. Replace 3 with 2. Array becomes [1,2,0]. MEX is 3.
+
+Step 3: maximum is 2. Replace with 3. Array becomes [1,3,0]. Wait, but this seems like it's not converging.
+
+Wait, but in this example, the process would go on indefinitely. So, for this n=3, b=2, c=1, the process never reaches a permutation. So the answer is -1.
+
+But wait, in this case, after step 1, the array is [1,3,0], which is a permutation. So, the answer is 1.
+
+Wait, no, I'm getting confused. Let's see:
+
+Wait, the initial array is [1,3,5]. MEX is 0. So the first step is to replace 5 with 0. The new array is [1,3,0]. Now, the MEX is 2.
+
+Wait, the MEX is the smallest non-negative integer not present. The current array is [1,3,0]. So, 0 is present, 1 is present, 2 is missing. So MEX is 2.
+
+So, the second step is to replace the maximum element (3) with 2. The array becomes [1,2,0].
+
+Now, the MEX is 3, because 0,1,2 are present.
+
+Third step: replace the maximum element (2) with 3. Array becomes [1,3,0].
+
+Wait, now the array is back to the state after step 1. So, it's entering a loop.
+
+Thus, in this case, it's impossible to reach a permutation, so the answer is -1.
+
+So, how can we model this?
+
+Hmm.
+
+Another example: n=4, b=2, c=0.
+
+Initial array: [0,2,4,6]. MEX is 1.
+
+Step 1: replace 6 with 1. Array becomes [0,2,4,1]. The MEX is 3.
+
+Step 2: replace 4 with 3. Array becomes [0,2,3,1]. MEX is 4.
+
+Step 3: replace 3 with 4. Array becomes [0,2,4,1]. MEX is 3 again.
+
+Hmm, so the process oscillates between [0,2,4,1] and [0,2,3,1].
+
+So, it's stuck in a loop.
+
+Thus, for some cases, it's impossible to reach a permutation.
+
+So, to find whether it's possible, perhaps we can model the process.
+
+But for large n, it's impractical to simulate.
+
+Alternative approach: find the number of steps until the array becomes a permutation.
+
+But how?
+
+Let me think about the initial MEX. Let's denote mex_initial.
+
+In each step:
+
+- The maximum element is replaced with the mex_initial.
+
+- Then, the MEX is calculated again.
+
+But the mex after each step depends on the current elements.
+
+Wait, but perhaps the MEX increases each time.
+
+Wait, for the initial array, mex_initial is m.
+
+After replacing the maximum with m, the array now has m as an element. So, the mex may increase.
+
+In the first step, mex_initial is m.
+
+After replacing the maximum with m, if m was the mex_initial, then m is present. So, the new mex may increase.
+
+Wait, but the mex_initial is the smallest non-present. So, when we add m to the array, which was the mex_initial, the mex could increase.
+
+So, perhaps the process is as follows:
+
+After each step, the mex increases by 1.
+
+Wait, but for the initial array, mex_initial is the smallest missing non-negative integer.
+
+Suppose mex_initial is 0: that means 0 is missing. So, the array starts with 0, but wait, no: mex_initial is the smallest non-present. So if mex_initial is 0, it means 0 is missing.
+
+Wait, initial array has elements starting from c. So, if c is 0, then 0 is present. So mex_initial would be 1.
+
+Wait, I'm getting stuck.
+
+Alternative approach: model the process as a loop.
+
+But for n up to 1e18, we can't simulate each step.
+
+Alternative Idea:
+
+The process can be thought of as replacing the maximum with the MEX, which is the smallest missing non-negative integer.
+
+After each replacement, the MEX could increase.
+
+Wait, because the MEX is the smallest missing. So, when we add a new element (the MEX), it could potentially increase the MEX.
+
+But how?
+
+Wait, for example, in the first step, the array is [1,3,5]. MEX is 0.
+
+We add 0 to the array. Now the array is [0,1,3,5]. The MEX is 2.
+
+In the next step, the maximum is 5, so we replace it with 2. The array becomes [0,1,2,3,5] (wait, no, n is 3, so the array is [0,1,3]. Wait, no: n=3, the initial array is [1,3,5]. After replacing 5 with 0, the array is [1,3,0]. Then, in the next step, the MEX is 2, so we replace the maximum, which is 3, with 2. So the array becomes [1,2,0]. The MEX is 3. Next step, replace 2 with 3, array becomes [1,3,0]. Then MEX is 2, replace maximum (3) with 2, array becomes [1,2,0]. So it's stuck.
+
+Hmm.
+
+So, perhaps the process can be broken down into phases where each phase involves replacing the maximum with the MEX, and the MEX increases by 1 each time.
+
+But how?
+
+Alternatively, perhaps the process can be broken into two cases: one where the initial array is already a permutation, and another where it's not.
+
+But for the initial array, how can we determine if it's a permutation?
+
+We can compute the MEX of the initial array.
+
+If the MEX is zero, then the initial array is a permutation only if all elements are distinct and every number from 0 up to n-1 is present.
+
+Wait, no. For example, the initial array is [0, 0, 0]. The MEX is 1. So it's not a permutation.
+
+So, the initial array is a permutation if and only if all numbers from 0 to n-1 are present, and all are unique.
+
+Wait, but in the initial array, which is an arithmetic sequence, the elements are all congruent mod b. So, for example, if b is 2, and c is 0, the elements are 0, 2, 4, ... So, the initial array can't have all numbers from 0 to n-1, except when c is 0 and b is 1. Or something like that.
+
+Wait, no: for the initial array, if b is 1, and c is 0, the array is 0, 1, 2, ..., n-1. So, it's a permutation.
+
+So, the initial array is a permutation only if the arithmetic sequence contains all numbers from 0 to n-1 exactly once.
+
+Which happens when the step b is 1, and c is 0, and the array is 0,1,2,...,n-1.
+
+But that's a specific case.
+
+So, in general, the initial array is a permutation if and only if the step b is 1, and c is 0, and the array is 0,1,2,...,n-1.
+
+So, for the initial array to be a permutation, if b is 1 and c is 0, and the array is of size n, then it's a permutation.
+
+Otherwise, it's not.
+
+So, perhaps the first step is to check whether the initial array is a permutation. If yes, then 0 steps.
+
+Else, proceed.
+
+But for the general case, when the initial array is not a permutation, what do we do?
+
+Let's think about the process.
+
+Each step replaces the leftmost maximum with the MEX of the array at that step.
+
+So, the first step is to find the current maximum, replace it with the MEX, then compute the new MEX.
+
+This seems like a process that could potentially take O(n) steps, which is not feasible.
+
+We need a way to model the steps mathematically.
+
+Alternative Idea:
+
+Suppose that after some steps, the array becomes a permutation. Let's model what the first few steps would do.
+
+Let's denote the initial array as A.
+
+Step 1: find max element m1. Replace it with mex1 = mex(A).
+
+Step 2: find max element m2. Replace it with mex2 = mex(A').
+
+And so on.
+
+But each time, mex is the MEX of the current array.
+
+So, mex can be computed as the smallest non-negative integer not present.
+
+So, perhaps the MEX is non-decreasing after each step.
+
+Wait, is that true?
+
+Because in each step, the MEX is the smallest non-present, but after replacing the maximum with the MEX, which is the current mex.
+
+Wait, for example, in the first step:
+
+If mex is m, then the array now contains m, so the mex can't be less than m.
+
+Because before replacing, m was not present. After replacing, m is present. So the new mex is the smallest non-present, which is >= m.
+
+Wait, no: because mex before was m, which means m is not present. After adding m, mex becomes m+1.
+
+Wait, no. Let's see:
+
+Suppose mex_initial is m.
+
+The array has m as a new element. So, the mex after the first step is the smallest non-present, which is either m (if m+1 is present) or higher.
+
+Wait, no. Let me think.
+
+Before step 1: array has some elements, mex is m. So, m is the smallest missing.
+
+After replacing the first max (say, k) with m: the new array has m added, so m is now present.
+
+So, the mex after step 1 is the smallest non-present, which is the mex_initial if mex_initial is greater than m, or it's m if m is present.
+
+Wait, no.
+
+Wait, before step 1, mex is m. So, m is not present in the array. After adding m, the mex becomes m+1.
+
+So, after the first step, mex becomes m+1.
+
+Wait, is that correct?
+
+No, because mex is the smallest missing. So, if m is present, the mex is m+1.
+
+Wait, for example:
+
+Initial array: [0, 2, 3]. The mex is 1.
+
+After replacing 3 with 1, the array becomes [0,2,1]. The mex is 3.
+
+Wait, because now 0,1,2 are present. Mex is 3.
+
+So, in that case, mex increased by 2.
+
+Hmm.
+
+But in the first example, when the initial mex is 0, replacing the max with 0, the mex becomes 1.
+
+So, mex increased by 1.
+
+But in other cases, mex can increase by more.
+
+So, perhaps the mex can increase by any amount each step.
+
+Hmm.
+
+But perhaps, after a few steps, the mex increases by 1 each time.
+
+So, perhaps the process can be modeled as a loop where mex increases by 1 each step.
+
+But I'm not sure.
+
+Alternative Idea: Let's think about the process in terms of mex.
+
+Each step, the mex can increase by 1.
+
+Because when you replace the maximum with mex_initial, mex_initial is the current mex. So, after adding mex_initial, mex increases by 1.
+
+Wait, is that true?
+
+Let's see.
+
+Suppose mex_initial is m.
+
+After adding m, the mex becomes m+1.
+
+Because m is now present, so the smallest missing is m+1.
+
+Yes.
+
+So, in the first step, mex increases by 1.
+
+In the next step, the mex is now m+1.
+
+So, in the next step, mex_initial is m+1.
+
+Replace the maximum with m+1: mex increases to m+2.
+
+And so on.
+
+So, each step increases mex by 1.
+
+Thus, the number of steps it takes for mex to reach n is m_initial steps.
+
+But wait, in this scenario, the MEX is being increased by 1 each step until it reaches n.
+
+But this is only possible if, at each step, the mex is exactly the mex of the array before the step.
+
+But I'm not sure.
+
+Wait, let's take the example where mex_initial is 0.
+
+So, n=3, c=1, b=2.
+
+Step 1: mex_initial is 0.
+
+Replace the maximum (5) with 0.
+
+The array becomes [1,3,0]. The mex is now 2.
+
+Step 2: mex_initial is 2.
+
+Replace the maximum (3) with 2.
+
+Array becomes [1,2,0]. mex is now 3.
+
+Step 3: mex_initial is 3.
+
+Replace the maximum (2) with 3.
+
+Array becomes [1,3,0]. mex is now 2.
+
+Wait, but this is the same as step 2.
+
+So, it's stuck in a loop.
+
+Hmm. So, in this case, the mex increases by 1 each step, but the process doesn't converge.
+
+So, the initial assumption that mex increases by 1 each step is not always true.
+
+So, perhaps the process can be thought of as:
+
+Each step, mex increases by 1, until mex reaches a certain value, and then it starts to cycle.
+
+So, to model this, perhaps we can find the number of steps until mex reaches n, and then see if it's possible.
+
+But I'm not sure.
+
+Another Idea: Let's think about the process in terms of mex.
+
+Let's suppose that the mex increases by 1 each step.
+
+Then, the number of steps required to reach mex = n is (n - mex_initial).
+
+But as shown in the earlier example, this is not always the case.
+
+So, perhaps the process can be broken into two phases: until mex reaches k, and then it's stuck in a loop.
+
+So, the total steps would be the steps until mex reaches k, plus any steps needed to reach a permutation.
+
+But this requires knowing when mex reaches a certain value.
+
+Another Idea: Let's find the first occurrence where the MEX increases, and see how many steps it takes.
+
+But I'm not making progress.
+
+Alternative Idea: Let's think about the process in terms of the MEX.
+
+Each step, the MEX increases by 1, until it reaches the maximum possible mex, which is n.
+
+But when mex reaches n, the array cannot contain n, but since the array has n elements, it's possible that n is not present.
+
+Wait, but the array has n elements, so if mex is n, that means all elements are from 0 to n-1, with exactly one occurrence of each.
+
+In that case, the array is a permutation.
+
+So, the process can take up to n steps.
+
+But in the previous example, it took more steps.
+
+Wait, but in the example where mex_initial is 0, it took 3 steps to reach mex=3.
+
+Which is n.
+
+So, that's acceptable.
+
+But in the earlier example where mex_initial is 0, the process took 3 steps, which is n.
+
+So, perhaps the maximum steps required is n.
+
+But given that n can be up to 1e18, simulating each step is impossible.
+
+Hmm.
+
+Alternative Idea: Find the number of steps required until the array is a permutation.
+
+We can model the process as the number of steps until the MEX is such that all elements are present, and each step increases the MEX by 1.
+
+So, perhaps the steps can be divided into two phases: one where the MEX increases by 1 each step, and another where it doesn't.
+
+But I'm not sure.
+
+Another Idea: Let's think about the initial MEX.
+
+Let mex_initial be m.
+
+Each step, mex increases by 1.
+
+In each step, we replace the maximum element with mex.
+
+So, after k steps, the mex is m +k.
+
+We need mex to be equal to n, because when mex is n, all elements are 0,1,...,n-1, which is a permutation.
+
+So, if m +k >= n.
+
+But wait, let's see:
+
+In the first step, k=1: mex = m+1.
+
+In the second step, k=2: mex = m+2.
+
+So, to reach mex =n, we need m +k =n. So, k =n -m.
+
+But wait, in the earlier example where mex_initial is 0 and n=3, k=3 steps, which is correct.
+
+But in the other example where mex_initial was 0 and n=4, the process took 4 steps, which is n.
+
+So, perhaps the maximum steps needed are n.
+
+But wait, in the earlier example where mex_initial is 0 and n=4:
+
+Initial mex is 0.
+
+Step 1: mex becomes 1.
+
+Step 2: mex becomes 2.
+
+Step 3: mex becomes 3.
+
+Step 4: mex becomes4.
+
+Which is n steps.
+
+So, the maximum steps needed is n.
+
+So, perhaps the process can take up to n steps.
+
+But for some cases, it may take more steps.
+
+Wait, no. Because mex increases by 1 each step, and the mex can't exceed n.
+
+So, the maximum steps is n.
+
+Thus, for the problem, the process can be simulated up to n steps, but for n up to 1e18, that's impossible.
+
+So, we need a formula-based approach.
+
+So, the plan is:
+
+1. Check if the initial array is a permutation. If yes, answer 0.
+
+2. Else, compute the initial MEX, mex_initial.
+
+3. Compute how many steps are needed until mex reaches n, provided that in each step, the mex increases by 1.
+
+But how to compute the number of steps?
+
+But wait, let's think about when the mex increases by 1 each step.
+
+In each step, mex increases by 1, so the number of steps is required until mex reaches n.
+
+But in some cases, the mex may not increase by 1 in each step.
+
+So, perhaps the process can be split into two parts:
+
+- Steps until the mex increases by 1 each step.
+
+- Then, the mex remains the same, and the process enters a loop.
+
+But how to find when that happens.
+
+Let me think.
+
+The MEX increases by 1 each step until the mex is such that it can no longer increase.
+
+Wait, perhaps the mex increases by 1 until it reaches a certain point.
+
+Wait, let's take an example where mex_initial is 1.
+
+n=4, b=1, c=0.
+
+Initial array is [0,1,2,3]. So, it's a permutation. So answer is 0.
+
+Another example: n=4, b=1, c=0. It's a permutation, so 0 steps.
+
+Another example: n=5, c=0, b=1.
+
+Initial array is [0,1,2,3,4]. It's a permutation. So, 0 steps.
+
+But if the array is [0,1,2,3,5], mex_initial is 4.
+
+Step 1: mex becomes 4. So, replace 5 with 4.
+
+Array becomes [0,1,2,3,4]. Now, it's a permutation. So, 1 step.
+
+Another example: n=5, c=0, b=1.
+
+Initial array is [0,1,2,3,5]. mex_initial is 4.
+
+Step 1: replace 5 with 4. Now array is [0,1,2,3,4], which is a permutation. So, 1 step.
+
+Another example: n=5, c=1, b=2.
+
+Initial array: 1,3,5,7,9.
+
+mex_initial is 0.
+
+Step 1: replace the maximum 9 with 0. Array becomes [1,3,5,7,0]. mex is 2.
+
+Step 2: mex is 2. Replace 7 with 2. Array becomes [1,3,5,2,0]. mex is 4.
+
+Step 3: mex is 4. Replace 5 with 4. Array becomes [1,3,4,2,0]. mex is 6.
+
+Wait, but n=5, so mex can't be 6.
+
+Wait, no. Because the array is of size 5, and mex is the smallest non-present. So, if 0,1,2,3,4 are present, mex is 5.
+
+Wait, but in step 3, the array is [1,3,4,2,0]. So, 0 is present, 1 is present, 2 is present, 3 is present, 4 is present. So, mex is 5.
+
+Step 4: mex is 5. We replace the maximum element (4 is the current maximum?) Or is the maximum 4?
+
+Wait, after step 3, the array is [1,3,4,2,0]. The maximum is 4.
+
+So, replace 4 with 5. Array becomes [1,3,5,2,0]. mex is now 4, because 0,1,2,3 are present, 4 is missing.
+
+So, mex is 4.
+
+Step 5: mex is 4. Replace the maximum (3) with 4. Array becomes [1,4,5,2,0]. mex is now 3.
+
+Step 6: mex is 3. Replace the maximum (5) with 3. Array becomes [1,4,3,2,0]. mex is 5.
+
+But wait, this is getting out of hand.
+
+So, in this case, after 6 steps, the array becomes a permutation with mex 5.
+
+But n is 5.
+
+So,

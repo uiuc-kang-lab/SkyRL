@@ -1,0 +1,605 @@
+Okay, so I've got this problem to solve. Let's see what it's about. The problem is about finding the minimum possible median of an array after performing some operations. The operations involve choosing an element that's at least x and subtracting x from it. We can do this any number of times, and we need to find the minimum median for each query x.
+
+Hmm, first, I need to understand the problem clearly. Let's break it down.
+
+So, for each query x, we can perform operations where we subtract x from any a_i that's >= x. We can do this any number of times, so it's like choosing how many times to subtract x from each a_i that's eligible.
+
+The goal is to find the minimum possible median after these operations. The median is the middle element when the array is sorted. So, for an array of size n, if it's odd, it's the (n+1)/2-th element. If even, it's the n/2-th element.
+
+Wait, but the array size n can vary for each test case. So for each query x, I have to process the array in a way that allows me to compute the minimum median.
+
+Let me think about how to approach this. Since for each x, the operations are subtracting x from some elements, perhaps the key is to figure out which elements can be reduced as much as possible, and how that affects the median.
+
+I think the first step is to sort the array. Because the median is determined by the sorted array, and we want to minimize it, we need to arrange the elements in a way that the median is as small as possible.
+
+So, let's sort the array in non-decreasing order. Then, for each x, we can process the array to see what's the best way to subtract x's to minimize the median.
+
+Wait, but the operations allow us to subtract x any number of times. So, for each a_i >= x, we can subtract x as many times as we want. So for a_i, the maximum number of times we can subtract x is floor(a_i / x). But wait, no: each operation subtracts x once. So for a_i, the maximum possible is a_i // x times. Because each time you subtract x, a_i reduces by x. So, the maximum number of times you can subtract x from a_i is a_i // x.
+
+Wait, no: for example, if a_i is 5 and x is 2, you can subtract 2 twice, getting 1. So the maximum is 2 times (5//2 is 2). Yes.
+
+So, for each a_i, the maximum possible value after subtracting x as much as possible is (a_i - k*x), where k is the maximum possible (a_i // x).
+
+Wait, no. Because each subtraction is a single operation. So, the maximum number of times you can subtract x is the maximum k where a_i - k*x >=0. So k can be up to a_i // x.
+
+So, for a_i, you can reduce it to any value in the set {a_i - k*x | k >=0 and a_i -k*x >=0}.
+
+But for each a_i, the possible values after operations are a_i, a_i -x, a_i-2x, etc., down to 0 (if x is larger than a_i). But wait, the problem states that you can choose any number of operations, including zero. So, you can choose to perform zero operations on a_i, or any number up to a_i // x.
+
+Wait, but the problem allows us to perform the operation any number of times. So, the choice is to select which a_i's to subtract x from, and how many times, in such a way that the median is minimized.
+
+But since the operations can be applied to any a_i, perhaps the optimal strategy is to focus on the elements that can be reduced the most, especially those that are larger.
+
+So, perhaps the approach is to sort the array, and then for each x, determine which a_i's can be reduced, and see how that affects the median.
+
+Let me think: after sorting, the array is a_1 <= a_2 <= ... <= a_n.
+
+The median is the m-th element, where m is (n+1)//2 if n is odd, or n//2 if even.
+
+So, for each query x, I need to find the minimal possible median by possibly reducing some elements.
+
+The minimal median occurs when as many elements as possible are as small as possible, particularly focusing on the elements that contribute to the median.
+
+So, perhaps the approach is to find out, for each x, how many elements can be reduced to a value that's as small as possible, especially the ones that are in the median position.
+
+Let me think about the sorted array. After sorting, the median is at position m-1 (assuming 0-based indexing, but wait n is the size. For example, n=5, m is 3, so the 3rd element is the median. So for 1-based, it's (n+1)//2. For 0-based, it's m-1, where m is (n+1)//2.
+
+So, for each x, I need to find the minimal possible a_i that can be in the m-th position after the operations.
+
+Wait, but after the operations, the array is not necessarily sorted. So, it's tricky.
+
+Alternatively, perhaps the minimal median is achieved by setting the m-th element as small as possible. So, the approach is to find for each x, the minimal value of a_i such that at least m elements are <= this value, after the operations.
+
+Wait, that might not be correct. Let me think again.
+
+The median is the m-th element in the sorted array. So, to minimize the median, we need to make sure that at least m elements are as small as possible, but the m-th element is as small as possible.
+
+So, perhaps the approach is to find the minimal possible value that can be achieved for the m-th element, considering that we can subtract x from some elements.
+
+So, for each x, the minimal median is the minimal possible value that is at least as large as the m-th element after some operations.
+
+Hmm, perhaps it's better to think in terms of binary search. For each x, can we find the minimal possible median by comparing certain values.
+
+Wait, perhaps the binary search approach can be applied here. For each x, we can perform a binary search on the possible values of the median, and check if it's possible to achieve that value given the operations.
+
+But considering the constraints, that might be time-consuming. Let's think of a better way.
+
+Another idea: for each x, we can find the minimal possible a_i (after any number of subtractions) such that at least m elements are <= that value, and then the median would be the m-th element.
+
+Wait, but that's not necessarily correct, because the m-th element is the median, but the minimal median is determined by the m-th element's value. So, perhaps the minimal median is the minimal possible value that is in the m-th position after the operations.
+
+So, perhaps the approach is to find for each x, the minimal possible value of a_i after the operations, such that at least m elements are <= that value.
+
+Wait, that sounds promising. So, for a given x, the minimal possible median is the minimal value v such that after subtracting x as much as possible from some elements, at least m elements are <= v.
+
+So, to find the minimal v, we can perform a binary search on v, and for each v, check if it's possible to have at least m elements that are <= v by subtracting x from some elements.
+
+But how to check this efficiently.
+
+Wait, let's think about this. For a given x, and a target v, we can compute for each a_i how much it can be reduced. For each a_i, the maximum it can be reduced is a_i - 0 (if we don't subtract anything) or a_i - k*x, where k is the maximum such that a_i - k*x >=0.
+
+But wait, no. For each a_i, the maximum it can be reduced to is a_i // x * x, but that's only if we subtract as much as possible.
+
+Wait, no. For a_i, the maximum possible reduction is (a_i // x) * x. So the maximum possible value after subtraction is a_i - (a_i // x) * x.
+
+Wait, no. If a_i is 5 and x is 2, 5//2 is 2, so maximum reduction is 2*2=4. So 5-4=1.
+
+Yes.
+
+So, for each a_i, the possible values it can take are a_i - k*x, where k is 0,1,..., a_i // x.
+
+So, for a given v, how many a_i's can be reduced to a value <= v?
+
+We can count for each a_i the maximum number of times we can subtract x such that a_i - k*x <= v.
+
+Which is equivalent to k >= (a_i - v) / x.
+
+But k has to be >=0.
+
+So, for each a_i, the minimal k required is max(0, (a_i - v) // x). Wait, no: wait, a_i - k*x <= v. So, k >= (a_i - v)/x.
+
+But since k must be an integer, the minimal k is ceiling( (a_i - v) / x ). Or, if (a_i - v) is negative, then k can be 0.
+
+So, for each a_i, the maximum number of times we can subtract x is the minimal k such that a_i -k*x <=v.
+
+Wait, perhaps I should think of it as for a_i, v can be at most a_i -k*x. So, to have a_i -k*x <=v, k >= (a_i -v)/x.
+
+But since k must be an integer >=0, the minimal k is max(0, (a_i -v + x -1) // x ). Wait, maybe I should compute k as the minimal number of subtractions needed to bring a_i down to at most v.
+
+So, for each a_i, the minimal number of subtractions k_i needed is max(0, ceil( (a_i - v)/x ) ).
+
+Wait, perhaps it's easier to compute the maximum number of subtractions allowed.
+
+Alternatively, for a given x and v, the number of elements that can be reduced to <=v is the number of a_i such that a_i - k*x <=v.
+
+But k can be any integer >=0, but the maximum k is a_i // x.
+
+So, for each a_i, the minimal k is (a_i -v + x -1) // x, but only if a_i >v. If a_i <=v, then no subtraction is needed.
+
+So, the condition is: for a_i >v, can we subtract k times such that a_i -k*x <=v.
+
+So, the maximum k is (a_i -v) // x, but only if a_i >v.
+
+So, for each a_i, if a_i >v, then we can subtract as much as possible to get it down to v or below.
+
+Wait, but a_i can be reduced to any value from a_i down to 0, in steps of x.
+
+So, for a given x and v, the number of a_i's that can be reduced to <=v is the number of a_i's where a_i <=v, plus the number of a_i's where a_i >v and (a_i -v) is divisible by x, or (a_i -v) //x is >=1.
+
+Wait, maybe it's easier to think of it as: for a_i, the maximum possible value is a_i -k*x, which is <=v. So, k >= (a_i -v)/x.
+
+So, for a_i >v, the minimal k is ceil( (a_i -v)/x ). So, if (a_i -v) is divisible by x, then k is exactly (a_i -v)/x. Otherwise, it's the ceiling.
+
+But since the number of subtractions can be any k up to a_i //x, the a_i can be reduced to any value from a_i -k*x, where k ranges from 0 to a_i//x.
+
+So, for a given a_i and x, the minimal number of subtractions needed to bring it down to <=v is k = max(0, (a_i -v + x -1) //x ).
+
+If this k is <= a_i//x, then a_i can be reduced to <=v.
+
+So, for each a_i, we can compute whether it can be reduced to <=v.
+
+So, the count is the number of a_i's that can be reduced to <=v.
+
+If this count is >=m, then v is a possible median value, and we can try to find a smaller v.
+
+So, the binary search approach would be for a given x, to find the minimal v such that at least m elements can be reduced to <=v.
+
+So, the steps for each x would be:
+
+1. Sort the array.
+
+2. Binary search on v between the current array's possible minimum and maximum. The minimum possible v is 0, the maximum possible is the current median, but wait, no. Because after subtracting x's, the elements can be as small as 0. So, the possible v can be as low as 0, but we're looking for the minimal v.
+
+Wait, but the median is the m-th element after the array is sorted. So, the minimal possible v is determined by how many elements can be reduced to be <=v.
+
+So, for a given x, we can binary search on v to find the minimal possible median.
+
+But how to perform the binary search.
+
+Wait, let's think about the binary search boundaries.
+
+The minimal possible median is at least the original median (but possibly lower). The maximum possible is the maximum a_i after any subtractions, which could be a_i - 0 (if no subtractions) or a_i - (a_i//x)*x, which is >=0.
+
+Wait, but the minimal possible median is the smallest possible a_i in the sorted array, which is the m-th element.
+
+So, for the binary search, the low can be 0, and high can be the maximum possible a_i, which is n (since a_i can be up to n).
+
+Wait, but n can be up to 1e5, and t is 1e4. So, for each test case, binary search on v could be log(n) steps, each step involving O(n) operations. So, for each test case, the time is O(n log n), which is acceptable, since the sum of n across test cases is 1e5.
+
+So, for each query x:
+
+- Sort the array.
+
+- Binary search for the minimal v such that the number of elements a_i that can be reduced to <=v is >= m.
+
+- The m is (n+1)//2.
+
+But how to compute the number of elements that can be reduced to <=v for a given x and v.
+
+So, for each a_i in the sorted array, after sorting, for each a_i, check if a_i <=v. If so, it contributes 1 to the count. Also, if a_i >v, then check if (a_i -v) is divisible by x, and (a_i -v) //x >=1. Or, more accurately, compute k = (a_i -v +x -1) //x. If k <= a_i //x, then a_i can be reduced to <=v.
+
+So, for each a_i, the condition is:
+
+if a_i <=v: count +=1
+
+else:
+
+   if (a_i -v) %x ==0 and (a_i -v)//x >=1: count +=1
+
+   else: no
+
+So, for each a_i, the condition is whether a_i can be reduced to <=v.
+
+So, for each a_i, we can compute this.
+
+So, the binary search would proceed as follows:
+
+low = 0
+
+high = max_possible_value (could be the maximum a_i after any possible subtraction, but perhaps higher than that. Let's think: the maximum a_i after subtraction is a_i - (a_i //x)*x, which is a_i %x. So, the maximum possible a_i can be as high as a_i %x, which is up to x-1. So, high can be the maximum a_i after any operation.
+
+Wait, but the maximum a_i after any operation is when we subtract as much as possible, which is a_i - (a_i //x)*x. Which is a_i mod x. So, the maximum possible value for any a_i is x-1.
+
+So, for high, we can set it to x-1.
+
+Wait, but if x is larger than a_i, then a_i mod x is a_i, so it's possible that some a_i's can be kept as is. So, high can be the maximum a_i in the array, but that's not correct.
+
+Wait, no. For example, if x is 1, then a_i can be reduced to 0, so the maximum possible a_i can be 0. So, high can be 0 in that case. But perhaps setting high to the maximum a_i in the array is sufficient.
+
+Wait, let's think: for a given x, the maximum possible v is when all a_i are reduced to 0, but that's not necessarily the case. So, for binary search, setting high to the maximum a_i in the array is correct, but let's see.
+
+Wait, no. Because for some a_i, after subtracting x, they can be reduced to a lower value. So, high can be the maximum possible a_i after any number of operations, which is the maximum of (a_i - (a_i //x)*x). So, it's a_i mod x, but if x is larger than a_i, then a_i mod x is a_i, but if x is 0, but x is >=1.
+
+So, for high, the maximum possible is the maximum of (a_i mod x) for all a_i, which is <=x-1.
+
+So, for binary search, the high can be x-1, but that's not necessarily correct. For example, if x is 2, and a_i is 3, then a_i mod x is 1, which is less than x-1 (which is 1). So, in that case, high can be 1. So, perhaps setting high to the maximum a_i - (a_i//x)*x is better.
+
+But perhaps for the purposes of binary search, it's easier to set high to the maximum possible a_i after any operation, which is the maximum a_i in the original array, since for x=1, you can reduce all a_i to 0, which is the minimum.
+
+Wait, but in the case where x is larger than some a_i, for example, a_i is 5 and x is 10. Then, a_i can be reduced to 5 or 0, but 5 is larger than 0. So, the maximum possible a_i after any operations is 5. So, high can be set to the maximum of all a_i.
+
+So, perhaps the high can be the maximum element in the array.
+
+So, for each query x:
+
+- Sort the array.
+
+- Compute m = (n+1)//2.
+
+- Binary search for the minimal v such that the count of a_i that can be reduced to <=v is >=m.
+
+Once we find the minimal v, that's the answer.
+
+So, the steps for each query x are:
+
+1. Sort the array.
+
+2. Compute m.
+
+3. Binary search on v between 0 and max_a (max of the array).
+
+4. For each mid in binary search:
+
+   a. For each a_i in the sorted array, determine if a_i can be reduced to <=mid.
+
+   b. Count the number of such a_i.
+
+   c. If the count >=m, then we can try to find a smaller v.
+
+   d. Else, we need to increase v.
+
+5. The minimal v is the answer.
+
+Now, the question is, how to implement this efficiently.
+
+Given that for each test case, the array is sorted, and for each query x, the binary search runs in log(max_a) steps, and each step involves O(n) operations.
+
+Given that n is up to 1e5 and t is up to 1e4, the total operations would be 1e4 * 1e5 * 20 = 2e9, which is too much.
+
+Wait, that's 2e9 operations, which is way beyond the acceptable time limit. So, this approach is not feasible.
+
+Hmm, so I need a better approach.
+
+Alternative idea: For each query x, determine the minimal possible median without binary search. Maybe find a way to compute it directly.
+
+Let me think about the sorted array. The median is the m-th element. So, to minimize this, we want as many elements as possible to be as small as possible, especially the m-th element.
+
+So, perhaps for each x, the minimal median is the (m)-th element in the array after subtracting x as much as possible.
+
+But how?
+
+Wait, perhaps the minimal possible median is the (m)-th element in the array after subtracting x as much as possible. But I'm not sure.
+
+Alternatively, perhaps the minimal median is the maximum between the m-th element in the original array and the (m)-th element after subtracting x as much as possible.
+
+Wait, no. Because subtracting x can only make elements smaller, so the m-th element can't be larger than it was. So, the minimal median can't be larger than the original m-th element.
+
+Wait, that's an important point. So, the minimal median is the m-th element after subtracting x as much as possible, but in a way that allows the m-th element to be as small as possible.
+
+So, perhaps for each query x, the minimal possible median is the (m)-th element of the array after subtracting x as much as possible, but considering that some elements can be reduced more than others.
+
+Wait, but how?
+
+Alternatively, for each x, the minimal median is the minimum of all possible a_i's after subtraction, such that at least m elements are <= that value.
+
+Wait, perhaps the minimal median is the maximum between the (m)-th element in the sorted array after subtracting x as much as possible, and the (m)-th element in the sorted array after any possible subtraction.
+
+No, I'm getting stuck.
+
+Another idea: For each query x, the minimal median is the smallest value v such that at least m elements can be reduced to <=v.
+
+As before, but the problem is the time complexity.
+
+We need a way to compute the count for a given v in O(1) time.
+
+Wait, perhaps precompute for each a_i, the minimal number of subtractions needed to bring it down to a certain value.
+
+But I'm not sure.
+
+Wait, for a given x and a_i, the maximum number of subtractions k that can be applied to a_i is floor(a_i /x). So, the possible values after subtraction are a_i - k*x, where k ranges from 0 to floor(a_i /x).
+
+So, for each a_i, the possible values it can be reduced to are a_i - k*x, for k >=0, up to a_i//x.
+
+So, for a given x, the number of possible values is a_i//x +1.
+
+But how to represent this.
+
+Wait, but for each a_i, the minimal k such that a_i -k*x <=v is k >= (a_i -v +x-1) //x.
+
+If this k is <= a_i//x, then a_i can be reduced to <=v.
+
+So, for a given v, the number of a_i's that can be reduced to <=v is the count of a_i's that satisfy this condition.
+
+So, the function is:
+
+count = sum over all a_i of 1 if a_i <=v else ( (a_i -v) %x ==0 and (a_i -v) //x >=1 )
+
+So, this function can be computed in O(n) time per query.
+
+Wait, but for n up to 1e5 and t up to 1e4, and each query being O(n log n) steps, the total time would be 1e4 * 1e5 * 20 = 2e9 operations, which is way too slow.
+
+So, this approach is not feasible.
+
+We need a more efficient way to compute the count for a given v.
+
+Alternative idea: Preprocess the array for each x.
+
+Wait, but x can be up to n, which is 1e5, and for each x, we'd have to process the array, which is O(n) per x. So, for t=1e4 and n=1e5, it's 1e9 operations, which is way too slow.
+
+So, that's not feasible.
+
+Hmm, perhaps we can find a way to compute the count for a given v without iterating through all a_i's.
+
+Let me think: for a given x and v, the count is the number of a_i's that are <=v, plus the number of a_i's that are >v and (a_i -v) is divisible by x and (a_i -v)/x >=1.
+
+So, for each v, the count is the number of a_i's <=v plus the number of a_i's in the range (v, a_i_max) that are congruent to v mod x, and the quotient is at least 1.
+
+Wait, perhaps we can precompute for each x, the sorted array, and then for each query x, perform a binary search on v to find the minimal v where the count is >=m.
+
+But the problem is, for each query x, binary search on v takes O(log(max_a)) steps, and each step is O(n) time.
+
+So, it's still O(n log max_a) per query.
+
+Which is 1e5 * 20 = 2e6 per test case, multiplied by t=1e4, gives 2e10 operations, which is way too slow.
+
+So, this approach is not feasible.
+
+We need a smarter way.
+
+Alternative Idea: Since x is up to 1e5, perhaps for each x, the minimal median can be found by looking at the m-th element after subtracting x as much as possible.
+
+But how?
+
+Wait, for each x, the minimal possible median is the m-th element in the sorted array after subtracting x as much as possible, but not necessarily in the sorted array.
+
+Wait, perhaps for each x, the minimal median is the minimal value of a_i - k*x, where k is the maximum possible such that a_i -k*x <=v, and v is the minimal median.
+
+No, that's not helpful.
+
+Alternative Idea: Let's think about the sorted array. The median is the m-th element. So, to minimize the median, we need to make as many elements as possible as small as possible, especially the m-th element.
+
+So, for each x, the minimal possible median is the minimal a_i in the sorted array after subtracting x as much as possible, but considering that the m-th element can be reduced as much as possible.
+
+Wait, but I'm not sure.
+
+Another Idea: For each x, the minimal possible median is the m-th element in the array after subtracting x as much as possible.
+
+Wait, but that can't be right because the m-th element can be reduced further.
+
+Wait, no, because the m-th element is the median. So, if we can reduce it to a smaller value, that would be better.
+
+So, perhaps the minimal median is the m-th element in the array after subtracting x as much as possible.
+
+But I'm not sure.
+
+Let's consider an example.
+
+Sample Input 1:
+
+n=3, q=1
+
+a = [2,3,4]
+
+x=1.
+
+After subtracting 1 from all elements, the array becomes [1,2,3], median is 2.
+
+But if x=2, then:
+
+a sorted is [2,3,4]
+
+For each a_i:
+
+a1=2: can be reduced to 0, 1, etc.
+
+a2=3: can be reduced to 1, 0.
+
+a3=4: can be reduced to 2,1,0.
+
+So, to find the minimal median after x=2.
+
+We can subtract 2 from a3, getting 2.
+
+So, the array becomes [2,3,2] sorted as [2,2,3]. Median is 2.
+
+Alternatively, subtract 2 from a2: [2,1,4], sorted [1,2,4], median is 2.
+
+So, the minimal median is 2.
+
+Which is the same as the m-th element in the original sorted array (m=2, a2 is 3). So, in this case, the median is 3, but after subtracting 2, it becomes 2, which is smaller.
+
+So, the minimal median is 2.
+
+Which is less than the original a2.
+
+So, in this case, the minimal median is achieved by subtracting x from some elements, and the minimal possible median is lower than the original a2.
+
+So, perhaps the minimal median is the m-th element after subtracting x from a certain number of elements.
+
+But how to find it.
+
+Alternative Idea: For each x, the minimal possible median is the m-th element in the sorted array after subtracting x as much as possible.
+
+Wait, but in the example above, the m-th element after subtracting x is 2, which is the minimal possible.
+
+Another example: a = [5, 5,5], x=2.
+
+Original sorted array: [5,5,5].
+
+m=2.
+
+If we subtract x=2 from the first two elements, we get [3,3,5]. Median is 3.
+
+But if we subtract x=2 from the second and third elements, we get [5,3,3]. Median is 3.
+
+Alternatively, subtract x=2 from the third element: 5,5,3. Median is 5. So, no.
+
+So, the minimal median is 3.
+
+Which is higher than the original m-th element (5), but that's not the case. Wait, in this case, the original m-th element is 5. But after subtracting x, the median is 3, which is lower.
+
+So, the minimal possible median is 3, which is lower than the original a2.
+
+So, the approach of taking the m-th element after subtracting x is not correct.
+
+So, the minimal median can be lower than the original a_m.
+
+So, that approach is not correct.
+
+Alternative Idea: For each x, the minimal possible median is the maximum between the m-th element in the array after subtracting x, and the (m+1)-th element in the array after subtracting x as much as possible.
+
+Wait, no. Not sure.
+
+Alternative Idea: For each x, the minimal possible median is the maximum among the m-th element in the array after subtracting x as much as possible, and the (m+1)-th element after subtracting x as much as possible.
+
+But I'm not sure.
+
+Wait, perhaps the minimal median is the maximum between the m-th element in the array after subtracting x as much as possible, and the (m+1)-th element in the array after subtracting x as much as possible.
+
+But I'm not sure.
+
+Another Idea: To find the minimal possible median, we need to find the minimal possible value of the m-th element after subtracting x as much as possible.
+
+So, for each x, the minimal possible median is the minimal value v such that at least m elements can be reduced to <=v.
+
+So, the function to compute for a given x is the minimal v that satisfies this condition.
+
+So, the approach is to compute for each x, this minimal v.
+
+But the problem is the time.
+
+So, perhaps precompute for each x, the sorted array, and then for each query x, perform a binary search on the possible v values.
+
+But with n up to 1e5 and q up to 1e4, this is not feasible.
+
+So, perhaps the solution is to find a way to compute the minimal median without binary search.
+
+Alternative Idea: The minimal median is the maximum between the m-th element and the (m+1)-th element in the array after subtracting x as much as possible.
+
+Wait, no. Because in the example where a = [5,5,5], x=2. After subtracting x from all, the array is [3,3,3], median is 3. So, the m-th element is 3, which is the minimal possible.
+
+But in another example, a = [5,5,5], x=1. Then, after subtracting x from all, array is [4,4,4], median is 4. So, the minimal median is 4, which is the m-th element.
+
+So, perhaps the minimal median is the m-th element in the array after subtracting x as much as possible.
+
+In that case, for each x, the minimal median is the m-th element in the array after subtracting x as much as possible.
+
+So, how do we compute this.
+
+For each x, subtract x as much as possible from all elements, then take the m-th element.
+
+But wait, in the first example I considered where a = [2,3,4], x=1. Subtracting x from all gives [1,2,3], median is 2. Which is the m-th element (m=2) of the original array, which is 3. So, the m-th element in the original array is 3, but after subtracting x, the median is 2, which is lower.
+
+So, this suggests that the minimal median is not always the m-th element after subtracting x.
+
+So, this Idea is incorrect.
+
+Another Idea: For each x, the minimal possible median is the minimum between the m-th element after subtracting x as much as possible, and the (m+1)-th element after subtracting x as much as possible.
+
+Wait, not sure.
+
+Alternative Idea: Perhaps, for each x, the minimal median is the maximum between the (m)-th element in the array after subtracting x as much as possible, and the (m+1)-th element in the array after subtracting x as much as possible.
+
+Wait, no, that seems to suggest that the minimal median is the larger of the two, which would be the (m+1)-th element. Which is not necessarily the case.
+
+So, perhaps this approach is not correct.
+
+Alternative Idea: Since the minimal median is the m-th element in the sorted array after subtracting x as much as possible, but some elements can be subtracted more, perhaps the minimal possible median is the maximum between the m-th element and the (m+1)-th elements after subtracting x.
+
+Wait, perhaps that's the case.
+
+Wait, for example, in the a = [5,5,5], x=2.
+
+After subtracting x, array is [3,3,3], median is 3.
+
+So, m-th element is 3, which is the minimal possible.
+
+In the a = [2,3,4], x=1.
+
+After subtracting x, array is [1,2,3], median is 2.
+
+Which is the m-th element (2 in 3 elements) of the original array, but the minimal possible.
+
+So, perhaps the minimal possible median is the m-th element in the array after subtracting x as much as possible.
+
+So, the approach is:
+
+For each x, subtract x as much as possible from all elements, then take the m-th element.
+
+So, the code can be written as follows:
+
+For each test case:
+
+   Read n, q.
+
+   Read the array a.
+
+   Sort a.
+
+   For each query x:
+
+      For each a_i in a:
+
+         subtract as much x as possible (i.e., k = a_i //x, a_i_new = a_i -k*x).
+
+      Sort the modified array.
+
+      The m-th element is the answer.
+
+But for n=1e5 and q=1e4, this is O(q*n), which is 1e9 operations, which is way too slow.
+
+So, that's not feasible.
+
+Alternative Idea: Precompute for each x, the sorted array after subtracting x as much as possible.
+
+But x can be up to 1e5, and for each x, the array is sorted.
+
+But for each x, the sorted array after subtracting x as much as possible is the same as the original array sorted, but each element is reduced to a_i mod x.
+
+Wait, no.
+
+Wait, for example, a_i =5, x=2.
+
+a_i mod x is 1.
+
+So, the modified array is [1,3,1], which when sorted is [1,1,3]. The m-th element is 1.
+
+But the original m-th element is 3.
+
+So, it's lower.
+
+So, the minimal median is the m-th element after subtracting x as much as possible.
+
+So, the code would be:
+
+For each test case:
+
+   Read n, q.
+
+   Read the array a.
+
+   Sort a.
+
+   For each query x:
+
+      Create a new array, where each element is a_i mod x.
+
+      Sort this new array.
+
+      The m-th element is the answer.
+
+But wait, no. Because when x is 3 and a_i is 5, a_i mod x is 2. But in the original array, 5 can be reduced to 2, but not further.
+
+So, the modified array is the same as a_i mod x, but we have to sort them.
+
+So, for each x, the minimal possible median is the m-th element of the sorted array after taking each a_i mod x.
+
+So, the code is:
+
+For each x:
+
+   Compute the modified array where each element is a_i mod x.
+
+   Sort the modified array.
+
+   The answer is modified_array[m-1], since m

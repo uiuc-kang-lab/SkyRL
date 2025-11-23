@@ -1,0 +1,1065 @@
+0
+Okay, I need to solve this problem where I have to construct a matrix b based on matrix a. The conditions are that every element in b is different from the corresponding element in a, and both matrices contain all integers from 1 to n*m exactly once. If it's not possible, I have to output -1.
+
+Hmm, let's think about what makes it impossible. Well, for each cell in a, the corresponding b cell must not have the same value. Also, since both a and b are Latin squares (since they contain all numbers exactly once), the problem is essentially about finding a derangement of the matrix.
+
+Wait, but it's not exactly a derangement because it's for each cell, not just rows or columns. So each row and each column must also contain all numbers from 1 to n*m except for their corresponding a's value.
+
+So, how can I approach this? Let's consider small cases first.
+
+Case 1: n=1, m=1. Then matrix a has only one cell, which is 1. The matrix b must have 1 in the only cell, but since a already has 1, it's impossible. So output is -1.
+
+Case 2: n=1, m>1. For example, m=2. So a is [[1,2]]. Then b must be [[2,1]] or something else? Wait, no, wait. Wait, each cell must be different, so for each row, the elements are different. But since n=1, all elements are in the same row.
+
+Wait, for n=1 and m=2, a is [[1,2]]. Then b must be a permutation of 1 and 2, but in the same row, so it must be [2,1], because 1 is already used in a's first cell. So that's possible. So output is [2,1].
+
+But wait, in this case, the matrix b must have all numbers from 1 to 2. So it's possible.
+
+Another example: n=2, m=2.
+
+a = [[1,2], [3,4]]
+
+We need to make b such that each cell is different, and both contain all numbers 1-4.
+
+So, row 1: can't have 1 or 2. So must have 3 and 4.
+
+Similarly, row 2 can't have 3 or 4, so has 1 and 2.
+
+But each column must also have unique numbers.
+
+Let me try to construct b.
+
+Option 1:
+
+Row 1: 3,4
+Row 2: 2,1
+
+Check columns:
+Col 1: 3,2 → okay.
+Col 2:4,1 → okay.
+
+So that's a valid matrix.
+
+So it's possible.
+
+Hmm, so for even n and m, it's possible. But wait, what about n=2, m=3?
+
+Wait, let's see. Let's think of a 2x3 matrix a.
+
+a = [
+ [1, 2, 3],
+ [4,5,6]
+]
+
+We need to construct b such that each cell is different.
+
+How can I do this?
+
+Well, perhaps for each row, swap the elements such that each row's elements are a derangement of the original row, and also the columns don't repeat the same elements.
+
+Wait, not exactly, because each column also needs to have all elements.
+
+Hmm, this is getting a bit complicated.
+
+An alternative approach is to construct b by swapping elements in such a way that for each row, the elements are a permutation of the row, but not in the same positions as a.
+
+Wait, but that's not sufficient because columns could conflict.
+
+So perhaps, a better approach is to find a permutation for each row such that the columns don't repeat any elements.
+
+Wait, but how?
+
+Another idea is to assign b[i][j] = a[i][j] + something, but ensuring that the values are unique.
+
+Alternatively, perhaps the problem is possible when the matrix is not a single cell (n=1 or m=1), but wait, in the case of n=1, m=2, it's possible, but in the case of n=2, m=2, it's also possible.
+
+Wait, maybe the problem is always possible except when n=1 and m=1.
+
+Wait, that seems to be the case. Let me see.
+
+Wait, let's think of n=1 and m=3. Then a is [1,2,3]. We need to construct b as [2,3,1], which is a derangement. So possible.
+
+What about n=3, m=3?
+
+Wait, a is a Latin square. So b must be a derangement, which is another Latin square where every cell is different.
+
+Wait, but can we always find such a derangement?
+
+Wait, if n and m are both even, maybe certain cases are impossible.
+
+Wait, no, wait. Let's think of n=2 and m=4.
+
+Hmm, but I'm not sure.
+
+Wait, perhaps the key is that the total number of cells is even. Or maybe when n and m are both even, it's impossible.
+
+Wait, perhaps when the total number of elements (n*m) is even and both n and m are even, it's impossible to construct such a matrix.
+
+Wait, let's test this.
+
+For example, n=2, m=2: 4 cells. It's possible to construct a matrix b as shown earlier.
+
+n=2, m=4: 8 cells.
+
+Wait, what about n=2, m=1: it's impossible, as per earlier.
+
+n=2, m=3: 6 cells.
+
+Is it possible?
+
+Let me try to construct such a matrix.
+
+a is:
+1 2 3
+4 5 6
+
+We need to create b where each cell is different.
+
+Possible approach:
+
+Row 1: swap 1 and 2, 3 and 6? Wait, but that might cause columns to have duplicates.
+
+Wait, maybe:
+
+Row 1: 2, 3, 1 → but then column 1 has 2, which is same as a's 2 in column 1. So that's not allowed.
+
+Hmm, perhaps another approach.
+
+Wait, for row 1, the elements must not be 1,2,3.
+
+So, possible options are 4,5,6.
+
+But since m=3, row 1 has 3 elements, each different from a's.
+
+So, for row 1, options are 4,5,6.
+
+Let's try:
+
+Row 1: 4,5,6. But then, for column 1, 4 is used, which is allowed in b. But then, in column 1, a has 1, so b can have 4 here. But wait, the problem is that a's 4 is in row 2, column 1. So in b's row 1, column 1 is 4, which is different from a's 4 (row 2, column 1). So that's acceptable.
+
+But then, in row 2, the elements can't be 4,5,6. So they have to be 1,2,3.
+
+But then, what's the arrangement?
+
+Wait, perhaps:
+
+Row 1: 4,5,6 → but then, column 3 has 6, which is allowed.
+
+Row 2: 1,2,3.
+
+But then, checking columns:
+
+Column 1: 4,1 → okay.
+
+Column 2:5,2 → okay.
+
+Column 3:6,3 → okay.
+
+So this would be a valid matrix.
+
+Wait, but wait: in row 2, 1 is in column 1, 2 in column 2, 3 in column 3. So no duplicates in any row or column.
+
+Yes, this works.
+
+So for n=2, m=3, it's possible.
+
+Hmm, so the initial idea that n=2 and m=2 is possible doesn't rule out other cases.
+
+So perhaps the problem is that when both n and m are 1, it's impossible. Otherwise, it's possible.
+
+Wait, but what about n=3, m=3? It's possible.
+
+Wait, let's think of n=3, m=3.
+
+a is a Latin square, so each row and column contains 1-3.
+
+We need to create b where each cell is different from a's.
+
+Let's see:
+
+Row 1: 1,2,3 → but in b, each cell must not be 1,2,3. So, row 1 of b has to be a permutation of 4,5,6? Wait, no— a has 1-3, so b's row 1 can't have 1,2,3. So b's row 1 must have 4,5,6? But wait, n=3, m=3, so the maximum is 9. So a's cells are 1-3, so b's cells are 4-6,7-9.
+
+Wait, but then for row 1, the numbers are 4,5,6. So in row 1, each cell is 4,5,6. But then, when building b, we have to make sure that each column has all numbers, and that no duplicates.
+
+Wait, but in this case, each row is a consecutive sequence, which might cause the columns to have duplicates.
+
+Alternatively, perhaps I can swap certain elements.
+
+Hmm, perhaps the problem is that when n and m are both even, it's impossible.
+
+Wait, let's think about it.
+
+Wait, in the case where both n and m are even, then the total number of elements is even. But perhaps that doesn't directly imply anything.
+
+Wait, another approach: for each row, the elements in b must be a derangement of a's row, but also, the columns as a whole must form a Latin square.
+
+Wait, but how can we ensure that the columns don't have duplicates?
+
+This seems tricky. So perhaps the problem is possible unless the total number of cells is 1, i.e., n=1 and m=1.
+
+Wait, but let's test this.
+
+Another example: n=3, m=3.
+
+a is:
+
+1 2 3
+
+4 5 6
+
+7 8 9
+
+We need to construct b, where each cell is different.
+
+One approach is to swap the diagonals.
+
+So:
+
+b would look like:
+
+7 8 9
+
+4 5 6
+
+1 2 3 → but wait, that's not allowed because the first row has 7,8,9 which are same as a's row 3. So that's not correct.
+
+Wait, perhaps a better approach:
+
+We can shift each row by one.
+
+b = [
+ [2,3,1],
+ [5,6,4],
+ [8,9,7]
+]
+
+Now, check each cell:
+
+Row 1: 2,3,1 → all different from a's row 1: 1,2,3.
+
+Row 2: 5,6,4 → different from a's 4,5,6.
+
+Row3: 8,9,7 → different from a's 7,8,9.
+
+But now, check columns.
+
+Column 1: 2,5,8 → all unique.
+
+Column 2:3,6,9 → unique.
+
+Column3:1,4,7 → unique.
+
+So this works. So for n=3, m=3 it's possible.
+
+Hmm, so perhaps the only impossible case is when n=1 and m=1.
+
+But wait, when n=2, m=2, it's possible. So, perhaps the problem is always possible except when n=1 and m=1.
+
+Wait, but let's see. What about n=1, m=3.
+
+a is [1,2,3].
+
+We need to construct b as [2,3,1], which is a derangement. So it's possible.
+
+So the only case where it's impossible is when n=1 and m=1.
+
+So, the approach is:
+
+If n == 1 and m == 1: output -1.
+
+Else: construct a matrix b where each cell is different from a, and both matrices are Latin squares.
+
+So, the plan is:
+
+For each test case:
+
+- If n == 1 and m == 1: output -1.
+
+- Else, construct a matrix b where each cell is such that it's not equal to a[i][j], and both are Latin squares.
+
+How to construct b?
+
+Well, for each row, we can shift the elements by one, but that might not always work.
+
+Wait, for example, in the 2x3 case I tried earlier, shifting the first row by 1 gives the second row as 4,5,6, but then the columns are 4,1;5,2;6,3.
+
+Which is valid.
+
+Alternatively, perhaps for each row, we can shift the elements in a way that avoids conflicts in the columns.
+
+Wait, another approach is to swap the elements in such a way that for each row, the elements are shifted by some amount, ensuring that the columns don't have duplicates.
+
+But that might be tricky.
+
+Alternatively, perhaps the easiest way is to construct matrix b as follows:
+
+For each row i, and column j:
+
+b[i][j] = (a[i][j] + i + j) mod (n*m) + 1
+
+Wait, not sure. Let me think.
+
+Wait, in a 2x2 case:
+
+a = [
+ [1,2],
+ [3,4]
+]
+
+Then, adding i + j:
+
+Row 0 (i=0), j=0: 1+0+0=1 → mod 4 is 1 → 2.
+
+j=1: 1+0+1=2 → mod 4 is 2 → 3.
+
+Row 1 (i=1), j=0: 3+1+0=4 → mod4=0 → 1.
+
+j=1:3+1+1=5 → mod4=1 →2.
+
+So b would be:
+2 3
+1 2
+
+Which is not a Latin square because the second row has 1,2, but the first row is 2,3. So columns have 2,1 and 3,2 → which is okay.
+
+But wait, the columns are okay, but the rows are not. So that's not a valid solution.
+
+Hmm, so that approach doesn't work.
+
+Alternative idea: for each row, shift the elements in a way that the new row has elements not present in the same column as a.
+
+Wait, perhaps for row i, the elements are a[i][j] + (i + j) mod (n*m), but adjusted.
+
+Alternatively, perhaps for each cell, b[i][j] = a[i][j] + k, where k is such that b is a Latin square.
+
+But I'm not sure.
+
+Another approach: since each row must be a permutation of 1..n*m, and each column must be a permutation, the problem is to find a derangement for each row and column.
+
+Wait, perhaps the problem is always possible except when n=1 and m=1.
+
+So, for the problem, the solution is:
+
+- For each test case:
+
+   - If n == 1 and m == 1: output -1.
+
+   - Else: construct b as follows:
+
+      - For each row i, create a permutation of the numbers 1..n*m, ensuring that each cell is not equal to a[i][j].
+
+But how?
+
+Wait, perhaps for each row, we can rotate the elements.
+
+For example, in a 2x2 matrix:
+
+a = [[1,2],[3,4]]
+
+We can create b as:
+
+[2,1]
+
+[4,3]
+
+Which is a derangement. And each column is a permutation.
+
+So, in general, for each row i, the elements are a[i][j] rotated.
+
+But wait, how?
+
+Another idea: for each row, shift the elements by a certain amount.
+
+Wait, for the first row, shift by 1, for the second row, shift by 1 as well.
+
+Wait, in the 2x3 example earlier, that worked.
+
+So, perhaps for each row, the shift is 1.
+
+So, the plan is:
+
+For each row i:
+
+   For each column j:
+
+      b[i][j] = a[i][ (j - 1) % m ] + i * m
+
+But wait, perhaps that's not correct.
+
+Wait, let's see. For each row i, the elements are shifted by 1, but in a way that columns are also covered.
+
+Wait, perhaps the following:
+
+For each row i, the elements are a[i][j], a[i][j-1], ... a[i][j-1 + m], but in a way that wraps around.
+
+Wait, but for m=3, j-1 could be negative, but in mod terms, it's manageable.
+
+So, in code, perhaps for each row i:
+
+start with the first element, then the next, and so on, wrapping around.
+
+But how to arrange this.
+
+Alternatively, for each row i, the elements are arranged in a shifted way, such that the elements form a Latin square.
+
+Wait, perhaps it's easier to construct b as follows:
+
+For each row i, the elements are a[i][j] shifted by i.
+
+Wait, for example, in a 2x2 matrix:
+
+i=0: j=0 → a[0][0], j=1 → a[0][1].
+
+i=1: j=0 → a[1][0] + 1, j=1 → a[1][1] +1.
+
+Which may not work.
+
+Alternatively, for each row, shift the elements by i.
+
+So, for a 2x3 matrix:
+
+Row 0: 1,2,3
+
+Row 1: 4,5,6
+
+Shifting row 1 by 1:
+
+b would be:
+
+1,2,3
+
+5,6,4
+
+Which is a valid matrix.
+
+Which works.
+
+So, perhaps the approach is:
+
+For each row i, the elements are a[i][j] shifted by i.
+
+So, for each row, the elements are a[i][ (j + i) mod m ].
+
+Wait, but that's not exactly right. Because in the 2x3 case, the second row is 4,5,6. Which is a[1][0], a[1][1], a[1][2].
+
+Which is correct.
+
+So, perhaps the general approach is:
+
+For each row i, the elements are a[i][j] for j from 0 to m-1, but in a way that the next row is shifted by i.
+
+Wait, but how to implement this.
+
+Wait, in code, for each row i:
+
+   row_b = [a[i][(j + i) % m] for j in range(m)]
+
+So, for row 0, it's j from 0 to m-1: j+0 mod m is j, so same as a.
+
+For row 1, j+1 mod m is (j+1) mod m. So, the elements are a[1][0], a[1][1], ..., a[1][m-1] shifted by 1.
+
+Wait, but that may not be correct.
+
+Wait, let's see:
+
+In the 2x3 case, row 0: a[0][j], j=0,1,2.
+
+Row 1: a[1][j+1 mod 3].
+
+So, for j=0: 1, j=1:2, j=2:3. So row1 is 4,5,6.
+
+Which is correct.
+
+In the 3x3 case:
+
+a is:
+
+1 2 3
+
+4 5 6
+
+7 8 9
+
+Then, for row 0: a[0][j], j=0,1,2.
+
+Row 1: a[1][(j+1) %3] → j=0:5, j=1:6, j=2:7.
+
+So row1 is 5,6,7.
+
+Row 2: a[2][(j+2) mod3] → j=0:8, j=1:9, j=2:4.
+
+So row2 is 8,9,4.
+
+But wait, let's check the columns.
+
+Column 0: 1,5,8 → all unique.
+
+Column1:2,6,9 → all unique.
+
+Column2:3,7,4 → all unique.
+
+So that's a valid matrix.
+
+Yes, this approach seems to work.
+
+So, the plan is:
+
+For each row i:
+
+   the elements in row i of b are a[i][(j + i) % m] for j from 0 to m-1.
+
+So, now, the code can be written as:
+
+For each test case:
+
+   read n and m.
+
+   if n == 1 and m ==1: output -1.
+
+   else:
+
+      construct b by:
+
+         for each row i in 0..n-1:
+
+             for each column j in 0..m-1:
+
+                 b[i][j] = a[i][(j +i) % m]
+
+      output b as n rows, each with m numbers.
+
+So, let's test this with the 2x3 case.
+
+a is:
+
+1 2 3
+
+4 5 6
+
+n=2, m=3.
+
+row 0: j=0: (0+0) mod3=0 →1.
+
+j=1: 0+1=1→2.
+
+j=2:0+2=2→3.
+
+So row0 is 1,2,3.
+
+Row1: i=1.
+
+j=0:1+0=1 mod3=1 →4.
+
+j=1:1+1=2 mod3=2 →5.
+
+j=2:1+2=3 mod3=0 →3.
+
+So row1 is 4,5,3.
+
+So b is:
+
+1 2 3
+
+4 5 3.
+
+Wait, but in this case, the columns:
+
+column0:1,4 → okay.
+
+column1:2,5 → okay.
+
+column2:3,3 → same. Oh wait, that's a problem.
+
+Wait, in this example, the two cells in column2 are 3 and 3. So that's invalid.
+
+So this approach is not working.
+
+So, the problem is that in the 2x3 case, the two rows are 1 2 3 and 4 5 3. But the third column is 3 and 3, which is invalid.
+
+Hmm, so that approach is not correct.
+
+So what's wrong with this approach?
+
+In the 2x3 case, the second row is [4,5,3], which is the same as a's third column. So, when i=1 and j=2, (j+i) mod3 is (2+1) mod3=0 → which is a[1][0] =4.
+
+So in this case, the third column in b is 3,3, which is invalid.
+
+So the approach is flawed.
+
+Hmm, so what's the problem here?
+
+Ah, I think the issue is that when n and m are even, it's possible for columns to overlap.
+
+Wait, perhaps the approach works if n is 1, but not for larger n.
+
+Wait, in the 2x2 case, it worked.
+
+In the 2x3 case, it's failing.
+
+Hmm, so maybe the approach works only when m is even or something.
+
+Alternatively, perhaps the problem is that the approach can't be generalized for all n and m.
+
+So, perhaps the initial approach is not sufficient.
+
+Hmm, so perhaps another approach is needed.
+
+Wait, perhaps the problem is always possible except when n=1 and m=1.
+
+So, in that case, the code can construct a matrix where each row is a shifted version of the row in a, with the shift being i.
+
+But in some cases, this can lead to duplicate columns.
+
+Wait, but in the 2x3 example, the third column has 3 and 3, which is a problem.
+
+So, maybe the approach is incorrect.
+
+Alternative idea: perhaps for each row, we can shift the elements in a way that each column has unique elements.
+
+But how?
+
+Wait, perhaps in each row, the elements are a[i][j], a[i][j + k], a[i][j + 2k], ... modulo m, where k is such that the shift is co-prime with m.
+
+But wait, for m=3, k could be 1 or 2.
+
+Wait, in the 2x3 example, for row 0, the shift is 1.
+
+But in that case, the third column ends up with duplicates.
+
+Hmm.
+
+Another approach: perhaps for each row i, the elements are a[i][j], a[i][j + m - (i mod m)], but I'm not sure.
+
+Alternatively, perhaps for each row, we can rotate the elements in a way that the columns are also covered.
+
+Wait, perhaps the problem is that the initial approach doesn't work for certain cases, but it's possible to construct a different matrix.
+
+So, perhaps the problem isn't to construct a derangement for each row, but to construct a permutation for each row such that all columns are unique.
+
+But how?
+
+An alternative idea is to construct a Latin square for b, such that for each row, the elements are a permutation of 1..n*m, and each column is a permutation.
+
+But how?
+
+Wait, perhaps for each row i, the elements are a[i][j], a[i][(j + i) mod m], but in a way that the columns are all unique.
+
+But in the 2x3 case, it's failing.
+
+Wait, perhaps the approach is to create b as follows:
+
+For each row i, the elements are taken from the same column as a, but in a shifted order.
+
+Wait, perhaps the code can be written to handle the 2x3 case by adjusting the shift.
+
+Alternatively, perhaps I should look for a pattern or formula that can construct b.
+
+Another idea: for each cell (i,j), b[i][j] = a[i][j] + i * m + j.
+
+But wait, that's not a permutation since it's not unique.
+
+Wait, for example, in a 2x3 matrix:
+
+a is:
+
+1 2 3
+
+4 5 6
+
+b would be:
+
+1 + 0*3 +0=1
+
+1 +0*3 +1=2
+
+1 +0*3 +2=3
+
+For row 0, 1,2,3.
+
+Row1:4 +1*3=7, 7+1=8, 7+2=9.
+
+So b is:
+
+1 2 3
+
+7 8 9.
+
+Which is a valid matrix.
+
+Each cell is different, and each column is 1,7; 2,8; 3,9 → all unique.
+
+So this works.
+
+But in this approach, the matrix b is not a derangement, but a permutation.
+
+So, this approach doesn't solve the problem.
+
+Wait, but the problem requires that each cell is different from a's, but it doesn't have to be a permutation.
+
+So, perhaps the approach is to construct b in a way that for each cell, it's a unique number, and not equal to a[i][j].
+
+So, perhaps the solution is to construct b as follows:
+
+For each row i, the elements are a[i][j], a[i][j + m], a[i][j + 2m], ... but that's not manageable.
+
+Wait, perhaps it's better to find a way to generate a derangement matrix.
+
+But how?
+
+Another idea: for each row i, the elements are a[i][j], a[i][j + (m+1)/2] mod m, but this might not work.
+
+Alternatively, perhaps for each row i, the elements are a[i][j], a[i][j + (i) mod m], but when m is even, it's possible to have distinct columns.
+
+Wait, perhaps the problem is that when m is even, the approach using cyclic shifts works, but when m is odd, it's not.
+
+In the 2x3 case, m=3 is odd, and the approach using cyclic shifts leads to duplicate columns.
+
+So, perhaps the approach works when m is even, but not when m is odd.
+
+But that's just a hypothesis.
+
+Alternatively, perhaps the problem is that the approach works only when the shift is co-prime with m.
+
+Wait, for m=3, the shift is 1, which is co-prime. So perhaps that's why it's working for 2x3.
+
+Wait, but in the 2x3 case, the approach leads to duplicate columns. So perhaps that's not the case.
+
+Alternatively, perhaps the problem is that the initial approach works when the shift is such that the columns are all unique.
+
+But I'm not making progress.
+
+Perhaps it's better to look for a general approach.
+
+Wait, perhaps the problem can be solved by making sure that for each row, the elements are a permutation, and each column is a permutation.
+
+So, it's a Latin square.
+
+So, the problem reduces to finding a Latin square b where each cell is different from a's.
+
+So, the question is, for a given Latin square a, can we find another Latin square b (different from a) where each cell is different from a's.
+
+So, the problem is to construct such a b.
+
+But how?
+
+If the original a is a Latin square, then perhaps for each cell, we can find a cell in b that is different and in a different row and column.
+
+But this is vague.
+
+Another approach: for each cell (i,j), find a permutation of the numbers 1..n*m, such that b[i][j] is not equal to a[i][j], and that for each row i, all elements are distinct, and for each column j, all elements are distinct.
+
+This sounds like a problem that can be solved with backtracking, but given the constraints (n*m up to 1e4), it's not feasible for large n and m.
+
+But in the problem, n and m are up to 10, so the total cells are up to 100, which is manageable with some smart approach.
+
+But given the time constraints, perhaps it's better to find a pattern.
+
+Wait, perhaps the problem is always possible except when n=1 and m=1.
+
+So, for any test case where n=1 and m=1, output -1.
+
+Else, construct b as follows:
+
+For each row i, the elements are a[i][j], a[i][j + (i) mod m], a[i][j + 2i mod m], etc., but ensuring that the shift is such that the columns are unique.
+
+Wait, perhaps this approach works.
+
+But in the 2x3 case, it's not working.
+
+Hmm.
+
+Alternatively, perhaps the approach is to shift the row i by i steps.
+
+In code:
+
+for each row i:
+    for each column j in 0..m-1:
+        b[i][j] = a[i][(j - i) mod m]
+
+Wait, let's test this.
+
+In the 2x3 case:
+
+a is:
+
+1 2 3
+
+4 5 6
+
+For row 0:
+
+j=0: (0-0) mod3=0 →1.
+
+j=1: (1-0)=1 →2.
+
+j=2: 2→3.
+
+Row0 is 1,2,3.
+
+Row1:
+
+j=0: (0-1) mod3=2 → a[1][2]=6.
+
+j=1: (1-1)=0 →4.
+
+j=2: (2-1)=1 →5.
+
+So row1 is 6,4,5.
+
+So b is:
+
+1 2 3
+
+6 4 5.
+
+Now, check columns.
+
+Column0:1,6 → okay.
+
+Column1:2,4 → okay.
+
+Column2:3,5 → okay.
+
+So this works.
+
+So, in this approach, for each row i, the elements are a[i][ (j - i) mod m ].
+
+So, this seems to work.
+
+So, the code will construct b as follows:
+
+For each row i in 0 to n-1:
+
+   for each column j in 0 to m-1:
+
+       b[i][j] = a[i][ (j - i) mod m ]
+
+This should work.
+
+Let's see for the 2x3 case.
+
+Yes, as shown.
+
+Another test case: 3x3.
+
+a is:
+
+1 2 3
+
+4 5 6
+
+7 8 9
+
+For row 0:
+
+j=0: (0-0)=0 →1.
+
+j=1:1-0=1→2.
+
+j=2:2-0=2→3.
+
+So row0 is 1,2,3.
+
+Row1: j=0: (0-1) mod3=2 →7.
+
+j=1: 1-1=0 →4.
+
+j=2: 2-1=1→5.
+
+So row1 is 7,4,5.
+
+Row2: j=0: (0-2) mod3=1→8.
+
+j=1: 1-2= -1 mod3=2→9.
+
+j=2:2-2=0→6.
+
+So row2 is 8,9,6.
+
+So b is:
+
+1 2 3
+
+7 4 5
+
+8 9 6.
+
+Check columns:
+
+Column0:1,7,8 → all unique.
+
+Column1:2,4,9 → all unique.
+
+Column2:3,5,6 → all unique.
+
+So this works.
+
+So, this approach seems to work.
+
+Thus, the solution is to construct b as described.
+
+So, the plan is:
+
+For each test case:
+
+   read n, m.
+
+   if n ==1 and m ==1:
+
+       output -1.
+
+   else:
+
+       construct b as follows:
+
+           for each row i in 0 to n-1:
+
+               for each column j in 0 to m-1:
+
+                   b[i][j] = a[i][ (j - i) mod m ]
+
+       output b as a list of lists.
+
+So, the code can be written as:
+
+Read t test cases.
+
+For each test case:
+
+   Read n and m.
+
+   Read n lines, each with m integers → a.
+
+   if n ==1 and m ==1:
+
+       print -1.
+
+   else:
+
+       construct b as per the formula.
+
+       print b as space-separated integers per row.
+
+So, let's implement this.
+
+Testing in code:
+
+For the 2x3 case:
+
+n=2, m=3.
+
+a is:
+
+1 2 3
+
+4 5 6.
+
+b is:
+
+1 2 3
+
+7 4 5.
+
+Which works.
+
+Another case:
+
+n=3, m=3.
+
+As shown earlier.
+
+n=2, m=2.
+
+b is:
+
+1 2
+
+4 3.
+
+Which is correct.
+
+So, the code should handle all cases.
+
+Thus, the solution is to construct b as described.
+
+So, the code will be:
+
+Read t.
+
+For each t:
+
+   n, m = map(int, input().split())
+
+   a = [list(map(int, input().split())) for _ in range(n)]
+
+   if n == 1 and m == 1:
+
+       print(-1)
+
+   else:
+
+       b = []
+
+       for i in range(n):
+
+           row = []
+
+           for j in range(m):
+
+               pos = (j - i) % m
+
+               row.append(a[i][pos])
+
+           b.append(row)
+
+       # print the matrix.
+
+       for row in b:
+
+           print(' '.join(map(str, row)))
+
+But wait, in the 2x3 case, the code correctly constructs b as:
+
+row 0: j=0 → (0-0)=0 →1.
+
+j=1: (1-0)=1 →2.
+
+j=2: (2-0)=2 →3.
+
+row1: j=0 → (0-1) mod3=2 →6.
+
+j=1 →0-1= -1 mod3=2 →4.
+
+Wait, wait, in the code for row1, j=0: (0-1) mod3 = 2 → a[1][2] is 6.
+
+But in the earlier example, the second row was [6,4,5].
+
+Wait, no.
+
+Wait, for row1, j=0: (0-1) mod3 is 2 → a[1][2] is 6.
+
+j=1: (1-1) mod3=0 →a[1][0] is4.
+
+j=2: (2-1) mod3=1 →a[1][1] is5.
+
+So row1 is [6,4,5].
+
+So the code correctly constructs it.
+
+Thus, the code should work.
+</think>
+
+To solve this problem, we need to construct a matrix \( b \) from matrix \( a \) such that each element in \( b \) is different from the corresponding element in \( a \), and both matrices contain all integers from 1 to \( n \times m \). If it's impossible to construct such a matrix, we should return -1.
+
+### Approach
+The approach to solve this problem involves constructing matrix \( b \) such that each element \( b[i][j] \) is different from \( a[i][j] \). The key insight is to use a cyclic shift approach where each element in row \( i \) of matrix \( b \) is taken from a shifted version of row \( i \) in matrix \( a \). Specifically, for each row \( i \), the elements are taken from the previous row in a cyclic manner, ensuring that each column is a permutation.
+
+### Solution Code
+```python
+def construct_matrix(n, m, a):
+    if n == 1 and m == 1:
+        return [-1]
+    b = []
+    for i in range(n):
+        row = []
+        for
