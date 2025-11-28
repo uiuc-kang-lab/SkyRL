@@ -624,7 +624,7 @@ def initialize_ray(cfg: DictConfig):
     excludes = []
     for file in os.listdir("."):
         if file.endswith(".out"):
-            excludes.append(file)
+            excludes.append("/data/yuxuan_zhu/SkyRL/skyrl-train/" + file)
 
     print(f"Excluding files from ray runtime env: {excludes}")
 

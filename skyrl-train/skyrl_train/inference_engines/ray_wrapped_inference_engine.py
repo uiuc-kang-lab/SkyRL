@@ -205,7 +205,7 @@ def create_ray_wrapped_inference_engines(
                     worker_extension_cls="skyrl_train.inference_engines.vllm.vllm_engine.WorkerWrap",
                     tensor_parallel_size=tensor_parallel_size,
                     pipeline_parallel_size=pipeline_parallel_size,
-                    enable_expert_parallel=expert_parallel_size > 1,
+                    enable_expert_parallel=True,
                     distributed_executor_backend=distributed_executor_backend,
                     seed=seed + i * data_parallel_size + dp_rank,
                     enable_prefix_caching=enable_prefix_caching,

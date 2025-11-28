@@ -38,8 +38,8 @@ class AgentLoopOutput:
     loss_mask: List[int]
     prompt_ids: List[int]
     rollout_logprobs: Optional[List[float]]
-    extra_metadata: Optional[Dict[str, Any]] = None
     env_metrics: Dict[str, Any]
+    extra_metadata: Optional[Dict[str, Any]] = None
 
 
 class SkyRLGymGenerator(GeneratorInterface):
@@ -328,7 +328,7 @@ class SkyRLGymGenerator(GeneratorInterface):
             loss_mask=loss_mask,
             prompt_ids=prompt_ids,
             rollout_logprobs=rollout_logprobs,
-            extra_metadata=env_step_output.get("metadata", {})
+            extra_metadata=env_step_output.get("metadata", {}),
             env_metrics=env_metrics,
         )
 
