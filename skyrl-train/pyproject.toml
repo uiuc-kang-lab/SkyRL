@@ -122,9 +122,9 @@ sandboxes = [
     "litellm[proxy]>=1.67.5",
 ]
 vllm = [
-    "vllm==0.11.0",
+    "vllm @ git+https://github.com/vllm-project/vllm.git@main",
     "flash-attn==2.8.3",
-    "torch==2.8.0",
+    "torch==2.9.0",
     "flashinfer-python",
     "flashinfer-jit-cache",
     "torchvision"
