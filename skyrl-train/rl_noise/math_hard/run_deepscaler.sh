@@ -67,8 +67,8 @@ uv run --isolated --extra vllm -m rl_noise.math_hard.main_math_hard \
   trainer.train_batch_size=64 \
   trainer.policy_mini_batch_size=64 \
   trainer.critic_mini_batch_size=64 \
-  trainer.micro_forward_batch_size_per_gpu=4 \
-  trainer.micro_train_batch_size_per_gpu=4 \
+  trainer.micro_forward_batch_size_per_gpu=2 \
+  trainer.micro_train_batch_size_per_gpu=2 \
   trainer.ckpt_interval=10 \
   trainer.max_prompt_length=1024 \
   generator.sampling_params.max_generate_length=3072 \
