@@ -23,7 +23,7 @@ dependencies = [
     "tqdm",
     "tensorboard",
     "func_timeout",
-    "transformers>=4.51.0",
+    "transformers[vllm]==4.57.0",
     "hydra-core==1.3.2",
     "accelerate",
     "torchdata",
@@ -95,12 +95,6 @@ vllm = [
     "torch==2.7.1",
     "flashinfer-python",
     "torchvision"
-]
-sglang = [
-    "sglang[srt,openai,torch_memory_saver]==0.4.8.post1",  # 0.4.9.post1 causes non-colocate weight broadcast to hang
-    "flashinfer-python",
-    "torch==2.7.1",
-    "torchvision",
 ]
 flashrl = [
     # TODO (sumanthrh): Shift to install from git source
