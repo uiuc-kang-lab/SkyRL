@@ -433,7 +433,7 @@ def initialize_ray(cfg: DictConfig):
     print(f"Excluding files from ray runtime env: {excludes}")
 
     env_vars = prepare_runtime_environment(cfg)
-    ray.init(runtime_env={"env_vars": env_vars, "excludes": excludes}, address="local", _temp_dir="/data/daniel_kang_group/tmp")
+    ray.init(runtime_env={"env_vars": env_vars, "excludes": excludes}, address="local", _temp_dir="/projects/illinois/eng/cs/ddkang/yxx404/tmp", num_cpus=16)
 
     # create the named ray actors for the registries to make available to all workers
     sync_registries()

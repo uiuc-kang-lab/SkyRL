@@ -1,6 +1,7 @@
 import datasets
 from datasets import load_dataset
 import os, argparse
+import json
 
 system_prompt = """
 When tackling complex reasoning tasks, you have access to the following actions. Use them as needed to progress through your thought process.
@@ -40,32 +41,16 @@ instruction_prompt = "Present the answer in LaTex format: \\boxed{Your answer}"
 def filter_by_ability(dataset, ability):
     return dataset.filter(lambda x: x["ability"] == ability)
 
-def make_map_fn(split: str, data_source: str):
+def make_map_fn_math_mlvr(split: str, data_source: str):
 
     def preprocess_fn(example, idx):
-        if "prompt" in example:
-            prompt = example.pop("prompt") 
-            assert isinstance(prompt, list), "Prompt should be a list of messages."
-            assert len(prompt) == 2
-            assert prompt[0]["role"] == "system"
-            assert prompt[1]["role"] == "user"
-        else:
-            question = example.pop("problem").strip() if "problem" in example else example.pop("question").strip()
-            prompt = [
-                {
-                    "role": "system",
-                    "content": system_prompt
-                },
-                {
-                    "role": "user", 
-                    "content": f"{question}\n\n{instruction_prompt}"
-                }
-            ]
+        prompt = example.pop("prompt") 
+        assert isinstance(prompt, list), "Prompt should be a list of messages."
+        assert len(prompt) == 2
+        assert prompt[0]["role"] == "system"
+        assert prompt[1]["role"] == "user"
 
-        if 'reward_model' in example:
-            answer = example.pop("reward_model")['ground_truth']
-        else:
-            answer = example.pop('answer')
+        answer = example.pop("reward_model")['ground_truth']
 
         data = {
             "data_source": data_source,
@@ -86,10 +71,60 @@ def make_map_fn(split: str, data_source: str):
 
     return preprocess_fn
 
+def make_map_fn_code(split: str, data_source: str):
+    
+    def preprocess_fn(example, idx):
+        question = example.pop("question")
+        if example['tests'] is None or len(example['tests']) == 0:
+            dropped = True
+            tests = []
+        
+        tests = example.pop("tests")
+
+        # Check inside the tests for any single giant number
+        def has_giant_number(obj):
+            if isinstance(obj, int) and len(str(abs(obj))) > max_single_number_digits:
+                return True
+            if isinstance(obj, list):
+                return any(has_giant_number(x) for x in obj)
+            if isinstance(obj, dict):
+                return any(has_giant_number(v) for v in obj.values())
+            return False
+        
+        if has_giant_number(tests):
+            print(f"Skipping example {idx}: contains giant number")
+            dropped = True
+            
+        ground_truth_str = json.dumps(tests)
+
+        if isinstance(question, dict):
+            # question = json.dumps(question)
+            print(question)
+
+        data = {
+            "data_source": data_source,
+            "prompt": prompt,
+            "env_class": "mlvr",
+            "reward_spec": {
+                "method": "rule", 
+                "ground_truth": str(answer)
+            },
+            "extra_info": {
+                "split": split,
+                "index": str(idx),
+                "answer": str(answer),
+                "question": prompt[1]['content'],
+            },
+            "dropped": dropped,
+        }
+        return data
+
+    return preprocess_fn
+
 def prepare_eurus_data():
     dataset = datasets.load_dataset("uiuc-kang-lab/eurus-2-math-100k", split="train")
 
-    dataset = dataset.map(function=make_map_fn("train", "eurus_math"), with_indices=True)
+    dataset = dataset.map(function=make_map_fn_math_mlvr("train", "eurus_math"), with_indices=True)
 
     # take the first 40k
     dataset = dataset.select(range(40000))
@@ -103,6 +138,12 @@ def prepare_eurus_data():
         print("\n")
 
     return dataset
+
+def prepare_code_data():
+    dataset = datasets.load_dataset('uiuc-kang-lab/code-100k-rl', split='train')
+    dataset = dataset.filter(lambda x: x['data_source'] in ['apps', 'lcbv5', 'primeintellect'])
+    print(f"size of code dataset: {len(dataset)}")
+
 
 def prepare_eurus_valid_data():
     dataset = datasets.load_dataset('PRIME-RL/Eurus-2-RL-Data', split='validation')
