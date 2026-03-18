@@ -62,7 +62,7 @@ uv run --isolated --extra fsdp -m skyrl.train.entrypoints.main_base \
   generator.batched=true \
   environment.env_class=gsm8k \
   generator.n_samples_per_prompt=5 \
-  generator.inference_engine.gpu_memory_utilization=0.6 \
+  generator.inference_engine.gpu_memory_utilization=0.8 \
   trainer.logger="$LOGGER" \
   trainer.project_name="gsm8k_0.5b_qlora" \
   trainer.run_name="gsm8k_0.5b_qlora_grpo_selective_layers" \
