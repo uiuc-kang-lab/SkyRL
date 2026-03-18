@@ -620,7 +620,7 @@ class TrainerConfig(BaseConfig):
     disable_fast_tokenizer: bool = False
     project_name: str = "skyrl"
     run_name: str = "test_run"
-    logger: str = "wandb"
+    logger: Union[str, List[str]] = "wandb"
     dump_data_batch: bool = False
     dump_eval_results: bool = True
     rope_scaling: Optional[Dict[str, Any]] = None
