@@ -89,7 +89,7 @@ uv run --isolated --extra fsdp -m examples.train.eurus_rl_math.main \
   generator.inference_engine.run_engines_locally=true \
   generator.inference_engine.weight_sync_backend=nccl \
   generator.inference_engine.async_engine=true \
-  generator.inference_engine.enforce_eager=true \
+  generator.inference_engine.enforce_eager=false \
   generator.batched=true \
   environment.env_class=eurus_rl_math \
   generator.n_samples_per_prompt=$group_size \
