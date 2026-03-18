@@ -747,13 +747,12 @@ def create_ray_wrapped_inference_engines_from_config(
         engine_kwargs["max_loras"] = 1
         engine_kwargs["fully_sharded_loras"] = cfg.generator.inference_engine.fully_sharded_loras
 
-        if cfg.generator.inference_engine.enforce_eager and cfg.generator.inference_engine.backend == "vllm":
+        if not cfg.generator.inference_engine.enforce_eager and cfg.generator.inference_engine.backend == "vllm":
             logger.warning(
-                "LoRA is enabled but generator.inference_engine.enforce_eager=true. "
+                "LoRA is enabled but generator.inference_engine.enforce_eager=false. "
                 "This combination causes significant performance degradation (2-3x slower generation). "
-                "Automatically setting enforce_eager=false for better performance. "
+                "Consider setting enforce_eager=true if you encounter CUDA graph capture issues. "
             )
-            engine_kwargs["enforce_eager"] = False
 
     if cfg.generator.rope_scaling is not None:
         engine_kwargs["rope_scaling"] = cfg.generator.rope_scaling

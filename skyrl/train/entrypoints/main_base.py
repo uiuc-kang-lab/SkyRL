@@ -80,13 +80,12 @@ def create_ray_wrapped_inference_engines_from_config(
 
         # TODO(devpatel): Bandaid solution, replace this once we have a better
         # solution for LoRA performance degradation on the vLLM side
-        if ie_cfg.enforce_eager and ie_cfg.backend == "vllm":
+        if not ie_cfg.enforce_eager and ie_cfg.backend == "vllm":
             logger.warning(
-                "LoRA is enabled but inference_engine.enforce_eager=true. "
+                "LoRA is enabled but inference_engine.enforce_eager=false. "
                 "This combination causes significant performance degradation (2-3x slower generation). "
-                "Automatically setting enforce_eager=false for better performance. "
+                "Consider setting enforce_eager=true if you encounter CUDA graph capture issues. "
             )
-            engine_kwargs["enforce_eager"] = False
 
     if cfg.generator.rope_scaling is not None:
         engine_kwargs["rope_scaling"] = cfg.generator.rope_scaling

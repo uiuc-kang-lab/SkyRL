@@ -55,7 +55,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-uv run --isolated --extra gpu -m examples.train.eurus_rl_math.main \
+uv run --isolated --extra fsdp -m examples.train.eurus_rl_math.main \
   data.train_data="['$DATA_DIR/train.parquet']" \
   data.val_data="['$DATA_DIR/validation.parquet']" \
   trainer.algorithm.advantage_estimator="grpo" \
@@ -67,7 +67,10 @@ uv run --isolated --extra gpu -m examples.train.eurus_rl_math.main \
   trainer.placement.policy_num_gpus_per_node=$NUM_GPUS \
   trainer.placement.ref_num_gpus_per_node=$NUM_GPUS \
   generator.inference_engine.num_engines=$NUM_GPUS \
+  trainer.policy.fsdp_config.wrap_policy.transformer_layer_cls_to_wrap="['Qwen3_5DecoderLayer']" \
+  trainer.ref.fsdp_config.wrap_policy.transformer_layer_cls_to_wrap="['Qwen3_5DecoderLayer']" \
   generator.inference_engine.tensor_parallel_size=$tensor_parallel_size \
+  generator.inference_engine.engine_init_kwargs.language_model_only=true \
   trainer.epochs=$epochs \
   trainer.eval_batch_size=$eval_batch_size \
   trainer.eval_before_train=false \
@@ -86,6 +89,7 @@ uv run --isolated --extra gpu -m examples.train.eurus_rl_math.main \
   generator.inference_engine.run_engines_locally=true \
   generator.inference_engine.weight_sync_backend=nccl \
   generator.inference_engine.async_engine=true \
+  generator.inference_engine.enforce_eager=true \
   generator.batched=true \
   environment.env_class=eurus_rl_math \
   generator.n_samples_per_prompt=$group_size \

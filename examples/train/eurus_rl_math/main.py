@@ -10,14 +10,16 @@ from skyrl.train.config import SkyRLTrainConfig
 from skyrl.train.utils import initialize_ray
 from skyrl.train.entrypoints.main_base import BasePPOExp, validate_cfg
 from skyrl_gym.envs import register
+from dotenv import load_dotenv
 
+load_dotenv()
 
 @ray.remote(num_cpus=1)
 def skyrl_entrypoint(cfg: SkyRLTrainConfig):
     # Register the multiply environment inside the entrypoint task (no need to modify the skyrl-gym package).
     register(
         id="eurus_rl_math",
-        entry_point="examples.eurus_rl_math.env:MathEnv",
+        entry_point="examples.train.eurus_rl_math.env:MathEnv",
     )
 
     # make sure that the training loop is not run on the head node.
