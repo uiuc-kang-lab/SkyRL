@@ -95,7 +95,7 @@ uv run --isolated --extra fsdp -m examples.train.eurus_rl_math.main \
   generator.n_samples_per_prompt=$group_size \
   generator.inference_engine.gpu_memory_utilization=0.8 \
   trainer.logger="$logger" \
-  trainer.project_name="rl_bound" \
+  trainer.project_name="rl_bounds" \
   trainer.run_name="$run_name" \
   trainer.resume_mode=latest \
   trainer.ckpt_path="$checkpoint_base_path/eurus_rl_math_qwen3.5-4b_lora_ckpt" \
