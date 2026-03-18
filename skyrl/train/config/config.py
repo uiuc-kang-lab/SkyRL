@@ -55,11 +55,33 @@ class SkyRLLoraConfig(BaseConfig):
     alpha: int = 16
     dropout: float = 0.0
     lora_sync_path: str = "/tmp/skyrl_lora_sync"
-    target_modules: str = "all-linear"
+    target_modules: Union[str, List[str]] = "all-linear"
     exclude_modules: Optional[str] = None
     init_method: str = "kaiming"
     """For FSDP, corresponds to ``init_lora_weights`` in PEFT.
     For Megatron, used for ``lora_A_init_method``; supports "xavier", "normal", "kaiming", "zero"."""
+    load_in_4bit: bool = False
+    """Enable NF4 4-bit quantization (QLoRA). FSDP backend only.
+    Requires ``rank > 0`` (LoRA must be enabled alongside quantization).
+    Incompatible with FSDP sharding: the model will NOT be wrapped with FSDP when this is True."""
+    layers_to_transform: Optional[List[int]] = None
+    """Transformer block indices to apply LoRA to (FSDP backend only).
+    When set, ``target_modules`` must be a list of strings, not a regex string like ``"all-linear"``.
+    Corresponds directly to PEFT's ``LoraConfig.layers_to_transform``."""
+
+    def __post_init__(self):
+        if self.load_in_4bit and self.rank == 0:
+            raise ValueError(
+                "SkyRLLoraConfig: 'load_in_4bit=True' requires LoRA to be enabled "
+                "(rank > 0). Quantization-only training is not supported."
+            )
+        if self.layers_to_transform is not None and isinstance(self.target_modules, str):
+            raise ValueError(
+                "SkyRLLoraConfig: 'layers_to_transform' requires 'target_modules' to be a "
+                "list of module name strings (e.g. ['q_proj', 'v_proj']), not a regex string "
+                f"like '{self.target_modules}'. PEFT does not support layers_to_transform "
+                "with a string pattern for target_modules."
+            )
 
 
 @dataclass

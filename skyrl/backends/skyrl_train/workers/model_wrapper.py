@@ -99,6 +99,7 @@ class HFModelWrapper(nn.Module):
         lora_init_method="kaiming",
         target_modules=None,
         exclude_modules=None,
+        layers_to_transform=None,
         device_map=None,
         temperature=1.0,
         use_liger_kernel=False,
@@ -194,6 +195,7 @@ class HFModelWrapper(nn.Module):
                     lora_dropout=lora_dropout,
                     bias="none",
                     init_lora_weights=True if lora_init_method == "kaiming" else lora_init_method,
+                    layers_to_transform=layers_to_transform,
                 )
                 self.model = get_peft_model(self.model, lora_config)
 

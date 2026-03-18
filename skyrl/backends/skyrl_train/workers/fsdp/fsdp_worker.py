@@ -2,6 +2,8 @@ from skyrl.train.utils.trainer_utils import get_rope_scaling_config, get_rope_th
 import ray
 import torch
 import torch.distributed
+import torch.optim as optim
+from transformers.trainer import get_scheduler
 from transformers import AutoConfig
 from torch.distributed.fsdp.api import ShardedStateDictConfig, StateDictType
 from torch.distributed.fsdp.fully_sharded_data_parallel import FullyShardedDataParallel as FSDP
@@ -128,6 +130,8 @@ class FSDPPolicyWorkerBase(PolicyWorkerBase):
 
     def init_model(self, model_path, num_training_steps: int = None):
         assert self.cfg.strategy in ("fsdp", "fsdp2")
+        lora_cfg = self.cfg.policy.model.lora
+
         strategy = FSDPStrategy(
             fsdp_config=self.cfg.policy.fsdp_config,
             optimizer_config=self.cfg.policy.optimizer_config,
@@ -140,26 +144,26 @@ class FSDPPolicyWorkerBase(PolicyWorkerBase):
         strategy.setup_distributed()
         self.strategy = strategy
 
-        self._is_lora = self.cfg.policy.model.lora.rank > 0
+        self._is_lora = lora_cfg.rank > 0
 
-        model_config = AutoConfig.from_pretrained(model_path, trust_remote_code=True)
-        init_context = get_init_weight_context_manager(
-            use_meta_tensor=not model_config.tie_word_embeddings, mesh=self.strategy.device_mesh
-        )
-        with init_context():
-
+        if lora_cfg.load_in_4bit:
+            # QLoRA path: BitsAndBytes NF4 quantization is incompatible with both
+            # meta-tensor init (BnB needs real weights to quantize) and FSDP sharding
+            # (FSDP cannot shard NF4 quantized tensors). Load directly to GPU on each
+            # rank and skip FSDP wrapping.
             wrapped_model = HFModelWrapper(
                 model_path,
                 use_flash_attention_2=self.cfg.flash_attn,
-                # NOTE (sumanthrh): Model initialization should always be in fp32
-                # during training
-                bf16=False,
-                lora_rank=self.cfg.policy.model.lora.rank,
-                lora_alpha=self.cfg.policy.model.lora.alpha,
-                lora_dropout=self.cfg.policy.model.lora.dropout,
-                lora_init_method=self.cfg.policy.model.lora.init_method,
-                target_modules=self.cfg.policy.model.lora.target_modules,
-                exclude_modules=self.cfg.policy.model.lora.exclude_modules,
+                bf16=True,  # BnB requires bf16 compute dtype
+                load_in_4bit=True,
+                lora_rank=lora_cfg.rank,
+                lora_alpha=lora_cfg.alpha,
+                lora_dropout=lora_cfg.dropout,
+                lora_init_method=lora_cfg.init_method,
+                target_modules=lora_cfg.target_modules,
+                exclude_modules=lora_cfg.exclude_modules,
+                layers_to_transform=lora_cfg.layers_to_transform,
+                device_map="auto",
                 sequence_parallel_size=self.cfg.policy.sequence_parallel_size,
                 use_sample_packing=self.cfg.use_sample_packing,
                 use_torch_compile=self.cfg.policy.use_torch_compile,
@@ -167,7 +171,6 @@ class FSDPPolicyWorkerBase(PolicyWorkerBase):
                 rope_theta=get_rope_theta_config(self.cfg),
                 model_config_kwargs=self.cfg.policy.model_config_kwargs,
             )
-            # in-place patch
             self._seq_parallel_monkey_patch(model=wrapped_model.model)
 
             if self.cfg.gradient_checkpointing:
@@ -175,12 +178,65 @@ class FSDPPolicyWorkerBase(PolicyWorkerBase):
                     gradient_checkpointing_kwargs={"use_reentrant": self.cfg.gradient_checkpointing_use_reentrant}
                 )
 
-        self.model, self.optimizer, self.scheduler = strategy.prepare(
-            (wrapped_model, None, None),
-        )
+            # Create optimizer and scheduler directly (mirrors FSDPStrategy._fsdp_init_train_model)
+            optim_config = self.cfg.policy.optimizer_config
+            optimizer = optim.AdamW(
+                wrapped_model.parameters(),
+                lr=optim_config.lr,
+                betas=tuple(optim_config.adam_betas),
+                weight_decay=optim_config.weight_decay,
+            )
+            scheduler = get_scheduler(
+                optim_config.scheduler,
+                optimizer,
+                num_warmup_steps=optim_config.num_warmup_steps,
+                num_training_steps=num_training_steps,
+            )
+            self.model = wrapped_model
+            self.optimizer = optimizer
+            self.scheduler = scheduler
+        else:
+            # Standard FSDP path
+            model_config = AutoConfig.from_pretrained(model_path, trust_remote_code=True)
+            init_context = get_init_weight_context_manager(
+                use_meta_tensor=not model_config.tie_word_embeddings, mesh=self.strategy.device_mesh
+            )
+            with init_context():
+                wrapped_model = HFModelWrapper(
+                    model_path,
+                    use_flash_attention_2=self.cfg.flash_attn,
+                    # NOTE (sumanthrh): Model initialization should always be in fp32
+                    # during training
+                    bf16=False,
+                    lora_rank=lora_cfg.rank,
+                    lora_alpha=lora_cfg.alpha,
+                    lora_dropout=lora_cfg.dropout,
+                    lora_init_method=lora_cfg.init_method,
+                    target_modules=lora_cfg.target_modules,
+                    exclude_modules=lora_cfg.exclude_modules,
+                    layers_to_transform=lora_cfg.layers_to_transform,
+                    sequence_parallel_size=self.cfg.policy.sequence_parallel_size,
+                    use_sample_packing=self.cfg.use_sample_packing,
+                    use_torch_compile=self.cfg.policy.use_torch_compile,
+                    rope_scaling=get_rope_scaling_config(self.cfg),
+                    rope_theta=get_rope_theta_config(self.cfg),
+                    model_config_kwargs=self.cfg.policy.model_config_kwargs,
+                )
+                # in-place patch
+                self._seq_parallel_monkey_patch(model=wrapped_model.model)
+
+                if self.cfg.gradient_checkpointing:
+                    wrapped_model.gradient_checkpointing_enable(
+                        gradient_checkpointing_kwargs={"use_reentrant": self.cfg.gradient_checkpointing_use_reentrant}
+                    )
+
+            self.model, self.optimizer, self.scheduler = strategy.prepare(
+                (wrapped_model, None, None),
+            )
+
         assert (
             self.optimizer is not None and self.scheduler is not None
-        ), "FSDP preparation should create optimizer and scheduler"
+        ), "Model preparation should create optimizer and scheduler"
 
     async def init_weight_sync_state(self, inference_engine_client, inference_engine_cfg: "InferenceEngineConfig"):
         # Call super first to set _transfer_strategy_cls and create sender/receivers
