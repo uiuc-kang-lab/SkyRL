@@ -100,7 +100,7 @@ uv run --isolated --extra fsdp -m examples.train.eurus_rl_math.main \
   generator.batched=true \
   environment.env_class=eurus_rl_math \
   generator.n_samples_per_prompt=$group_size \
-  generator.inference_engine.gpu_memory_utilization=0.5 \
+  generator.inference_engine.gpu_memory_utilization=0.8 \
   trainer.logger="$logger" \
   trainer.project_name="rl_bounds" \
   trainer.run_name="$run_name" \
