@@ -209,6 +209,27 @@ class HFModelWrapper(nn.Module):
                             if hasattr(module, "weight"):
                                 module = module.to(torch.bfloat16)
 
+                # ── Verification logging ──────────────────────────────────
+                trainable = [(n, p.shape, p.dtype) for n, p in self.model.named_parameters() if p.requires_grad]
+                total_params = sum(p.numel() for p in self.model.parameters())
+                trainable_params = sum(p.numel() for _, p, *_ in [(n, p) for n, p in self.model.named_parameters() if p.requires_grad])
+                logger.info(
+                    f"[LoRA] Trainable params: {trainable_params:,} / {total_params:,} "
+                    f"({100 * trainable_params / total_params:.4f}%)"
+                )
+                logger.info(f"[LoRA] Trainable parameter list ({len(trainable)} tensors):")
+                for name, shape, dtype in trainable:
+                    logger.info(f"  [LoRA]   {name}  shape={list(shape)}  dtype={dtype}")
+                if load_in_4bit:
+                    # Sample a few base model weights to confirm 4-bit storage
+                    logger.info("[QLoRA] Base model weight dtypes (sample):")
+                    shown = 0
+                    for name, param in self.model.named_parameters():
+                        if not param.requires_grad and shown < 5:
+                            logger.info(f"  [QLoRA]   {name}  dtype={param.dtype}  class={type(param).__name__}")
+                            shown += 1
+                # ─────────────────────────────────────────────────────────
+
             # MoE - balancing loss
             model_config = self.model.config.to_dict()
             if "output_router_logits" in model_config:
