@@ -58,7 +58,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 uv run --isolated --extra fsdp -m examples.train.eurus_rl_math.main \
-  data.train_data="['$DATA_DIR/train.parquet']" \
+  data.train_data="['$DATA_DIR/train_small.parquet']" \
   data.val_data="['$DATA_DIR/validation.parquet']" \
   trainer.algorithm.advantage_estimator="grpo" \
   trainer.policy.model.path=$model_path \
@@ -75,7 +75,7 @@ uv run --isolated --extra fsdp -m examples.train.eurus_rl_math.main \
   generator.inference_engine.engine_init_kwargs.language_model_only=true \
   trainer.epochs=$epochs \
   trainer.eval_batch_size=$eval_batch_size \
-  trainer.eval_before_train=false \
+  trainer.eval_before_train=true \
   trainer.eval_interval=$eval_interval \
   trainer.update_epochs_per_batch=1 \
   trainer.train_batch_size=$train_batch_size \
@@ -101,4 +101,6 @@ uv run --isolated --extra fsdp -m examples.train.eurus_rl_math.main \
   trainer.run_name="$run_name" \
   trainer.resume_mode=latest \
   trainer.ckpt_path="$checkpoint_base_path/$run_name" \
-  "${EXTRA_ARGS[@]}"
+  "${EXTRA_ARGS[@]}" \
+  trainer.export_path="/root/export/$run_name" 
+
