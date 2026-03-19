@@ -67,7 +67,7 @@ uv run --isolated --extra fsdp -m examples.train.eurus_rl_math.main \
   trainer.placement.colocate_all=true \
   trainer.policy.model.lora.rank=$lora_rank \
   trainer.policy.model.lora.alpha=$lora_alpha \
-  trainer.policy.model.lora.load_in_4bit=true \
+  trainer.policy.model.lora.load_in_4bit=false \
   "trainer.policy.model.lora.target_modules=$target_modules" \
   "trainer.policy.model.lora.layers_to_transform=$layers_to_transform" \
   trainer.strategy=fsdp2 \
@@ -105,5 +105,6 @@ uv run --isolated --extra fsdp -m examples.train.eurus_rl_math.main \
   trainer.project_name="rl_bounds" \
   trainer.run_name="$run_name" \
   trainer.resume_mode=latest \
-  trainer.ckpt_path="$checkpoint_base_path/eurus_rl_math_qwen3.5-4b_qlora_ckpt" \
+  trainer.ckpt_path="$checkpoint_base_path/$run_name" \
+  trainer.export_path="$export_base_path/$run_name" \
   "${EXTRA_ARGS[@]}"
