@@ -122,11 +122,12 @@ class FSDPStrategy(DistributedStrategy):
         else:
             model = model
 
+        _is_fsdp_model = isinstance(model, (FSDP, FSDPModule))
         if self.manual_offload:
-            if offload_model:
+            if offload_model and _is_fsdp_model:
                 offload_fsdp_model_to_cpu(model, empty_cache=True)
 
-            if optimizer is not None and self.manual_offload_optimizer and offload_optimizer:
+            if optimizer is not None and self.manual_offload_optimizer and offload_optimizer and _is_fsdp_model:
                 offload_fsdp_optimizer(optimizer)
 
         torch.cuda.synchronize()
@@ -139,11 +140,12 @@ class FSDPStrategy(DistributedStrategy):
         else:
             model = model
 
+        _is_fsdp_model = isinstance(model, (FSDP, FSDPModule))
         # if we are using fsdp 1 or cpu offload is off for fsdp2, then we need to manually backload weights/optimizer to gpu
         if self.manual_offload:
-            if backload_model:
+            if backload_model and _is_fsdp_model:
                 load_fsdp_model_to_gpu(model)
-            if optimizer is not None and self.manual_offload_optimizer and backload_optimizer:
+            if optimizer is not None and self.manual_offload_optimizer and backload_optimizer and _is_fsdp_model:
                 load_fsdp_optimizer(optimizer, torch.cuda.current_device())
 
         torch.cuda.synchronize()
