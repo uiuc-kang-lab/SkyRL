@@ -100,5 +100,5 @@ uv run --isolated --extra fsdp -m examples.train.eurus_rl_math.main \
   trainer.project_name="rl_bounds" \
   trainer.run_name="$run_name" \
   trainer.resume_mode=latest \
-  trainer.ckpt_path="$checkpoint_base_path/eurus_rl_math_qwen3.5-4b_lora_ckpt" \
+  trainer.ckpt_path="$checkpoint_base_path/$run_name" \
   "${EXTRA_ARGS[@]}"
