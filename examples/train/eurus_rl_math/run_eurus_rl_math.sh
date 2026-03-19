@@ -28,6 +28,7 @@ ckpt_interval=10
 lr=3e-5
 run_name="eurus_rl_math_qwen3.5-4b_lora_grpo"
 INFERENCE_BACKEND="vllm"
+model_path="Qwen/Qwen3.5-4B"
 
 # Parse --key value style arguments
 EXTRA_ARGS=()
@@ -51,6 +52,7 @@ while [[ $# -gt 0 ]]; do
     --ckpt_interval) ckpt_interval="$2"; shift 2 ;;
     --lr) lr="$2"; shift 2 ;;
     --run_name) run_name="$2"; shift 2 ;;
+    --model_path) model_path="$2"; shift 2 ;;
     *) EXTRA_ARGS+=("$1"); shift ;;
   esac
 done
@@ -59,7 +61,7 @@ uv run --isolated --extra fsdp -m examples.train.eurus_rl_math.main \
   data.train_data="['$DATA_DIR/train.parquet']" \
   data.val_data="['$DATA_DIR/validation.parquet']" \
   trainer.algorithm.advantage_estimator="grpo" \
-  trainer.policy.model.path="Qwen/Qwen3.5-4B" \
+  trainer.policy.model.path=$model_path \
   trainer.placement.colocate_all=true \
   trainer.policy.model.lora.rank=$lora_rank \
   trainer.policy.model.lora.alpha=$lora_alpha \
