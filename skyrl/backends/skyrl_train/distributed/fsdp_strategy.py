@@ -369,7 +369,8 @@ class FSDPStrategy(DistributedStrategy):
         """Save LoRA adapters in HuggingFace PEFT format"""
         from dataclasses import asdict
         from safetensors.torch import save_file
-        from skyrl.backends.skyrl_train.distributed.fsdp_utils import layered_summon_lora_params
+        from skyrl.backends.skyrl_train.distributed.fsdp_utils import layered_summon_lora_params, fsdp_version
+        from peft import get_peft_model_state_dict
 
         lora_save_path = os.path.join(ckpt_dir, "lora_adapter")
         peft_config = {}
@@ -382,7 +383,14 @@ class FSDPStrategy(DistributedStrategy):
                 peft_config["peft_type"] = peft_config["peft_type"].value
                 peft_config["target_modules"] = list(peft_config["target_modules"])
 
+        # For QLoRA (non-FSDP) models, layered_summon_lora_params returns empty because
+        # no submodules are FSDP-wrapped. Fall back to direct state dict extraction.
         lora_params = layered_summon_lora_params(model)
+        if len(lora_params) == 0:
+            lora_params = {
+                name: param.detach().cpu()
+                for name, param in get_peft_model_state_dict(model).items()
+            }
 
         if self.is_rank_0():
             save_file(lora_params, os.path.join(lora_save_path, "adapter_model.safetensors"))
