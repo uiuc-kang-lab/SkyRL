@@ -88,8 +88,11 @@ if __name__ == "__main__":
 
     train_dataset = train_dataset.map(function=make_map_fn("train"), with_indices=True)
     val_dataset = val_dataset.map(function=make_map_fn("test"), with_indices=True)
+    
+    train_small_dataset = train_dataset.select(range(64*20))
 
     output_dir = args.output_dir
     os.makedirs(output_dir, exist_ok=True)
     train_dataset.to_parquet(os.path.join(output_dir, "train.parquet"))
     val_dataset.to_parquet(os.path.join(output_dir, "validation.parquet"))
+    train_small_dataset.to_parquet(os.path.join(output_dir, "train_small.parquet"))
