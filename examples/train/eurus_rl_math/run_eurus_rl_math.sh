@@ -57,7 +57,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-uv run --isolated --extra fsdp -m examples.train.eurus_rl_math.main \
+uv run --extra fsdp -m examples.train.eurus_rl_math.main \
   data.train_data="['$DATA_DIR/train_small.parquet']" \
   data.val_data="['$DATA_DIR/validation.parquet']" \
   trainer.algorithm.advantage_estimator="grpo" \
@@ -75,7 +75,7 @@ uv run --isolated --extra fsdp -m examples.train.eurus_rl_math.main \
   generator.inference_engine.engine_init_kwargs.language_model_only=true \
   trainer.epochs=$epochs \
   trainer.eval_batch_size=$eval_batch_size \
-  trainer.eval_before_train=true \
+  trainer.eval_before_train=false \
   trainer.eval_interval=$eval_interval \
   trainer.update_epochs_per_batch=1 \
   trainer.train_batch_size=$train_batch_size \
@@ -95,7 +95,7 @@ uv run --isolated --extra fsdp -m examples.train.eurus_rl_math.main \
   generator.batched=true \
   environment.env_class=eurus_rl_math \
   generator.n_samples_per_prompt=$group_size \
-  generator.inference_engine.gpu_memory_utilization=0.5 \
+  generator.inference_engine.gpu_memory_utilization=0.8 \
   trainer.logger="$logger" \
   trainer.project_name="rl_bounds" \
   trainer.run_name="$run_name" \
