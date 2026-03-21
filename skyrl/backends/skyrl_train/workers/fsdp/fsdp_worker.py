@@ -292,13 +292,13 @@ class FSDPPolicyWorkerBase(PolicyWorkerBase):
 
             # --- LoRA weight sync diagnostics ---
             lora_keys = list(lora_params.keys())
-            lora_logger.info(f"[LoRA sync] Saving {len(lora_keys)} adapter tensors to {lora_sync_path}")
-            lora_logger.info(f"[LoRA sync] Sample keys (first 4): {lora_keys[:4]}")
+            print(f"[LoRA sync] Saving {len(lora_keys)} adapter tensors to {lora_sync_path}")
+            print(f"[LoRA sync] Sample keys (first 4): {lora_keys[:4]}")
             # Log L2 norms for a few lora_B weights to verify they change across steps
             lora_b_keys = [k for k in lora_keys if "lora_B" in k][:4]
             for k in lora_b_keys:
                 norm = lora_params[k].float().norm().item()
-                lora_logger.info(f"[LoRA sync] {k} | shape={tuple(lora_params[k].shape)} | L2={norm:.6f}")
+                print(f"[LoRA sync] {k} | shape={tuple(lora_params[k].shape)} | L2={norm:.6f}")
 
             # Save LoRA parameters and config
             save_file(lora_params, os.path.join(lora_sync_path, "adapter_model.safetensors"))
@@ -307,9 +307,9 @@ class FSDPPolicyWorkerBase(PolicyWorkerBase):
 
             # Send LoRA disk loading request to inference engine
             lora_request = LoraLoadRequest(lora_path=lora_sync_path)
-            lora_logger.info(f"[LoRA sync] Sending add_lora request to inference engine (path={lora_sync_path})")
+            print(f"[LoRA sync] Sending add_lora request to inference engine (path={lora_sync_path})")
             result = await inference_engine_client.update_named_weights(lora_request)
-            lora_logger.info(f"[LoRA sync] add_lora result: {result}")
+            print(f"[LoRA sync] add_lora result: {result}")
 
         torch.distributed.barrier()
 

@@ -30,6 +30,10 @@ run_name="eurus_rl_math_qwen3.5-4b_lora_grpo"
 INFERENCE_BACKEND="vllm"
 model_path="Qwen/Qwen3.5-4B"
 
+# TIS parameters
+TIS_IMP_RATIO_CAP=2.0
+USE_TIS=true
+
 # Parse --key value style arguments
 EXTRA_ARGS=()
 while [[ $# -gt 0 ]]; do
@@ -58,7 +62,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 uv run --extra fsdp -m examples.train.eurus_rl_math.main \
-  data.train_data="['$DATA_DIR/train_small.parquet']" \
+  data.train_data="['$DATA_DIR/train.parquet']" \
   data.val_data="['$DATA_DIR/validation.parquet']" \
   trainer.algorithm.advantage_estimator="grpo" \
   trainer.policy.model.path=$model_path \
@@ -87,7 +91,9 @@ uv run --extra fsdp -m examples.train.eurus_rl_math.main \
   trainer.max_prompt_length=$max_prompt_length \
   generator.sampling_params.max_generate_length=$max_generate_length \
   trainer.policy.optimizer_config.lr=$lr \
-  trainer.algorithm.use_kl_loss=false \
+  trainer.algorithm.use_kl_loss=true \
+  trainer.algorithm.use_tis=$USE_TIS \
+  trainer.algorithm.tis_imp_ratio_cap=$TIS_IMP_RATIO_CAP \
   generator.inference_engine.backend=$INFERENCE_BACKEND \
   generator.inference_engine.run_engines_locally=true \
   generator.inference_engine.weight_sync_backend=nccl \
