@@ -286,6 +286,8 @@ class FSDPPolicyWorkerBase(PolicyWorkerBase):
             peft_config["task_type"] = peft_config["task_type"].value
             peft_config["peft_type"] = peft_config["peft_type"].value
             peft_config["target_modules"] = list(peft_config["target_modules"])
+            if isinstance(peft_config.get("exclude_modules"), set):
+                peft_config["exclude_modules"] = list(peft_config["exclude_modules"])
 
             # Save LoRA parameters and config
             save_file(lora_params, os.path.join(lora_sync_path, "adapter_model.safetensors"))
