@@ -256,15 +256,28 @@ class FSDPPolicyWorkerBase(PolicyWorkerBase):
             ),
         )
 
-    async def _save_lora_adapters_and_sync(self, peft_model, lora_sync_path, inference_engine_client):
-        """Collect LoRA parameters, save and call inference engine to load."""
+    async def _save_lora_adapters_and_sync(self, peft_model, lora_sync_path, inference_engine_client, needs_lm_prefix=False):
+        """Collect LoRA parameters, save and call inference engine to load.
+
+        Args:
+            needs_lm_prefix: When True, remap PEFT adapter keys so that vLLM can
+                resolve them correctly for models whose vLLM class is
+                ForConditionalGeneration (e.g. Qwen3.5 with language_model_only=True).
+                See ``remap_peft_lora_keys_for_conditional_gen`` for details.
+        """
         import os
         import json
         from dataclasses import asdict
         from safetensors.torch import save_file
-        from skyrl.backends.skyrl_train.distributed.fsdp_utils import collect_lora_params
+        from skyrl.backends.skyrl_train.distributed.fsdp_utils import (
+            collect_lora_params,
+            remap_peft_lora_keys_for_conditional_gen,
+        )
 
         lora_params = collect_lora_params(module=self.model.model)
+
+        if needs_lm_prefix:
+            lora_params = remap_peft_lora_keys_for_conditional_gen(lora_params)
 
         if torch.distributed.get_rank() == 0:
             os.makedirs(lora_sync_path, exist_ok=True)
@@ -303,7 +316,20 @@ class FSDPPolicyWorkerBase(PolicyWorkerBase):
 
             # assume base model is already synced, sync LoRA adapters
             lora_sync_path = self.cfg.policy.model.lora.lora_sync_path
-            await self._save_lora_adapters_and_sync(peft_model, lora_sync_path, inference_engine_client)
+            # When language_model_only=True (e.g. Qwen3.5), vLLM uses
+            # ForConditionalGeneration whose LoRA layers are registered under
+            # "language_model.model.*", but PEFT on the CausalLM training model
+            # produces keys with "model.*". Remap before saving to disk.
+            needs_lm_prefix = inference_engine_cfg.engine_init_kwargs.get("language_model_only", False)
+            await self._save_lora_adapters_and_sync(
+                peft_model, lora_sync_path, inference_engine_client, needs_lm_prefix=needs_lm_prefix
+            )
+            # Await prefix cache reset here — the non-LoRA path does this at the
+            # end of the function, but we return early above, so we must handle it
+            # explicitly. Without this, stale KV cache entries (keyed by old LoRA
+            # IDs) accumulate across steps when enable_prefix_caching=True.
+            if cache_reset_task is not None:
+                await cache_reset_task
             return
 
         # Extract and send weights using the sender created at init time

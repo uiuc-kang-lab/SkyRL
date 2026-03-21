@@ -555,3 +555,45 @@ def collect_lora_params(module: FSDP) -> OrderedDict:
     else:
         lora_params = get_peft_model_state_dict(peft_model)
     return lora_params
+
+
+def remap_peft_lora_keys_for_conditional_gen(lora_params):
+    """Remap PEFT LoRA adapter keys for vLLM ForConditionalGeneration models.
+
+    When vLLM loads a model as ForConditionalGeneration (e.g. Qwen3.5 with
+    language_model_only=True), its LoRA layers are registered under
+    ``language_model.model.layers.*``.  However, PEFT applied to the HF
+    CausalLM training model (which has a top-level ``.model`` attribute)
+    produces adapter keys of the form::
+
+        base_model.model.model.layers.<n>.<module>.lora_{A,B}.weight
+
+    vLLM's ``parse_fine_tuned_lora_name`` strips the ``base_model.model.``
+    prefix, then applies the model's ``hf_to_vllm_mapper``.  The Qwen3VL
+    mapper only handles ``model.language_model.*`` → ``language_model.model.*``
+    and does NOT handle the plain ``model.layers.*`` path, so the resulting
+    ``module_name`` ends up as ``model.layers.*`` which matches nothing in the
+    vLLM model → all LoRA weights are silently discarded.
+
+    This function performs the necessary prefix remap before the adapter is
+    saved to disk::
+
+        base_model.model.model.* → base_model.model.language_model.model.*
+
+    After the remap, ``parse_fine_tuned_lora_name`` produces
+    ``language_model.model.layers.*``, which correctly matches the registered
+    vLLM LoRA layer paths.
+
+    Args:
+        lora_params: OrderedDict of adapter tensors as returned by
+            ``collect_lora_params`` / ``get_peft_model_state_dict``.
+
+    Returns:
+        A new OrderedDict with remapped keys and the same tensors.
+    """
+    old_prefix = "base_model.model.model."
+    new_prefix = "base_model.model.language_model.model."
+    return {
+        (new_prefix + k[len(old_prefix):] if k.startswith(old_prefix) else k): v
+        for k, v in lora_params.items()
+    }
