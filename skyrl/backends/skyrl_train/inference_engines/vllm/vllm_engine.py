@@ -33,7 +33,6 @@ from skyrl.backends.skyrl_train.inference_engines.base import (
 from skyrl.backends.skyrl_train.weight_sync import WeightLoader, WeightUpdateRequest
 from skyrl.backends.skyrl_train.inference_engines.vllm.utils import pop_openai_kwargs
 from loguru import logger
-import time
 from packaging import version
 
 
@@ -93,6 +92,12 @@ class BaseVLLMInferenceEngine(InferenceEngineInterface):
         self._pp_size = kwargs.get("pipeline_parallel_size", 1)
         self._dp_size = kwargs.get("data_parallel_size", 1)
         self._is_lora = kwargs.get("enable_lora", False)
+        # Monotonically increasing counter for LoRA request IDs.  Using
+        # time.time_ns() % constant risks collision: if two consecutive calls
+        # produce the same modular value, vLLM's add_adapter finds the ID
+        # already registered and skips the weight reload, silently returning
+        # stale adapter weights for inference.
+        self._lora_load_counter = 0
 
         # Let subclass create the appropriate engine
         self.llm = self._create_engine(*args, **kwargs)
@@ -277,7 +282,8 @@ class VLLMInferenceEngine(BaseVLLMInferenceEngine):
 
     async def _load_lora_from_disk(self, lora_path: str):
         """Load LoRA adapters from disk using vLLM's native add_lora method."""
-        lora_id = int(time.time_ns() % 0x7FFFFFFF)
+        self._lora_load_counter += 1
+        lora_id = self._lora_load_counter
         lora_request = LoRARequest(lora_name=f"{lora_id}", lora_int_id=lora_id, lora_path=lora_path)
         result = self.llm.llm_engine.add_lora(lora_request)
         return result
@@ -410,7 +416,8 @@ class AsyncVLLMInferenceEngine(BaseVLLMInferenceEngine):
 
     async def _load_lora_from_disk(self, lora_path: str):
         """Load LoRA adapters from disk using vLLM's native add_lora method."""
-        lora_id = int(time.time_ns() % 0x7FFFFFFF)
+        self._lora_load_counter += 1
+        lora_id = self._lora_load_counter
         lora_request = LoRARequest(lora_name=f"{lora_id}", lora_int_id=lora_id, lora_path=lora_path)
         result = await self.llm.add_lora(lora_request)
         return result
