@@ -798,18 +798,52 @@ def print_mem(tag: str, mem: dict):
 
 
 def run_p2p_access_check():
+    import subprocess
+
     device_count = torch.cuda.device_count()
     if device_count < 2:
         return False
 
-    # Check P2P access between all GPU pairs
+    # First gate on CUDA-level capability.
     for i in range(device_count):
         for j in range(device_count):
             if i != j:
-                # This checks if device i can access device j's memory
-                can_access = torch.cuda.can_device_access_peer(i, j)
-                if not can_access:
+                if not torch.cuda.can_device_access_peer(i, j):
                     return False
+
+    # can_device_access_peer only checks whether CUDA can *map* the peer BAR1
+    # region — it does NOT verify that PCIe P2P DMA writes actually complete.
+    #
+    # NCCL uses SM-based direct GPU-to-GPU writes (not cudaMemcpyPeer).  On
+    # systems where GPUs sit on separate PCIe root complexes (common with L40S
+    # on multi-socket servers), IOMMU blocks cross-root DMA even when
+    # can_device_access_peer returns True.  NCCL submits its P2P kernel; the
+    # destination GPU spin-polls a flag that never gets written; all GPUs burn
+    # at 100 % util until the 600 s watchdog fires.
+    #
+    # On A100/H100 with NVLink this never triggers because NCCL uses NVLink
+    # (which bypasses PCIe/IOMMU) rather than SM-based P2P writes.
+    #
+    # nvidia-smi topo -m reports the actual inter-GPU path:
+    #   NV#  → NVLink          (always reliable)
+    #   PIX  → same PCIe switch (reliable)
+    #   PXB/PHB → same root complex (usually OK)
+    #   NODE/SYS → different NUMA/socket (IOMMU may block NCCL P2P)
+    # Treat NODE or SYS as P2P-unreliable.
+    try:
+        result = subprocess.run(
+            ["nvidia-smi", "topo", "--matrix"],
+            capture_output=True, text=True, timeout=10
+        )
+        if result.returncode == 0:
+            for line in result.stdout.splitlines():
+                fields = line.split()
+                for field in fields:
+                    if field in ("NODE", "SYS"):
+                        return False
+    except (subprocess.TimeoutExpired, FileNotFoundError, OSError):
+        # If nvidia-smi is unavailable, fall back to the CUDA capability check only.
+        pass
 
     return True
 
