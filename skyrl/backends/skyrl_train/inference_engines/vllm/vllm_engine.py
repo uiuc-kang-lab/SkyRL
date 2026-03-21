@@ -227,6 +227,7 @@ class VLLMInferenceEngine(BaseVLLMInferenceEngine):
             lora_int_ids = list(self.llm.llm_engine.list_loras())
             if len(lora_int_ids) > 0:
                 lora_int_id = lora_int_ids[0]
+                logger.info(f"[LoRA gen] Using LoRA id={lora_int_id} (active ids: {lora_int_ids})")
                 batch_size = len(prompt_token_ids)
                 # dummy_lora_path for placeholder (actual loading done in add_lora())
                 lora_requests = [
@@ -285,7 +286,11 @@ class VLLMInferenceEngine(BaseVLLMInferenceEngine):
         self._lora_load_counter += 1
         lora_id = self._lora_load_counter
         lora_request = LoRARequest(lora_name=f"{lora_id}", lora_int_id=lora_id, lora_path=lora_path)
+        logger.info(f"[LoRA load] Loading LoRA id={lora_id} from {lora_path}")
         result = self.llm.llm_engine.add_lora(lora_request)
+        logger.info(f"[LoRA load] add_lora(id={lora_id}) returned: {result}")
+        active = list(self.llm.llm_engine.list_loras())
+        logger.info(f"[LoRA load] Active LoRA ids after load: {active}")
         return result
 
     async def update_named_weights(self, request: WeightUpdateRequest):
@@ -419,7 +424,11 @@ class AsyncVLLMInferenceEngine(BaseVLLMInferenceEngine):
         self._lora_load_counter += 1
         lora_id = self._lora_load_counter
         lora_request = LoRARequest(lora_name=f"{lora_id}", lora_int_id=lora_id, lora_path=lora_path)
+        logger.info(f"[LoRA load] Loading LoRA id={lora_id} from {lora_path}")
         result = await self.llm.add_lora(lora_request)
+        logger.info(f"[LoRA load] add_lora(id={lora_id}) returned: {result}")
+        active = list(await self.llm.list_loras())
+        logger.info(f"[LoRA load] Active LoRA ids after load: {active}")
         return result
 
     async def _collect_outputs(self, prompt_token_ids, request_id: str, sampling_params: SamplingParams):
@@ -432,6 +441,7 @@ class AsyncVLLMInferenceEngine(BaseVLLMInferenceEngine):
             lora_int_ids = list(await self.llm.list_loras())
             if len(lora_int_ids) > 0:
                 lora_int_id = lora_int_ids[0]
+                logger.info(f"[LoRA gen] Using LoRA id={lora_int_id} (active ids: {lora_int_ids})")
                 # dummy_lora_path for placeholder (actual loading done in add_lora())
                 lora_request = LoRARequest(
                     lora_name=f"{lora_int_id}", lora_int_id=lora_int_id, lora_path="/dummy_lora_path"

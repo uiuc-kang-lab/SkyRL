@@ -1,6 +1,7 @@
 from skyrl.train.utils.trainer_utils import get_rope_scaling_config, get_rope_theta_config
 import ray
 import torch
+from loguru import logger as lora_logger
 import torch.distributed
 import torch.optim as optim
 from transformers.trainer import get_scheduler
@@ -289,6 +290,16 @@ class FSDPPolicyWorkerBase(PolicyWorkerBase):
             if isinstance(peft_config.get("exclude_modules"), set):
                 peft_config["exclude_modules"] = list(peft_config["exclude_modules"])
 
+            # --- LoRA weight sync diagnostics ---
+            lora_keys = list(lora_params.keys())
+            lora_logger.info(f"[LoRA sync] Saving {len(lora_keys)} adapter tensors to {lora_sync_path}")
+            lora_logger.info(f"[LoRA sync] Sample keys (first 4): {lora_keys[:4]}")
+            # Log L2 norms for a few lora_B weights to verify they change across steps
+            lora_b_keys = [k for k in lora_keys if "lora_B" in k][:4]
+            for k in lora_b_keys:
+                norm = lora_params[k].float().norm().item()
+                lora_logger.info(f"[LoRA sync] {k} | shape={tuple(lora_params[k].shape)} | L2={norm:.6f}")
+
             # Save LoRA parameters and config
             save_file(lora_params, os.path.join(lora_sync_path, "adapter_model.safetensors"))
             with io.open(os.path.join(lora_sync_path, "adapter_config.json"), "w", encoding="utf-8") as f:
@@ -296,7 +307,9 @@ class FSDPPolicyWorkerBase(PolicyWorkerBase):
 
             # Send LoRA disk loading request to inference engine
             lora_request = LoraLoadRequest(lora_path=lora_sync_path)
-            await inference_engine_client.update_named_weights(lora_request)
+            lora_logger.info(f"[LoRA sync] Sending add_lora request to inference engine (path={lora_sync_path})")
+            result = await inference_engine_client.update_named_weights(lora_request)
+            lora_logger.info(f"[LoRA sync] add_lora result: {result}")
 
         torch.distributed.barrier()
 
