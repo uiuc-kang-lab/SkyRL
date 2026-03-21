@@ -382,6 +382,8 @@ class FSDPStrategy(DistributedStrategy):
                 peft_config["task_type"] = peft_config["task_type"].value
                 peft_config["peft_type"] = peft_config["peft_type"].value
                 peft_config["target_modules"] = list(peft_config["target_modules"])
+                if isinstance(peft_config.get("exclude_modules"), set):
+                    peft_config["exclude_modules"] = list(peft_config["exclude_modules"])
 
         # For QLoRA (non-FSDP) models, layered_summon_lora_params returns empty because
         # no submodules are FSDP-wrapped. Fall back to direct state dict extraction.
