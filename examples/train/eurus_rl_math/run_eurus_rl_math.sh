@@ -65,7 +65,7 @@ uv run --extra fsdp -m examples.train.eurus_rl_math.main \
   trainer.placement.colocate_all=true \
   trainer.policy.model.lora.rank=$lora_rank \
   trainer.policy.model.lora.alpha=$lora_alpha \
-  "trainer.policy.model.lora.exclude_modules=['in_proj_qkv','in_proj_z','in_proj_b','in_proj_a']" \
+  "trainer.policy.model.lora.target_modules=['q_proj','k_proj','v_proj','o_proj']" \
   trainer.strategy=fsdp2 \
   trainer.placement.policy_num_gpus_per_node=$NUM_GPUS \
   trainer.placement.ref_num_gpus_per_node=$NUM_GPUS \
