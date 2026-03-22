@@ -14,13 +14,11 @@ Usage:
 import argparse
 import asyncio
 import json
-import sys
 from collections import defaultdict
 
 import datasets as hf_datasets
 import ray
 from loguru import logger
-from tqdm import tqdm
 
 from examples.train.eurus_rl_math.env import MathEnv
 from skyrl.backends.skyrl_train.inference_engines.base import InferenceEngineInput
@@ -125,42 +123,44 @@ async def run_eval(args: argparse.Namespace) -> float:
     # ------------------------------------------------------------------ #
     # For n_samples > 1 we expand each prompt into n_samples copies and
     # deduplicate results by problem index afterward.
+    # The per-call prompt count is capped at batch_size (not batch_size × n_samples)
+    # to avoid overwhelming the engine with one giant call.
     results_by_problem: dict[int, list[bool]] = defaultdict(list)
     n_skipped = 0
 
-    all_indices = list(range(len(ds)))
-    for batch_start in tqdm(range(0, len(all_indices), args.batch_size), desc="Evaluating"):
-        batch_idx = all_indices[batch_start : batch_start + args.batch_size]
-        rows = ds[batch_idx]
+    # Pre-tokenize and filter all problems up front
+    logger.info("Tokenizing prompts...")
+    all_valid: list[tuple[int, list[int], dict]] = []
+    for j in range(len(ds)):
+        row = ds[j]
+        ids = tokenizer.apply_chat_template(row["prompt"], add_generation_prompt=True, return_dict=False)
+        if len(ids) <= args.max_prompt_length:
+            all_valid.append((j, ids, row["reward_spec"]))
+        else:
+            n_skipped += 1
 
-        prompts = rows["prompt"]
-        reward_specs = rows["reward_spec"]
+    logger.info(f"Valid prompts: {len(all_valid)}, skipped (too long): {n_skipped}")
 
-        # Tokenize
-        token_ids_all = [
-            tokenizer.apply_chat_template(p, add_generation_prompt=True, return_dict=False)
-            for p in prompts
-        ]
+    # Expand by n_samples, then iterate in batches of args.batch_size
+    expanded: list[tuple[int, list[int], dict]] = [
+        (pid, ids, rs) for (pid, ids, rs) in all_valid for _ in range(args.n_samples)
+    ]
 
-        # Filter prompts that exceed max_prompt_length
-        valid_entries = [
-            (batch_idx[j], ids, rspec)
-            for j, (ids, rspec) in enumerate(zip(token_ids_all, reward_specs))
-            if len(ids) <= args.max_prompt_length
-        ]
-        n_skipped += len(batch_idx) - len(valid_entries)
-        if not valid_entries:
-            continue
+    n_batches = (len(expanded) + args.batch_size - 1) // args.batch_size
+    n_problems_done = 0
+    n_correct_so_far = 0
 
-        problem_ids, token_ids, rs_list = zip(*valid_entries)
+    for batch_idx, batch_start in enumerate(range(0, len(expanded), args.batch_size)):
+        batch = expanded[batch_start : batch_start + args.batch_size]
+        expanded_problem_ids, expanded_ids, expanded_rs = zip(*batch)
 
-        # Expand by n_samples: repeat each prompt n_samples times
-        expanded_ids = [ids for ids in token_ids for _ in range(args.n_samples)]
-        expanded_problem_ids = [pid for pid in problem_ids for _ in range(args.n_samples)]
-        expanded_rs = [rs for rs in rs_list for _ in range(args.n_samples)]
+        logger.info(
+            f"Batch {batch_idx + 1}/{n_batches}: generating {len(expanded_ids)} completions "
+            f"(problems evaluated so far: {n_problems_done}/{len(all_valid)})"
+        )
 
         input_batch: InferenceEngineInput = {
-            "prompt_token_ids": expanded_ids,
+            "prompt_token_ids": list(expanded_ids),
             "sampling_params": sampling_params,
             "session_ids": list(range(len(expanded_ids))),
         }
@@ -171,9 +171,15 @@ async def run_eval(args: argparse.Namespace) -> float:
             step_out = env.step(response)
             correct = float(step_out["reward"]) > 0.0
             results_by_problem[pid].append(correct)
+            if len(results_by_problem[pid]) == args.n_samples:
+                n_problems_done += 1
+                n_correct_so_far += int(any(results_by_problem[pid]))
 
-    if n_skipped > 0:
-        logger.warning(f"Skipped {n_skipped} prompts exceeding {args.max_prompt_length} tokens")
+        logger.info(
+            f"Batch {batch_idx + 1}/{n_batches} done. "
+            f"Running pass@k: {n_correct_so_far}/{n_problems_done} "
+            f"= {n_correct_so_far / n_problems_done:.4f}" if n_problems_done > 0 else ""
+        )
 
     # ------------------------------------------------------------------ #
     # Aggregate metrics                                                    #
