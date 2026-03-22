@@ -217,7 +217,7 @@ class HFModelWrapper(nn.Module):
                     f"[LoRA] Trainable params: {trainable_params:,} / {total_params:,} "
                     f"({100 * trainable_params / total_params:.4f}%)"
                 )
-                logger.info(f"[LoRA] Trainable parameter list ({len(trainable)} tensors):")
+                print(f"[LoRA] Trainable parameter list ({len(trainable)} tensors):")
                 for name, shape, dtype in trainable:
                     logger.info(f"  [LoRA]   {name}  shape={list(shape)}  dtype={dtype}")
                 if load_in_4bit:
