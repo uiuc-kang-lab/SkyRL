@@ -13,6 +13,7 @@ Usage:
 
 import argparse
 import asyncio
+import hashlib
 import json
 from collections import defaultdict
 
@@ -28,6 +29,16 @@ from skyrl.backends.skyrl_train.inference_engines.ray_wrapped_inference_engine i
 )
 from skyrl.train.config import InferenceEngineConfig, SkyRLLoraConfig
 from skyrl.utils.tok import get_tokenizer
+
+
+def _prompt_hash(prompt) -> str:
+    """16-char hex prefix of SHA-256 over the JSON-serialised prompt.
+
+    Used as a lightweight fingerprint to verify that uid→problem alignment
+    is consistent between eval_teacher.py and training.
+    """
+    blob = json.dumps(prompt, sort_keys=True, ensure_ascii=False).encode()
+    return hashlib.sha256(blob).hexdigest()[:16]
 
 
 def parse_args() -> argparse.Namespace:
@@ -131,11 +142,16 @@ async def run_eval(args: argparse.Namespace) -> float:
     # Pre-tokenize and filter all problems up front
     logger.info("Tokenizing prompts...")
     all_valid: list[tuple[int, list[int], dict]] = []
+    # raw_idx: original row index j in the parquet (before filtering)
+    # prompt_hash: 16-char SHA-256 fingerprint of the prompt, for alignment checks at load time
+    problem_meta: dict[int, dict] = {}
     for j in range(len(ds)):
         row = ds[j]
         ids = tokenizer.apply_chat_template(row["prompt"], add_generation_prompt=True, return_dict=False)
         if len(ids) <= args.max_prompt_length:
-            all_valid.append((j, ids, row["reward_spec"]))
+            seq_id = len(all_valid)
+            all_valid.append((seq_id, ids, row["reward_spec"]))
+            problem_meta[seq_id] = {"raw_idx": j, "prompt_hash": _prompt_hash(row["prompt"])}
         else:
             n_skipped += 1
 
@@ -175,11 +191,12 @@ async def run_eval(args: argparse.Namespace) -> float:
                 n_problems_done += 1
                 n_correct_so_far += int(any(results_by_problem[pid]))
 
-        logger.info(
-            f"Batch {batch_idx + 1}/{n_batches} done. "
-            f"Running pass@k: {n_correct_so_far}/{n_problems_done} "
-            f"= {n_correct_so_far / n_problems_done:.4f}" if n_problems_done > 0 else ""
-        )
+        if n_problems_done > 0:
+            logger.info(
+                f"Batch {batch_idx + 1}/{n_batches} done. "
+                f"Running pass@k: {n_correct_so_far}/{n_problems_done} "
+                f"= {n_correct_so_far / n_problems_done:.4f}"
+            )
 
     # ------------------------------------------------------------------ #
     # Aggregate metrics                                                    #
@@ -192,8 +209,13 @@ async def run_eval(args: argparse.Namespace) -> float:
     # pass@1: mean of per-problem first-sample correctness
     pass_at_1 = sum(v[0] for v in results_by_problem.values()) / n_total
 
-    metrics: dict = {"model_path": args.model_path, "data_path": args.data_path, "n_total": n_total,
-                     "pass_at_1": pass_at_1}
+    metrics: dict = {
+        "model_path": args.model_path,
+        "data_path": args.data_path,
+        "max_prompt_length": args.max_prompt_length,
+        "n_total": n_total,
+        "pass_at_1": pass_at_1,
+    }
 
     if args.n_samples > 1:
         # pass@k: fraction of problems with at least one correct sample
@@ -209,7 +231,8 @@ async def run_eval(args: argparse.Namespace) -> float:
 
     if args.output_path:
         metrics["per_problem"] = {
-            str(pid): {"samples": samples} for pid, samples in sorted(results_by_problem.items())
+            str(pid): {"samples": samples, **problem_meta[pid]}
+            for pid, samples in sorted(results_by_problem.items())
         }
         with open(args.output_path, "w") as f:
             json.dump(metrics, f, indent=2)
