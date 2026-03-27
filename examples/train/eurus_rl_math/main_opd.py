@@ -11,6 +11,11 @@ from skyrl.backends.skyrl_train.utils.ppo_utils import (
     register_advantage_estimator,
 )
 from skyrl.backends.skyrl_train.training_batch import TrainingInputBatch
+from skyrl_gym.envs import register
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 
 class OnPolicyDistillationTrainer(RayPPOTrainer):
@@ -50,6 +55,10 @@ class OnPolicyDistillationExp(BasePPOExp):
 
 @ray.remote(num_cpus=1)
 def skyrl_entrypoint(cfg: SkyRLTrainConfig):
+    register(
+        id="eurus_rl_math",
+        entry_point="examples.train.eurus_rl_math.env:MathEnv",
+    )
     exp = OnPolicyDistillationExp(cfg)
     exp.run()
 
