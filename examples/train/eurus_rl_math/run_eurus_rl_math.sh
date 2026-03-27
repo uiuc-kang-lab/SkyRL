@@ -101,6 +101,7 @@ uv run --extra fsdp -m examples.train.eurus_rl_math.main \
   generator.inference_engine.enforce_eager=true \
   generator.batched=true \
   environment.env_class=eurus_rl_math \
+  environment.skyrl_gym.max_env_workers=-1 \
   generator.n_samples_per_prompt=$group_size \
   generator.inference_engine.gpu_memory_utilization=0.8 \
   trainer.logger="$logger" \

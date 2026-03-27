@@ -6,7 +6,7 @@ validate answers when necessary.
 
 from typing import Any, Dict
 from skyrl_gym.envs.base_text_env import BaseTextEnv, BaseTextEnvStepOutput
-from examples.train.eurus_rl_math.utils import extract_answer, grade_answer_mathd, grade_answer_sympy
+from examples.train.eurus_rl_math.utils import extract_answer, grade_answer_mathd, grade_answer_sympy, grade_answer_math_verify
 
 THOUGHT_DELIMITER_START = "<think>"
 THOUGHT_DELIMITER_END = "</think>"
@@ -27,6 +27,7 @@ class MathEnv(BaseTextEnv):
         assert "ground_truth" in extras["reward_spec"], "ground_truth is required in reward_spec field"
         self.ground_truth = extras["reward_spec"]["ground_truth"]
         # assert isinstance(self.ground_truth, list)
+        # print(f"DEBUG: Ground truth loaded: {self.ground_truth}")
         self.format_only = extras["reward_spec"]["method"] == "format"
 
     def step(self, action: str) -> BaseTextEnvStepOutput:
