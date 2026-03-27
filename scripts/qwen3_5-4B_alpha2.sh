@@ -19,6 +19,6 @@ bash examples/train/eurus_rl_math/run_eurus_rl_math.sh \
     --tensor_parallel_size 1 \
     --eval_interval 50 \
     --ckpt_interval 5 \
-    --lr 1e-4 \
+    --lr 5e-4 \
     --run_name "qwen3.5-4b_alpha2_lr1e-4_tis_kl" \
     --model_path "Qwen/Qwen3.5-4B" > logs/qwen3.5-4b_alpha2_lr1e-4_tis_kl.log 2>&1
