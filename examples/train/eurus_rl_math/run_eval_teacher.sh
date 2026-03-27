@@ -62,7 +62,7 @@ OPTIONAL_ARGS=()
 
 uv run --extra fsdp -m examples.train.eurus_rl_math.eval_teacher \
   --model_path "$MODEL_PATH" \
-  --data_path "$DATA_DIR/train_32k.parquet" \
+  --data_path "$DATA_DIR/train.parquet" \
   --num_gpus "$NUM_GPUS" \
   --max_prompt_length "$MAX_PROMPT_LENGTH" \
   --max_generate_length "$MAX_GENERATE_LENGTH" \
