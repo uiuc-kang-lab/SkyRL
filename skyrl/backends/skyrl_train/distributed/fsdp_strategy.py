@@ -207,12 +207,15 @@ class FSDPStrategy(DistributedStrategy):
         return ret[0] if len(ret) == 1 else ret
 
     def _fsdp_init_model(self, model, is_train=True, is_wrapped=False):
-        # Initialize FSDP wrapping policy
-        wrap_policy = get_fsdp_wrap_policy(
-            module=model.model if is_wrapped else model,
-            config=getattr(self.fsdp_config, "wrap_policy", None),
-            is_lora=self.is_lora,
-        )
+        # Initialize FSDP wrapping policy (only needed for fsdp, not fsdp2)
+        if self.fsdp_strategy == "fsdp":
+            wrap_policy = get_fsdp_wrap_policy(
+                module=model.model if is_wrapped else model,
+                config=getattr(self.fsdp_config, "wrap_policy", None),
+                is_lora=self.is_lora,
+            )
+        else:
+            wrap_policy = None
 
         # Setup mixed precision
         mixed_precision_config = getattr(self.fsdp_config, "mixed_precision", None)
