@@ -91,7 +91,7 @@ class MathEnv(BaseTextEnv):
 
         # Check against all possible correct answers
         for ground_truth in processed_ground_truths:
-            is_correct = grade_answer_mathd(model_answer, ground_truth) or grade_answer_sympy(model_answer, ground_truth)
+            is_correct = grade_answer_mathd(model_answer, ground_truth) or grade_answer_sympy(model_answer, ground_truth) or grade_answer_math_verify(model_answer, ground_truth)
             if is_correct:
                 # print(f"DEBUG: Correct answer found: {model_answer}; Ground truth was: {ground_truth}")
                 return BaseTextEnvStepOutput(observation=[], reward=1, done=True, metadata={"reason": "Correct answer"})

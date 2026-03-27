@@ -482,3 +482,22 @@ def grade_answer_verl(solution_str, ground_truth):
     if given_answer is None:
         return False
     return grade_answer_mathd(given_answer, ground_truth) or grade_answer_sympy(given_answer, ground_truth)
+
+def grade_answer_math_verify(given_answer: str, ground_truth: str, timeout: int) -> bool:
+    """
+    Use the math_verify package to verify the answer.
+    """
+    from math_verify import parse, verify
+
+    #   Make sure the answer is wrapped in $ if it already isn't otherwise it is not parsed correctly
+    if not given_answer.startswith("$") and not given_answer.endswith("$"):
+        given_answer = f"${given_answer}$"
+    if not ground_truth.startswith("$") and not ground_truth.endswith("$"):
+        ground_truth = f"${ground_truth}$"
+
+    given_answer_parsed = parse(given_answer, parsing_timeout=timeout)
+    ground_truth_parsed = parse(ground_truth, parsing_timeout=timeout)
+
+    is_correct = verify(given_answer_parsed, ground_truth_parsed, timeout_seconds=timeout)
+
+    return is_correct
