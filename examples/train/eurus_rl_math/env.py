@@ -26,6 +26,7 @@ class MathEnv(BaseTextEnv):
         assert "reward_spec" in extras, "reward_spec field is required"
         assert "ground_truth" in extras["reward_spec"], "ground_truth is required in reward_spec field"
         self.ground_truth = extras["reward_spec"]["ground_truth"]
+        # assert isinstance(self.ground_truth, list)
         self.format_only = extras["reward_spec"]["method"] == "format"
 
     def step(self, action: str) -> BaseTextEnvStepOutput:
