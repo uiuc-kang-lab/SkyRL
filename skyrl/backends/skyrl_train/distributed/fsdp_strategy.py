@@ -271,10 +271,27 @@ class FSDPStrategy(DistributedStrategy):
             }
             module = model.model if is_wrapped else model
             full_state = module.state_dict()
+            # Non-persistent buffers (e.g. rotary inv_freq) are not in state_dict()
+            # but become meta tensors after to_empty(). Save them so they can be
+            # restored before fsdp2_load_full_state_dict calls model.to("cpu"),
+            # which fails on meta tensors.
+            saved_buffers = {
+                name: buf.detach().cpu()
+                for name, buf in module.named_buffers()
+                if buf is not None and name not in full_state
+            }
             # Move to meta device before apply_fsdp2 to prevent fully_shard from
             # materializing all weights on GPU 0 before sharding.
             module.to_empty(device="meta")
             apply_fsdp2(module, fsdp_kwargs, self.fsdp_config)
+            # Restore non-persistent buffers on CPU before fsdp2_load_full_state_dict,
+            # which ends with model.to("cpu") that cannot handle meta tensors.
+            for name, buf in saved_buffers.items():
+                parts = name.split(".")
+                submod = module
+                for part in parts[:-1]:
+                    submod = getattr(submod, part)
+                submod._buffers[parts[-1]] = buf
             fsdp2_load_full_state_dict(module, full_state, cpu_offload)
             fsdp_module = module
         else:
