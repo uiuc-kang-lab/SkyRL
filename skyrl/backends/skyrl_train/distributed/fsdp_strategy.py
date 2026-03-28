@@ -271,6 +271,9 @@ class FSDPStrategy(DistributedStrategy):
             }
             module = model.model if is_wrapped else model
             full_state = module.state_dict()
+            # Move to meta device before apply_fsdp2 to prevent fully_shard from
+            # materializing all weights on GPU 0 before sharding.
+            module.to_empty(device="meta")
             apply_fsdp2(module, fsdp_kwargs, self.fsdp_config)
             fsdp2_load_full_state_dict(module, full_state, cpu_offload)
             fsdp_module = module
