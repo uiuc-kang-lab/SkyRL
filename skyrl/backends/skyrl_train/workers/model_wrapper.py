@@ -59,6 +59,24 @@ def _patch_qwen3_5():
     except ImportError:
         pass  # Not using Qwen3.5, no patches needed
 
+    # Apply the same 3D position_ids fix to the MoE variant (Qwen3.5-35B-A3B etc.)
+    # Qwen3_5MoeDecoderLayer is a separate class in a separate module and is not
+    # covered by the dense-model patch above.
+    try:
+        from transformers.models.qwen3_5_moe.modeling_qwen3_5_moe import Qwen3_5MoeDecoderLayer
+
+        _original_moe_decoder_forward = Qwen3_5MoeDecoderLayer.forward
+
+        def _patched_moe_decoder_forward(self, hidden_states, position_ids=None, **kwargs):
+            if position_ids is not None and position_ids.ndim == 3:
+                position_ids = position_ids[0]
+            return _original_moe_decoder_forward(self, hidden_states, position_ids=position_ids, **kwargs)
+
+        Qwen3_5MoeDecoderLayer.forward = _patched_moe_decoder_forward
+        logger.info("Patched Qwen3.5 MoE decoder layer to fix 3D position_ids")
+    except ImportError:
+        pass  # Not using Qwen3.5 MoE, no patches needed
+
 
 _patch_qwen3_5()
 
