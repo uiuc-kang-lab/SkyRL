@@ -4,7 +4,7 @@ source .env
 
 bash examples/train/eurus_rl_math/run_eurus_rl_math_opd.sh \
     --data_dir $DATA_DIR \
-    --num_gpus 2 \
+    --num_gpus 4 \
     --lora_rank 1 \
     --lora_alpha 2 \
     --epochs 10 \
@@ -22,4 +22,4 @@ bash examples/train/eurus_rl_math/run_eurus_rl_math_opd.sh \
     --lr 5e-4 \
     --run_name "qwen3.5-2b_alpha2_lr5e-4_opd" \
     --student_model "Qwen/Qwen3.5-2B" \
-    --teacher_model "/workspace/Qwen3.5-35B-A3B-Fixed-Data-Finetuned/" > logs/qwen3.5-2b_alpha2_lr5e-4_opd.log 2>&1
+    --teacher_model "uiuc-kang-lab/Qwen3.5-35B-A3B-Eurus" > logs/qwen3.5-2b_alpha2_lr5e-4_opd.log 2>&1
