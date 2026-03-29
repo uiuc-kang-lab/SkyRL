@@ -169,12 +169,20 @@ async def run_eval(args: argparse.Namespace, model_path: str) -> dict:
 
     # Inference engine
     logger.info(f"Initializing vLLM engine (TP={args.num_gpus}, model={model_path})")
+    # Prefix caching reuses prompt KV across all n_samples of the same problem,
+    # which is critical for large n_samples (e.g. 256). The expanded list is
+    # ordered [p0×n, p1×n, ...] so batches of size n_samples hit the same prefix.
+    enable_prefix_caching = args.enable_prefix_caching if args.enable_prefix_caching is not None else (args.n_samples > 1)
+    if args.n_samples > 1 and not enable_prefix_caching:
+        logger.warning("n_samples > 1 without prefix caching: prompt KV computed separately per sample.")
+
     ie_cfg = InferenceEngineConfig(
         tensor_parallel_size=args.num_gpus,
         gpu_memory_utilization=args.gpu_memory_utilization,
         async_engine=True,
         enforce_eager=False,
         backend="vllm",
+        enable_prefix_caching=enable_prefix_caching,
     )
     engines = create_ray_wrapped_inference_engines(
         num_inference_engines=1,
@@ -183,7 +191,7 @@ async def run_eval(args: argparse.Namespace, model_path: str) -> dict:
         pretrain=model_path,
         seed=args.seed,
         vllm_v1_disable_multiproc=ie_cfg.vllm_v1_disable_multiproc,
-        enable_prefix_caching=ie_cfg.enable_prefix_caching,
+        enable_prefix_caching=enable_prefix_caching,
         enforce_eager=False,
         gpu_memory_utilization=args.gpu_memory_utilization,
         async_engine=True,
@@ -198,6 +206,8 @@ async def run_eval(args: argparse.Namespace, model_path: str) -> dict:
         "max_tokens": args.max_generate_length,
         "top_p": 1.0,
     }
+
+    batch_size = args.batch_size if args.batch_size is not None else args.n_samples
 
     # Tokenize + filter
     logger.info("Tokenizing prompts...")
@@ -216,10 +226,10 @@ async def run_eval(args: argparse.Namespace, model_path: str) -> dict:
     expanded = [(pid, ids, rs, info) for (pid, ids, rs, info) in all_valid for _ in range(args.n_samples)]
 
     results_by_problem: dict[int, list[bool]] = defaultdict(list)
-    n_batches = (len(expanded) + args.batch_size - 1) // args.batch_size
+    n_batches = (len(expanded) + batch_size - 1) // batch_size
 
-    for batch_idx, start in enumerate(range(0, len(expanded), args.batch_size)):
-        batch = expanded[start : start + args.batch_size]
+    for batch_idx, start in enumerate(range(0, len(expanded), batch_size)):
+        batch = expanded[start : start + batch_size]
         pids, ids_list, rs_list, _ = zip(*batch)
 
         logger.info(f"Batch {batch_idx + 1}/{n_batches}: {len(ids_list)} completions")
@@ -301,8 +311,13 @@ def parse_args() -> argparse.Namespace:
                    help="0.0 = greedy (pass@1). Set >0 with --n_samples for pass@k.")
     p.add_argument("--n_samples", type=int, default=1,
                    help="Independent samples per problem (requires --temperature > 0 for diversity)")
-    p.add_argument("--batch_size", type=int, default=64)
+    p.add_argument("--batch_size", type=int, default=None,
+                   help="Prompts per generate() call. Defaults to n_samples so each batch covers "
+                        "exactly one problem (maximises prefix-cache hits). Override if needed.")
     p.add_argument("--gpu_memory_utilization", type=float, default=0.9)
+    p.add_argument("--enable_prefix_caching", type=lambda x: x.lower() != "false",
+                   default=None, metavar="BOOL",
+                   help="Enable vLLM prefix caching. Defaults to True when n_samples > 1.")
     p.add_argument("--output_path", default=None,
                    help="Write JSON results to this path")
     return p.parse_args()
