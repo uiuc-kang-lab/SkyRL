@@ -116,7 +116,67 @@ def resolve_model_path(checkpoint_path: str, base_model_path: str | None, tmp_di
     tokenizer = get_tokenizer(base_model_path, trust_remote_code=True, padding_side="left")
     tokenizer.save_pretrained(merged_path)
 
+    _patch_qwen35_config_for_vllm(merged_path)
+
     return merged_path
+
+
+def _patch_qwen35_config_for_vllm(merged_path: str) -> None:
+    """Restructure Qwen3.5 text config as VL config for vLLM compatibility.
+
+    vLLM normalizes Qwen3_5ForCausalLM → Qwen3_5ForConditionalGeneration (the
+    VL architecture) and then expects Qwen3_5Config (VL format) rather than
+    Qwen3_5TextConfig.  After PEFT merge, save_pretrained writes the text-only
+    config.  This function wraps it in the VL structure so vLLM's multimodal
+    registry type-check passes.  With language_model_only=True the vision tower
+    is stubbed out, so the dummy vision_config is never materialised.
+    """
+    config_path = os.path.join(merged_path, "config.json")
+    with open(config_path) as f:
+        cfg = json.load(f)
+
+    if cfg.get("model_type") != "qwen3_5_text":
+        return
+
+    top_level_keys = {
+        "architectures", "model_type", "transformers_version",
+        "torch_dtype", "auto_map", "_commit_hash",
+        "_attn_implementation_autoset",
+    }
+    text_config = {k: v for k, v in cfg.items() if k not in top_level_keys}
+    text_config["model_type"] = "qwen3_5_text"
+
+    vl_config = {
+        "model_type": "qwen3_5",
+        "architectures": ["Qwen3_5ForConditionalGeneration"],
+        "text_config": text_config,
+        "vision_config": {
+            "model_type": "qwen3_5",
+            "depth": 27,
+            "hidden_size": 1152,
+            "hidden_act": "gelu_pytorch_tanh",
+            "intermediate_size": 4304,
+            "num_heads": 16,
+            "in_channels": 3,
+            "patch_size": 16,
+            "spatial_merge_size": 2,
+            "temporal_patch_size": 2,
+            "out_hidden_size": 3584,
+            "num_position_embeddings": 2304,
+        },
+        "image_token_id": 248056,
+        "video_token_id": 248057,
+        "vision_start_token_id": 248053,
+        "vision_end_token_id": 248054,
+        "tie_word_embeddings": cfg.get("tie_word_embeddings", False),
+    }
+    if "transformers_version" in cfg:
+        vl_config["transformers_version"] = cfg["transformers_version"]
+
+    with open(config_path, "w") as f:
+        json.dump(vl_config, f, indent=2)
+
+    logger.info("Patched config.json to VL format for vLLM compatibility")
 
 
 # ---------------------------------------------------------------------------
