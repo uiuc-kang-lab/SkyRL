@@ -483,7 +483,7 @@ def grade_answer_verl(solution_str, ground_truth):
         return False
     return grade_answer_mathd(given_answer, ground_truth) or grade_answer_sympy(given_answer, ground_truth)
 
-def grade_answer_math_verify(given_answer: str, ground_truth: str, timeout: int=10) -> bool:
+def grade_answer_math_verify(given_answer: str, ground_truth: str, timeout: int | None = None) -> bool:
     """
     Use the math_verify package to verify the answer.
     """
@@ -495,9 +495,9 @@ def grade_answer_math_verify(given_answer: str, ground_truth: str, timeout: int=
     if not ground_truth.startswith("$") and not ground_truth.endswith("$"):
         ground_truth = f"${ground_truth}$"
 
-    given_answer_parsed = parse(given_answer, parsing_timeout=None)
-    ground_truth_parsed = parse(ground_truth, parsing_timeout=None)
+    given_answer_parsed = parse(given_answer, parsing_timeout=timeout)
+    ground_truth_parsed = parse(ground_truth, parsing_timeout=timeout)
 
-    is_correct = verify(given_answer_parsed, ground_truth_parsed, timeout_seconds=None)
+    is_correct = verify(given_answer_parsed, ground_truth_parsed, timeout_seconds=timeout)
 
     return is_correct
