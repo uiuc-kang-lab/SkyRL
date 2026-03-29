@@ -17,9 +17,10 @@ class MathEnv(BaseTextEnv):
     """
 
     def __init__(
-        self, 
+        self,
         env_config: Dict[str, Any] = {},
         extras: Dict[str, Any] = {},
+        math_verify_timeout: int | None = None,
     ):
         super().__init__()
 
@@ -29,6 +30,7 @@ class MathEnv(BaseTextEnv):
         # assert isinstance(self.ground_truth, list)
         # print(f"DEBUG: Ground truth loaded: {self.ground_truth}")
         self.format_only = extras["reward_spec"]["method"] == "format"
+        self.math_verify_timeout = math_verify_timeout
 
     def step(self, action: str) -> BaseTextEnvStepOutput:
         """
@@ -92,7 +94,7 @@ class MathEnv(BaseTextEnv):
 
         # Check against all possible correct answers
         for ground_truth in processed_ground_truths:
-            is_correct = grade_answer_mathd(model_answer, ground_truth) or grade_answer_sympy(model_answer, ground_truth) or grade_answer_math_verify(model_answer, ground_truth)
+            is_correct = grade_answer_mathd(model_answer, ground_truth) or grade_answer_sympy(model_answer, ground_truth) or grade_answer_math_verify(model_answer, ground_truth, timeout=self.math_verify_timeout)
             if is_correct:
                 # print(f"DEBUG: Correct answer found: {model_answer}; Ground truth was: {ground_truth}")
                 return BaseTextEnvStepOutput(observation=[], reward=1, done=True, metadata={"reason": "Correct answer"})

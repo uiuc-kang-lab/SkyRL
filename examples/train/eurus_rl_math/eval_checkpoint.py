@@ -231,7 +231,11 @@ async def run_eval(args: argparse.Namespace, model_path: str) -> dict:
     # Prefix caching reuses prompt KV across all n_samples of the same problem,
     # which is critical for large n_samples (e.g. 256). The expanded list is
     # ordered [p0×n, p1×n, ...] so batches of size n_samples hit the same prefix.
-    enable_prefix_caching = args.enable_prefix_caching if args.enable_prefix_caching is not None else (args.n_samples > 1)
+    # Prefix caching is OFF by default: vLLM 0.17's Mamba prefix cache
+    # ("align" mode) is experimental and crashes deterministically on hybrid
+    # Mamba-Attention models like Qwen3.5.  Explicitly pass
+    # --enable_prefix_caching true to opt in at your own risk.
+    enable_prefix_caching = args.enable_prefix_caching if args.enable_prefix_caching is not None else False
     if args.n_samples > 1 and not enable_prefix_caching:
         logger.warning("n_samples > 1 without prefix caching: prompt KV computed separately per sample.")
 
@@ -305,7 +309,7 @@ async def run_eval(args: argparse.Namespace, model_path: str) -> dict:
         output = await client.generate(input_batch)
 
         for response, pid, reward_spec in zip(output["responses"], pids, rs_list):
-            env = MathEnv(extras={"reward_spec": reward_spec})
+            env = MathEnv(extras={"reward_spec": reward_spec}, math_verify_timeout=10)
             step_out = env.step(response)
             results_by_problem[pid].append(float(step_out["reward"]) > 0.0)
 
