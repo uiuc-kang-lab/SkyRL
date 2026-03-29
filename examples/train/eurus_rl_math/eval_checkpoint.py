@@ -48,7 +48,7 @@ from skyrl.backends.skyrl_train.inference_engines.ray_wrapped_inference_engine i
 )
 from skyrl.train.config import InferenceEngineConfig, SkyRLLoraConfig
 from skyrl.utils.tok import get_tokenizer
-
+from tqdm import tqdm
 
 # ---------------------------------------------------------------------------
 # Checkpoint resolution
@@ -218,7 +218,7 @@ async def run_eval(args: argparse.Namespace, model_path: str) -> dict:
     results_by_problem: dict[int, list[bool]] = defaultdict(list)
     n_batches = (len(expanded) + args.batch_size - 1) // args.batch_size
 
-    for batch_idx, start in enumerate(range(0, len(expanded), args.batch_size)):
+    for batch_idx, start in tqdm(enumerate(range(0, len(expanded), args.batch_size))):
         batch = expanded[start : start + args.batch_size]
         pids, ids_list, rs_list, _ = zip(*batch)
 
