@@ -198,6 +198,7 @@ async def run_eval(args: argparse.Namespace, model_path: str) -> dict:
         tokenizer=tokenizer,
         backend="vllm",
         inference_engine_enable_sleep=False,
+        engine_init_kwargs={"language_model_only": True},
     )
     client = InferenceEngineClient(engines, tokenizer, model_path, SkyRLLoraConfig(), ie_cfg)
 
