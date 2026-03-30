@@ -1,26 +1,18 @@
-"""Evaluate a training checkpoint on a random subset of the EURUS math dataset.
+"""Evaluate a LoRA adapter checkpoint on a random subset of the EURUS math dataset.
 
-Supports three checkpoint formats:
-  1. HF model directory  (config.json + safetensors weights)
-  2. FSDP step directory (policy/lora_adapter/ present)  — merges LoRA into base model
-  3. LoRA adapter directory (adapter_config.json present) — merges LoRA into base model
+The adapter is merged into the base model at runtime; the merged weights are
+written to a temporary directory and discarded after evaluation.
 
 Usage examples
 --------------
-# Evaluate an HF-exported checkpoint directly:
 uv run -m examples.train.eurus_rl_math.eval_checkpoint \\
-    --checkpoint_path /path/to/step_1000 \\
+    --lora_adapter /path/to/lora_adapter \\
     --base_model_path Qwen/Qwen3.5-2B \\
     --num_problems 200 --seed 42 --num_gpus 1
 
-# Evaluate a raw HF model (no LoRA):
+# With a local parquet:
 uv run -m examples.train.eurus_rl_math.eval_checkpoint \\
-    --checkpoint_path Qwen/Qwen3.5-2B \\
-    --num_problems 500 --seed 0 --num_gpus 1
-
-# Evaluate from a local parquet instead of HF hub:
-uv run -m examples.train.eurus_rl_math.eval_checkpoint \\
-    --checkpoint_path /path/to/step_1000 \\
+    --lora_adapter /path/to/lora_adapter \\
     --base_model_path Qwen/Qwen3.5-2B \\
     --data_path ~/data/eurus_rl_math/validation.parquet \\
     --num_problems 200
@@ -53,46 +45,15 @@ from skyrl.utils.tok import get_tokenizer
 # Checkpoint resolution
 # ---------------------------------------------------------------------------
 
-def _find_lora_adapter_dir(checkpoint_path: str) -> str | None:
-    """Return the LoRA adapter directory if present, else None."""
-    p = Path(checkpoint_path)
-    # FSDP step directory: policy/lora_adapter/adapter_config.json
-    fsdp_lora = p / "policy" / "lora_adapter"
-    if (fsdp_lora / "adapter_config.json").exists():
-        return str(fsdp_lora)
-    # Plain LoRA adapter directory
-    if (p / "adapter_config.json").exists():
-        return str(p)
-    return None
-
-
-def _is_hf_model_dir(path: str) -> bool:
-    p = Path(path)
-    return (p / "config.json").exists() and not (p / "adapter_config.json").exists()
-
-
-def resolve_model_path(checkpoint_path: str, base_model_path: str | None, tmp_dir: str) -> str:
-    """Return an HF model path ready for vLLM.
-
-    If the checkpoint contains LoRA weights, merge them into `base_model_path`
-    and save the merged model to `tmp_dir`.  Otherwise return `checkpoint_path`
-    directly (assumed to already be an HF model directory or hub ID).
-    """
-    lora_dir = _find_lora_adapter_dir(checkpoint_path)
-
-    if lora_dir is None:
-        # No LoRA — use directly (HF model dir or hub ID)
-        logger.info(f"No LoRA adapter found; using checkpoint directly: {checkpoint_path}")
-        return checkpoint_path
-
-    # LoRA present — merge into base model
-    if base_model_path is None:
+def resolve_model_path(lora_adapter: str, base_model_path: str, tmp_dir: str) -> str:
+    """Merge a LoRA adapter into the base model and return the merged model path."""
+    if not (Path(lora_adapter) / "adapter_config.json").exists():
         raise ValueError(
-            f"LoRA adapter found at {lora_dir} but --base_model_path was not provided. "
-            "Pass the base model path so the LoRA delta can be merged."
+            f"No adapter_config.json found in {lora_adapter}. "
+            "Pass the LoRA adapter directory directly."
         )
 
-    logger.info(f"Merging LoRA adapter at {lora_dir} into {base_model_path}...")
+    logger.info(f"Merging LoRA adapter at {lora_adapter} into {base_model_path}...")
 
     # Import here to keep top-level imports light
     import torch
@@ -104,7 +65,7 @@ def resolve_model_path(checkpoint_path: str, base_model_path: str | None, tmp_di
         torch_dtype=torch.bfloat16,
         trust_remote_code=True,
     )
-    merged = PeftModel.from_pretrained(base, lora_dir)
+    merged = PeftModel.from_pretrained(base, lora_adapter)
     merged = merged.merge_and_unload()
 
     merged_path = os.path.join(tmp_dir, "merged_model")
@@ -358,11 +319,11 @@ async def run_eval(args: argparse.Namespace, model_path: str) -> dict:
 # ---------------------------------------------------------------------------
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Evaluate a checkpoint on a random EURUS subset")
-    p.add_argument("--checkpoint_path", required=True,
-                   help="HF model dir, FSDP step dir (policy/lora_adapter/ detected), or hub ID")
-    p.add_argument("--base_model_path", default=None,
-                   help="Base HF model to merge LoRA into (required if checkpoint contains LoRA)")
+    p = argparse.ArgumentParser(description="Evaluate a LoRA adapter checkpoint on a random EURUS subset")
+    p.add_argument("--lora_adapter", required=True,
+                   help="Path to the LoRA adapter directory (must contain adapter_config.json)")
+    p.add_argument("--base_model_path", required=True,
+                   help="Base HF model to merge the LoRA adapter into")
     p.add_argument("--data_path", default=None,
                    help="Local parquet file (train.parquet / validation.parquet). "
                         "Omit to download from HF hub.")
@@ -399,7 +360,7 @@ def main() -> None:
 
     tmp_dir = tempfile.mkdtemp(prefix="eval_ckpt_")
     try:
-        model_path = resolve_model_path(args.checkpoint_path, args.base_model_path, tmp_dir)
+        model_path = resolve_model_path(args.lora_adapter, args.base_model_path, tmp_dir)
         metrics = asyncio.run(run_eval(args, model_path))
         print(f"\npass@1: {metrics['pass_at_1']:.4f}  (n={metrics['n_problems']} problems)")
     finally:
