@@ -273,12 +273,14 @@ async def run_eval(args: argparse.Namespace, model_path: str) -> dict:
             env = MathEnv(extras={"reward_spec": reward_spec}, math_verify_timeout=10)
             step_out = env.step(response)
             results_by_problem[pid].append(float(step_out["reward"]) > 0.0)
+            
+        print(f"  pass@1 so far: {sum(v[0] for v in results_by_problem.values()) / len(results_by_problem):.4f}")
 
     # Metrics
     n_total = len(results_by_problem)
     pass_at_1 = sum(v[0] for v in results_by_problem.values()) / n_total
     metrics: dict = {
-        "checkpoint_path": args.checkpoint_path,
+        "lora_adapter_path": args.lora_adapter,
         "model_path": model_path,
         "n_problems": n_total,
         "n_skipped": n_skipped,
