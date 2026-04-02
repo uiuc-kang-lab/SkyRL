@@ -135,9 +135,14 @@ class SVDRandomProjection(ApproximationScheme):
         }
 
     def forward(self, x: Tensor, v: Tensor, buffers: Dict[str, Tensor]) -> Tensor:
-        U_scaled = buffers["U_scaled"]  # (out_features, r)
-        V = buffers["V"]  # (in_features, r)
-        P = buffers["P"]  # (u, r, r)
+        # FSDP mixed precision may cast buffers to buffer_dtype (e.g. float32)
+        # while x is in param_dtype (e.g. bf16).  Cast buffers to x's dtype
+        # to avoid wasteful implicit upcasting in matmuls.
+        compute_dtype = x.dtype
+        U_scaled = buffers["U_scaled"].to(compute_dtype)  # (out_features, r)
+        V = buffers["V"].to(compute_dtype)  # (in_features, r)
+        P = buffers["P"].to(compute_dtype)  # (u, r, r)
+        v = v.to(compute_dtype)
 
         # M = sum_i v_i * P_i → (r, r)
         M = torch.einsum("u, uij -> ij", v, P)
