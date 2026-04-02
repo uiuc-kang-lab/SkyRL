@@ -23,7 +23,7 @@ CLIP_RATIO_C=10.0
 NUM_GPUS=8
 MODEL_NAME=deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B
 RUN_NAME=rl_gen_math_test_dapo
-BASE_DIR=/projects/illinois/eng/cs/ddkang/yxx404/.cache/rl_gen/
+BASE_DIR=${BASE_DIR:-$HOME/.cache/rl_gen}
 DEBUG=false
 
 while [[ "$1" == --* ]]; do

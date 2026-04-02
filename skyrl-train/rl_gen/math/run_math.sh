@@ -8,7 +8,7 @@ set -x
 NUM_GPUS=8
 MODEL_NAME=deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B
 RUN_NAME=rl_gen_math_test
-BASE_DIR=/projects/illinois/eng/cs/ddkang/yxx404/.cache/rl_gen/
+BASE_DIR=${BASE_DIR:-$HOME/.cache/rl_gen}
 DEBUG=false
 
 # TIS parameters

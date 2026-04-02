@@ -8,7 +8,7 @@ set -x
 NUM_GPUS=4
 MODEL_NAME=deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B
 RUN_NAME=rl_gen_mixed_test
-BASE_DIR=/data/daniel_kang_group/rl_noise
+BASE_DIR=${BASE_DIR:-$HOME/.cache/rl_gen}
 DEBUG=false
 MAX_GEN_LENGTH=8192
 
