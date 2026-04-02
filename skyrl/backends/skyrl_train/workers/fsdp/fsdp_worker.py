@@ -426,7 +426,9 @@ class FSDPPolicyWorkerBase(PolicyWorkerBase):
                         tensors=[tensor],
                     )
 
-            # Build metadata that excludes custom LoRA internal keys
+            # Build metadata that excludes custom LoRA internal keys.
+            # param.shape on DTensor (FSDP v2) and ShardedTensor (FSDP v1)
+            # returns the global (full) shape, matching full_tensor().shape.
             filtered_meta = {"names": [], "dtype_names": [], "shapes": []}
             for name, param in sd.items():
                 if name not in skip_keys:
