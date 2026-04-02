@@ -127,6 +127,7 @@ class HFModelWrapper(nn.Module):
         rope_scaling: Dict[str, Any] = {},
         rope_theta: float | None = None,
         model_config_kwargs: dict = {},
+        custom_lora_config=None,
         **kwargs,
     ) -> None:
         super().__init__()
@@ -246,6 +247,27 @@ class HFModelWrapper(nn.Module):
                         if not param.requires_grad and shown < 5:
                             logger.info(f"  [QLoRA]   {name}  dtype={param.dtype}  class={type(param).__name__}")
                             shown += 1
+                # ─────────────────────────────────────────────────────────
+
+            # Custom LoRA (SVD + random projection parameterisation)
+            elif custom_lora_config is not None and getattr(custom_lora_config, "enabled", False):
+                from skyrl.backends.skyrl_train.custom_lora import apply_custom_lora
+
+                self.model.enable_input_require_grads()
+                self.model = apply_custom_lora(self.model, custom_lora_config)
+
+                # ── Verification logging ──────────────────────────────────
+                trainable = [(n, p.shape, p.dtype) for n, p in self.model.named_parameters() if p.requires_grad]
+                total_params = sum(p.numel() for p in self.model.parameters())
+                trainable_params = sum(p.numel() for n, p in self.model.named_parameters() if p.requires_grad)
+                logger.info(
+                    f"[CustomLoRA] Trainable params: {trainable_params:,} / {total_params:,} "
+                    f"({100 * trainable_params / total_params:.6f}%)"
+                )
+                for name, shape, dtype in trainable[:10]:
+                    logger.info(f"  [CustomLoRA]   {name}  shape={list(shape)}  dtype={dtype}")
+                if len(trainable) > 10:
+                    logger.info(f"  [CustomLoRA]   ... and {len(trainable) - 10} more")
                 # ─────────────────────────────────────────────────────────
 
             # MoE - balancing loss

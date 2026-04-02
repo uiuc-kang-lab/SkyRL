@@ -88,6 +88,9 @@ class FSDPStrategy(DistributedStrategy):
 
         # LoRA related configs
         self.is_lora = self.model_config.lora.rank > 0 if self.model_config is not None else False
+        self.is_custom_lora = (
+            self.model_config.custom_lora.enabled if self.model_config is not None else False
+        )
 
         self.time_steps = defaultdict(int)
 
@@ -213,6 +216,7 @@ class FSDPStrategy(DistributedStrategy):
                 module=model.model if is_wrapped else model,
                 config=getattr(self.fsdp_config, "wrap_policy", None),
                 is_lora=self.is_lora,
+                is_custom_lora=self.is_custom_lora,
             )
         else:
             wrap_policy = None
@@ -306,8 +310,14 @@ class FSDPStrategy(DistributedStrategy):
 
         optim_config = self.optimizer_config
         if optim_config is not None:
+            # For custom LoRA, only pass trainable params to avoid wasting
+            # optimizer memory on the frozen base model.
+            if self.is_custom_lora:
+                optim_params = [p for p in fsdp_module.parameters() if p.requires_grad]
+            else:
+                optim_params = fsdp_module.parameters()
             new_optimizer = optim.AdamW(
-                fsdp_module.parameters(),
+                optim_params,
                 lr=optim_config.lr,
                 betas=optim_config.adam_betas,
                 weight_decay=optim_config.weight_decay,
@@ -524,6 +534,16 @@ class FSDPStrategy(DistributedStrategy):
         # Save LoRA adapters if using LoRA
         if self.is_lora and hasattr(save_model, "peft_config"):
             self._save_lora_adapters(save_model, ckpt_dir)
+
+        # Save custom LoRA trainable parameters
+        if self.is_custom_lora and self.is_rank_0():
+            from skyrl.backends.skyrl_train.custom_lora import collect_custom_lora_params
+            from safetensors.torch import save_file
+
+            custom_lora_params = collect_custom_lora_params(save_model)
+            custom_lora_dir = os.path.join(ckpt_dir, "custom_lora")
+            os.makedirs(custom_lora_dir, exist_ok=True)
+            save_file(custom_lora_params, os.path.join(custom_lora_dir, "custom_lora_params.safetensors"))
 
         # Final barrier to ensure all operations complete
         dist.barrier()

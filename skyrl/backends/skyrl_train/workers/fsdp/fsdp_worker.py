@@ -146,6 +146,8 @@ class FSDPPolicyWorkerBase(PolicyWorkerBase):
         self.strategy = strategy
 
         self._is_lora = lora_cfg.rank > 0
+        custom_lora_cfg = self.cfg.policy.model.custom_lora
+        self._is_custom_lora = custom_lora_cfg.enabled
 
         if lora_cfg.load_in_4bit:
             # QLoRA path: BitsAndBytes NF4 quantization is incompatible with both
@@ -171,6 +173,7 @@ class FSDPPolicyWorkerBase(PolicyWorkerBase):
                 rope_scaling=get_rope_scaling_config(self.cfg),
                 rope_theta=get_rope_theta_config(self.cfg),
                 model_config_kwargs=self.cfg.policy.model_config_kwargs,
+                custom_lora_config=custom_lora_cfg if self._is_custom_lora else None,
             )
             self._seq_parallel_monkey_patch(model=wrapped_model.model)
 
@@ -222,6 +225,7 @@ class FSDPPolicyWorkerBase(PolicyWorkerBase):
                     rope_scaling=get_rope_scaling_config(self.cfg),
                     rope_theta=get_rope_theta_config(self.cfg),
                     model_config_kwargs=self.cfg.policy.model_config_kwargs,
+                    custom_lora_config=custom_lora_cfg if self._is_custom_lora else None,
                 )
                 # in-place patch
                 self._seq_parallel_monkey_patch(model=wrapped_model.model)
@@ -345,6 +349,28 @@ class FSDPPolicyWorkerBase(PolicyWorkerBase):
             # IDs) accumulate across steps when enable_prefix_caching=True.
             if cache_reset_task is not None:
                 await cache_reset_task
+            return
+
+        if self._is_custom_lora:
+            # Custom LoRA: merge deltas into base weights, sync full weights,
+            # then unmerge to restore the original parameterisation.
+            from skyrl.backends.skyrl_train.custom_lora import merge_custom_lora, unmerge_custom_lora
+
+            merge_custom_lora(self.model.model)
+            try:
+                weight_iterator = self.weight_extractor.extract_weights(generator_dtype)
+                weight_metadata = self.weight_extractor.get_weight_metadata(generator_dtype)
+                await self._weight_transfer_sender.send_chunks(
+                    weight_iterator,
+                    weight_metadata=weight_metadata,
+                )
+            finally:
+                unmerge_custom_lora(self.model.model)
+
+            if cache_reset_task is not None:
+                await cache_reset_task
+            torch.cuda.empty_cache()
+            torch.distributed.barrier()
             return
 
         # Extract and send weights using the sender created at init time

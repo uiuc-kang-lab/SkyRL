@@ -67,13 +67,14 @@ def get_init_weight_context_manager(use_meta_tensor=True, mesh: DeviceMesh = Non
     return init_context
 
 
-def get_fsdp_wrap_policy(module, config=None, is_lora=False):
+def get_fsdp_wrap_policy(module, config=None, is_lora=False, is_custom_lora=False):
     """Get FSDP wrap policy for the module.
 
     Args:
         module: The module to get wrap policy for
         config: Configuration for wrap policy
         is_lora: Whether to enable lambda policy for LoRA modules
+        is_custom_lora: Whether to enable lambda policy for custom LoRA modules
     """
     if config is None:
         config = {}
@@ -110,6 +111,16 @@ def get_fsdp_wrap_policy(module, config=None, is_lora=False):
 
         lambda_policy = functools.partial(lambda_auto_wrap_policy, lambda_fn=lambda_policy_fn)
         policies.append(lambda_policy)
+
+    # Add lambda policy for custom LoRA modules (trainable param is `v`, not `weight`)
+    if is_custom_lora:
+        from skyrl.backends.skyrl_train.custom_lora.module import CustomLoraLinear
+
+        def custom_lora_policy_fn(module):
+            return isinstance(module, CustomLoraLinear)
+
+        custom_lora_policy = functools.partial(lambda_auto_wrap_policy, lambda_fn=custom_lora_policy_fn)
+        policies.append(custom_lora_policy)
 
     if min_num_params > 0:
         size_policy = functools.partial(size_based_auto_wrap_policy, min_num_params=min_num_params)

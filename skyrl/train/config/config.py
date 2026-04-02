@@ -85,9 +85,37 @@ class SkyRLLoraConfig(BaseConfig):
 
 
 @dataclass
+class CustomLoraConfig(BaseConfig):
+    """Configuration for the custom LoRA method (SVD + random projection)."""
+
+    enabled: bool = False
+    svd_rank: int = 16
+    """Truncation rank r for the SVD decomposition of the original weight."""
+    num_coefficients: int = 64
+    """Number of trainable scalar coefficients u per adapted layer."""
+    target_modules: Union[str, List[str]] = "all-linear"
+    """Which linear modules to adapt. Same semantics as PEFT's target_modules."""
+    exclude_modules: Optional[str] = None
+    """Regex pattern for modules to exclude from adaptation."""
+    projection_seed: int = 42
+    """Deterministic seed for generating the random projection basis P."""
+    scheme: str = "svd_random_projection"
+    """Approximation scheme name. See custom_lora/schemes.py for available schemes."""
+
+
+@dataclass
 class ModelConfig(BaseConfig):
     path: Optional[str] = None
     lora: SkyRLLoraConfig = field(default_factory=SkyRLLoraConfig)
+    custom_lora: CustomLoraConfig = field(default_factory=CustomLoraConfig)
+
+    def __post_init__(self):
+        if self.lora.rank > 0 and self.custom_lora.enabled:
+            raise ValueError(
+                "ModelConfig: standard LoRA (lora.rank > 0) and custom LoRA "
+                "(custom_lora.enabled=True) are mutually exclusive. "
+                "Please enable only one."
+            )
 
 
 # ---------------------------------------------------------------------------
