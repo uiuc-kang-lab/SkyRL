@@ -286,8 +286,9 @@ def run(args: argparse.Namespace) -> dict:
         ds = ds.select(indices)
     logger.info(f"Dataset: {len(ds)} prompts")
 
-    # Tokenize prompts
+    # Tokenize prompts (truncate to max_prompt_length)
     all_prompt_ids: list[list[int]] = []
+    n_truncated = 0
     for i in range(len(ds)):
         prompt = ds[i][args.prompt_key]
         if isinstance(prompt, list):
@@ -296,10 +297,12 @@ def run(args: argparse.Namespace) -> dict:
         else:
             # Plain text
             ids = tokenizer.encode(prompt, add_special_tokens=True)
-        if len(ids) <= args.max_prompt_length:
-            all_prompt_ids.append(ids)
+        if len(ids) > args.max_prompt_length:
+            ids = ids[: args.max_prompt_length]
+            n_truncated += 1
+        all_prompt_ids.append(ids)
 
-    logger.info(f"After filtering by max_prompt_length={args.max_prompt_length}: {len(all_prompt_ids)} prompts")
+    logger.info(f"Tokenized {len(all_prompt_ids)} prompts ({n_truncated} truncated to {args.max_prompt_length} tokens)")
 
     # Process in batches
     batch_size = args.batch_size

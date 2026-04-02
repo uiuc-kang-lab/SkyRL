@@ -268,17 +268,20 @@ def _run_inner(args: argparse.Namespace, tmp_dir: str) -> dict:
         ds = ds.select(indices)
     logger.info(f"Dataset: {len(ds)} prompts")
 
-    # Tokenize
+    # Tokenize (truncate to max_prompt_length)
     all_prompt_ids: list[list[int]] = []
+    n_truncated = 0
     for i in range(len(ds)):
         prompt = ds[i][args.prompt_key]
         if isinstance(prompt, list):
             ids = tokenizer.apply_chat_template(prompt, add_generation_prompt=True, return_dict=False)
         else:
             ids = tokenizer.encode(prompt, add_special_tokens=True)
-        if len(ids) <= args.max_prompt_length:
-            all_prompt_ids.append(ids)
-    logger.info(f"After length filter: {len(all_prompt_ids)} prompts")
+        if len(ids) > args.max_prompt_length:
+            ids = ids[: args.max_prompt_length]
+            n_truncated += 1
+        all_prompt_ids.append(ids)
+    logger.info(f"Tokenized {len(all_prompt_ids)} prompts ({n_truncated} truncated to {args.max_prompt_length} tokens)")
 
     # ---- Generate with vLLM ----
     logger.info("Generating responses with model_a via vLLM...")
