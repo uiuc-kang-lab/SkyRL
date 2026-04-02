@@ -261,12 +261,13 @@ class FSDPPolicyWorkerBase(PolicyWorkerBase):
             ),
         )
 
-        # For custom LoRA: build a map from state_dict weight key → module
-        # so we can apply deltas inline during weight extraction.
+        # For custom LoRA: build a map from state_dict weight key → layer info
+        # (scheme name + keys for v and buffers) so we can apply deltas
+        # inline during weight extraction using gathered tensors only.
         if self._is_custom_lora:
-            from skyrl.backends.skyrl_train.custom_lora import build_custom_lora_weight_map
+            from skyrl.backends.skyrl_train.custom_lora import build_custom_lora_delta_map
 
-            self._custom_lora_weight_map = build_custom_lora_weight_map(self.model.model)
+            self._custom_lora_delta_map = build_custom_lora_delta_map(self.model.model)
 
     async def _save_lora_adapters_and_sync(self, peft_model, lora_sync_path, inference_engine_client, needs_lm_prefix=False):
         """Collect LoRA parameters, save and call inference engine to load.
@@ -359,27 +360,79 @@ class FSDPPolicyWorkerBase(PolicyWorkerBase):
             return
 
         if self._is_custom_lora:
-            # Custom LoRA: add deltas inline to the already-gathered weight
-            # tensors produced by the extractor.  This is FSDP-safe because
-            # we never touch the module's own weight parameter (which is a
-            # flat shard outside forward); we only modify the fresh tensor
-            # that extract_weights() already allocated.
-            weight_map = self._custom_lora_weight_map
+            # Custom LoRA weight sync — FSDP-safe.
+            #
+            # Under FSDP, module attributes (self.v, self.U_scaled, …) are
+            # flat shards outside forward/summon_full_params.  We must NOT
+            # read them.  Instead we:
+            #   1. Let extract_weights() gather ALL state_dict entries
+            #      (weights, v params, buffers) into full tensors.
+            #   2. Collect the gathered v / buffer tensors into a lookup.
+            #   3. For each adapted weight chunk, compute and add the delta
+            #      using the gathered tensors and the scheme directly.
+            #   4. Yield only the base-model chunks (weight, bias, norm)
+            #      to the transfer sender; skip v / buffer chunks.
+            from skyrl.backends.skyrl_train.custom_lora.schemes import get_scheme
 
-            def _apply_deltas(chunk_iter):
-                for chunk in chunk_iter:
+            delta_map = self._custom_lora_delta_map
+            # Keys that belong to custom LoRA internals (v, U_scaled, V, P)
+            # and should NOT be sent to the inference engine.
+            skip_keys: set[str] = set()
+            for info in delta_map.values():
+                skip_keys.add(info.v_key)
+                skip_keys.update(info.buffer_keys.values())
+
+            # First pass: extract all state_dict entries and collect
+            # gathered custom LoRA tensors for delta computation.
+            all_chunks = list(self.weight_extractor.extract_weights(generator_dtype))
+            gathered: dict[str, torch.Tensor] = {}
+            for chunk in all_chunks:
+                for i, name in enumerate(chunk.names):
+                    if name in skip_keys:
+                        gathered[name] = chunk.tensors[i]
+
+            # Second pass: apply deltas to weight chunks and yield only
+            # base-model tensors.
+            def _apply_and_filter():
+                for chunk in all_chunks:
+                    out_names, out_dtypes, out_shapes, out_tensors = [], [], [], []
                     for i, name in enumerate(chunk.names):
-                        if name in weight_map:
-                            weight_map[name].add_delta_inplace(chunk.tensors[i])
-                    yield chunk
+                        if name in skip_keys:
+                            continue
+                        tensor = chunk.tensors[i]
+                        if name in delta_map:
+                            info = delta_map[name]
+                            scheme = get_scheme(info.scheme_name)
+                            v_full = gathered[info.v_key]
+                            buffers = {
+                                buf_name: gathered[sd_key]
+                                for buf_name, sd_key in info.buffer_keys.items()
+                            }
+                            scheme.merge_into(tensor, v_full, buffers)
+                        out_names.append(name)
+                        out_dtypes.append(chunk.dtypes[i] if len(chunk.dtypes) > i else str(generator_dtype))
+                        out_shapes.append(chunk.shapes[i] if len(chunk.shapes) > i else list(tensor.shape))
+                        out_tensors.append(tensor)
+                    if out_names:
+                        yield WeightChunk(
+                            names=out_names,
+                            dtypes=out_dtypes,
+                            shapes=out_shapes,
+                            tensors=out_tensors,
+                        )
 
-            weight_iterator = _apply_deltas(
-                self.weight_extractor.extract_weights(generator_dtype)
-            )
-            weight_metadata = self.weight_extractor.get_weight_metadata(generator_dtype)
+            # Build metadata that excludes custom LoRA internal keys
+            raw_meta = self.weight_extractor.get_weight_metadata(generator_dtype)
+            filtered_meta = {"names": [], "dtype_names": [], "shapes": []}
+            for i, name in enumerate(raw_meta["names"]):
+                if name not in skip_keys:
+                    filtered_meta["names"].append(name)
+                    filtered_meta["dtype_names"].append(raw_meta["dtype_names"][i])
+                    filtered_meta["shapes"].append(raw_meta["shapes"][i])
+
             await self._weight_transfer_sender.send_chunks(
-                weight_iterator,
-                weight_metadata=weight_metadata,
+                _apply_and_filter(),
+                weight_metadata=filtered_meta,
             )
 
             if cache_reset_task is not None:

@@ -102,14 +102,13 @@ class SVDRandomProjection(ApproximationScheme):
         # to minimise peak GPU memory during sequential layer init.
         #
         # torch.svd_lowrank uses a randomised algorithm internally
-        # (random projection → QR → SVD).  Seed the RNG before the call
-        # so that all ranks and all runs produce identical U, S, V for
-        # the same weight and seed.
+        # (random projection → QR → SVD).  We run it inside fork_rng
+        # which snapshots and restores both CPU and CUDA RNG states,
+        # so the seeded SVD call cannot disturb downstream randomness.
         w_f32 = weight.float()
-        rng_state = torch.random.get_rng_state()
-        torch.manual_seed(seed)
-        U, S, V = torch.svd_lowrank(w_f32, q=svd_rank)
-        torch.random.set_rng_state(rng_state)
+        with torch.random.fork_rng(devices=[], enabled=True):
+            torch.manual_seed(seed)
+            U, S, V = torch.svd_lowrank(w_f32, q=svd_rank)
         del w_f32
         # U: (out_features, r), S: (r,), V: (in_features, r)
 

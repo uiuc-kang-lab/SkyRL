@@ -76,8 +76,6 @@ class CustomLoraLinear(nn.Module):
         # The ONLY trainable parameter
         self.v = nn.Parameter(torch.zeros(num_coefficients, dtype=self.weight.dtype))
 
-        self._merged = False
-
         # Cached buffer dict — avoids re-creating a dict on every forward call.
         # Invalidated by _invalidate_buffer_cache() if buffers ever change.
         self._buffer_cache: dict | None = None
@@ -114,20 +112,6 @@ class CustomLoraLinear(nn.Module):
         base_out = F.linear(x, self.weight, self.bias)
         lora_out = self.scheme.forward(x, self.v, self._get_buffers())
         return base_out + lora_out
-
-    def add_delta_inplace(self, full_weight: torch.Tensor) -> None:
-        """Add delta_W to *full_weight* **in-place**.
-
-        FSDP-safe: operates on the already-gathered full tensor produced by
-        ``FSDPWeightExtractor`` (which is a fresh allocation from
-        ``full_tensor().to(dtype).detach().contiguous()``).  The module's
-        own ``weight`` parameter (a flat FSDP shard outside forward) is
-        never read or written.
-
-        Zero extra GPU allocation beyond the ``(r, in_features)``
-        intermediate inside ``merge_into``.
-        """
-        self.scheme.merge_into(full_weight, self.v, self._get_buffers())
 
     def extra_repr(self) -> str:
         return (

@@ -1,6 +1,6 @@
 from .apply import (
     apply_custom_lora,
-    build_custom_lora_weight_map,
+    build_custom_lora_delta_map,
     collect_custom_lora_params,
 )
 from .module import CustomLoraLinear
@@ -11,7 +11,7 @@ __all__ = [
     "CustomLoraLinear",
     "SCHEME_REGISTRY",
     "apply_custom_lora",
-    "build_custom_lora_weight_map",
+    "build_custom_lora_delta_map",
     "collect_custom_lora_params",
     "get_scheme",
 ]
