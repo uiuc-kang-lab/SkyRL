@@ -281,8 +281,10 @@ def _run_inner(args: argparse.Namespace, tmp_dir: str) -> dict:
 
     # ---- Generate with vLLM ----
     logger.info("Generating responses with LoRA model via vLLM...")
+    from vllm.inputs import TokensPrompt
+    prompts = [TokensPrompt(prompt_token_ids=ids) for ids in all_prompt_ids]
     vllm_outputs = llm.generate(
-        prompt_token_ids=all_prompt_ids,
+        prompts=prompts,
         sampling_params=sampling_params,
     )
 
