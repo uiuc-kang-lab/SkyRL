@@ -366,29 +366,21 @@ class FSDPPolicyWorkerBase(PolicyWorkerBase):
             # flat shards outside forward/summon_full_params.  We must NOT
             # read them.  Instead we use gathered tensors from state_dict().
             #
-            # Strategy (single streaming pass):
-            #   1. Cheap pre-pass: gather only the tiny custom LoRA tensors
-            #      (v, U_scaled, V, P) from the state_dict.  These are a
-            #      few MB total — negligible vs the base model weights.
-            #   2. Stream extract_weights() as normal.  For each chunk:
-            #      - skip custom LoRA internal keys (v, buffers)
-            #      - for adapted weight keys, apply delta using the
-            #        pre-gathered tensors and the scheme directly
-            #      - yield everything else as-is
+            # Single state_dict() call, two-phase iteration:
+            #   Phase 1: gather only tiny custom LoRA tensors (v, buffers)
+            #            into a lookup dict.  Base weights are NOT gathered.
+            #   Phase 2: stream base-model entries one at a time, applying
+            #            deltas inline for adapted weights, skipping
+            #            custom LoRA internals.
             from skyrl.backends.skyrl_train.custom_lora.schemes import get_scheme
 
             delta_map = self._custom_lora_delta_map
-            # Keys that belong to custom LoRA internals (v, U_scaled, V, P)
-            # and should NOT be sent to the inference engine.
             skip_keys: set[str] = set()
             for info in delta_map.values():
                 skip_keys.add(info.v_key)
                 skip_keys.update(info.buffer_keys.values())
 
-            # Pre-pass: gather only the tiny custom LoRA tensors.
-            # state_dict() returns FSDP-managed tensors; _gather_tensor
-            # does the all-gather for DTensors.  Only skip_keys are
-            # materialized here — base model weights are NOT touched.
+            # Single state_dict() call — returns sharded/DTensor references
             if fsdp_version(self.model.model) == 1:
                 FSDP.set_state_dict_type(
                     self.model.model,
@@ -396,6 +388,9 @@ class FSDPPolicyWorkerBase(PolicyWorkerBase):
                     state_dict_config=ShardedStateDictConfig(),
                 )
             sd = self.model.model.state_dict()
+
+            # Phase 1: gather only the tiny custom LoRA tensors (v, U_scaled,
+            # V, P).  These are a few MB total — negligible.
             gathered: dict[str, torch.Tensor] = {}
             for name, param in sd.items():
                 if name in skip_keys:
@@ -404,46 +399,43 @@ class FSDPPolicyWorkerBase(PolicyWorkerBase):
                         .to(generator_dtype).detach().contiguous()
                     )
 
-            # Streaming pass: apply deltas inline, skip internal keys.
-            def _apply_and_filter(chunk_iter):
-                for chunk in chunk_iter:
-                    out_names, out_dtypes, out_shapes, out_tensors = [], [], [], []
-                    for i, name in enumerate(chunk.names):
-                        if name in skip_keys:
-                            continue
-                        tensor = chunk.tensors[i]
-                        if name in delta_map:
-                            info = delta_map[name]
-                            scheme = get_scheme(info.scheme_name)
-                            v_full = gathered[info.v_key]
-                            buffers = {
-                                buf_name: gathered[sd_key]
-                                for buf_name, sd_key in info.buffer_keys.items()
-                            }
-                            scheme.merge_into(tensor, v_full, buffers)
-                        out_names.append(name)
-                        out_dtypes.append(chunk.dtypes[i] if len(chunk.dtypes) > i else str(generator_dtype))
-                        out_shapes.append(chunk.shapes[i] if len(chunk.shapes) > i else list(tensor.shape))
-                        out_tensors.append(tensor)
-                    if out_names:
-                        yield WeightChunk(
-                            names=out_names,
-                            dtypes=out_dtypes,
-                            shapes=out_shapes,
-                            tensors=out_tensors,
-                        )
+            # Phase 2: stream base-model weights, applying deltas inline.
+            dtype_str = str(generator_dtype)
+
+            def _stream_with_deltas():
+                for name, param in sd.items():
+                    if name in skip_keys:
+                        continue
+                    tensor = (
+                        self.weight_extractor._gather_tensor(param)
+                        .to(generator_dtype).detach().contiguous()
+                    )
+                    if name in delta_map:
+                        info = delta_map[name]
+                        scheme = get_scheme(info.scheme_name)
+                        v_full = gathered[info.v_key]
+                        buffers = {
+                            buf_name: gathered[sd_key]
+                            for buf_name, sd_key in info.buffer_keys.items()
+                        }
+                        scheme.merge_into(tensor, v_full, buffers)
+                    yield WeightChunk(
+                        names=[name],
+                        dtypes=[dtype_str],
+                        shapes=[list(tensor.shape)],
+                        tensors=[tensor],
+                    )
 
             # Build metadata that excludes custom LoRA internal keys
-            raw_meta = self.weight_extractor.get_weight_metadata(generator_dtype)
             filtered_meta = {"names": [], "dtype_names": [], "shapes": []}
-            for i, name in enumerate(raw_meta["names"]):
+            for name, param in sd.items():
                 if name not in skip_keys:
                     filtered_meta["names"].append(name)
-                    filtered_meta["dtype_names"].append(raw_meta["dtype_names"][i])
-                    filtered_meta["shapes"].append(raw_meta["shapes"][i])
+                    filtered_meta["dtype_names"].append(dtype_str.split(".")[-1])
+                    filtered_meta["shapes"].append(list(param.shape))
 
             await self._weight_transfer_sender.send_chunks(
-                _apply_and_filter(self.weight_extractor.extract_weights(generator_dtype)),
+                _stream_with_deltas(),
                 weight_metadata=filtered_meta,
             )
 
