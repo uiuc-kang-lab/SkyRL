@@ -29,14 +29,13 @@ from typing import Optional
 
 import datasets as hf_datasets
 import torch
-import torch.nn.functional as F
 from loguru import logger
 from peft import PeftModel
 from tqdm import tqdm
 from transformers import AutoModelForCausalLM
 
 from skyrl.backends.skyrl_train.utils.ppo_utils import compute_approx_kl
-from skyrl.backends.skyrl_train.utils.torch_utils import logprobs_from_logits, masked_mean
+from skyrl.backends.skyrl_train.utils.torch_utils import logprobs_from_logits
 from skyrl.utils.tok import get_tokenizer
 
 
@@ -164,91 +163,7 @@ def generate_responses(
     return full_ids, full_attn, response_mask
 
 
-@torch.no_grad()
-def get_logits(
-    model,
-    input_ids: torch.Tensor,
-    attention_mask: torch.Tensor,
-) -> torch.Tensor:
-    """Forward pass to get logits. Returns shape (batch, seq_len, vocab_size)."""
-    outputs = model(input_ids=input_ids, attention_mask=attention_mask)
-    return outputs.logits
 
-
-# ---------------------------------------------------------------------------
-# KL computation
-# ---------------------------------------------------------------------------
-
-@torch.no_grad()
-def compute_exact_kl(
-    logits_a: torch.Tensor,
-    logits_b: torch.Tensor,
-    response_mask: torch.Tensor,
-) -> torch.Tensor:
-    """Compute exact token-level KL(P_a || P_b) over the full vocabulary.
-
-    KL(P||Q) = sum_x P(x) * (log P(x) - log Q(x))
-
-    Args:
-        logits_a: (batch, seq_len, vocab) from model A.
-        logits_b: (batch, seq_len, vocab) from model B.
-        response_mask: (batch, seq_len) binary mask for response tokens.
-            KL is computed using the *preceding* position's distribution to
-            predict the *current* token, so we shift: use logits[:, t-1, :]
-            for position t.  The mask marks response positions.
-
-    Returns:
-        Per-token KL of shape (batch, seq_len), masked by response_mask.
-    """
-    # Shift: logits at position t predict token t+1.
-    # For response tokens starting at position s, we use logits at s-1..end-1.
-    # We compute KL at every position and mask later.
-    log_probs_a = F.log_softmax(logits_a[:, :-1].float(), dim=-1)
-    log_probs_b = F.log_softmax(logits_b[:, :-1].float(), dim=-1)
-    probs_a = log_probs_a.exp()
-
-    # KL(P_a || P_b) = sum_x P_a(x) * (log P_a(x) - log P_b(x))
-    kl = (probs_a * (log_probs_a - log_probs_b)).sum(dim=-1)  # (batch, seq_len-1)
-
-    # Align mask: response_mask[:, 1:] since logits[:, t] predicts token t+1
-    mask = response_mask[:, 1:]
-    kl = kl * mask
-    return kl, mask
-
-
-@torch.no_grad()
-def compute_approx_kl_from_logits(
-    logits_a: torch.Tensor,
-    logits_b: torch.Tensor,
-    input_ids: torch.Tensor,
-    response_mask: torch.Tensor,
-    kl_estimator_type: str = "k3",
-) -> tuple[torch.Tensor, torch.Tensor]:
-    """Compute approximate KL using only the log-prob of the selected token.
-
-    This mirrors SkyRL's compute_approx_kl from ppo_utils.py.
-
-    Args:
-        logits_a: (batch, seq_len, vocab) from model A.
-        logits_b: (batch, seq_len, vocab) from model B.
-        input_ids: (batch, seq_len) token IDs (prompt + response).
-        response_mask: (batch, seq_len) binary mask.
-        kl_estimator_type: One of "k1", "k2", "k3", "abs".
-
-    Returns:
-        (kl, mask) each of shape (batch, seq_len-1).
-    """
-    # Labels for logprobs: token at position t+1 is predicted by logits at t
-    labels = input_ids[:, 1:]  # (batch, seq_len-1)
-    shifted_logits_a = logits_a[:, :-1]
-    shifted_logits_b = logits_b[:, :-1]
-
-    log_probs_a = logprobs_from_logits(shifted_logits_a.float(), labels)
-    log_probs_b = logprobs_from_logits(shifted_logits_b.float(), labels)
-
-    mask = response_mask[:, 1:]
-    kl = compute_approx_kl(log_probs_a, log_probs_b, loss_mask=mask, kl_estimator_type=kl_estimator_type)
-    return kl, mask
 
 
 # ---------------------------------------------------------------------------
@@ -264,10 +179,6 @@ def run(args: argparse.Namespace) -> dict:
 
     # Load tokenizer from the base model
     tokenizer = get_tokenizer(args.base_model, trust_remote_code=True, padding_side="left")
-
-    # Load LoRA model (model_a) and base model (model_b)
-    model_a = load_model(args.base_model, device, dtype, lora_path=args.lora)
-    model_b = load_model(args.base_model, device, dtype, lora_path=None)
 
     # Load dataset
     ds = load_dataset(args.dataset, prompt_key=args.prompt_key)
@@ -296,58 +207,102 @@ def run(args: argparse.Namespace) -> dict:
 
     logger.info(f"Tokenized {len(all_prompt_ids)} prompts ({n_truncated} truncated to {args.max_prompt_length} tokens)")
 
-    # Process in batches
     batch_size = args.batch_size
-    all_kl_means = []
-    all_kl_maxs = []
-    all_seq_kl = []
-    total_tokens = 0
-    total_kl_sum = 0.0
+    pad_id = tokenizer.pad_token_id
 
-    for start in tqdm(range(0, len(all_prompt_ids), batch_size), desc="Computing KL"):
+    # ---- Phase 1: Generate with LoRA model and collect its logprobs ----
+    logger.info("Loading LoRA model for generation + logprob extraction...")
+    model_a = load_model(args.base_model, device, dtype, lora_path=args.lora)
+
+    # Generate responses and store (prompt_ids, response_ids) pairs
+    sequences: list[tuple[list[int], list[int]]] = []
+    for start in tqdm(range(0, len(all_prompt_ids), batch_size), desc="Generating"):
         batch_ids = all_prompt_ids[start : start + batch_size]
-
-        # Generate from model_a
         full_ids, full_attn, response_mask = generate_responses(
             model_a, tokenizer, batch_ids, args.max_gen_length, args.temperature, device
         )
+        # Extract per-sequence token lists
+        max_prompt_len = max(len(ids) for ids in batch_ids)
+        for i, ids in enumerate(batch_ids):
+            pad_len = max_prompt_len - len(ids)
+            prompt_part = ids  # original unpadded prompt
+            # response = non-pad tokens after the prompt
+            resp_start = max_prompt_len
+            resp_ids = []
+            for j in range(resp_start, full_ids.shape[1]):
+                tok = full_ids[i, j].item()
+                if tok == pad_id:
+                    break
+                resp_ids.append(tok)
+            if resp_ids:
+                sequences.append((prompt_part, resp_ids))
+        del full_ids, full_attn, response_mask
+        torch.cuda.empty_cache()
 
-        # Check that we have generated tokens
-        n_response_tokens = response_mask.sum().item()
-        if n_response_tokens == 0:
-            logger.warning(f"Batch {start}: no response tokens generated, skipping")
-            continue
+    logger.info(f"Generated {len(sequences)} non-empty responses")
 
-        # Get logits from both models
-        logits_a = get_logits(model_a, full_ids, full_attn)
-        logits_b = get_logits(model_b, full_ids, full_attn)
+    def _build_batch_tensors(batch):
+        full_seqs = [p + r for p, r in batch]
+        prompt_lens = [len(p) for p, _ in batch]
+        max_len = max(len(s) for s in full_seqs)
+        padded_ids, attn_masks, resp_masks = [], [], []
+        for seq, plen in zip(full_seqs, prompt_lens):
+            pl = max_len - len(seq)
+            padded_ids.append([pad_id] * pl + seq)
+            attn_masks.append([0] * pl + [1] * len(seq))
+            resp_masks.append([0.0] * (pl + plen) + [1.0] * (len(seq) - plen))
+        return (
+            torch.tensor(padded_ids, dtype=torch.long, device=device),
+            torch.tensor(attn_masks, dtype=torch.long, device=device),
+            torch.tensor(resp_masks, dtype=torch.float, device=device),
+        )
 
-        # Compute KL
-        if args.kl_type == "exact":
-            kl, mask = compute_exact_kl(logits_a, logits_b, response_mask)
-        else:
-            kl, mask = compute_approx_kl_from_logits(
-                logits_a, logits_b, full_ids, response_mask, kl_estimator_type=args.kl_type
-            )
+    def _collect_logprobs(model, label):
+        all_lp, all_masks = [], []
+        for start in tqdm(range(0, len(sequences), batch_size), desc=f"Logprobs ({label})"):
+            batch = sequences[start : start + batch_size]
+            input_ids, attention_mask, response_mask = _build_batch_tensors(batch)
+            with torch.no_grad():
+                logits = model(input_ids=input_ids, attention_mask=attention_mask).logits
+            labels = input_ids[:, 1:]
+            lp = logprobs_from_logits(logits[:, :-1].float(), labels)
+            mask = response_mask[:, 1:]
+            all_lp.append(lp.cpu())
+            all_masks.append(mask.cpu())
+            del logits, lp
+            torch.cuda.empty_cache()
+        return all_lp, all_masks
 
-        # Per-sequence KL (mean over response tokens)
-        seq_token_counts = mask.sum(dim=-1)  # (batch,)
-        seq_kl_sum = kl.sum(dim=-1)  # (batch,)
+    # Collect LoRA model logprobs
+    lp_a_batches, mask_batches = _collect_logprobs(model_a, "lora")
+    del model_a
+    torch.cuda.empty_cache()
 
-        for i in range(len(batch_ids)):
+    # ---- Phase 2: Collect base model logprobs ----
+    logger.info("Loading base model for logprob extraction...")
+    model_b = load_model(args.base_model, device, dtype, lora_path=None)
+    lp_b_batches, _ = _collect_logprobs(model_b, "base")
+    del model_b
+    torch.cuda.empty_cache()
+
+    # ---- Phase 3: Compute KL from stored logprobs ----
+    all_kl_means = []
+    all_kl_maxs = []
+    total_tokens = 0
+    total_kl_sum = 0.0
+
+    for lp_a, lp_b, masks in zip(lp_a_batches, lp_b_batches, mask_batches):
+        kl = compute_approx_kl(lp_a, lp_b, loss_mask=masks, kl_estimator_type=args.kl_type)
+        seq_token_counts = masks.sum(dim=-1)
+        seq_kl_sum = kl.sum(dim=-1)
+
+        for i in range(kl.shape[0]):
             n_tok = seq_token_counts[i].item()
             if n_tok > 0:
-                mean_kl = seq_kl_sum[i].item() / n_tok
-                max_kl = (kl[i] * mask[i]).max().item() if mask[i].sum() > 0 else 0.0
-                all_kl_means.append(mean_kl)
-                all_kl_maxs.append(max_kl)
-                all_seq_kl.append(seq_kl_sum[i].item())
+                all_kl_means.append(seq_kl_sum[i].item() / n_tok)
+                all_kl_maxs.append((kl[i] * masks[i]).max().item())
                 total_tokens += n_tok
                 total_kl_sum += seq_kl_sum[i].item()
-
-        # Free memory
-        del logits_a, logits_b, kl, mask, full_ids, full_attn, response_mask
-        torch.cuda.empty_cache()
 
     # Aggregate metrics
     if not all_kl_means:
@@ -432,9 +387,9 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--gpu", type=int, default=0, help="GPU device index")
     p.add_argument(
         "--kl_type",
-        choices=["exact", "k1", "k2", "k3", "abs"],
-        default="exact",
-        help="KL computation method: 'exact' for full-vocab KL, or approx estimators from SkyRL",
+        choices=["k1", "k2", "k3", "abs"],
+        default="k3",
+        help="Approximate KL estimator from SkyRL (k3 = Schulman's approximation)",
     )
     p.add_argument("--output_path", default=None, help="Path to save JSON results")
     return p.parse_args()

@@ -25,7 +25,6 @@ from pathlib import Path
 import datasets as hf_datasets
 import numpy as np
 import torch
-import torch.nn.functional as F
 from loguru import logger
 from peft import PeftModel
 from tqdm import tqdm
@@ -33,7 +32,7 @@ from transformers import AutoModelForCausalLM
 from vllm import LLM, SamplingParams
 
 from skyrl.backends.skyrl_train.utils.ppo_utils import compute_approx_kl
-from skyrl.backends.skyrl_train.utils.torch_utils import logprobs_from_logits, masked_mean
+from skyrl.backends.skyrl_train.utils.torch_utils import logprobs_from_logits
 from skyrl.utils.tok import get_tokenizer
 
 
@@ -59,39 +58,6 @@ def load_dataset(source: str, prompt_key: str = "prompt") -> hf_datasets.Dataset
             f"Available columns: {ds.column_names}"
         )
     return ds
-
-
-# ---------------------------------------------------------------------------
-# KL computation (same as single-GPU variant)
-# ---------------------------------------------------------------------------
-
-@torch.no_grad()
-def compute_kl_from_logits(
-    logits_a: torch.Tensor,
-    logits_b: torch.Tensor,
-    input_ids: torch.Tensor,
-    response_mask: torch.Tensor,
-    kl_type: str = "exact",
-) -> tuple[torch.Tensor, torch.Tensor]:
-    """Compute KL(model_a || model_b) per token.
-
-    Returns (kl, mask) each of shape (batch, seq_len - 1).
-    """
-    if kl_type == "exact":
-        log_probs_a = F.log_softmax(logits_a[:, :-1].float(), dim=-1)
-        log_probs_b = F.log_softmax(logits_b[:, :-1].float(), dim=-1)
-        probs_a = log_probs_a.exp()
-        kl = (probs_a * (log_probs_a - log_probs_b)).sum(dim=-1)
-        mask = response_mask[:, 1:]
-        kl = kl * mask
-        return kl, mask
-    else:
-        labels = input_ids[:, 1:]
-        lp_a = logprobs_from_logits(logits_a[:, :-1].float(), labels)
-        lp_b = logprobs_from_logits(logits_b[:, :-1].float(), labels)
-        mask = response_mask[:, 1:]
-        kl = compute_approx_kl(lp_a, lp_b, loss_mask=mask, kl_estimator_type=kl_type)
-        return kl, mask
 
 
 # ---------------------------------------------------------------------------
@@ -301,65 +267,83 @@ def _run_inner(args: argparse.Namespace, tmp_dir: str) -> dict:
     del llm
     torch.cuda.empty_cache()
 
-    # ---- Load HF models for logit extraction ----
+    # ---- Compute logprobs one model at a time to avoid OOM ----
+    # With exact KL we need full-vocab log_softmax which is huge. Instead of
+    # holding two sets of logits, we run each model separately and store only
+    # the per-token log-probs (selected token) or per-token KL contribution.
     device = torch.device(f"cuda:0")
     dtype = torch.bfloat16
-
-    logger.info("Loading LoRA model (HF) for logit extraction...")
-    model_a_hf = load_hf_model(args.base_model, device, dtype, lora_path=args.lora)
-
-    logger.info("Loading base model (HF) for logit extraction...")
-    model_b_hf = load_hf_model(args.base_model, device, dtype, lora_path=None)
-
-    # ---- Compute KL in batches ----
     batch_size = args.batch_size
-    all_kl_means = []
-    all_kl_maxs = []
-    total_tokens = 0
-    total_kl_sum = 0.0
+    pad_id = tokenizer.pad_token_id
 
-    for start in tqdm(range(0, len(sequences), batch_size), desc="Computing KL"):
-        batch = sequences[start : start + batch_size]
-        pad_id = tokenizer.pad_token_id
-
-        # Build padded tensors: left-pad to uniform length
+    def _build_batch_tensors(batch):
         full_seqs = [p + r for p, r in batch]
         prompt_lens = [len(p) for p, _ in batch]
         max_len = max(len(s) for s in full_seqs)
-
-        padded_ids = []
-        attn_masks = []
-        resp_masks = []
-
+        padded_ids, attn_masks, resp_masks = [], [], []
         for seq, plen in zip(full_seqs, prompt_lens):
             pad_len = max_len - len(seq)
             padded_ids.append([pad_id] * pad_len + seq)
             attn_masks.append([0] * pad_len + [1] * len(seq))
             resp_masks.append([0.0] * (pad_len + plen) + [1.0] * (len(seq) - plen))
+        return (
+            torch.tensor(padded_ids, dtype=torch.long, device=device),
+            torch.tensor(attn_masks, dtype=torch.long, device=device),
+            torch.tensor(resp_masks, dtype=torch.float, device=device),
+        )
 
-        input_ids = torch.tensor(padded_ids, dtype=torch.long, device=device)
-        attention_mask = torch.tensor(attn_masks, dtype=torch.long, device=device)
-        response_mask = torch.tensor(resp_masks, dtype=torch.float, device=device)
+    def _collect_logprobs(model, label: str):
+        """Run forward pass over all sequences, return per-token log-probs of the selected token."""
+        all_lp = []
+        all_masks = []
+        all_ids = []
+        for start in tqdm(range(0, len(sequences), batch_size), desc=f"Logprobs ({label})"):
+            batch = sequences[start : start + batch_size]
+            input_ids, attention_mask, response_mask = _build_batch_tensors(batch)
+            with torch.no_grad():
+                logits = model(input_ids=input_ids, attention_mask=attention_mask).logits
+            labels = input_ids[:, 1:]
+            lp = logprobs_from_logits(logits[:, :-1].float(), labels)
+            mask = response_mask[:, 1:]
+            all_lp.append(lp.cpu())
+            all_masks.append(mask.cpu())
+            all_ids.append(input_ids.cpu())
+            del logits, lp
+            torch.cuda.empty_cache()
+        return all_lp, all_masks, all_ids
 
-        with torch.no_grad():
-            logits_a = model_a_hf(input_ids=input_ids, attention_mask=attention_mask).logits
-            logits_b = model_b_hf(input_ids=input_ids, attention_mask=attention_mask).logits
+    # --- LoRA model logprobs ---
+    logger.info("Loading LoRA model (HF) for logit extraction...")
+    model_a_hf = load_hf_model(args.base_model, device, dtype, lora_path=args.lora)
+    lp_a_batches, mask_batches, ids_batches = _collect_logprobs(model_a_hf, "lora")
+    del model_a_hf
+    torch.cuda.empty_cache()
 
-        kl, mask = compute_kl_from_logits(logits_a, logits_b, input_ids, response_mask, args.kl_type)
+    # --- Base model logprobs ---
+    logger.info("Loading base model (HF) for logit extraction...")
+    model_b_hf = load_hf_model(args.base_model, device, dtype, lora_path=None)
+    lp_b_batches, _, _ = _collect_logprobs(model_b_hf, "base")
+    del model_b_hf
+    torch.cuda.empty_cache()
 
-        seq_token_counts = mask.sum(dim=-1)
+    # ---- Compute KL from stored logprobs ----
+    all_kl_means = []
+    all_kl_maxs = []
+    total_tokens = 0
+    total_kl_sum = 0.0
+
+    for lp_a, lp_b, masks in zip(lp_a_batches, lp_b_batches, mask_batches):
+        kl = compute_approx_kl(lp_a, lp_b, loss_mask=masks, kl_estimator_type=args.kl_type)
+        seq_token_counts = masks.sum(dim=-1)
         seq_kl_sum = kl.sum(dim=-1)
 
-        for i in range(len(batch)):
+        for i in range(kl.shape[0]):
             n_tok = seq_token_counts[i].item()
             if n_tok > 0:
                 all_kl_means.append(seq_kl_sum[i].item() / n_tok)
-                all_kl_maxs.append((kl[i] * mask[i]).max().item())
+                all_kl_maxs.append((kl[i] * masks[i]).max().item())
                 total_tokens += n_tok
                 total_kl_sum += seq_kl_sum[i].item()
-
-        del logits_a, logits_b, kl, mask
-        torch.cuda.empty_cache()
 
     if not all_kl_means:
         logger.error("No valid sequences processed")
@@ -435,7 +419,9 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--tp_size", type=int, default=1, help="vLLM tensor parallel size")
     p.add_argument("--gpu_memory_utilization", type=float, default=0.5)
-    p.add_argument("--kl_type", choices=["exact", "k1", "k2", "k3", "abs"], default="exact")
+    p.add_argument("--kl_type", choices=["k1", "k2", "k3", "abs"], default="k3",
+                   help="Approximate KL estimator (exact KL not supported in vLLM variant due to memory; "
+                        "use the HF variant for exact KL)")
     p.add_argument("--output_path", default=None)
     return p.parse_args()
 
