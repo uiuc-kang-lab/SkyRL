@@ -105,8 +105,11 @@ class SVDRandomProjection(ApproximationScheme):
         # (random projection → QR → SVD).  We run it inside fork_rng
         # which snapshots and restores both CPU and CUDA RNG states,
         # so the seeded SVD call cannot disturb downstream randomness.
+        # Fork the weight's CUDA device (if any) so that GPU random
+        # state is also isolated.
         w_f32 = weight.float()
-        with torch.random.fork_rng(devices=[], enabled=True):
+        fork_devices = [device] if device.type == "cuda" else []
+        with torch.random.fork_rng(devices=fork_devices, enabled=True):
             torch.manual_seed(seed)
             U, S, V = torch.svd_lowrank(w_f32, q=svd_rank)
         del w_f32

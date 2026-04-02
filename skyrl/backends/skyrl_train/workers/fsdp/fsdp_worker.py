@@ -360,18 +360,21 @@ class FSDPPolicyWorkerBase(PolicyWorkerBase):
             return
 
         if self._is_custom_lora:
-            # Custom LoRA weight sync — FSDP-safe.
+            # Custom LoRA weight sync — FSDP-safe, memory-efficient.
             #
             # Under FSDP, module attributes (self.v, self.U_scaled, …) are
             # flat shards outside forward/summon_full_params.  We must NOT
-            # read them.  Instead we:
-            #   1. Let extract_weights() gather ALL state_dict entries
-            #      (weights, v params, buffers) into full tensors.
-            #   2. Collect the gathered v / buffer tensors into a lookup.
-            #   3. For each adapted weight chunk, compute and add the delta
-            #      using the gathered tensors and the scheme directly.
-            #   4. Yield only the base-model chunks (weight, bias, norm)
-            #      to the transfer sender; skip v / buffer chunks.
+            # read them.  Instead we use gathered tensors from state_dict().
+            #
+            # Strategy (single streaming pass):
+            #   1. Cheap pre-pass: gather only the tiny custom LoRA tensors
+            #      (v, U_scaled, V, P) from the state_dict.  These are a
+            #      few MB total — negligible vs the base model weights.
+            #   2. Stream extract_weights() as normal.  For each chunk:
+            #      - skip custom LoRA internal keys (v, buffers)
+            #      - for adapted weight keys, apply delta using the
+            #        pre-gathered tensors and the scheme directly
+            #      - yield everything else as-is
             from skyrl.backends.skyrl_train.custom_lora.schemes import get_scheme
 
             delta_map = self._custom_lora_delta_map
@@ -382,19 +385,28 @@ class FSDPPolicyWorkerBase(PolicyWorkerBase):
                 skip_keys.add(info.v_key)
                 skip_keys.update(info.buffer_keys.values())
 
-            # First pass: extract all state_dict entries and collect
-            # gathered custom LoRA tensors for delta computation.
-            all_chunks = list(self.weight_extractor.extract_weights(generator_dtype))
+            # Pre-pass: gather only the tiny custom LoRA tensors.
+            # state_dict() returns FSDP-managed tensors; _gather_tensor
+            # does the all-gather for DTensors.  Only skip_keys are
+            # materialized here — base model weights are NOT touched.
+            if fsdp_version(self.model.model) == 1:
+                FSDP.set_state_dict_type(
+                    self.model.model,
+                    state_dict_type=StateDictType.SHARDED_STATE_DICT,
+                    state_dict_config=ShardedStateDictConfig(),
+                )
+            sd = self.model.model.state_dict()
             gathered: dict[str, torch.Tensor] = {}
-            for chunk in all_chunks:
-                for i, name in enumerate(chunk.names):
-                    if name in skip_keys:
-                        gathered[name] = chunk.tensors[i]
+            for name, param in sd.items():
+                if name in skip_keys:
+                    gathered[name] = (
+                        self.weight_extractor._gather_tensor(param)
+                        .to(generator_dtype).detach().contiguous()
+                    )
 
-            # Second pass: apply deltas to weight chunks and yield only
-            # base-model tensors.
-            def _apply_and_filter():
-                for chunk in all_chunks:
+            # Streaming pass: apply deltas inline, skip internal keys.
+            def _apply_and_filter(chunk_iter):
+                for chunk in chunk_iter:
                     out_names, out_dtypes, out_shapes, out_tensors = [], [], [], []
                     for i, name in enumerate(chunk.names):
                         if name in skip_keys:
@@ -431,7 +443,7 @@ class FSDPPolicyWorkerBase(PolicyWorkerBase):
                     filtered_meta["shapes"].append(raw_meta["shapes"][i])
 
             await self._weight_transfer_sender.send_chunks(
-                _apply_and_filter(),
+                _apply_and_filter(self.weight_extractor.extract_weights(generator_dtype)),
                 weight_metadata=filtered_meta,
             )
 
