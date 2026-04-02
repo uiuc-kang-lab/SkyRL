@@ -273,7 +273,7 @@ def _run_inner(args: argparse.Namespace, tmp_dir: str) -> dict:
     # the per-token log-probs (selected token) or per-token KL contribution.
     device = torch.device(f"cuda:0")
     dtype = torch.bfloat16
-    batch_size = args.batch_size
+    micro_batch_size = args.micro_batch_size
     pad_id = tokenizer.pad_token_id
 
     def _build_batch_tensors(batch):
@@ -296,33 +296,33 @@ def _run_inner(args: argparse.Namespace, tmp_dir: str) -> dict:
         """Run forward pass over all sequences, return per-token log-probs of the selected token."""
         all_lp = []
         all_masks = []
-        all_ids = []
-        for start in tqdm(range(0, len(sequences), batch_size), desc=f"Logprobs ({label})"):
-            batch = sequences[start : start + batch_size]
+        for start in tqdm(range(0, len(sequences), micro_batch_size), desc=f"Logprobs ({label})"):
+            batch = sequences[start : start + micro_batch_size]
             input_ids, attention_mask, response_mask = _build_batch_tensors(batch)
             with torch.no_grad():
                 logits = model(input_ids=input_ids, attention_mask=attention_mask).logits
-            labels = input_ids[:, 1:]
-            lp = logprobs_from_logits(logits[:, :-1].float(), labels)
+                # Keep logits in bf16 -- logprobs_from_logits_v2 handles bf16
+                # row-by-row without materializing a full float32 copy.
+                labels = input_ids[:, 1:]
+                lp = logprobs_from_logits(logits[:, :-1], labels)
             mask = response_mask[:, 1:]
             all_lp.append(lp.cpu())
             all_masks.append(mask.cpu())
-            all_ids.append(input_ids.cpu())
-            del logits, lp
+            del logits, lp, input_ids, attention_mask, response_mask
             torch.cuda.empty_cache()
-        return all_lp, all_masks, all_ids
+        return all_lp, all_masks
 
     # --- LoRA model logprobs ---
     logger.info("Loading LoRA model (HF) for logit extraction...")
     model_a_hf = load_hf_model(args.base_model, device, dtype, lora_path=args.lora)
-    lp_a_batches, mask_batches, ids_batches = _collect_logprobs(model_a_hf, "lora")
+    lp_a_batches, mask_batches = _collect_logprobs(model_a_hf, "lora")
     del model_a_hf
     torch.cuda.empty_cache()
 
     # --- Base model logprobs ---
     logger.info("Loading base model (HF) for logit extraction...")
     model_b_hf = load_hf_model(args.base_model, device, dtype, lora_path=None)
-    lp_b_batches, _, _ = _collect_logprobs(model_b_hf, "base")
+    lp_b_batches, _ = _collect_logprobs(model_b_hf, "base")
     del model_b_hf
     torch.cuda.empty_cache()
 
@@ -413,7 +413,11 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--prompt_key", default="prompt")
     p.add_argument("--max_gen_length", type=int, default=1024)
     p.add_argument("--max_prompt_length", type=int, default=4096)
-    p.add_argument("--batch_size", type=int, default=8)
+    p.add_argument("--batch_size", type=int, default=256,
+                   help="Number of prompts sent to vLLM per generate() call")
+    p.add_argument("--micro_batch_size", type=int, default=4,
+                   help="Batch size for HF forward passes (logprob extraction). "
+                        "Keep small to avoid OOM on large models.")
     p.add_argument("--temperature", type=float, default=0.0)
     p.add_argument("--num_samples", type=int, default=None)
     p.add_argument("--seed", type=int, default=42)

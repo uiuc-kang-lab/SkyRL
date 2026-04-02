@@ -208,6 +208,7 @@ def run(args: argparse.Namespace) -> dict:
     logger.info(f"Tokenized {len(all_prompt_ids)} prompts ({n_truncated} truncated to {args.max_prompt_length} tokens)")
 
     batch_size = args.batch_size
+    micro_batch_size = args.micro_batch_size
     pad_id = tokenizer.pad_token_id
 
     # ---- Phase 1: Generate with LoRA model and collect its logprobs ----
@@ -259,17 +260,19 @@ def run(args: argparse.Namespace) -> dict:
 
     def _collect_logprobs(model, label):
         all_lp, all_masks = [], []
-        for start in tqdm(range(0, len(sequences), batch_size), desc=f"Logprobs ({label})"):
-            batch = sequences[start : start + batch_size]
+        for start in tqdm(range(0, len(sequences), micro_batch_size), desc=f"Logprobs ({label})"):
+            batch = sequences[start : start + micro_batch_size]
             input_ids, attention_mask, response_mask = _build_batch_tensors(batch)
             with torch.no_grad():
                 logits = model(input_ids=input_ids, attention_mask=attention_mask).logits
-            labels = input_ids[:, 1:]
-            lp = logprobs_from_logits(logits[:, :-1].float(), labels)
+                # Keep logits in bf16 -- logprobs_from_logits handles bf16
+                # row-by-row without materializing a full float32 copy.
+                labels = input_ids[:, 1:]
+                lp = logprobs_from_logits(logits[:, :-1], labels)
             mask = response_mask[:, 1:]
             all_lp.append(lp.cpu())
             all_masks.append(mask.cpu())
-            del logits, lp
+            del logits, lp, input_ids, attention_mask, response_mask
             torch.cuda.empty_cache()
         return all_lp, all_masks
 
@@ -380,7 +383,10 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--prompt_key", default="prompt", help="Key in dataset for the prompt field")
     p.add_argument("--max_gen_length", type=int, default=512, help="Maximum generation length")
     p.add_argument("--max_prompt_length", type=int, default=4096, help="Maximum prompt length (filter longer)")
-    p.add_argument("--batch_size", type=int, default=4, help="Batch size for generation and forward passes")
+    p.add_argument("--batch_size", type=int, default=4, help="Batch size for HF generation")
+    p.add_argument("--micro_batch_size", type=int, default=4,
+                   help="Batch size for HF forward passes (logprob extraction). "
+                        "Keep small to avoid OOM on large models.")
     p.add_argument("--temperature", type=float, default=0.0, help="Sampling temperature (0 = greedy)")
     p.add_argument("--num_samples", type=int, default=None, help="Subsample N prompts from the dataset")
     p.add_argument("--seed", type=int, default=42)
