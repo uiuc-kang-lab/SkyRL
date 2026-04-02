@@ -261,6 +261,13 @@ class FSDPPolicyWorkerBase(PolicyWorkerBase):
             ),
         )
 
+        # For custom LoRA: build a map from state_dict weight key → module
+        # so we can apply deltas inline during weight extraction.
+        if self._is_custom_lora:
+            from skyrl.backends.skyrl_train.custom_lora import build_custom_lora_weight_map
+
+            self._custom_lora_weight_map = build_custom_lora_weight_map(self.model.model)
+
     async def _save_lora_adapters_and_sync(self, peft_model, lora_sync_path, inference_engine_client, needs_lm_prefix=False):
         """Collect LoRA parameters, save and call inference engine to load.
 
@@ -352,20 +359,28 @@ class FSDPPolicyWorkerBase(PolicyWorkerBase):
             return
 
         if self._is_custom_lora:
-            # Custom LoRA: merge deltas into base weights, sync full weights,
-            # then unmerge to restore the original parameterisation.
-            from skyrl.backends.skyrl_train.custom_lora import merge_custom_lora, unmerge_custom_lora
+            # Custom LoRA: add deltas inline to the already-gathered weight
+            # tensors produced by the extractor.  This is FSDP-safe because
+            # we never touch the module's own weight parameter (which is a
+            # flat shard outside forward); we only modify the fresh tensor
+            # that extract_weights() already allocated.
+            weight_map = self._custom_lora_weight_map
 
-            merge_custom_lora(self.model.model)
-            try:
-                weight_iterator = self.weight_extractor.extract_weights(generator_dtype)
-                weight_metadata = self.weight_extractor.get_weight_metadata(generator_dtype)
-                await self._weight_transfer_sender.send_chunks(
-                    weight_iterator,
-                    weight_metadata=weight_metadata,
-                )
-            finally:
-                unmerge_custom_lora(self.model.model)
+            def _apply_deltas(chunk_iter):
+                for chunk in chunk_iter:
+                    for i, name in enumerate(chunk.names):
+                        if name in weight_map:
+                            weight_map[name].add_delta_inplace(chunk.tensors[i])
+                    yield chunk
+
+            weight_iterator = _apply_deltas(
+                self.weight_extractor.extract_weights(generator_dtype)
+            )
+            weight_metadata = self.weight_extractor.get_weight_metadata(generator_dtype)
+            await self._weight_transfer_sender.send_chunks(
+                weight_iterator,
+                weight_metadata=weight_metadata,
+            )
 
             if cache_reset_task is not None:
                 await cache_reset_task

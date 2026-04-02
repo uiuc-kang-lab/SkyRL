@@ -16,7 +16,8 @@ from .schemes import ApproximationScheme, get_scheme
 
 logger = logging.getLogger(__name__)
 
-EPHEMERAL_PREFIX = "_ephemeral_"
+
+
 
 
 class CustomLoraLinear(nn.Module):
@@ -70,13 +71,16 @@ class CustomLoraLinear(nn.Module):
             buffers = self._meta_placeholders(svd_rank, num_coefficients)
 
         for name, tensor in buffers.items():
-            persistent = not name.startswith(EPHEMERAL_PREFIX)
-            self.register_buffer(name, tensor, persistent=persistent)
+            self.register_buffer(name, tensor, persistent=True)
 
         # The ONLY trainable parameter
         self.v = nn.Parameter(torch.zeros(num_coefficients, dtype=self.weight.dtype))
 
         self._merged = False
+
+        # Cached buffer dict — avoids re-creating a dict on every forward call.
+        # Invalidated by _invalidate_buffer_cache() if buffers ever change.
+        self._buffer_cache: dict | None = None
 
     def _meta_placeholders(self, svd_rank: int, num_coefficients: int) -> dict:
         """Create meta-device placeholder buffers matching expected shapes."""
@@ -84,41 +88,46 @@ class CustomLoraLinear(nn.Module):
         return {
             "U_scaled": torch.empty(self.out_features, svd_rank, dtype=dtype, device="meta"),
             "V": torch.empty(self.in_features, svd_rank, dtype=dtype, device="meta"),
-            "_ephemeral_P": torch.empty(
+            "P": torch.empty(
                 num_coefficients, svd_rank, svd_rank, dtype=dtype, device="meta"
             ),
         }
 
     def _get_buffers(self) -> dict:
-        """Collect registered buffers into a dict for the scheme."""
-        return {name: buf for name, buf in self.named_buffers(recurse=False)}
+        """Return registered buffers as a dict, using a cache to avoid
+        repeated dict construction on the training hot path."""
+        if self._buffer_cache is None:
+            self._buffer_cache = {
+                name: buf for name, buf in self.named_buffers(recurse=False)
+            }
+        return self._buffer_cache
+
+    def _invalidate_buffer_cache(self) -> None:
+        self._buffer_cache = None
+
+    # Override register_buffer to invalidate cache
+    def register_buffer(self, name, tensor, persistent=True):
+        super().register_buffer(name, tensor, persistent=persistent)
+        self._buffer_cache = None
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         base_out = F.linear(x, self.weight, self.bias)
         lora_out = self.scheme.forward(x, self.v, self._get_buffers())
         return base_out + lora_out
 
-    def merge(self) -> None:
-        """Merge delta_W into the base weight (for inference weight sync).
+    def add_delta_inplace(self, full_weight: torch.Tensor) -> None:
+        """Add delta_W to *full_weight* **in-place**.
 
-        Saves a copy of the original weight so that ``unmerge`` can restore
-        it exactly, avoiding the numerical drift of add-then-subtract in
-        low-precision dtypes (e.g. bf16).
+        FSDP-safe: operates on the already-gathered full tensor produced by
+        ``FSDPWeightExtractor`` (which is a fresh allocation from
+        ``full_tensor().to(dtype).detach().contiguous()``).  The module's
+        own ``weight`` parameter (a flat FSDP shard outside forward) is
+        never read or written.
+
+        Zero extra GPU allocation beyond the ``(r, in_features)``
+        intermediate inside ``merge_into``.
         """
-        if self._merged:
-            return
-        self._weight_backup = self.weight.data.clone()
-        delta = self.scheme.compute_delta(self.v, self._get_buffers())
-        self.weight.data.add_(delta.to(self.weight.dtype))
-        self._merged = True
-
-    def unmerge(self) -> None:
-        """Restore the original base weight saved during ``merge``."""
-        if not self._merged:
-            return
-        self.weight.data.copy_(self._weight_backup)
-        del self._weight_backup
-        self._merged = False
+        self.scheme.merge_into(full_weight, self.v, self._get_buffers())
 
     def extra_repr(self) -> str:
         return (

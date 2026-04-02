@@ -436,6 +436,44 @@ class FSDPStrategy(DistributedStrategy):
 
         dist.barrier()
 
+    def _save_custom_lora_params(self, model, ckpt_dir):
+        """Save custom LoRA v parameters, gathering across FSDP ranks.
+
+        All ranks must call this (the gather is collective).  Only rank 0
+        writes the file.
+        """
+        from collections import OrderedDict
+        from safetensors.torch import save_file
+        from skyrl.backends.skyrl_train.distributed.fsdp_utils import fsdp_version
+
+        params = OrderedDict()
+
+        if fsdp_version(model) >= 1:
+            # FSDP v1/v2: gather full params across ranks
+            from torch.distributed.fsdp import FSDP
+
+            with FSDP.summon_full_params(model, writeback=False):
+                for name, param in model.named_parameters():
+                    if param.requires_grad:
+                        if hasattr(param, "full_tensor"):
+                            # DTensor (FSDP v2)
+                            params[name] = param.full_tensor().detach().cpu()
+                        else:
+                            params[name] = param.detach().cpu()
+        else:
+            # Non-FSDP fallback (e.g. QLoRA path)
+            for name, param in model.named_parameters():
+                if param.requires_grad:
+                    params[name] = param.detach().cpu()
+
+        if self.is_rank_0():
+            custom_lora_dir = os.path.join(ckpt_dir, "custom_lora")
+            os.makedirs(custom_lora_dir, exist_ok=True)
+            save_file(params, os.path.join(custom_lora_dir, "custom_lora_params.safetensors"))
+            self.print(f"[rank-0]: Saved custom LoRA params ({len(params)} tensors) to: {custom_lora_dir}")
+
+        dist.barrier()
+
     def save_checkpoint(
         self,
         model,
@@ -535,15 +573,11 @@ class FSDPStrategy(DistributedStrategy):
         if self.is_lora and hasattr(save_model, "peft_config"):
             self._save_lora_adapters(save_model, ckpt_dir)
 
-        # Save custom LoRA trainable parameters
-        if self.is_custom_lora and self.is_rank_0():
-            from skyrl.backends.skyrl_train.custom_lora import collect_custom_lora_params
-            from safetensors.torch import save_file
-
-            custom_lora_params = collect_custom_lora_params(save_model)
-            custom_lora_dir = os.path.join(ckpt_dir, "custom_lora")
-            os.makedirs(custom_lora_dir, exist_ok=True)
-            save_file(custom_lora_params, os.path.join(custom_lora_dir, "custom_lora_params.safetensors"))
+        # Save custom LoRA trainable parameters.
+        # All ranks participate in the gather (summon_full_params / full_tensor),
+        # but only rank 0 writes the file.
+        if self.is_custom_lora:
+            self._save_custom_lora_params(save_model, ckpt_dir)
 
         # Final barrier to ensure all operations complete
         dist.barrier()

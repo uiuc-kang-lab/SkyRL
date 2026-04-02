@@ -37,9 +37,8 @@ class ApproximationScheme(ABC):
             seed: Deterministic seed for random components.
 
         Returns:
-            Dict mapping buffer names to tensors.  Buffers whose names start
-            with ``_ephemeral_`` will be registered as non-persistent (not saved
-            in checkpoints, regenerated from seed).
+            Dict mapping buffer names to tensors.  All buffers are registered
+            as persistent and will be saved in checkpoints and synced by FSDP.
         """
 
     @abstractmethod
@@ -61,6 +60,19 @@ class ApproximationScheme(ABC):
 
         Used only for merge/unmerge during weight sync to inference engines.
         """
+
+    def merge_into(
+        self, weight: Tensor, v: Tensor, buffers: Dict[str, Tensor]
+    ) -> None:
+        """Add delta_W into *weight* in-place.
+
+        Default implementation materializes the full delta.  Schemes can
+        override this with a chunked version that avoids the full (d, k)
+        allocation.
+        """
+        delta = self.compute_delta(v, buffers)
+        weight.data.add_(delta.to(weight.dtype))
+        del delta
 
 
 class SVDRandomProjection(ApproximationScheme):
@@ -85,16 +97,29 @@ class SVDRandomProjection(ApproximationScheme):
         dtype = weight.dtype
         device = weight.device
 
-        # Truncated SVD — use float32 for numerical stability
+        # Truncated SVD — use float32 for numerical stability.
+        # Eagerly delete the float32 copy and intermediate results
+        # to minimise peak GPU memory during sequential layer init.
+        #
+        # torch.svd_lowrank uses a randomised algorithm internally
+        # (random projection → QR → SVD).  Seed the RNG before the call
+        # so that all ranks and all runs produce identical U, S, V for
+        # the same weight and seed.
         w_f32 = weight.float()
+        rng_state = torch.random.get_rng_state()
+        torch.manual_seed(seed)
         U, S, V = torch.svd_lowrank(w_f32, q=svd_rank)
+        torch.random.set_rng_state(rng_state)
+        del w_f32
         # U: (out_features, r), S: (r,), V: (in_features, r)
 
-        # Fold singular values into U
+        # Fold singular values into U, then drop full-precision intermediates
         U_scaled = (U * S.unsqueeze(0)).to(dtype)  # (out_features, r)
         V = V.to(dtype)  # (in_features, r)
+        del U, S  # free float32 originals
 
-        # Fixed random projection basis — deterministic from seed
+        # Fixed random projection basis — deterministic from seed.
+        # Generated on CPU to avoid fragmenting GPU memory, then moved.
         rng = torch.Generator(device="cpu")
         rng.manual_seed(seed)
         P = torch.randn(num_coefficients, svd_rank, svd_rank, generator=rng, dtype=dtype)
@@ -104,14 +129,13 @@ class SVDRandomProjection(ApproximationScheme):
         return {
             "U_scaled": U_scaled.to(device),
             "V": V.to(device),
-            # Prefix with _ephemeral_ → registered as non-persistent buffer
-            "_ephemeral_P": P.to(device),
+            "P": P.to(device),
         }
 
     def forward(self, x: Tensor, v: Tensor, buffers: Dict[str, Tensor]) -> Tensor:
         U_scaled = buffers["U_scaled"]  # (out_features, r)
         V = buffers["V"]  # (in_features, r)
-        P = buffers["_ephemeral_P"]  # (u, r, r)
+        P = buffers["P"]  # (u, r, r)
 
         # M = sum_i v_i * P_i → (r, r)
         M = torch.einsum("u, uij -> ij", v, P)
@@ -129,12 +153,44 @@ class SVDRandomProjection(ApproximationScheme):
     def compute_delta(self, v: Tensor, buffers: Dict[str, Tensor]) -> Tensor:
         U_scaled = buffers["U_scaled"]  # (out_features, r)
         V = buffers["V"]  # (in_features, r)
-        P = buffers["_ephemeral_P"]  # (u, r, r)
+        P = buffers["P"]  # (u, r, r)
 
         M = torch.einsum("u, uij -> ij", v, P)  # (r, r)
         # delta_W = U_scaled @ M @ V^T → (out_features, in_features)
         delta_W = U_scaled @ M @ V.T
         return delta_W
+
+    def merge_into(
+        self, weight: Tensor, v: Tensor, buffers: Dict[str, Tensor]
+    ) -> None:
+        """Add delta_W into *weight* without materializing the full matrix.
+
+        Processes the addition in row-chunks to keep peak memory at
+        ``chunk_rows * in_features`` instead of ``out_features * in_features``.
+        Falls back to the dense path for small weights where chunking overhead
+        would dominate.
+        """
+        U_scaled = buffers["U_scaled"]  # (out_features, r)
+        V = buffers["V"]  # (in_features, r)
+        P = buffers["P"]  # (u, r, r)
+
+        M = torch.einsum("u, uij -> ij", v, P)  # (r, r)
+        MV_T = M @ V.T  # (r, in_features)
+
+        out_features = weight.shape[0]
+        # Only chunk when the full delta would exceed ~32 MB (in bf16)
+        full_size_bytes = out_features * weight.shape[1] * weight.element_size()
+        if full_size_bytes <= 32 * 1024 * 1024:
+            weight.data.add_((U_scaled @ MV_T).to(weight.dtype))
+            return
+
+        # Process in row-chunks to avoid materializing the full (d, k) delta
+        chunk_rows = max(1, (32 * 1024 * 1024) // (weight.shape[1] * weight.element_size()))
+        for start in range(0, out_features, chunk_rows):
+            end = min(start + chunk_rows, out_features)
+            weight.data[start:end].add_(
+                (U_scaled[start:end] @ MV_T).to(weight.dtype)
+            )
 
 
 # ---------------------------------------------------------------------------

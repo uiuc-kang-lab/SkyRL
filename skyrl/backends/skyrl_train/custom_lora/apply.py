@@ -111,22 +111,28 @@ def apply_custom_lora(model: nn.Module, config) -> nn.Module:
     return model
 
 
-def merge_custom_lora(model: nn.Module) -> None:
-    """Merge all CustomLoraLinear deltas into base weights."""
-    for module in model.modules():
-        if isinstance(module, CustomLoraLinear):
-            module.merge()
+def build_custom_lora_weight_map(model: nn.Module) -> dict[str, CustomLoraLinear]:
+    """Build a mapping from state_dict weight key → CustomLoraLinear module.
 
+    Used by the weight extraction path to know which gathered weight tensors
+    need a delta added before being sent to the inference engine.
 
-def unmerge_custom_lora(model: nn.Module) -> None:
-    """Unmerge all CustomLoraLinear deltas from base weights."""
-    for module in model.modules():
+    The state_dict key for a module's weight is ``<module_path>.weight``.
+    """
+    weight_map: dict[str, CustomLoraLinear] = {}
+    for name, module in model.named_modules():
         if isinstance(module, CustomLoraLinear):
-            module.unmerge()
+            weight_key = f"{name}.weight" if name else "weight"
+            weight_map[weight_key] = module
+    return weight_map
 
 
 def collect_custom_lora_params(model: nn.Module) -> OrderedDict:
-    """Collect only trainable v parameters for checkpointing."""
+    """Collect trainable v parameters for checkpointing (non-FSDP path).
+
+    For FSDP-sharded models, use ``collect_custom_lora_params_fsdp``
+    instead, which gathers full tensors across ranks before saving.
+    """
     params = OrderedDict()
     for name, param in model.named_parameters():
         if param.requires_grad:
