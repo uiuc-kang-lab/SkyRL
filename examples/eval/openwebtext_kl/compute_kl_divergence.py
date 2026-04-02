@@ -1,31 +1,24 @@
-"""Compute KL divergence of output token distributions between two LoRA adapters.
+"""Compute KL divergence between a LoRA-finetuned model and its base model.
 
-Given a base model, two LoRA adapter paths, and a dataset of prompts, this script:
-1. Loads the base model and applies each LoRA adapter to create model_a and model_b.
-2. Tokenizes each prompt and generates responses from model_a.
+Given a base model, a LoRA adapter, and a dataset of prompts, this script:
+1. Loads the base model twice: once with LoRA merged (model_a) and once
+   without (model_b).
+2. Generates responses from the LoRA model (model_a).
 3. Computes the full next-token distribution (logits) from both models over
    the generated response tokens.
-4. Reports per-token, per-sequence, and dataset-level KL(model_a || model_b).
+4. Reports per-token, per-sequence, and dataset-level KL(lora || base).
 
 Supports both *exact* KL over the full vocabulary and the *approximate* KL
 estimators from SkyRL (k1, k2, k3, abs).
 
 Usage
 -----
-# Two LoRA adapters on the same base model:
-uv run --extra fsdp scripts/compute_kl_divergence.py \
+uv run --extra fsdp -m examples.eval.openwebtext_kl.compute_kl_divergence \
     --base_model Qwen/Qwen2.5-0.5B-Instruct \
-    --lora_a /path/to/lora_adapter_a \
-    --lora_b /path/to/lora_adapter_b \
+    --lora /path/to/lora_adapter \
     --dataset data/prompts.parquet \
     --max_gen_length 512 \
     --batch_size 4
-
-# Base model vs a LoRA adapter (omit --lora_a to use base as model_a):
-uv run --extra fsdp scripts/compute_kl_divergence.py \
-    --base_model Qwen/Qwen2.5-0.5B-Instruct \
-    --lora_b /path/to/lora_adapter \
-    --dataset data/prompts.parquet
 """
 
 import argparse
@@ -266,16 +259,15 @@ def run(args: argparse.Namespace) -> dict:
     device = torch.device(f"cuda:{args.gpu}" if torch.cuda.is_available() else "cpu")
     dtype = torch.bfloat16
 
-    # Resolve model descriptions for logging
-    model_a_desc = f"{args.base_model} + LoRA({args.lora_a})" if args.lora_a else args.base_model
-    model_b_desc = f"{args.base_model} + LoRA({args.lora_b})" if args.lora_b else args.base_model
+    lora_desc = f"{args.base_model} + LoRA({args.lora})"
+    base_desc = args.base_model
 
     # Load tokenizer from the base model
     tokenizer = get_tokenizer(args.base_model, trust_remote_code=True, padding_side="left")
 
-    # Load models (base + optional LoRA)
-    model_a = load_model(args.base_model, device, dtype, lora_path=args.lora_a)
-    model_b = load_model(args.base_model, device, dtype, lora_path=args.lora_b)
+    # Load LoRA model (model_a) and base model (model_b)
+    model_a = load_model(args.base_model, device, dtype, lora_path=args.lora)
+    model_b = load_model(args.base_model, device, dtype, lora_path=None)
 
     # Load dataset
     ds = load_dataset(args.dataset, prompt_key=args.prompt_key)
@@ -368,10 +360,9 @@ def run(args: argparse.Namespace) -> dict:
 
     metrics = {
         "base_model": args.base_model,
-        "lora_a": args.lora_a,
-        "lora_b": args.lora_b,
-        "model_a": model_a_desc,
-        "model_b": model_b_desc,
+        "lora": args.lora,
+        "model_a": lora_desc,
+        "model_b": base_desc,
         "kl_type": args.kl_type,
         "num_sequences": len(all_kl_means),
         "total_response_tokens": int(total_tokens),
@@ -397,9 +388,9 @@ def run(args: argparse.Namespace) -> dict:
     # Print summary
     logger.info("=" * 60)
     logger.info(f"KL Divergence: {args.kl_type.upper()}")
-    logger.info(f"  KL(model_a || model_b)")
-    logger.info(f"  model_a: {model_a_desc}")
-    logger.info(f"  model_b: {model_b_desc}")
+    logger.info(f"  KL(lora || base)")
+    logger.info(f"  lora:  {lora_desc}")
+    logger.info(f"  base:  {base_desc}")
     logger.info(f"  sequences: {metrics['num_sequences']}")
     logger.info(f"  total response tokens: {metrics['total_response_tokens']}")
     logger.info("-" * 60)
@@ -429,8 +420,7 @@ def parse_args() -> argparse.Namespace:
         description="Compute KL divergence of output token distributions between two models"
     )
     p.add_argument("--base_model", required=True, help="Path or HF name of the base model")
-    p.add_argument("--lora_a", default=None, help="Path to LoRA adapter for model A (omit to use base model)")
-    p.add_argument("--lora_b", default=None, help="Path to LoRA adapter for model B (omit to use base model)")
+    p.add_argument("--lora", required=True, help="Path to LoRA adapter directory")
     p.add_argument("--dataset", required=True, help="Dataset path: .parquet, .json/.jsonl, or HF dataset name[:split]")
     p.add_argument("--prompt_key", default="prompt", help="Key in dataset for the prompt field")
     p.add_argument("--max_gen_length", type=int, default=512, help="Maximum generation length")

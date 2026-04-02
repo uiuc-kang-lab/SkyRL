@@ -1,15 +1,14 @@
-"""Compute KL divergence between two LoRA adapters using vLLM for generation.
+"""Compute KL divergence between a LoRA-finetuned model and its base model.
 
-This variant uses vLLM for fast generation (model_a) and HuggingFace for logit
-extraction from both models.  LoRA adapters are merged into the base model
-before loading.
+This variant uses vLLM for fast generation (lora model) and HuggingFace for
+logit extraction from both models.  The LoRA adapter is merged into the base
+model and saved to a temp directory for vLLM.
 
 Usage
 -----
-uv run --extra fsdp scripts/compute_kl_divergence_vllm.py \
+uv run --extra fsdp -m examples.eval.openwebtext_kl.compute_kl_divergence_vllm \
     --base_model Qwen/Qwen2.5-7B-Instruct \
-    --lora_a /path/to/lora_a \
-    --lora_b /path/to/lora_b \
+    --lora /path/to/lora_adapter \
     --dataset data/prompts.parquet \
     --max_gen_length 1024 \
     --tp_size 1 \
@@ -229,17 +228,14 @@ def run(args: argparse.Namespace) -> dict:
 def _run_inner(args: argparse.Namespace, tmp_dir: str) -> dict:
     tokenizer = get_tokenizer(args.base_model, trust_remote_code=True, padding_side="left")
 
-    model_a_desc = f"{args.base_model} + LoRA({args.lora_a})" if args.lora_a else args.base_model
-    model_b_desc = f"{args.base_model} + LoRA({args.lora_b})" if args.lora_b else args.base_model
+    lora_desc = f"{args.base_model} + LoRA({args.lora})"
+    base_desc = args.base_model
 
-    # ---- Resolve model_a path for vLLM (needs on-disk weights) ----
-    if args.lora_a is not None:
-        vllm_model_path = merge_lora_to_disk(args.base_model, args.lora_a, os.path.join(tmp_dir, "model_a"))
-    else:
-        vllm_model_path = args.base_model
+    # ---- Merge LoRA to disk for vLLM ----
+    vllm_model_path = merge_lora_to_disk(args.base_model, args.lora, os.path.join(tmp_dir, "lora_merged"))
 
     # ---- vLLM for generation ----
-    logger.info(f"Initializing vLLM engine for model_a: {model_a_desc}")
+    logger.info(f"Initializing vLLM engine for LoRA model: {lora_desc}")
     llm = LLM(
         model=vllm_model_path,
         tensor_parallel_size=args.tp_size,
@@ -284,7 +280,7 @@ def _run_inner(args: argparse.Namespace, tmp_dir: str) -> dict:
     logger.info(f"Tokenized {len(all_prompt_ids)} prompts ({n_truncated} truncated to {args.max_prompt_length} tokens)")
 
     # ---- Generate with vLLM ----
-    logger.info("Generating responses with model_a via vLLM...")
+    logger.info("Generating responses with LoRA model via vLLM...")
     vllm_outputs = llm.generate(
         prompt_token_ids=all_prompt_ids,
         sampling_params=sampling_params,
@@ -307,11 +303,11 @@ def _run_inner(args: argparse.Namespace, tmp_dir: str) -> dict:
     device = torch.device(f"cuda:0")
     dtype = torch.bfloat16
 
-    logger.info("Loading model_a (HF) for logit extraction...")
-    model_a_hf = load_hf_model(args.base_model, device, dtype, lora_path=args.lora_a)
+    logger.info("Loading LoRA model (HF) for logit extraction...")
+    model_a_hf = load_hf_model(args.base_model, device, dtype, lora_path=args.lora)
 
-    logger.info("Loading model_b (HF) for logit extraction...")
-    model_b_hf = load_hf_model(args.base_model, device, dtype, lora_path=args.lora_b)
+    logger.info("Loading base model (HF) for logit extraction...")
+    model_b_hf = load_hf_model(args.base_model, device, dtype, lora_path=None)
 
     # ---- Compute KL in batches ----
     batch_size = args.batch_size
@@ -372,10 +368,9 @@ def _run_inner(args: argparse.Namespace, tmp_dir: str) -> dict:
 
     metrics = {
         "base_model": args.base_model,
-        "lora_a": args.lora_a,
-        "lora_b": args.lora_b,
-        "model_a": model_a_desc,
-        "model_b": model_b_desc,
+        "lora": args.lora,
+        "model_a": lora_desc,
+        "model_b": base_desc,
         "kl_type": args.kl_type,
         "num_sequences": len(all_kl_means),
         "total_response_tokens": int(total_tokens),
@@ -400,9 +395,9 @@ def _run_inner(args: argparse.Namespace, tmp_dir: str) -> dict:
 
     logger.info("=" * 60)
     logger.info(f"KL Divergence: {args.kl_type.upper()}")
-    logger.info(f"  KL(model_a || model_b)")
-    logger.info(f"  model_a: {model_a_desc}")
-    logger.info(f"  model_b: {model_b_desc}")
+    logger.info(f"  KL(lora || base)")
+    logger.info(f"  lora:  {lora_desc}")
+    logger.info(f"  base:  {base_desc}")
     logger.info(f"  sequences: {metrics['num_sequences']}")
     logger.info(f"  total response tokens: {metrics['total_response_tokens']}")
     logger.info("-" * 60)
@@ -427,8 +422,7 @@ def parse_args() -> argparse.Namespace:
         description="Compute KL divergence between two models (vLLM generation + HF logits)"
     )
     p.add_argument("--base_model", required=True, help="Path or HF name of the base model")
-    p.add_argument("--lora_a", default=None, help="Path to LoRA adapter for model A (omit to use base model)")
-    p.add_argument("--lora_b", default=None, help="Path to LoRA adapter for model B (omit to use base model)")
+    p.add_argument("--lora", required=True, help="Path to LoRA adapter directory")
     p.add_argument("--dataset", required=True, help=".parquet, .json/.jsonl, or HF dataset[:split]")
     p.add_argument("--prompt_key", default="prompt")
     p.add_argument("--max_gen_length", type=int, default=1024)
