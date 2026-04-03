@@ -257,18 +257,20 @@ class HFModelWrapper(nn.Module):
                 self.model = apply_custom_lora(self.model, custom_lora_config)
 
                 # ── Verification logging ──────────────────────────────────
+                # Use logger.info (loguru) so output appears in Ray actor logs.
+                # Plain print() is suppressed/deduplicated by Ray workers.
                 trainable = [(n, p.shape, p.dtype) for n, p in self.model.named_parameters() if p.requires_grad]
                 total_params = sum(p.numel() for p in self.model.parameters())
                 trainable_params = sum(p.numel() for n, p in self.model.named_parameters() if p.requires_grad)
-                print(
+                logger.info(
                     f"[CustomLoRA] Trainable params: {trainable_params:,} / {total_params:,} "
                     f"({100 * trainable_params / total_params:.6f}%)"
                 )
-                print(f"[CustomLoRA] Trainable parameter list ({len(trainable)} tensors):")
+                logger.info(f"[CustomLoRA] Trainable parameter list ({len(trainable)} tensors):")
                 for name, shape, dtype in trainable[:10]:
-                    print(f"  [CustomLoRA]   {name}  shape={list(shape)}  dtype={dtype}")
+                    logger.info(f"  [CustomLoRA]   {name}  shape={list(shape)}  dtype={dtype}")
                 if len(trainable) > 10:
-                    print(f"  [CustomLoRA]   ... and {len(trainable) - 10} more")
+                    logger.info(f"  [CustomLoRA]   ... and {len(trainable) - 10} more")
                 # ─────────────────────────────────────────────────────────
 
             # MoE - balancing loss
