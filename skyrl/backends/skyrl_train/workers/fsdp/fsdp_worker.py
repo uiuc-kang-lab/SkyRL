@@ -243,6 +243,10 @@ class FSDPPolicyWorkerBase(PolicyWorkerBase):
             self.optimizer is not None and self.scheduler is not None
         ), "Model preparation should create optimizer and scheduler"
 
+    def _get_custom_lora_summary(self) -> str | None:
+        """Return the custom LoRA summary string for driver-side logging."""
+        return getattr(self.model, "_custom_lora_summary", None)
+
     async def init_weight_sync_state(self, inference_engine_client, inference_engine_cfg: "InferenceEngineConfig"):
         # Call super first to set _transfer_strategy_cls and create sender/receivers
         await super().init_weight_sync_state(inference_engine_client, inference_engine_cfg)
