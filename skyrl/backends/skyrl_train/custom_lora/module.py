@@ -59,6 +59,11 @@ class CustomLoraLinear(nn.Module):
         # Instantiate scheme
         self.scheme: ApproximationScheme = get_scheme(scheme_name)
 
+        # Effective rank may be smaller than svd_rank when a weight
+        # dimension is smaller (e.g. GQA k/v projections).
+        effective_rank = min(svd_rank, self.out_features, self.in_features)
+        self.effective_rank = effective_rank
+
         # Compute fixed buffers (SVD, random projection, etc.)
         is_meta = self.weight.is_meta
         if not is_meta:
@@ -68,7 +73,7 @@ class CustomLoraLinear(nn.Module):
         else:
             # Meta-tensor init path: create placeholder meta buffers.
             # Real values will be populated via FSDP sync_module_states.
-            buffers = self._meta_placeholders(svd_rank, num_coefficients)
+            buffers = self._meta_placeholders(effective_rank, num_coefficients)
 
         for name, tensor in buffers.items():
             self.register_buffer(name, tensor, persistent=True)
@@ -80,14 +85,18 @@ class CustomLoraLinear(nn.Module):
         # Invalidated by _invalidate_buffer_cache() if buffers ever change.
         self._buffer_cache: dict | None = None
 
-    def _meta_placeholders(self, svd_rank: int, num_coefficients: int) -> dict:
-        """Create meta-device placeholder buffers matching expected shapes."""
+    def _meta_placeholders(self, effective_rank: int, num_coefficients: int) -> dict:
+        """Create meta-device placeholder buffers matching expected shapes.
+
+        Uses effective_rank (not svd_rank) because svd_lowrank caps the
+        rank at min(out_features, in_features).
+        """
         dtype = self.weight.dtype
         return {
-            "U_scaled": torch.empty(self.out_features, svd_rank, dtype=dtype, device="meta"),
-            "V": torch.empty(self.in_features, svd_rank, dtype=dtype, device="meta"),
+            "U_scaled": torch.empty(self.out_features, effective_rank, dtype=dtype, device="meta"),
+            "V": torch.empty(self.in_features, effective_rank, dtype=dtype, device="meta"),
             "P": torch.empty(
-                num_coefficients, svd_rank, svd_rank, dtype=dtype, device="meta"
+                num_coefficients, effective_rank, effective_rank, dtype=dtype, device="meta"
             ),
         }
 

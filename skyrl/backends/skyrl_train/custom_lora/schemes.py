@@ -97,6 +97,11 @@ class SVDRandomProjection(ApproximationScheme):
         dtype = weight.dtype
         device = weight.device
 
+        # Cap effective rank at the matrix rank to handle layers where
+        # min(out_features, in_features) < svd_rank (e.g. GQA k/v
+        # projections with fewer heads).
+        effective_rank = min(svd_rank, out_features, in_features)
+
         # Truncated SVD — use float32 for numerical stability.
         # Eagerly delete the float32 copy and intermediate results
         # to minimise peak GPU memory during sequential layer init.
@@ -111,20 +116,22 @@ class SVDRandomProjection(ApproximationScheme):
         fork_devices = [device] if device.type == "cuda" else []
         with torch.random.fork_rng(devices=fork_devices, enabled=True):
             torch.manual_seed(seed)
-            U, S, V = torch.svd_lowrank(w_f32, q=svd_rank)
+            U, S, V = torch.svd_lowrank(w_f32, q=effective_rank)
         del w_f32
-        # U: (out_features, r), S: (r,), V: (in_features, r)
+        # U: (out_features, effective_rank), S: (effective_rank,),
+        # V: (in_features, effective_rank)
 
         # Fold singular values into U, then drop full-precision intermediates
-        U_scaled = (U * S.unsqueeze(0)).to(dtype)  # (out_features, r)
-        V = V.to(dtype)  # (in_features, r)
+        U_scaled = (U * S.unsqueeze(0)).to(dtype)  # (out_features, effective_rank)
+        V = V.to(dtype)  # (in_features, effective_rank)
         del U, S  # free float32 originals
 
         # Fixed random projection basis — deterministic from seed.
+        # Use effective_rank (not svd_rank) so P matches the SVD dimensions.
         # Generated on CPU to avoid fragmenting GPU memory, then moved.
         rng = torch.Generator(device="cpu")
         rng.manual_seed(seed)
-        P = torch.randn(num_coefficients, svd_rank, svd_rank, generator=rng, dtype=dtype)
+        P = torch.randn(num_coefficients, effective_rank, effective_rank, generator=rng, dtype=dtype)
         # Normalise each P_i so that ||P_i||_F = 1 for stable initialisation
         P = P / (P.norm(dim=(-2, -1), keepdim=True) + 1e-8)
 

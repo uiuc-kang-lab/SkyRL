@@ -260,14 +260,15 @@ class HFModelWrapper(nn.Module):
                 trainable = [(n, p.shape, p.dtype) for n, p in self.model.named_parameters() if p.requires_grad]
                 total_params = sum(p.numel() for p in self.model.parameters())
                 trainable_params = sum(p.numel() for n, p in self.model.named_parameters() if p.requires_grad)
-                logger.info(
+                print(
                     f"[CustomLoRA] Trainable params: {trainable_params:,} / {total_params:,} "
                     f"({100 * trainable_params / total_params:.6f}%)"
                 )
+                print(f"[CustomLoRA] Trainable parameter list ({len(trainable)} tensors):")
                 for name, shape, dtype in trainable[:10]:
-                    logger.info(f"  [CustomLoRA]   {name}  shape={list(shape)}  dtype={dtype}")
+                    print(f"  [CustomLoRA]   {name}  shape={list(shape)}  dtype={dtype}")
                 if len(trainable) > 10:
-                    logger.info(f"  [CustomLoRA]   ... and {len(trainable) - 10} more")
+                    print(f"  [CustomLoRA]   ... and {len(trainable) - 10} more")
                 # ─────────────────────────────────────────────────────────
 
             # MoE - balancing loss
