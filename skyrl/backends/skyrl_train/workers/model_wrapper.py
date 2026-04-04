@@ -256,19 +256,23 @@ class HFModelWrapper(nn.Module):
                 self.model.enable_input_require_grads()
                 self.model = apply_custom_lora(self.model, custom_lora_config)
 
-                # ── Verification logging ──────────────────────────────────
-                trainable = [(n, p.shape, p.dtype) for n, p in self.model.named_parameters() if p.requires_grad]
+                # ── Store summary for driver-side logging ─────────────────
+                # Ray deduplicates worker stdout/stderr, so logging here
+                # is unreliable.  Store the summary string on self so the
+                # driver can retrieve and log it after init_model returns.
                 total_params = sum(p.numel() for p in self.model.parameters())
-                trainable_params = sum(p.numel() for n, p in self.model.named_parameters() if p.requires_grad)
-                print(
+                trainable_params = sum(p.numel() for p in self.model.parameters() if p.requires_grad)
+                trainable = [(n, list(p.shape), str(p.dtype)) for n, p in self.model.named_parameters() if p.requires_grad]
+                lines = [
                     f"[CustomLoRA] Trainable params: {trainable_params:,} / {total_params:,} "
-                    f"({100 * trainable_params / total_params:.6f}%)"
-                )
-                print(f"[CustomLoRA] Trainable parameter list ({len(trainable)} tensors):")
+                    f"({100 * trainable_params / total_params:.6f}%)",
+                    f"[CustomLoRA] Trainable parameter list ({len(trainable)} tensors):",
+                ]
                 for name, shape, dtype in trainable[:10]:
-                    print(f"  [CustomLoRA]   {name}  shape={list(shape)}  dtype={dtype}")
+                    lines.append(f"  [CustomLoRA]   {name}  shape={shape}  dtype={dtype}")
                 if len(trainable) > 10:
-                    print(f"  [CustomLoRA]   ... and {len(trainable) - 10} more")
+                    lines.append(f"  [CustomLoRA]   ... and {len(trainable) - 10} more")
+                self._custom_lora_summary = "\n".join(lines)
                 # ─────────────────────────────────────────────────────────
 
             # MoE - balancing loss

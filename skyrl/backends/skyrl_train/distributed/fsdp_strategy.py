@@ -448,18 +448,23 @@ class FSDPStrategy(DistributedStrategy):
 
         params = OrderedDict()
 
-        if fsdp_version(model) >= 1:
-            # FSDP v1/v2: gather full params across ranks
+        fsdp_ver = fsdp_version(model)
+        if fsdp_ver == 2:
+            # FSDP v2: parameters are DTensors — gather via full_tensor()
+            for name, param in model.named_parameters():
+                if param.requires_grad:
+                    if hasattr(param, "full_tensor"):
+                        params[name] = param.full_tensor().detach().cpu()
+                    else:
+                        params[name] = param.detach().cpu()
+        elif fsdp_ver == 1:
+            # FSDP v1: use summon_full_params to gather sharded params
             from torch.distributed.fsdp import FSDP
 
             with FSDP.summon_full_params(model, writeback=False):
                 for name, param in model.named_parameters():
                     if param.requires_grad:
-                        if hasattr(param, "full_tensor"):
-                            # DTensor (FSDP v2)
-                            params[name] = param.full_tensor().detach().cpu()
-                        else:
-                            params[name] = param.detach().cpu()
+                        params[name] = param.detach().cpu()
         else:
             # Non-FSDP fallback (e.g. QLoRA path)
             for name, param in model.named_parameters():

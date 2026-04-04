@@ -575,6 +575,29 @@ class RayPPOTrainer:
 
         logger.info("init policy/ref/critic models done")
 
+        # Log custom LoRA config from the driver process (worker logs are
+        # suppressed by Ray's log deduplication).
+        custom_lora_cfg = cfg.trainer.policy.model.custom_lora
+        if custom_lora_cfg.enabled:
+            logger.info(
+                f"[CustomLoRA] Config: scheme={custom_lora_cfg.scheme}, "
+                f"svd_rank={custom_lora_cfg.svd_rank}, "
+                f"num_coefficients={custom_lora_cfg.num_coefficients}, "
+                f"target_modules={custom_lora_cfg.target_modules}, "
+                f"projection_seed={custom_lora_cfg.projection_seed}"
+            )
+            # Retrieve trainable param summary from rank-0 policy worker
+            try:
+                summaries = ray.get(
+                    policy_model.async_run_ray_method("pass_through", "_get_custom_lora_summary")
+                )
+                summary = summaries[0] if summaries else None
+                if summary:
+                    for line in summary.split("\n"):
+                        logger.info(line)
+            except Exception:
+                pass  # non-critical logging — don't crash if method doesn't exist
+
     def init_weight_sync_state(self):
         """
         Setup the connection between policy model and inference engine for weight syncing.
