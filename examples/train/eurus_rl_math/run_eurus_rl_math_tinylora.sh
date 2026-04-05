@@ -104,6 +104,7 @@ uv run --extra fsdp -m examples.train.eurus_rl_math.main \
   trainer.algorithm.use_kl_loss=true \
   trainer.algorithm.use_tis=$USE_TIS \
   trainer.algorithm.tis_imp_ratio_cap=$TIS_IMP_RATIO_CAP \
+  trainer.policy.optimizer_config.weight_decay=0.0 \
   generator.inference_engine.backend=$INFERENCE_BACKEND \
   generator.inference_engine.run_engines_locally=true \
   generator.inference_engine.weight_sync_backend=nccl \
