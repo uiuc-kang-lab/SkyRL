@@ -17,9 +17,9 @@ bash examples/train/eurus_rl_math/run_eurus_rl_math_tinylora.sh \
     --tensor_parallel_size 1 \
     --eval_interval 50 \
     --ckpt_interval 5 \
-    --lr 1e-3 \
-    --run_name "qwen3.5-4b_alpha2_lr1e-2_tinylora-n16r16" \
-    --model_path "/workspace/Qwen3.5-4B" \
+    --lr 5e-3 \
+    --run_name "qwen3.5-4b_alpha2_lr5e-3_tinylora-n16r16" \
+    --model_path "Qwen/Qwen3.5-4B" \
     --num_coefficients 16 \
     --svd_rank 16 \
-    --projection_seed 2333 > logs/qwen3.5-4b_alpha2_lr1e-2_tinylora-n16r16.log 2>&1
+    --projection_seed 2333 > logs/qwen3.5-4b_alpha2_lr5e-3_tinylora-n16r16.log 2>&1
