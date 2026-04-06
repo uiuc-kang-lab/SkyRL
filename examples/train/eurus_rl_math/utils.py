@@ -483,13 +483,10 @@ def grade_answer_verl(solution_str, ground_truth):
         return False
     return grade_answer_mathd(given_answer, ground_truth) or grade_answer_sympy(given_answer, ground_truth)
 
-def grade_answer_math_verify(given_answer: str, ground_truth: str, timeout: int | None = None) -> bool:
-    """
-    Use the math_verify package to verify the answer.
-    """
+def _grade_answer_math_verify_impl(given_answer: str, ground_truth: str, timeout: int | None) -> bool:
+    """Inner implementation that runs in a subprocess where signal.SIGALRM works."""
     from math_verify import parse, verify
 
-    #   Make sure the answer is wrapped in $ if it already isn't otherwise it is not parsed correctly
     if not given_answer.startswith("$") and not given_answer.endswith("$"):
         given_answer = f"${given_answer}$"
     if not ground_truth.startswith("$") and not ground_truth.endswith("$"):
@@ -499,5 +496,38 @@ def grade_answer_math_verify(given_answer: str, ground_truth: str, timeout: int 
     ground_truth_parsed = parse(ground_truth, parsing_timeout=timeout)
 
     is_correct = verify(given_answer_parsed, ground_truth_parsed, timeout_seconds=timeout)
-
     return is_correct
+
+
+# Lazy-initialized module-level process pool for math_verify grading.
+_math_verify_pool = None
+_math_verify_pool_lock = __import__("threading").Lock()
+
+
+def _get_math_verify_pool():
+    global _math_verify_pool
+    if _math_verify_pool is None:
+        with _math_verify_pool_lock:
+            if _math_verify_pool is None:
+                from concurrent.futures import ProcessPoolExecutor
+                _math_verify_pool = ProcessPoolExecutor(max_workers=16)
+    return _math_verify_pool
+
+
+def grade_answer_math_verify(given_answer: str, ground_truth: str, timeout: int | None = None) -> bool:
+    """
+    Use the math_verify package to verify the answer.
+
+    Runs in a subprocess so that math_verify's signal-based timeout
+    (SIGALRM) works even when called from a thread pool.
+    """
+    from concurrent.futures import TimeoutError
+
+    pool = _get_math_verify_pool()
+    # Outer timeout slightly longer than inner to let math_verify's SIGALRM fire first.
+    outer_timeout = (timeout + 5) if timeout else 30
+    try:
+        future = pool.submit(_grade_answer_math_verify_impl, given_answer, ground_truth, timeout)
+        return future.result(timeout=outer_timeout)
+    except (TimeoutError, Exception):
+        return False

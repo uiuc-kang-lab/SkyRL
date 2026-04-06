@@ -58,6 +58,7 @@ def skyrl_entrypoint(cfg: SkyRLTrainConfig):
     register(
         id="eurus_rl_math",
         entry_point="examples.train.eurus_rl_math.env:MathEnv",
+        kwargs={"math_verify_timeout": 30},
     )
     exp = OnPolicyDistillationExp(cfg)
     exp.run()
