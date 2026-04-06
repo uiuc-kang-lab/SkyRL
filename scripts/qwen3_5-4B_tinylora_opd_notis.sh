@@ -17,9 +17,9 @@ bash examples/train/eurus_rl_math/run_eurus_rl_math_tinylora_opd_notis.sh \
     --tensor_parallel_size 1 \
     --eval_interval 50 \
     --ckpt_interval 5 \
-    --lr 5e-4 \
-    --run_name "qwen3.5-4b_lr5e-4_tis_tinylora_n16r16_opd_notis" \
+    --lr 5e-3 \
+    --run_name "qwen3.5-4b_lr5e-3_tis_tinylora_n16r16_opd_notis" \
     --num_coefficients 16 \
     --svd_rank 16 \
     --student_model "Qwen/Qwen3.5-4B" \
-    --teacher_model "/workspace/Qwen3.5-4B-Finetuned" > logs/qwen3.5-4b_lr5e-4_tis_tinylora_n16r16_opd_notis.log 2>&1
+    --teacher_model "/workspace/Qwen3.5-4B-Finetuned" > logs/qwen3.5-4b_lr5e-3_tis_tinylora_n16r16_opd_notis.log 2>&1
