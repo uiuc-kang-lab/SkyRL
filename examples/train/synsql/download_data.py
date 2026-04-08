@@ -70,53 +70,39 @@ def load_synsql():
     with open("SynSQL-2.5M/tables.json", "r") as f:
         tables = json.load(f)
     dbid2ddl = {item["db_id"]: item["ddls"] for item in tables}
+
     def process_fn(example, idx):
-        question = example.pop("question")
-        db_id = example.pop("db_id")
-        external_knowledge = example.pop("external_knowledge")
-        sql = example.pop("sql")
-        engine = "sqlite"
-        db_details = dbid2ddl[db_id]
-        answer = sql
-        
+        db_details = dbid2ddl[example["db_id"]]
         prompt = prompt_template.format(
-            engine=engine,
+            engine="sqlite",
             db_details=db_details,
-            external_knowledge=external_knowledge,
-            question=question
+            external_knowledge=example["external_knowledge"],
+            question=example["question"],
         )
-        
-        data = {
+        return {
             "data_source": "synsql",
             "prompt": [
-                {
-                    "role": "system",
-                    "content": system_prompt,
-                },
-                {
-                    "role": "user",
-                    "content": prompt,
-                }
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": prompt},
             ],
             "data": "synsql",
             "env_class": "text2sql",
-            "reward_spec": {
-                "method": "sql",
-                "ground_truth": answer,
-            },
-            "extra_info": {
-                "index": idx,
-                "answer": answer
-            },
-            "db_id": db_id
+            "reward_spec": {"method": "sql", "ground_truth": example["sql"]},
+            "extra_info": {"index": idx, "answer": example["sql"]},
+            "db_id": example["db_id"],
         }
-        return data
-    
-    with open("SynSQL-2.5M/data.json", "r") as f:
-        data = json.load(f)
-    
-    dataset = datasets.Dataset.from_list(data)
-    processed_dataset = dataset.map(function=process_fn, with_indices=True)
+
+    # Use HF's JSON loader (Arrow-backed, memory-mapped) instead of
+    # json.load() + Dataset.from_list() which requires the full list in memory.
+    dataset = datasets.load_dataset(
+        "json", data_files="SynSQL-2.5M/data.json", split="train"
+    )
+    raw_columns = dataset.column_names
+    processed_dataset = dataset.map(
+        function=process_fn,
+        with_indices=True,
+        remove_columns=raw_columns,
+    )
     return processed_dataset
 
 if __name__ == "__main__":
