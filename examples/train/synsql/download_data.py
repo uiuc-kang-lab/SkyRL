@@ -65,8 +65,11 @@ Question:
 {question}
 """
 
-def load_synsql():
+def load_synsql(output_path):
     # make sure to clone https://huggingface.co/datasets/seeklhy/SynSQL-2.5M/tree/main first
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+
     with open("SynSQL-2.5M/tables.json", "r") as f:
         tables = json.load(f)
     dbid2ddl = {item["db_id"]: item["ddls"] for item in tables}
@@ -92,50 +95,111 @@ def load_synsql():
             "db_id": example["db_id"],
         }
 
-    # Stream-parse data.json as a JSON array in small chunks so that
-    # neither the raw file nor all processed entries need to fit in memory.
-    def generate():
-        for idx, example in enumerate(_iter_json_array("SynSQL-2.5M/data.json")):
-            yield process_fn(example, idx)
+    # Stream JSON → process → write parquet in chunks.
+    # Never holds more than CHUNK_SIZE processed rows in memory.
+    import os
+    import time
 
-    processed_dataset = datasets.Dataset.from_generator(generate)
-    return processed_dataset
+    CHUNK_SIZE = 10_000
+    data_file = "SynSQL-2.5M/data.json"
+    file_size = os.path.getsize(data_file)
+
+    chunk: list[dict] = []
+    writer = None
+    n_total = 0
+    t_start = time.time()
+    t_last_log = t_start
+
+    for idx, (example, bytes_read) in enumerate(
+        _iter_json_array(data_file)
+    ):
+        chunk.append(process_fn(example, idx))
+        if len(chunk) >= CHUNK_SIZE:
+            table = pa.Table.from_pylist(chunk)
+            if writer is None:
+                writer = pq.ParquetWriter(output_path, table.schema)
+            writer.write_table(table)
+            n_total += len(chunk)
+            chunk.clear()
+
+            now = time.time()
+            if now - t_last_log >= 2.0:  # log every 2 seconds
+                elapsed = now - t_start
+                pct = bytes_read / file_size * 100
+                rate = n_total / elapsed
+                eta = (file_size - bytes_read) / (bytes_read / elapsed) if bytes_read else 0
+                print(
+                    f"  {n_total:,} rows | {pct:.1f}% of file | "
+                    f"{rate:,.0f} rows/s | ETA {eta:.0f}s",
+                    flush=True,
+                )
+                t_last_log = now
+
+    if chunk:
+        table = pa.Table.from_pylist(chunk)
+        if writer is None:
+            writer = pq.ParquetWriter(output_path, table.schema)
+        writer.write_table(table)
+        n_total += len(chunk)
+
+    if writer is not None:
+        writer.close()
+
+    elapsed = time.time() - t_start
+    print(f"Done — {n_total:,} rows written to {output_path} in {elapsed:.1f}s")
+    return datasets.load_dataset("parquet", data_files=output_path, split="train")
 
 
-def _iter_json_array(filepath, buf_size=64 * 1024):
-    """Stream items from a JSON array file without loading it into memory."""
+def _iter_json_array(filepath, buf_size=8 * 1024):
+    """Stream items from a JSON array file without loading it into memory.
+
+    Yields ``(object, bytes_consumed)`` tuples so callers can report progress
+    against the known file size.
+    """
     decoder = json.JSONDecoder()
     with open(filepath, "r", encoding="utf-8") as f:
-        buf = ""
-        # Scan forward to the opening '['
+        bytes_consumed = 0
+
+        # --- locate opening '[' ---
+        text = ""
         while True:
             chunk = f.read(buf_size)
             if not chunk:
                 return
-            buf += chunk
-            pos = buf.find("[")
+            bytes_consumed += len(chunk)
+            text += chunk
+            pos = text.find("[")
             if pos != -1:
-                buf = buf[pos + 1 :]
+                text = text[pos + 1 :]
                 break
 
+        # --- yield one object at a time ---
         while True:
-            buf = buf.lstrip(" \t\n\r,")
-            if buf and buf[0] == "]":
-                return
-            # Try to decode one object; read more data if incomplete
-            while True:
-                if buf.lstrip(" \t\n\r,").startswith("]"):
+            text = text.lstrip(" \t\n\r,")
+            if not text:
+                chunk = f.read(buf_size)
+                if not chunk:
                     return
-                try:
-                    obj, end = decoder.raw_decode(buf)
-                    buf = buf[end:]
-                    yield obj
-                    break
-                except json.JSONDecodeError:
-                    chunk = f.read(buf_size)
-                    if not chunk:
-                        return
-                    buf += chunk
+                bytes_consumed += len(chunk)
+                text = chunk.lstrip(" \t\n\r,")
+                if not text:
+                    continue
+
+            if text[0] == "]":
+                return
+
+            try:
+                obj, end = decoder.raw_decode(text)
+            except json.JSONDecodeError:
+                chunk = f.read(buf_size)
+                if not chunk:
+                    return
+                bytes_consumed += len(chunk)
+                text += chunk
+                continue
+
+            text = text[end:]
+            yield obj, bytes_consumed
 
 if __name__ == "__main__":
     import argparse
@@ -144,5 +208,4 @@ if __name__ == "__main__":
     parser.add_argument("--output_path", type=str, default="synsql_dataset.parquet", help="Path to save the processed dataset")
     args = parser.parse_args()
     
-    train_data = load_synsql()
-    train_data.to_parquet(args.output_path)
+    load_synsql(args.output_path)
