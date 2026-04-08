@@ -101,14 +101,16 @@ def load_synsql():
             "data": "synsql",
             "env_class": "text2sql",
             "reward_spec": {
-                "method": f"sql",
+                "method": "sql",
                 "ground_truth": answer,
             },
             "extra_info": {
                 "index": idx,
                 "answer": answer
-            }
+            },
+            "db_id": db_id
         }
+        return data
     
     with open("SynSQL-2.5M/data.json", "r") as f:
         data = json.load(f)
