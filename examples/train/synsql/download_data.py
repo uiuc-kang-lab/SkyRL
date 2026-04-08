@@ -92,17 +92,19 @@ def load_synsql():
             "db_id": example["db_id"],
         }
 
-    # Use HF's JSON loader (Arrow-backed, memory-mapped) instead of
-    # json.load() + Dataset.from_list() which requires the full list in memory.
-    dataset = datasets.load_dataset(
-        "json", data_files="SynSQL-2.5M/data.json", split="train"
-    )
-    raw_columns = dataset.column_names
-    processed_dataset = dataset.map(
-        function=process_fn,
-        with_indices=True,
-        remove_columns=raw_columns,
-    )
+    # Load raw entries with json.load() (small per-entry footprint), then
+    # use Dataset.from_generator() to stream processed entries into Arrow
+    # on disk one at a time.  This avoids both the PyArrow JSON reader's
+    # int32 block_size limit (>2 GB files) and holding all DDL-expanded
+    # prompts in memory simultaneously.
+    with open("SynSQL-2.5M/data.json", "r") as f:
+        raw_data = json.load(f)
+
+    def generate():
+        for idx, example in enumerate(raw_data):
+            yield process_fn(example, idx)
+
+    processed_dataset = datasets.Dataset.from_generator(generate)
     return processed_dataset
 
 if __name__ == "__main__":
