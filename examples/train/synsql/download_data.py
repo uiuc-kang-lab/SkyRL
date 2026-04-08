@@ -92,20 +92,50 @@ def load_synsql():
             "db_id": example["db_id"],
         }
 
-    # Load raw entries with json.load() (small per-entry footprint), then
-    # use Dataset.from_generator() to stream processed entries into Arrow
-    # on disk one at a time.  This avoids both the PyArrow JSON reader's
-    # int32 block_size limit (>2 GB files) and holding all DDL-expanded
-    # prompts in memory simultaneously.
-    with open("SynSQL-2.5M/data.json", "r") as f:
-        raw_data = json.load(f)
-
+    # Stream-parse data.json as a JSON array in small chunks so that
+    # neither the raw file nor all processed entries need to fit in memory.
     def generate():
-        for idx, example in enumerate(raw_data):
+        for idx, example in enumerate(_iter_json_array("SynSQL-2.5M/data.json")):
             yield process_fn(example, idx)
 
     processed_dataset = datasets.Dataset.from_generator(generate)
     return processed_dataset
+
+
+def _iter_json_array(filepath, buf_size=64 * 1024):
+    """Stream items from a JSON array file without loading it into memory."""
+    decoder = json.JSONDecoder()
+    with open(filepath, "r", encoding="utf-8") as f:
+        buf = ""
+        # Scan forward to the opening '['
+        while True:
+            chunk = f.read(buf_size)
+            if not chunk:
+                return
+            buf += chunk
+            pos = buf.find("[")
+            if pos != -1:
+                buf = buf[pos + 1 :]
+                break
+
+        while True:
+            buf = buf.lstrip(" \t\n\r,")
+            if buf and buf[0] == "]":
+                return
+            # Try to decode one object; read more data if incomplete
+            while True:
+                if buf.lstrip(" \t\n\r,").startswith("]"):
+                    return
+                try:
+                    obj, end = decoder.raw_decode(buf)
+                    buf = buf[end:]
+                    yield obj
+                    break
+                except json.JSONDecodeError:
+                    chunk = f.read(buf_size)
+                    if not chunk:
+                        return
+                    buf += chunk
 
 if __name__ == "__main__":
     import argparse
