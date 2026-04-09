@@ -154,7 +154,12 @@ def resolve_model_path(
         if isinstance(module, CustomLoraLinear):
             scheme_obj = module.scheme
             buffers = {n: b for n, b in module.named_buffers(recurse=False)}
-            scheme_obj.merge_into(module.weight, module.v, buffers)
+            # Ensure v is on the same device as weight/buffers (device_map="auto"
+            # may scatter parameters across devices)
+            device = module.weight.device
+            v = module.v.data.to(device)
+            buffers = {n: b.to(device) for n, b in buffers.items()}
+            scheme_obj.merge_into(module.weight, v, buffers)
             n_merged += 1
     logger.info(f"  Merged {n_merged} custom LoRA layers")
 
