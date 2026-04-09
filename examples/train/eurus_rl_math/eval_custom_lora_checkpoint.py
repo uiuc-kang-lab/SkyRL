@@ -92,15 +92,19 @@ def resolve_model_path(
     logger.info(f"  Loaded {len(v_params)} v tensors, "
                 f"total params: {sum(p.numel() for p in v_params.values()):,}")
 
-    # 2. Load base model on CPU
+    # 2. Load base model on GPU (SVD in apply_custom_lora uses device-dependent
+    #    RNG — must match the training device for identical U_scaled/V buffers)
     logger.info(f"Loading base model from {base_model_path}...")
     model = AutoModelForCausalLM.from_pretrained(
         base_model_path,
         torch_dtype=torch.bfloat16,
         trust_remote_code=True,
+        device_map="auto",
     )
 
     # 3. Apply custom LoRA (creates SVD buffers from base weights)
+    #    The model must be on the same device as during training (GPU) so that
+    #    torch.svd_lowrank produces identical U_scaled/V from the same seed.
     class _Config:
         pass
 
@@ -117,23 +121,33 @@ def resolve_model_path(
     model = apply_custom_lora(model, config)
 
     # 4. Load v parameters into the model
-    missing, unexpected = [], []
+    unexpected = []
     model_sd = model.state_dict()
+    n_loaded = 0
     for name, tensor in v_params.items():
         if name in model_sd:
             model_sd[name].copy_(tensor)
+            n_loaded += 1
         else:
             unexpected.append(name)
 
-    # Load via state_dict to handle buffer/param distinction
     model.load_state_dict(model_sd, strict=False)
 
     if unexpected:
-        logger.warning(f"Unexpected keys in checkpoint (not in model): {unexpected}")
+        logger.warning(f"Unexpected keys in checkpoint (not in model): {unexpected[:5]}...")
+    logger.info(f"  Loaded {n_loaded}/{len(v_params)} v tensors into model")
+
+    # Verify v params are non-zero
+    v_norms = []
+    from skyrl.backends.skyrl_train.custom_lora.module import CustomLoraLinear
+    for name, module in model.named_modules():
+        if isinstance(module, CustomLoraLinear):
+            v_norms.append(module.v.data.abs().sum().item())
+    logger.info(f"  v param norms: min={min(v_norms):.6f}, max={max(v_norms):.6f}, "
+                f"mean={sum(v_norms)/len(v_norms):.6f}")
 
     # 5. Merge deltas into base weights
     logger.info("Merging custom LoRA deltas into base weights...")
-    from skyrl.backends.skyrl_train.custom_lora.module import CustomLoraLinear
 
     n_merged = 0
     for name, module in model.named_modules():
@@ -144,7 +158,8 @@ def resolve_model_path(
             n_merged += 1
     logger.info(f"  Merged {n_merged} custom LoRA layers")
 
-    # 6. Extract base model (unwrap CustomLoraLinear -> nn.Linear)
+    # 6. Move to CPU and extract base model (unwrap CustomLoraLinear -> nn.Linear)
+    model = model.cpu()
     logger.info("Unwrapping custom LoRA layers back to nn.Linear...")
     replacements = []
     for name, module in model.named_modules():
@@ -156,7 +171,6 @@ def resolve_model_path(
             else:
                 attr_name = parts[0]
                 parent = model
-            # Create a plain nn.Linear with the merged weight
             linear = torch.nn.Linear(
                 module.in_features, module.out_features,
                 bias=module.bias is not None,
