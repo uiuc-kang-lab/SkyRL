@@ -467,6 +467,38 @@ def parse_args() -> argparse.Namespace:
     return p.parse_args()
 
 
+def _resolve_model_path_in_subprocess(kwargs: dict) -> str:
+    """Run resolve_model_path in a subprocess so GPU memory is fully released.
+
+    PyTorch's CUDA caching allocator retains reserved memory even after
+    del + empty_cache().  By running the merge in a subprocess, the GPU
+    memory is completely freed when the subprocess exits, leaving the full
+    GPU available for vLLM.
+    """
+    import multiprocessing as mp
+
+    def _worker(result_queue, kwargs):
+        try:
+            path = resolve_model_path(**kwargs)
+            result_queue.put(("ok", path))
+        except Exception as e:
+            import traceback
+            result_queue.put(("error", traceback.format_exc()))
+
+    ctx = mp.get_context("spawn")  # spawn to get clean CUDA state
+    result_queue = ctx.Queue()
+    proc = ctx.Process(target=_worker, args=(result_queue, kwargs))
+    proc.start()
+    proc.join()
+
+    if result_queue.empty():
+        raise RuntimeError("Merge subprocess exited without returning a result")
+    status, payload = result_queue.get()
+    if status == "error":
+        raise RuntimeError(f"Merge subprocess failed:\n{payload}")
+    return payload
+
+
 def main() -> None:
     args = parse_args()
     if args.n_samples > 1 and args.temperature == 0.0:
@@ -476,7 +508,7 @@ def main() -> None:
 
     tmp_dir = tempfile.mkdtemp(prefix="eval_custom_lora_")
     try:
-        model_path = resolve_model_path(
+        model_path = _resolve_model_path_in_subprocess(dict(
             checkpoint_dir=args.checkpoint_dir,
             base_model_path=args.base_model_path,
             svd_rank=args.svd_rank,
@@ -486,7 +518,7 @@ def main() -> None:
             target_modules=args.target_modules,
             exclude_modules=args.exclude_modules,
             tmp_dir=tmp_dir,
-        )
+        ))
         metrics = asyncio.run(run_eval(args, model_path))
         print(f"\npass@1: {metrics['pass_at_1']:.4f}  (n={metrics['n_problems']} problems)")
     finally:
