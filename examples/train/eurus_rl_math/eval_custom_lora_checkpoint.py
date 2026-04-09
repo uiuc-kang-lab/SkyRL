@@ -467,6 +467,16 @@ def parse_args() -> argparse.Namespace:
     return p.parse_args()
 
 
+def _merge_worker(result_queue, kwargs):
+    """Worker function for subprocess merge (must be at module level for pickling)."""
+    try:
+        path = resolve_model_path(**kwargs)
+        result_queue.put(("ok", path))
+    except Exception:
+        import traceback
+        result_queue.put(("error", traceback.format_exc()))
+
+
 def _resolve_model_path_in_subprocess(kwargs: dict) -> str:
     """Run resolve_model_path in a subprocess so GPU memory is fully released.
 
@@ -477,17 +487,9 @@ def _resolve_model_path_in_subprocess(kwargs: dict) -> str:
     """
     import multiprocessing as mp
 
-    def _worker(result_queue, kwargs):
-        try:
-            path = resolve_model_path(**kwargs)
-            result_queue.put(("ok", path))
-        except Exception as e:
-            import traceback
-            result_queue.put(("error", traceback.format_exc()))
-
-    ctx = mp.get_context("spawn")  # spawn to get clean CUDA state
+    ctx = mp.get_context("spawn")
     result_queue = ctx.Queue()
-    proc = ctx.Process(target=_worker, args=(result_queue, kwargs))
+    proc = ctx.Process(target=_merge_worker, args=(result_queue, kwargs))
     proc.start()
     proc.join()
 
