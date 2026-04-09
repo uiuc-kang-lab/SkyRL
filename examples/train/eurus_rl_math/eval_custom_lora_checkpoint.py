@@ -99,8 +99,7 @@ def resolve_model_path(
         base_model_path,
         torch_dtype=torch.bfloat16,
         trust_remote_code=True,
-        device_map="auto",
-    )
+    ).cuda()
 
     # 3. Apply custom LoRA (creates SVD buffers from base weights)
     #    The model must be on the same device as during training (GPU) so that
@@ -202,8 +201,13 @@ def resolve_model_path(
 
     _patch_qwen35_config_for_vllm(merged_path)
 
+    import gc
     del model
+    gc.collect()
     torch.cuda.empty_cache()
+    logger.info(f"GPU memory freed. "
+                f"Allocated: {torch.cuda.memory_allocated() / 1e9:.2f} GB, "
+                f"Reserved: {torch.cuda.memory_reserved() / 1e9:.2f} GB")
 
     return merged_path
 
