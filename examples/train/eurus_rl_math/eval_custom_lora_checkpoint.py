@@ -92,14 +92,17 @@ def resolve_model_path(
     logger.info(f"  Loaded {len(v_params)} v tensors, "
                 f"total params: {sum(p.numel() for p in v_params.values()):,}")
 
-    # 2. Load base model on GPU (SVD in apply_custom_lora uses device-dependent
-    #    RNG — must match the training device for identical U_scaled/V buffers)
-    logger.info(f"Loading base model from {base_model_path}...")
+    # 2. Load base model in float32 on CPU to match training.
+    #    During FSDP training, rank 0 loads the model in float32 on CPU
+    #    (bf16=False in fsdp_worker.py:214, cpu_init_weights in fsdp_utils.py:62).
+    #    The SVD in apply_custom_lora must see the exact same float32 weights
+    #    on the same device (CPU) to produce identical U_scaled/V buffers.
+    logger.info(f"Loading base model from {base_model_path} (float32, CPU)...")
     model = AutoModelForCausalLM.from_pretrained(
         base_model_path,
-        torch_dtype=torch.bfloat16,
+        torch_dtype=torch.float32,
         trust_remote_code=True,
-    ).cuda()
+    )
 
     # 3. Apply custom LoRA (creates SVD buffers from base weights)
     #    The model must be on the same device as during training (GPU) so that
@@ -153,12 +156,7 @@ def resolve_model_path(
         if isinstance(module, CustomLoraLinear):
             scheme_obj = module.scheme
             buffers = {n: b for n, b in module.named_buffers(recurse=False)}
-            # Ensure v is on the same device as weight/buffers (device_map="auto"
-            # may scatter parameters across devices)
-            device = module.weight.device
-            v = module.v.data.to(device)
-            buffers = {n: b.to(device) for n, b in buffers.items()}
-            scheme_obj.merge_into(module.weight, v, buffers)
+            scheme_obj.merge_into(module.weight, module.v, buffers)
             n_merged += 1
     logger.info(f"  Merged {n_merged} custom LoRA layers")
 
@@ -201,13 +199,7 @@ def resolve_model_path(
 
     _patch_qwen35_config_for_vllm(merged_path)
 
-    import gc
     del model
-    gc.collect()
-    torch.cuda.empty_cache()
-    logger.info(f"GPU memory freed. "
-                f"Allocated: {torch.cuda.memory_allocated() / 1e9:.2f} GB, "
-                f"Reserved: {torch.cuda.memory_reserved() / 1e9:.2f} GB")
 
     return merged_path
 
@@ -467,40 +459,6 @@ def parse_args() -> argparse.Namespace:
     return p.parse_args()
 
 
-def _merge_worker(result_queue, kwargs):
-    """Worker function for subprocess merge (must be at module level for pickling)."""
-    try:
-        path = resolve_model_path(**kwargs)
-        result_queue.put(("ok", path))
-    except Exception:
-        import traceback
-        result_queue.put(("error", traceback.format_exc()))
-
-
-def _resolve_model_path_in_subprocess(kwargs: dict) -> str:
-    """Run resolve_model_path in a subprocess so GPU memory is fully released.
-
-    PyTorch's CUDA caching allocator retains reserved memory even after
-    del + empty_cache().  By running the merge in a subprocess, the GPU
-    memory is completely freed when the subprocess exits, leaving the full
-    GPU available for vLLM.
-    """
-    import multiprocessing as mp
-
-    ctx = mp.get_context("spawn")
-    result_queue = ctx.Queue()
-    proc = ctx.Process(target=_merge_worker, args=(result_queue, kwargs))
-    proc.start()
-    proc.join()
-
-    if result_queue.empty():
-        raise RuntimeError("Merge subprocess exited without returning a result")
-    status, payload = result_queue.get()
-    if status == "error":
-        raise RuntimeError(f"Merge subprocess failed:\n{payload}")
-    return payload
-
-
 def main() -> None:
     args = parse_args()
     if args.n_samples > 1 and args.temperature == 0.0:
@@ -510,7 +468,7 @@ def main() -> None:
 
     tmp_dir = tempfile.mkdtemp(prefix="eval_custom_lora_")
     try:
-        model_path = _resolve_model_path_in_subprocess(dict(
+        model_path = resolve_model_path(
             checkpoint_dir=args.checkpoint_dir,
             base_model_path=args.base_model_path,
             svd_rank=args.svd_rank,
@@ -520,7 +478,7 @@ def main() -> None:
             target_modules=args.target_modules,
             exclude_modules=args.exclude_modules,
             tmp_dir=tmp_dir,
-        ))
+        )
         metrics = asyncio.run(run_eval(args, model_path))
         print(f"\npass@1: {metrics['pass_at_1']:.4f}  (n={metrics['n_problems']} problems)")
     finally:
