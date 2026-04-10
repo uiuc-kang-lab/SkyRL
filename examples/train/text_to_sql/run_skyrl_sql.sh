@@ -58,8 +58,8 @@ uv run --isolated --extra fsdp -m skyrl.train.entrypoints.main_base \
   generator.max_turns=6 \
   generator.sampling_params.temperature=0.6 \
   generator.sampling_params.top_p=0.95 \
-  generator.sampling_params.stop='["</sql>", "</solution>"]' \
-  generator.eval_sampling_params.stop='["</sql>", "</solution>"]' \
+  generator.sampling_params.stop='["</tool_call>", "</solution>"]' \
+  generator.eval_sampling_params.stop='["</tool_call>", "</solution>"]' \
   environment.skyrl_gym.text2sql.db_path=$DB_PATH \
   trainer.logger="wandb" \
   trainer.project_name="skyrlsql" \

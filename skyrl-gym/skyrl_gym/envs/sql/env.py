@@ -70,9 +70,13 @@ class SQLEnv(BaseTextEnv):
         """
         Parse action string to return tool name and corresponding arguments.
 
-        Expected: <sql>...</sql>
+        Expected: <tool_call>
+        <function=execute_sql>
+        <parameter=query>...</parameter>
+        </function>
+        </tool_call>
         """
-        match = re.search(r"<sql>(.*?)</sql>", action, re.DOTALL)
+        match = re.search(r"<parameter=query>\s*(.*?)\s*</parameter>", action, re.DOTALL)
         tool_input = match.group(1) if match else None
         # NOTE: hard code
         # NOTE (shu): in the future imagine can use different tools here
@@ -96,7 +100,7 @@ class SQLEnv(BaseTextEnv):
         return "<solution>" in action and "</solution>" in action
 
     def _validate_action(self, action: str):
-        stop_tags = ["</sql>", "</solution>"]
+        stop_tags = ["</tool_call>", "</solution>"]
         for tag in stop_tags:
             if tag in action:
                 assert action.split(tag, 1)[1] == "", (

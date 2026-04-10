@@ -50,8 +50,7 @@ def mock_sqlite_connection():
     [
         # Test case 1: matching sql and solution
         (
-            "<think>a</think>\n\n\
-         <sql>SELECT name FROM employees WHERE id = 1;</sql>",
+            "<think>a</think>\n\n<tool_call>\n<function=execute_sql>\n<parameter=query>SELECT name FROM employees WHERE id = 1;</parameter>\n</function>\n</tool_call>",
             "<think>b</think>\n\n\
          <solution>SELECT name FROM employees WHERE id = 1;</solution>",
             "SELECT name FROM employees WHERE id = 1;",
@@ -59,8 +58,7 @@ def mock_sqlite_connection():
         ),
         # Test case 2: identical sql but different solution
         (
-            "<think>a</think>\n\n\
-         <sql>SELECT name FROM employees WHERE id = 1;</sql>",
+            "<think>a</think>\n\n<tool_call>\n<function=execute_sql>\n<parameter=query>SELECT name FROM employees WHERE id = 1;</parameter>\n</function>\n</tool_call>",
             "<think>b</think>\n\n\
          <solution>SELECT name FROM employees WHERE id = 1;</solution>",
             "GOLDEN_SQL;",
@@ -68,8 +66,7 @@ def mock_sqlite_connection():
         ),
         # Test case 3: solution is wrong
         (
-            "<think>a</think>\n\n\
-         <sql>SELECT name FROM employees WHERE id = 1;</sql>",
+            "<think>a</think>\n\n<tool_call>\n<function=execute_sql>\n<parameter=query>SELECT name FROM employees WHERE id = 1;</parameter>\n</function>\n</tool_call>",
             "<think>b</think>\n\n\
          <solution>SELECT name FROM employees WHERE id = 2;</solution>",
             "SELECT name FROM employees WHERE id = 1;",
@@ -77,7 +74,7 @@ def mock_sqlite_connection():
         ),
         # Test case 4: includes invalid sql msg
         (
-            "<think>a</think>",  # no sql tag here
+            "<think>a</think>",  # no tool_call tag here
             "<think>b</think>\n\n\
          <solution>SELECT name FROM employees WHERE id = 1;</solution>",
             "SELECT name FROM employees WHERE id = 1;",
@@ -109,7 +106,7 @@ def test_compute_score(mock_db_file, mock_sqlite_connection, step_1_output, step
     assert reward == 0.0
     # check reminder message
     assert reminder_text in obs1[0]["content"]
-    if "<sql>" not in step_1_output:
+    if "<tool_call>" not in step_1_output:
         assert invalid_sql_message in obs1[0]["content"]
     output = env.step(step_2_output)
     reward = output["reward"]
@@ -125,9 +122,12 @@ def test_compute_score(mock_db_file, mock_sqlite_connection, step_1_output, step
     "output, parse_ground_truth",
     [
         # Test case 1: Valid SQL query
-        ("<sql>SELECT name FROM employees WHERE id = 1;</sql>", "SELECT name FROM employees WHERE id = 1;"),
-        # Test case 3: Invalid formatting
-        ("<sql>SELECT name FROM employees", None),
+        (
+            "<tool_call>\n<function=execute_sql>\n<parameter=query>SELECT name FROM employees WHERE id = 1;</parameter>\n</function>\n</tool_call>",
+            "SELECT name FROM employees WHERE id = 1;",
+        ),
+        # Test case 3: Invalid formatting (no parameter tag)
+        ("<tool_call>\n<function=execute_sql>\nSELECT name FROM employees</function>\n</tool_call>", None),
     ],
 )
 def test_tool_parsing(mock_db_file, mock_sqlite_connection, output, parse_ground_truth):
@@ -162,7 +162,7 @@ def test_sql_execution(mock_db_file, mock_sqlite_connection):
     # Skip init() since it's not used in this test
 
     # Test a valid SQL query
-    output = "<sql>SELECT name FROM employees WHERE id = 1;</sql>"
+    output = "<tool_call>\n<function=execute_sql>\n<parameter=query>SELECT name FROM employees WHERE id = 1;</parameter>\n</function>\n</tool_call>"
     output = env.step(output)
     observation = output["observations"]
 
@@ -204,9 +204,9 @@ def test_sql_execution(mock_db_file, mock_sqlite_connection):
         ("<think>thinking</think>\nsome text<solution>", False, "solution_start_at_end"),
         # Solution contains forbidden tags
         (
-            "<think>thinking</think>\n<solution>SELECT * FROM users; <sql>forbidden</sql></solution>",
+            "<think>thinking</think>\n<solution>SELECT * FROM users; <tool_call>forbidden</tool_call></solution>",
             False,
-            "solution_contains_forbidden_sql_tag",
+            "solution_contains_forbidden_tool_call_tag",
         ),
         # Solution contains forbidden observation tag
         (

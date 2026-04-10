@@ -12,7 +12,7 @@ import threading
 
 
 THINK_START, THINK_END = "<think>", "</think>"
-SQL_START, SQL_END = "<sql>", "</sql>"
+TOOL_CALL_START, TOOL_CALL_END = "<tool_call>", "</tool_call>"
 SOLUTION_START, SOLUTION_END = "<solution>", "</solution>"
 OBS_START, OBS_END = "<observation>", "</observation>"
 
@@ -28,7 +28,7 @@ def verify_format_and_extract(output: str):
 
     solution_text, _ = tail.split(SOLUTION_END, 1)
 
-    if re.search(r"</?(think|sql|observation)\b", solution_text, re.I):
+    if re.search(r"</?(think|tool_call|observation)\b", solution_text, re.I):
         return False, None, None, None
 
     thoughts = re.findall(r"<think>(.*?)</think>", output, re.S)
