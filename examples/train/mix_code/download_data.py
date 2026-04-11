@@ -3,7 +3,7 @@ import json
 import os
 from typing import Any, Dict, Optional, Set
 import pandas as pd
-from datasets import load_dataset
+from datasets import load_dataset, Dataset
 import random
 
 """Utility functions for loading and processing datasets."""
@@ -228,6 +228,9 @@ if __name__ == "__main__":
     # subset for validation
     validation_data = train_data[:1000]
     train_data = train_data[1000:]
+    
+    train_data = Dataset.from_list(train_data)
+    validation_data = Dataset.from_list(validation_data)
 
     # Save combined train dataset
     train_data_df = pd.DataFrame(train_data)
