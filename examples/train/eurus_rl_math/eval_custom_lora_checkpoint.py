@@ -50,8 +50,25 @@ from skyrl.utils.tok import get_tokenizer
 # Checkpoint resolution: custom LoRA merge
 # ---------------------------------------------------------------------------
 
-def resolve_custom_lora_path(checkpoint_dir: str) -> str:
-    """Find the custom_lora_params.safetensors file in a checkpoint directory."""
+def resolve_custom_lora_path(checkpoint_dir: str | None = None, adapter_path: str | None = None) -> str:
+    """Find the custom LoRA v parameters safetensors file.
+
+    Args:
+        checkpoint_dir: SkyRL checkpoint directory (searches for
+            custom_lora/custom_lora_params.safetensors inside it).
+        adapter_path: Direct path to any .safetensors file containing
+            custom LoRA v parameters.
+
+    Either argument may be provided; adapter_path takes precedence.
+    """
+    if adapter_path is not None:
+        if os.path.isfile(adapter_path):
+            return adapter_path
+        raise FileNotFoundError(f"Adapter file not found: {adapter_path}")
+
+    if checkpoint_dir is None:
+        raise ValueError("Either --checkpoint_dir or --adapter_path must be provided")
+
     # Try direct path
     direct = os.path.join(checkpoint_dir, "custom_lora", "custom_lora_params.safetensors")
     if os.path.exists(direct):
@@ -69,7 +86,6 @@ def resolve_custom_lora_path(checkpoint_dir: str) -> str:
 
 
 def resolve_model_path(
-    checkpoint_dir: str,
     base_model_path: str,
     svd_rank: int,
     num_coefficients: int,
@@ -78,6 +94,8 @@ def resolve_model_path(
     target_modules: str,
     exclude_modules: str | None,
     tmp_dir: str,
+    checkpoint_dir: str | None = None,
+    adapter_path: str | None = None,
 ) -> str:
     """Load base model, apply custom LoRA, load v params, merge, and save."""
     from transformers import AutoModelForCausalLM
@@ -86,7 +104,7 @@ def resolve_model_path(
     from skyrl.backends.skyrl_train.custom_lora.schemes import get_scheme
 
     # 1. Find saved v parameters
-    v_params_path = resolve_custom_lora_path(checkpoint_dir)
+    v_params_path = resolve_custom_lora_path(checkpoint_dir=checkpoint_dir, adapter_path=adapter_path)
     logger.info(f"Loading custom LoRA v params from {v_params_path}")
     v_params = load_file(v_params_path)
     logger.info(f"  Loaded {len(v_params)} v tensors, "
@@ -428,8 +446,10 @@ async def run_eval(args: argparse.Namespace, model_path: str) -> dict:
 
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Evaluate a custom LoRA checkpoint on EURUS math")
-    p.add_argument("--checkpoint_dir", required=True,
-                   help="Path to the checkpoint directory containing custom_lora/custom_lora_params.safetensors")
+    p.add_argument("--checkpoint_dir", default=None,
+                   help="Path to a SkyRL checkpoint directory (searches for custom_lora/custom_lora_params.safetensors)")
+    p.add_argument("--adapter_path", default=None,
+                   help="Direct path to any custom LoRA .safetensors file (takes precedence over --checkpoint_dir)")
     p.add_argument("--base_model_path", required=True,
                    help="Base HF model (same one used during training)")
     p.add_argument("--data_path", default=None,
@@ -466,10 +486,12 @@ def main() -> None:
 
     ray.init(ignore_reinit_error=True)
 
+    if args.checkpoint_dir is None and args.adapter_path is None:
+        raise ValueError("Either --checkpoint_dir or --adapter_path must be provided")
+
     tmp_dir = tempfile.mkdtemp(prefix="eval_custom_lora_")
     try:
         model_path = resolve_model_path(
-            checkpoint_dir=args.checkpoint_dir,
             base_model_path=args.base_model_path,
             svd_rank=args.svd_rank,
             num_coefficients=args.num_coefficients,
@@ -478,6 +500,8 @@ def main() -> None:
             target_modules=args.target_modules,
             exclude_modules=args.exclude_modules,
             tmp_dir=tmp_dir,
+            checkpoint_dir=args.checkpoint_dir,
+            adapter_path=args.adapter_path,
         )
         metrics = asyncio.run(run_eval(args, model_path))
         print(f"\npass@1: {metrics['pass_at_1']:.4f}  (n={metrics['n_problems']} problems)")
