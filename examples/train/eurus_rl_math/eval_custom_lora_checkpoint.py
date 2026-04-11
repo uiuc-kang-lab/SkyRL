@@ -357,7 +357,7 @@ async def run_eval(args: argparse.Namespace, model_path: str) -> dict:
         "top_p": 1.0,
     }
 
-    batch_size = args.batch_size if args.batch_size is not None else args.n_samples
+    batch_size = args.batch_size if args.batch_size is not None else 64
 
     # Tokenize + filter
     logger.info("Tokenizing prompts...")
@@ -372,31 +372,40 @@ async def run_eval(args: argparse.Namespace, model_path: str) -> dict:
             n_skipped += 1
     logger.info(f"Valid: {len(all_valid)}, skipped (too long): {n_skipped}")
 
-    # Expand by n_samples
-    expanded = [(pid, ids, rs, info) for (pid, ids, rs, info) in all_valid for _ in range(args.n_samples)]
-
     results_by_problem: dict[int, list[bool]] = defaultdict(list)
-    n_batches = (len(expanded) + batch_size - 1) // batch_size
+    n_batches = (len(all_valid) + batch_size - 1) // batch_size
 
-    for batch_idx, start in enumerate(range(0, len(expanded), batch_size)):
-        batch = expanded[start : start + batch_size]
-        pids, ids_list, rs_list, _ = zip(*batch)
+    for batch_idx, start in enumerate(range(0, len(all_valid), batch_size)):
+        batch = all_valid[start : start + batch_size]
+        pids, ids_list, rs_list, infos = zip(*batch)
 
-        logger.info(f"Batch {batch_idx + 1}/{n_batches}: {len(ids_list)} completions")
+        logger.info(f"Batch {batch_idx + 1}/{n_batches}: {len(ids_list)} problems × {args.n_samples} samples")
 
+        # Use vLLM's native n parameter: send each prompt once, vLLM does
+        # prefill once and forks into n_samples decode streams internally.
+        sample_params = {
+            **sampling_params,
+            "n": args.n_samples,
+        }
         input_batch: InferenceEngineInput = {
             "prompt_token_ids": list(ids_list),
-            "sampling_params": sampling_params,
+            "sampling_params": sample_params,
             "session_ids": list(range(len(ids_list))),
         }
         output = await client.generate(input_batch)
 
-        for response, pid, reward_spec in zip(output["responses"], pids, rs_list):
-            env = MathEnv(extras={"reward_spec": reward_spec}, math_verify_timeout=10)
-            step_out = env.step(response)
-            results_by_problem[pid].append(float(step_out["reward"]) > 0.0)
+        # output["responses"] is ordered: [p0_s0, p0_s1, ..., p0_sN, p1_s0, ...]
+        responses_per_prompt = args.n_samples
+        for i, (pid, reward_spec) in enumerate(zip(pids, rs_list)):
+            for s in range(responses_per_prompt):
+                response = output["responses"][i * responses_per_prompt + s]
+                env = MathEnv(extras={"reward_spec": reward_spec}, math_verify_timeout=10)
+                step_out = env.step(response)
+                results_by_problem[pid].append(float(step_out["reward"]) > 0.0)
 
-        print(f"  pass@1 so far: {sum(v[0] for v in results_by_problem.values()) / len(results_by_problem):.4f}")
+        n_done = len(results_by_problem)
+        if n_done > 0:
+            print(f"  pass@1 so far: {sum(v[0] for v in results_by_problem.values()) / n_done:.4f} ({n_done} problems)")
 
     # Metrics
     n_total = len(results_by_problem)
