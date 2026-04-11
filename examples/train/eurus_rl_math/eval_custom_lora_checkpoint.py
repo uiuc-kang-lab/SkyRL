@@ -1,49 +1,41 @@
-"""Evaluate a custom LoRA checkpoint on a random subset of the EURUS math dataset.
+"""Evaluate a custom LoRA checkpoint on a subset of the EURUS math dataset.
 
 Unlike standard LoRA (PEFT), custom LoRA stores only the trainable v
-coefficients in ``custom_lora/custom_lora_params.safetensors``.  This script
+coefficients in ``custom_lora_params.safetensors``.  This script
 reconstructs the full delta_W from the base model's SVD + the saved v params,
-merges into the base weights, and evaluates via vLLM.
+merges into the base weights, and evaluates via vLLM (direct, no Ray).
 
 Usage examples
 --------------
-uv run -m examples.train.eurus_rl_math.eval_custom_lora_checkpoint \\
-    --checkpoint_dir /path/to/global_step_60/policy \\
+python -m examples.train.eurus_rl_math.eval_custom_lora_checkpoint \\
+    --adapter_path ../models/Qwen3.5-4B_tinylora_opd/custom_lora_params.safetensors \\
     --base_model_path Qwen/Qwen3.5-4B \\
-    --num_problems 200 --seed 42 --num_gpus 2
+    --data_path /workspace/data/eurus_fixed/train.parquet \\
+    --num_problems 2048 --n_samples 256 --temperature 0.6 --num_gpus 1
 
-# With explicit custom LoRA config overrides:
-uv run -m examples.train.eurus_rl_math.eval_custom_lora_checkpoint \\
+# From a SkyRL checkpoint:
+python -m examples.train.eurus_rl_math.eval_custom_lora_checkpoint \\
     --checkpoint_dir /path/to/global_step_60/policy \\
     --base_model_path Qwen/Qwen3.5-4B \\
-    --svd_rank 16 --num_coefficients 16 \\
-    --data_path ~/data/eurus_rl_math/validation.parquet
+    --data_path /workspace/data/eurus_fixed/train.parquet
 """
 
 import argparse
-import asyncio
 import json
 import os
 import random
 import shutil
 import tempfile
 from collections import defaultdict
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
 import datasets as hf_datasets
-import ray
 import torch
 from loguru import logger
 from safetensors.torch import load_file
 
 from examples.train.eurus_rl_math.env import MathEnv
-from skyrl.backends.skyrl_train.inference_engines.base import InferenceEngineInput
-from skyrl.backends.skyrl_train.inference_engines.inference_engine_client import InferenceEngineClient
-from skyrl.backends.skyrl_train.inference_engines.ray_wrapped_inference_engine import (
-    create_ray_wrapped_inference_engines,
-)
-from skyrl.train.config import InferenceEngineConfig, SkyRLLoraConfig
-from skyrl.utils.tok import get_tokenizer
 
 
 # ---------------------------------------------------------------------------
@@ -51,16 +43,7 @@ from skyrl.utils.tok import get_tokenizer
 # ---------------------------------------------------------------------------
 
 def resolve_custom_lora_path(checkpoint_dir: str | None = None, adapter_path: str | None = None) -> str:
-    """Find the custom LoRA v parameters safetensors file.
-
-    Args:
-        checkpoint_dir: SkyRL checkpoint directory (searches for
-            custom_lora/custom_lora_params.safetensors inside it).
-        adapter_path: Direct path to any .safetensors file containing
-            custom LoRA v parameters.
-
-    Either argument may be provided; adapter_path takes precedence.
-    """
+    """Find the custom LoRA v parameters safetensors file."""
     if adapter_path is not None:
         if os.path.isfile(adapter_path):
             return adapter_path
@@ -69,15 +52,12 @@ def resolve_custom_lora_path(checkpoint_dir: str | None = None, adapter_path: st
     if checkpoint_dir is None:
         raise ValueError("Either --checkpoint_dir or --adapter_path must be provided")
 
-    # Try direct path
-    direct = os.path.join(checkpoint_dir, "custom_lora", "custom_lora_params.safetensors")
-    if os.path.exists(direct):
-        return direct
-
-    # Try one level up (checkpoint_dir might be the policy/ subdir)
-    parent = os.path.join(os.path.dirname(checkpoint_dir), "custom_lora", "custom_lora_params.safetensors")
-    if os.path.exists(parent):
-        return parent
+    for candidate in [
+        os.path.join(checkpoint_dir, "custom_lora", "custom_lora_params.safetensors"),
+        os.path.join(os.path.dirname(checkpoint_dir), "custom_lora", "custom_lora_params.safetensors"),
+    ]:
+        if os.path.exists(candidate):
+            return candidate
 
     raise FileNotFoundError(
         f"Could not find custom_lora_params.safetensors in {checkpoint_dir}. "
@@ -99,9 +79,8 @@ def resolve_model_path(
 ) -> str:
     """Load base model, apply custom LoRA, load v params, merge, and save."""
     from transformers import AutoModelForCausalLM
-
     from skyrl.backends.skyrl_train.custom_lora.apply import apply_custom_lora
-    from skyrl.backends.skyrl_train.custom_lora.schemes import get_scheme
+    from skyrl.backends.skyrl_train.custom_lora.module import CustomLoraLinear
 
     # 1. Find saved v parameters
     v_params_path = resolve_custom_lora_path(checkpoint_dir=checkpoint_dir, adapter_path=adapter_path)
@@ -111,10 +90,9 @@ def resolve_model_path(
                 f"total params: {sum(p.numel() for p in v_params.values()):,}")
 
     # 2. Load base model in float32 on CPU to match training.
-    #    During FSDP training, rank 0 loads the model in float32 on CPU
+    #    During FSDP training, rank 0 loads in float32 on CPU
     #    (bf16=False in fsdp_worker.py:214, cpu_init_weights in fsdp_utils.py:62).
-    #    The SVD in apply_custom_lora must see the exact same float32 weights
-    #    on the same device (CPU) to produce identical U_scaled/V buffers.
+    #    SVD must see identical float32 weights on CPU for correct buffers.
     logger.info(f"Loading base model from {base_model_path} (float32, CPU)...")
     model = AutoModelForCausalLM.from_pretrained(
         base_model_path,
@@ -123,8 +101,6 @@ def resolve_model_path(
     )
 
     # 3. Apply custom LoRA (creates SVD buffers from base weights)
-    #    The model must be on the same device as during training (GPU) so that
-    #    torch.svd_lowrank produces identical U_scaled/V from the same seed.
     class _Config:
         pass
 
@@ -159,8 +135,7 @@ def resolve_model_path(
 
     # Verify v params are non-zero
     v_norms = []
-    from skyrl.backends.skyrl_train.custom_lora.module import CustomLoraLinear
-    for name, module in model.named_modules():
+    for _, module in model.named_modules():
         if isinstance(module, CustomLoraLinear):
             v_norms.append(module.v.data.abs().sum().item())
     logger.info(f"  v param norms: min={min(v_norms):.6f}, max={max(v_norms):.6f}, "
@@ -168,29 +143,26 @@ def resolve_model_path(
 
     # 5. Merge deltas into base weights
     logger.info("Merging custom LoRA deltas into base weights...")
-
     n_merged = 0
-    for name, module in model.named_modules():
+    for _, module in model.named_modules():
         if isinstance(module, CustomLoraLinear):
-            scheme_obj = module.scheme
             buffers = {n: b for n, b in module.named_buffers(recurse=False)}
-            scheme_obj.merge_into(module.weight, module.v, buffers)
+            module.scheme.merge_into(module.weight, module.v, buffers)
             n_merged += 1
     logger.info(f"  Merged {n_merged} custom LoRA layers")
 
-    # 6. Move to CPU and extract base model (unwrap CustomLoraLinear -> nn.Linear)
-    model = model.cpu()
+    # 6. Unwrap CustomLoraLinear -> nn.Linear
     logger.info("Unwrapping custom LoRA layers back to nn.Linear...")
     replacements = []
     for name, module in model.named_modules():
         if isinstance(module, CustomLoraLinear):
             parts = name.rsplit(".", 1)
             if len(parts) == 2:
-                parent_name, attr_name = parts
-                parent = dict(model.named_modules())[parent_name]
+                parent = dict(model.named_modules())[parts[0]]
+                attr_name = parts[1]
             else:
-                attr_name = parts[0]
                 parent = model
+                attr_name = parts[0]
             linear = torch.nn.Linear(
                 module.in_features, module.out_features,
                 bias=module.bias is not None,
@@ -212,13 +184,13 @@ def resolve_model_path(
     model.save_pretrained(merged_path, safe_serialization=True)
 
     # Copy tokenizer
-    tokenizer = get_tokenizer(base_model_path, trust_remote_code=True, padding_side="left")
+    from transformers import AutoTokenizer
+    tokenizer = AutoTokenizer.from_pretrained(base_model_path, trust_remote_code=True)
     tokenizer.save_pretrained(merged_path)
 
     _patch_qwen35_config_for_vllm(merged_path)
 
     del model
-
     return merged_path
 
 
@@ -245,22 +217,13 @@ def _patch_qwen35_config_for_vllm(merged_path: str) -> None:
         "text_config": text_config,
         "vision_config": {
             "model_type": "qwen3_5",
-            "depth": 27,
-            "hidden_size": 1152,
-            "hidden_act": "gelu_pytorch_tanh",
-            "intermediate_size": 4304,
-            "num_heads": 16,
-            "in_channels": 3,
-            "patch_size": 16,
-            "spatial_merge_size": 2,
-            "temporal_patch_size": 2,
-            "out_hidden_size": 3584,
-            "num_position_embeddings": 2304,
+            "depth": 27, "hidden_size": 1152, "hidden_act": "gelu_pytorch_tanh",
+            "intermediate_size": 4304, "num_heads": 16, "in_channels": 3,
+            "patch_size": 16, "spatial_merge_size": 2, "temporal_patch_size": 2,
+            "out_hidden_size": 3584, "num_position_embeddings": 2304,
         },
-        "image_token_id": 248056,
-        "video_token_id": 248057,
-        "vision_start_token_id": 248053,
-        "vision_end_token_id": 248054,
+        "image_token_id": 248056, "video_token_id": 248057,
+        "vision_start_token_id": 248053, "vision_end_token_id": 248054,
         "tie_word_embeddings": cfg.get("tie_word_embeddings", False),
     }
     if "transformers_version" in cfg:
@@ -268,12 +231,11 @@ def _patch_qwen35_config_for_vllm(merged_path: str) -> None:
 
     with open(config_path, "w") as f:
         json.dump(vl_config, f, indent=2)
-
     logger.info("Patched config.json to VL format for vLLM compatibility")
 
 
 # ---------------------------------------------------------------------------
-# Dataset loading (shared with eval_checkpoint.py)
+# Dataset loading
 # ---------------------------------------------------------------------------
 
 def load_eurus_dataset(data_path: str | None) -> hf_datasets.Dataset:
@@ -307,57 +269,31 @@ def random_subset(ds: hf_datasets.Dataset, num_problems: int, seed: int) -> hf_d
 
 
 # ---------------------------------------------------------------------------
+# Grading (parallel via process pool)
+# ---------------------------------------------------------------------------
+
+def _grade_one(args_tuple):
+    """Grade a single response in a subprocess (math_verify needs SIGALRM)."""
+    response, reward_spec, timeout = args_tuple
+    env = MathEnv(extras={"reward_spec": reward_spec}, math_verify_timeout=timeout)
+    step_out = env.step(response)
+    return float(step_out["reward"]) > 0.0
+
+
+# ---------------------------------------------------------------------------
 # Evaluation
 # ---------------------------------------------------------------------------
 
-async def run_eval(args: argparse.Namespace, model_path: str) -> dict:
-    tokenizer = get_tokenizer(model_path, trust_remote_code=True, padding_side="left")
+def run_eval(args: argparse.Namespace, model_path: str) -> dict:
+    from vllm import LLM, SamplingParams
+    from transformers import AutoTokenizer
 
+    tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
+
+    # Dataset
     ds_full = load_eurus_dataset(args.data_path)
     ds = random_subset(ds_full, args.num_problems, args.seed)
     logger.info(f"Evaluating on {len(ds)} problems (seed={args.seed})")
-
-    logger.info(f"Initializing vLLM engine (TP={args.num_gpus}, model={model_path})")
-    enable_prefix_caching = args.enable_prefix_caching if args.enable_prefix_caching is not None else False
-    if args.n_samples > 1 and not enable_prefix_caching:
-        logger.warning("n_samples > 1 without prefix caching: prompt KV computed separately per sample.")
-
-    ie_cfg = InferenceEngineConfig(
-        tensor_parallel_size=args.num_gpus,
-        gpu_memory_utilization=args.gpu_memory_utilization,
-        async_engine=True,
-        enforce_eager=False,
-        backend="vllm",
-        enable_prefix_caching=enable_prefix_caching,
-    )
-    engines = create_ray_wrapped_inference_engines(
-        num_inference_engines=1,
-        tensor_parallel_size=args.num_gpus,
-        model_dtype=ie_cfg.model_dtype,
-        pretrain=model_path,
-        seed=args.seed,
-        vllm_v1_disable_multiproc=ie_cfg.vllm_v1_disable_multiproc,
-        enable_prefix_caching=enable_prefix_caching,
-        enforce_eager=False,
-        gpu_memory_utilization=args.gpu_memory_utilization,
-        async_engine=True,
-        tokenizer=tokenizer,
-        backend="vllm",
-        inference_engine_enable_sleep=False,
-        engine_init_kwargs={
-            "language_model_only": True,
-            "max_model_len": args.max_prompt_length + args.max_generate_length,
-        },
-    )
-    client = InferenceEngineClient(engines, tokenizer, model_path, SkyRLLoraConfig(), ie_cfg)
-
-    sampling_params = {
-        "temperature": args.temperature,
-        "max_tokens": args.max_generate_length,
-        "top_p": 1.0,
-    }
-
-    batch_size = args.batch_size if args.batch_size is not None else 64
 
     # Tokenize + filter
     logger.info("Tokenizing prompts...")
@@ -372,45 +308,75 @@ async def run_eval(args: argparse.Namespace, model_path: str) -> dict:
             n_skipped += 1
     logger.info(f"Valid: {len(all_valid)}, skipped (too long): {n_skipped}")
 
-    results_by_problem: dict[int, list[bool]] = defaultdict(list)
+    # Initialize vLLM directly — no Ray, no SkyRL wrapper, native n>1 support
+    logger.info(f"Initializing vLLM engine (TP={args.num_gpus}, model={model_path})")
+    llm = LLM(
+        model=model_path,
+        tensor_parallel_size=args.num_gpus,
+        gpu_memory_utilization=args.gpu_memory_utilization,
+        max_model_len=args.max_prompt_length + args.max_generate_length,
+        trust_remote_code=True,
+        seed=args.seed,
+        enable_prefix_caching=bool(args.enable_prefix_caching),
+        enforce_eager=False,
+        language_model_only=True,
+    )
+
+    sampling_params = SamplingParams(
+        temperature=args.temperature,
+        max_tokens=args.max_generate_length,
+        top_p=1.0,
+        n=args.n_samples,
+    )
+
+    # Batch problems (not expanded samples — vLLM handles n internally)
+    batch_size = args.batch_size if args.batch_size is not None else 64
     n_batches = (len(all_valid) + batch_size - 1) // batch_size
+
+    results_by_problem: dict[int, list[bool]] = defaultdict(list)
+    grade_pool = ProcessPoolExecutor(max_workers=min(8, os.cpu_count() or 4))
 
     for batch_idx, start in enumerate(range(0, len(all_valid), batch_size)):
         batch = all_valid[start : start + batch_size]
-        pids, ids_list, rs_list, infos = zip(*batch)
+        pids = [b[0] for b in batch]
+        prompts = [{"prompt_token_ids": b[1]} for b in batch]
+        rs_list = [b[2] for b in batch]
 
-        logger.info(f"Batch {batch_idx + 1}/{n_batches}: {len(ids_list)} problems × {args.n_samples} samples")
+        logger.info(f"Batch {batch_idx + 1}/{n_batches}: "
+                    f"{len(prompts)} problems × {args.n_samples} samples")
 
-        # Use vLLM's native n parameter: send each prompt once, vLLM does
-        # prefill once and forks into n_samples decode streams internally.
-        sample_params = {
-            **sampling_params,
-            "n": args.n_samples,
-        }
-        input_batch: InferenceEngineInput = {
-            "prompt_token_ids": list(ids_list),
-            "sampling_params": sample_params,
-            "session_ids": list(range(len(ids_list))),
-        }
-        output = await client.generate(input_batch)
+        outputs = llm.generate(prompts, sampling_params=sampling_params)
 
-        # output["responses"] is ordered: [p0_s0, p0_s1, ..., p0_sN, p1_s0, ...]
-        responses_per_prompt = args.n_samples
-        for i, (pid, reward_spec) in enumerate(zip(pids, rs_list)):
-            for s in range(responses_per_prompt):
-                response = output["responses"][i * responses_per_prompt + s]
-                env = MathEnv(extras={"reward_spec": reward_spec}, math_verify_timeout=10)
-                step_out = env.step(response)
-                results_by_problem[pid].append(float(step_out["reward"]) > 0.0)
+        # Grade in parallel via process pool
+        grade_args = []
+        grade_pids = []
+        for output, pid, reward_spec in zip(outputs, pids, rs_list):
+            for completion in output.outputs:
+                grade_args.append((completion.text, reward_spec, 10))
+                grade_pids.append(pid)
+
+        grade_results = list(grade_pool.map(_grade_one, grade_args))
+
+        for pid, correct in zip(grade_pids, grade_results):
+            results_by_problem[pid].append(correct)
 
         n_done = len(results_by_problem)
         if n_done > 0:
-            print(f"  pass@1 so far: {sum(v[0] for v in results_by_problem.values()) / n_done:.4f} ({n_done} problems)")
+            p1 = sum(v[0] for v in results_by_problem.values()) / n_done
+            if args.n_samples > 1:
+                pk = sum(any(v) for v in results_by_problem.values()) / n_done
+                ma = sum(sum(v) / len(v) for v in results_by_problem.values()) / n_done
+                print(f"  [{n_done} problems] pass@1={p1:.4f}  pass@{args.n_samples}={pk:.4f}  mean_acc={ma:.4f}")
+            else:
+                print(f"  [{n_done} problems] pass@1={p1:.4f}")
 
-    # Metrics
+    grade_pool.shutdown()
+
+    # Final metrics
     n_total = len(results_by_problem)
     pass_at_1 = sum(v[0] for v in results_by_problem.values()) / n_total
     metrics: dict = {
+        "adapter_path": args.adapter_path,
         "checkpoint_dir": args.checkpoint_dir,
         "base_model_path": args.base_model_path,
         "svd_rank": args.svd_rank,
@@ -456,9 +422,9 @@ async def run_eval(args: argparse.Namespace, model_path: str) -> dict:
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Evaluate a custom LoRA checkpoint on EURUS math")
     p.add_argument("--checkpoint_dir", default=None,
-                   help="Path to a SkyRL checkpoint directory (searches for custom_lora/custom_lora_params.safetensors)")
+                   help="SkyRL checkpoint directory (searches for custom_lora/custom_lora_params.safetensors)")
     p.add_argument("--adapter_path", default=None,
-                   help="Direct path to any custom LoRA .safetensors file (takes precedence over --checkpoint_dir)")
+                   help="Direct path to any custom LoRA .safetensors file (takes precedence)")
     p.add_argument("--base_model_path", required=True,
                    help="Base HF model (same one used during training)")
     p.add_argument("--data_path", default=None,
@@ -471,8 +437,9 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--temperature", type=float, default=0.0,
                    help="0.0 = greedy. Set >0 with --n_samples for pass@k.")
     p.add_argument("--n_samples", type=int, default=1,
-                   help="Independent samples per problem")
-    p.add_argument("--batch_size", type=int, default=None)
+                   help="Independent samples per problem (uses vLLM native n parameter)")
+    p.add_argument("--batch_size", type=int, default=None,
+                   help="Problems per generate() call (default: 64)")
     p.add_argument("--gpu_memory_utilization", type=float, default=0.9)
     p.add_argument("--enable_prefix_caching", type=lambda x: x.lower() != "false",
                    default=None, metavar="BOOL")
@@ -493,8 +460,6 @@ def main() -> None:
     if args.n_samples > 1 and args.temperature == 0.0:
         logger.warning("n_samples > 1 with temperature=0 gives identical samples; consider --temperature 0.6")
 
-    ray.init(ignore_reinit_error=True)
-
     if args.checkpoint_dir is None and args.adapter_path is None:
         raise ValueError("Either --checkpoint_dir or --adapter_path must be provided")
 
@@ -512,7 +477,7 @@ def main() -> None:
             checkpoint_dir=args.checkpoint_dir,
             adapter_path=args.adapter_path,
         )
-        metrics = asyncio.run(run_eval(args, model_path))
+        metrics = run_eval(args, model_path)
         print(f"\npass@1: {metrics['pass_at_1']:.4f}  (n={metrics['n_problems']} problems)")
     finally:
         shutil.rmtree(tmp_dir, ignore_errors=True)
