@@ -163,6 +163,10 @@ async def run_eval(args: argparse.Namespace) -> float:
         "top_p": 1.0,
         "stop": stop_tokens,
         "include_stop_str_in_output": True,
+        # Must be False for models that encode <think>/<​/think> as special tokens
+        # (e.g. Qwen3/3.5). With True (the default), these tags are stripped from
+        # the decoded text, causing verify_format_and_extract to fail.
+        "skip_special_tokens": False,
     }
 
     # ------------------------------------------------------------------ #
