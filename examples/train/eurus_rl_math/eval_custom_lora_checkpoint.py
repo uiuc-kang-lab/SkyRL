@@ -37,6 +37,8 @@ from safetensors.torch import load_file
 
 from examples.train.eurus_rl_math.env import MathEnv
 
+from vllm import LLM, SamplingParams
+from transformers import AutoTokenizer
 
 # ---------------------------------------------------------------------------
 # Checkpoint resolution: custom LoRA merge
@@ -304,8 +306,6 @@ def _grade_one(args_tuple):
 # ---------------------------------------------------------------------------
 
 def run_eval(args: argparse.Namespace, model_path: str) -> dict:
-    from vllm import LLM, SamplingParams
-    from transformers import AutoTokenizer
 
     tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
 
@@ -388,8 +388,6 @@ def run_eval(args: argparse.Namespace, model_path: str) -> dict:
                 print(f"  [{n_done} problems] pass@1={p1:.4f}  pass@{args.n_samples}={pk:.4f}  mean_acc={ma:.4f}")
             else:
                 print(f"  [{n_done} problems] pass@1={p1:.4f}")
-
-    grade_pool.shutdown()
 
     # Final metrics
     n_total = len(results_by_problem)
