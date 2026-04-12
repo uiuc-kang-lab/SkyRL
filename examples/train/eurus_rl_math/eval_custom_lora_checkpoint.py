@@ -274,10 +274,29 @@ def random_subset(ds: hf_datasets.Dataset, num_problems: int, seed: int) -> hf_d
 
 def _grade_one(args_tuple):
     """Grade a single response in a subprocess (math_verify needs SIGALRM)."""
+    import signal
+
     response, reward_spec, timeout = args_tuple
-    env = MathEnv(extras={"reward_spec": reward_spec}, math_verify_timeout=timeout)
-    step_out = env.step(response)
-    return float(step_out["reward"]) > 0.0
+
+    # Hard process-level timeout as safety net: kill grading if it exceeds
+    # 2× the math_verify timeout.  math_verify's internal SIGALRM sometimes
+    # fails to fire if the LaTeX parser hangs before the alarm is armed.
+    hard_timeout = (timeout * 2) if timeout else 30
+
+    def _alarm_handler(signum, frame):
+        raise TimeoutError("Grading hard timeout")
+
+    old_handler = signal.signal(signal.SIGALRM, _alarm_handler)
+    signal.alarm(hard_timeout)
+    try:
+        env = MathEnv(extras={"reward_spec": reward_spec}, math_verify_timeout=timeout)
+        step_out = env.step(response)
+        return float(step_out["reward"]) > 0.0
+    except (TimeoutError, Exception):
+        return False
+    finally:
+        signal.alarm(0)
+        signal.signal(signal.SIGALRM, old_handler)
 
 
 # ---------------------------------------------------------------------------
