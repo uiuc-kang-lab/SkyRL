@@ -32,13 +32,13 @@ def verify_format_and_extract(output: str):
         return False, None, None, None
 
     thoughts = re.findall(r"<think>(.*?)</think>", output, re.S)
-    if not thoughts:
-        return False, None, None, None
 
-    for m in re.finditer(r"</observation>", pre_solution, re.I):
-        rest = pre_solution[m.end() :].lstrip()
-        if not rest.lower().startswith(THINK_START):
-            return False, None, None, None
+    # When <think> tags are present, verify observation→think ordering
+    if thoughts:
+        for m in re.finditer(r"</observation>", pre_solution, re.I):
+            rest = pre_solution[m.end() :].lstrip()
+            if not rest.lower().startswith(THINK_START):
+                return False, None, None, None
 
     return True, thoughts, solution_text.strip(), None
 
