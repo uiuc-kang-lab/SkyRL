@@ -41,6 +41,7 @@ from skyrl.backends.skyrl_train.inference_engines.ray_wrapped_inference_engine i
 from skyrl.train.config import InferenceEngineConfig, SkyRLLoraConfig
 from skyrl.utils.tok import get_tokenizer
 from skyrl_gym.envs.sql.env import SQLEnv, Text2SQLEnvConfig
+from skyrl_gym.envs.sql.utils import verify_format_and_extract
 
 
 def _prompt_hash(prompt) -> str:
@@ -284,6 +285,16 @@ async def run_eval(args: argparse.Namespace) -> float:
                 if step_out["done"]:
                     state.done = True
                     state.reward = float(step_out["reward"])
+
+                    # Diagnostic: log details for the first few completed problems
+                    if sum(len(v) for v in results_by_problem.values()) < 3:
+                        is_valid, thoughts, pred_sql, _ = verify_format_and_extract(response)
+                        logger.info(
+                            f"[DIAG] pid={state.pid} reward={state.reward:.1f} "
+                            f"format_valid={is_valid} has_think={thoughts is not None and len(thoughts) > 0} "
+                            f"pred_sql={pred_sql!r:.200}"
+                        )
+                        logger.info(f"[DIAG] response (first 500 chars): {response[:500]!r}")
                 else:
                     # Build observation token IDs and extend input_ids for next turn
                     observations = step_out["observations"]
@@ -357,6 +368,18 @@ async def run_eval(args: argparse.Namespace) -> float:
                 n_correct_so_far += int(any(results_by_problem[state.pid]))
 
     # ------------------------------------------------------------------ #
+    # Reward distribution diagnostic                                       #
+    # ------------------------------------------------------------------ #
+    all_rewards = [s.reward for s in all_states]
+    from collections import Counter
+    reward_dist = Counter(r for r in all_rewards)
+    logger.info(f"[DIAG] Reward distribution: {dict(sorted(reward_dist.items()))}")
+    logger.info(
+        f"[DIAG] Turns used distribution: "
+        f"{dict(Counter(s.n_turns_used for s in all_states))}"
+    )
+
+    # ------------------------------------------------------------------ #
     # Aggregate metrics                                                    #
     # ------------------------------------------------------------------ #
     n_total = len(results_by_problem)
@@ -389,8 +412,12 @@ async def run_eval(args: argparse.Namespace) -> float:
         logger.info(f"pass@1={pass_at_1:.4f}  ({n_total} problems)")
 
     if args.output_path:
+        # Build per-problem results with actual reward values for debugging
+        rewards_by_problem: dict[int, list[float]] = defaultdict(list)
+        for s in all_states:
+            rewards_by_problem[s.pid].append(s.reward)
         metrics["per_problem"] = {
-            str(pid): {"samples": samples, **problem_meta[pid]}
+            str(pid): {"samples": samples, "rewards": rewards_by_problem[pid], **problem_meta[pid]}
             for pid, samples in sorted(results_by_problem.items())
         }
         with open(args.output_path, "w") as f:
