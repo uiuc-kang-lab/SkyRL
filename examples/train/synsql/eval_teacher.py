@@ -3,6 +3,11 @@
 Supports multi-turn evaluation: the model generates SQL tool calls, observes execution
 results, and iterates up to --max_turns before submitting a final <solution>.
 
+By default, uses single-turn chat template mode (all turns in one assistant message with
+observations encoded directly), matching `generator.use_conversation_multi_turn=false` in
+the standard training config. Pass --conversation_multi_turn to use the multi-turn chat
+template variant instead.
+
 Generates responses greedy (temperature=0) by default for a clean pass@1 estimate.
 Set --temperature > 0 with --n_samples > 1 to estimate pass@k via independent samples.
 
@@ -21,7 +26,8 @@ import copy
 import hashlib
 import json
 from collections import defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import List
 
 import datasets as hf_datasets
 import ray
@@ -52,7 +58,8 @@ class _ProblemState:
     """Mutable state for one problem (or one sample of a problem) during multi-turn eval."""
 
     pid: int  # problem id (index into all_valid)
-    conversation: list  # list of chat messages for re-tokenization
+    input_ids: List[int]  # running token sequence for generation
+    conversation: list  # chat messages (only used in conversation_multi_turn mode)
     env: SQLEnv
     done: bool = False
     reward: float = 0.0
@@ -89,6 +96,14 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--output_path", default=None, help="Optional path to write per-problem JSON results")
     p.add_argument("--limit", type=int, default=None, help="Evaluate only the first N problems (for quick tests)")
     p.add_argument("--max_turns", type=int, default=6, help="Maximum conversation turns per problem")
+    p.add_argument(
+        "--conversation_multi_turn",
+        action="store_true",
+        default=False,
+        help="Use multi-turn chat template (separate user/assistant messages per turn). "
+        "Default is single-turn mode (all turns in one assistant message), matching "
+        "generator.use_conversation_multi_turn=false in the standard training config.",
+    )
     return p.parse_args()
 
 
@@ -155,7 +170,7 @@ async def run_eval(args: argparse.Namespace) -> float:
     logger.info("Tokenizing prompts...")
     env_cfg = Text2SQLEnvConfig(db_path=args.db_path)
 
-    all_valid: list[tuple[int, dict]] = []  # (seq_id, row_data)
+    all_valid: list[tuple[int, dict, list[int]]] = []  # (seq_id, row_data, initial_ids)
     problem_meta: dict[int, dict] = {}
     n_skipped = 0
     n_db_missing = 0
@@ -183,7 +198,7 @@ async def run_eval(args: argparse.Namespace) -> float:
             continue
 
         seq_id = len(all_valid)
-        all_valid.append((seq_id, row))
+        all_valid.append((seq_id, row, ids))
         problem_meta[seq_id] = {"raw_idx": j, "prompt_hash": _prompt_hash(row["prompt"])}
 
     logger.info(
@@ -194,12 +209,25 @@ async def run_eval(args: argparse.Namespace) -> float:
     # ------------------------------------------------------------------ #
     # Multi-turn generation + grading                                      #
     # ------------------------------------------------------------------ #
-    # For n_samples > 1, each sample gets an independent SQLEnv and conversation.
+    # For n_samples > 1, each sample gets an independent SQLEnv and state.
     results_by_problem: dict[int, list[bool]] = defaultdict(list)
+
+    # Precompute generation_prompt_ids for conversation_multi_turn mode
+    if args.conversation_multi_turn:
+        # Build a base conversation to compute the generation prompt tokens
+        # (e.g., for Qwen: "<|im_start|>assistant\n")
+        base_conversation = [{"role": "user", "content": ""}]
+        base_ids = tokenizer.apply_chat_template(
+            base_conversation, add_generation_prompt=True, return_dict=False
+        )
+        base_no_gen = tokenizer.apply_chat_template(
+            base_conversation, add_generation_prompt=False, return_dict=False
+        )
+        generation_prompt_ids = base_ids[len(base_no_gen) :]
 
     # Build initial states: expand by n_samples
     all_states: list[_ProblemState] = []
-    for seq_id, row in all_valid:
+    for seq_id, row, initial_ids in all_valid:
         for _ in range(args.n_samples):
             env = SQLEnv(
                 env_config=env_cfg,
@@ -213,7 +241,8 @@ async def run_eval(args: argparse.Namespace) -> float:
             all_states.append(
                 _ProblemState(
                     pid=seq_id,
-                    conversation=copy.deepcopy(row["prompt"]),
+                    input_ids=list(initial_ids),
+                    conversation=copy.deepcopy(row["prompt"]) if args.conversation_multi_turn else [],
                     env=env,
                 )
             )
@@ -235,14 +264,7 @@ async def run_eval(args: argparse.Namespace) -> float:
         for batch_start in range(0, len(active_indices), args.batch_size):
             batch_indices = active_indices[batch_start : batch_start + args.batch_size]
 
-            # Tokenize current conversations
-            batch_token_ids = []
-            for si in batch_indices:
-                state = all_states[si]
-                ids = tokenizer.apply_chat_template(
-                    state.conversation, add_generation_prompt=True, return_dict=False
-                )
-                batch_token_ids.append(ids)
+            batch_token_ids = [all_states[si].input_ids for si in batch_indices]
 
             input_batch: InferenceEngineInput = {
                 "prompt_token_ids": batch_token_ids,
@@ -254,6 +276,7 @@ async def run_eval(args: argparse.Namespace) -> float:
             for local_idx, si in enumerate(batch_indices):
                 state = all_states[si]
                 response = output["responses"][local_idx]
+                response_ids = output["response_ids"][local_idx]
 
                 step_out = state.env.step(response)
                 state.n_turns_used += 1
@@ -262,18 +285,38 @@ async def run_eval(args: argparse.Namespace) -> float:
                     state.done = True
                     state.reward = float(step_out["reward"])
                 else:
-                    # Append assistant response and observation to conversation
-                    state.conversation.append({"role": "assistant", "content": response})
+                    # Build observation token IDs and extend input_ids for next turn
                     observations = step_out["observations"]
-                    if observations:
+
+                    if args.conversation_multi_turn:
+                        # Multi-turn mode: use chat template for proper formatting
+                        state.conversation.append({"role": "assistant", "content": response})
                         for obs in observations:
                             state.conversation.append(obs)
+                        state.input_ids = tokenizer.apply_chat_template(
+                            state.conversation, add_generation_prompt=True, return_dict=False
+                        )
+                    else:
+                        # Single-turn mode (default): token-in-token-out
+                        # All turns stay in one assistant message. Observations are
+                        # encoded directly without chat template markers.
+                        #
+                        # Strip EOS from response IDs since we're continuing the
+                        # same assistant message (matches training behavior in
+                        # _update_agent_loop_state_with_singleturn_chat_template).
+                        resp_ids = list(response_ids)
+                        if resp_ids and resp_ids[-1] == tokenizer.eos_token_id:
+                            resp_ids = resp_ids[:-1]
+
+                        # Encode observation content directly (no chat template)
+                        obs_ids = []
+                        for obs in observations:
+                            obs_ids.extend(tokenizer.encode(obs["content"], add_special_tokens=False))
+
+                        state.input_ids = state.input_ids + resp_ids + obs_ids
 
                     # Check if conversation has grown too long
-                    new_ids = tokenizer.apply_chat_template(
-                        state.conversation, add_generation_prompt=True, return_dict=False
-                    )
-                    if len(new_ids) > args.max_prompt_length:
+                    if len(state.input_ids) > args.max_prompt_length:
                         logger.debug(
                             f"Problem {state.pid} exceeded max_prompt_length at turn {turn + 1}, "
                             f"force-terminating."
@@ -329,6 +372,7 @@ async def run_eval(args: argparse.Namespace) -> float:
         "db_path": args.db_path,
         "max_prompt_length": args.max_prompt_length,
         "max_turns": args.max_turns,
+        "conversation_multi_turn": args.conversation_multi_turn,
         "n_total": n_total,
         "pass_at_1": pass_at_1,
     }
