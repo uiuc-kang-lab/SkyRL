@@ -29,7 +29,7 @@ from skyrl.backends.skyrl_train.inference_engines.ray_wrapped_inference_engine i
 )
 from skyrl.train.config import InferenceEngineConfig, SkyRLLoraConfig
 from skyrl.utils.tok import get_tokenizer
-
+import pyarrow.parquet as pq
 
 def _prompt_hash(prompt) -> str:
     """16-char hex prefix of SHA-256 over the JSON-serialised prompt.
@@ -87,7 +87,16 @@ async def run_eval(args: argparse.Namespace) -> float:
     # Dataset                                                              #
     # ------------------------------------------------------------------ #
     logger.info(f"Loading dataset: {args.data_path}")
-    ds = hf_datasets.load_dataset("parquet", data_files=args.data_path, keep_in_memory=True)["train"]
+
+    def _parquet_row_iter():
+        pf = pq.ParquetFile(args.data_path)
+        for batch in pf.iter_batches(batch_size=10_000):
+            yield from batch.to_pylist()
+
+    ds = hf_datasets.Dataset.from_generator(_parquet_row_iter)
+    
+    # ds = hf_datasets.load_dataset("parquet", data_files=args.data_path, keep_in_memory=True)["train"]
+    ds = ds.shuffle(seed=42)  # Avoid any ordering biases; also ensures random sample if --limit is used
     if args.limit:
         ds = ds.select(range(min(args.limit, len(ds))))
     logger.info(f"Problems to evaluate: {len(ds)}")
