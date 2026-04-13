@@ -70,7 +70,8 @@ done
 
 
 uv run --extra fsdp -m examples.train.mix_general.main_opd \
-  data.train_data="['$DATA_DIR/train.parquet']" \
+  data.train_data="['$DATA_DIR/train_data.parquet']" \
+  data.val_data="['$DATA_DIR/valid_data.parquet']" \
   trainer.algorithm.advantage_estimator="no_op" \
   trainer.algorithm.policy_loss_type="importance_sampling" \
   trainer.policy.model.path=$STUDENT_MODEL \
