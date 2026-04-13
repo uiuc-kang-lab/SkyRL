@@ -70,7 +70,7 @@ done
 
 
 uv run --extra fsdp -m examples.train.synsql.main_opd \
-  data.train_data="['$DATA_DIR/train_data.parquet']" \
+  data.train_data="['$DATA_DIR/small_train_data.parquet']" \
   data.val_data="['$DATA_DIR/valid_data.parquet']" \
   trainer.algorithm.advantage_estimator="no_op" \
   trainer.algorithm.policy_loss_type="importance_sampling" \
@@ -114,9 +114,15 @@ uv run --extra fsdp -m examples.train.synsql.main_opd \
   generator.inference_engine.weight_sync_backend=nccl \
   generator.inference_engine.async_engine=true \
   generator.inference_engine.enforce_eager=true \
-  generator.batched=true \
+  generator.batched=false \
   environment.env_class=text2sql \
+  environment.skyrl_gym.text2sql.db_path="/workspace/data/sql/databases" \
   environment.skyrl_gym.max_env_workers=-1 \
+  generator.step_wise_trajectories=true \
+  generator.use_conversation_multi_turn=true \
+  generator.append_eos_token_after_stop_str_in_multi_turn=true \
+  generator.max_turns=6 \
+  generator.sampling_params.stop='["</tool_call>", "</solution>"]' \
   generator.n_samples_per_prompt=$group_size \
   generator.inference_engine.gpu_memory_utilization=0.8 \
   trainer.logger="$logger" \

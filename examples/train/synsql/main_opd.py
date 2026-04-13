@@ -150,12 +150,12 @@ class MultiTurnOPDExp(BasePPOExp):
 def skyrl_entrypoint(cfg: SkyRLTrainConfig):
     # text2sql is already registered in skyrl_gym.envs.__init__, but we
     # re-register here for explicitness (consistent with other examples).
-    from skyrl_gym.envs import register
+    # from skyrl_gym.envs import register
 
-    register(
-        id="text2sql",
-        entry_point="skyrl_gym.envs.sql.env:SQLEnv",
-    )
+    # register(
+    #     id="text2sql",
+    #     entry_point="skyrl_gym.envs.sql.env:SQLEnv",
+    # )
 
     exp = MultiTurnOPDExp(cfg)
     exp.run()
