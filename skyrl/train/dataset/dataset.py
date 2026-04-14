@@ -3,7 +3,7 @@ from loguru import logger
 import os
 from typing import List
 from transformers import PreTrainedTokenizerBase
-
+import pyarrow.parquet as pq
 
 class PromptDataset:
     def __init__(
@@ -32,7 +32,18 @@ class PromptDataset:
         for source in self.datasets:
             ext = os.path.splitext(source)[-1].lower()
             if ext == ".parquet":
-                ds = datasets.load_dataset("parquet", data_files=source, keep_in_memory=True)["train"]
+                try:
+                    ds = datasets.load_dataset("parquet", data_files=source, keep_in_memory=True)["train"]
+                except Exception as e:
+                    logger.info(f"Failed to load {source} as parquet with error: {e}. Attempting to load using generator.")
+
+                    def _parquet_row_iter():
+                        pf = pq.ParquetFile(source)
+                        for batch in pf.iter_batches(batch_size=10_000):
+                            yield from batch.to_pylist()
+
+                    ds = datasets.Dataset.from_generator(_parquet_row_iter)
+                    
             elif ext in [".json", ".jsonl"]:
                 ds = datasets.load_dataset("json", data_files=source, keep_in_memory=True)["train"]
             else:
