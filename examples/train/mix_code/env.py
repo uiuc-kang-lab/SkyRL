@@ -44,7 +44,7 @@ class MixCodeEnv(BaseTextEnv):
         self.timeout: int = (env_config or {}).get("timeout", 6)
 
     def step(self, action: str) -> BaseTextEnvStepOutput:
-        parsed_code, reward = compute_score(
+        parsed_code, reward, _ = compute_score(
             action, self.ground_truth, self.method, timeout=self.timeout,
         )
         return BaseTextEnvStepOutput(
