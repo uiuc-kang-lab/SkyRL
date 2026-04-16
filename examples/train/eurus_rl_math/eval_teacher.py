@@ -118,6 +118,9 @@ async def run_eval(args: argparse.Namespace) -> float:
         backend="vllm",
         # No sleep/weight-sync needed for eval-only
         inference_engine_enable_sleep=False,
+        engine_init_kwargs={
+            "language_model_only": True,
+        },
     )
     lora_cfg = SkyRLLoraConfig()  # rank=0, no LoRA
     client = InferenceEngineClient(engines, tokenizer, args.model_path, lora_cfg, ie_cfg)

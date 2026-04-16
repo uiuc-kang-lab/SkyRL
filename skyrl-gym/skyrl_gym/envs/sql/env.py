@@ -89,7 +89,7 @@ class SQLEnv(BaseTextEnv):
         if done:
             # Concat all chat history into a single string and compute reward
             chat_history_str = "".join([item["content"] for item in self.chat_history])
-            print(f"Chat history: {chat_history_str}")
+            # print(f"Chat history: {chat_history_str}")
             return compute_score_single(chat_history_str, self.gold_sql, self.db_file)
         else:
             # No reward for intermediate steps for SQL tasks
