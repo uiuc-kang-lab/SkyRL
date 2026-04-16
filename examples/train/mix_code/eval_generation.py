@@ -86,6 +86,8 @@ def parse_args() -> argparse.Namespace:
                    help="Directory to dump generated samples (for debugging)")
     p.add_argument("--num_workers", type=int, required=True,
                    help="Number of worker processes to use")
+    p.add_argument("--n_samples", type=int, default=64,  
+                   help="Number of samples per problem (should match what was generated in dump_gen_dir)")
     return p.parse_args()
 
 
