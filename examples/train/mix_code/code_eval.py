@@ -14,11 +14,14 @@ parent uses p.join(timeout=...) which is thread-safe.
 
 import ast
 import json
+import os
+import shutil
 import sys
 import signal
 import faulthandler
 import platform
 import re
+import tempfile
 import time
 import multiprocessing
 from io import StringIO
@@ -393,8 +396,9 @@ def _grade_assertions(code: str, test_code: str, timeout: int) -> bool:
 # ---------------------------------------------------------------------------
 # Subprocess workers
 # ---------------------------------------------------------------------------
-def _worker_inputs(code, inputs, outputs, timeout, result_queue):
+def _worker_inputs(code, inputs, outputs, timeout, work_dir, result_queue):
     """Subprocess entry-point for input/output testing."""
+    os.chdir(work_dir)
     signal.signal(signal.SIGALRM, timeout_handler)
     # Note: no memory-bytes cap — the forked child inherits the parent's
     # virtual-memory footprint, so a low RLIMIT_AS would OOM immediately.
@@ -407,8 +411,9 @@ def _worker_inputs(code, inputs, outputs, timeout, result_queue):
         result_queue.put(False)
 
 
-def _worker_assertions(code, test_code, timeout, result_queue):
+def _worker_assertions(code, test_code, timeout, work_dir, result_queue):
     """Subprocess entry-point for assertion testing."""
+    os.chdir(work_dir)
     signal.signal(signal.SIGALRM, timeout_handler)
     reliability_guard()
     try:
@@ -436,30 +441,38 @@ _mp_ctx = multiprocessing.get_context("forkserver")
 def _run_in_subprocess(target, args, global_timeout: float) -> bool:
     """Spawn *target* in an isolated process and return its bool result.
 
+    Each invocation creates a unique temporary directory that the subprocess
+    uses as its working directory, so parallel evaluations never share files.
+    The temp directory is cleaned up after the subprocess exits.
+
     Enforces *global_timeout* as a hard wall-clock deadline — the subprocess
     is killed (SIGKILL) if it exceeds it.  Always cleans up the Process
     object to prevent zombie / resource leaks.
     """
-    result_queue = _mp_ctx.Queue()
-    p = _mp_ctx.Process(target=target, args=(*args, result_queue))
-    p.start()
-    p.join(timeout=global_timeout)
-    
-    is_timout = False
-
-    if p.is_alive():
-        p.kill()
-        p.join(timeout=5)
-        is_timeout = True
-
+    work_dir = tempfile.mkdtemp(prefix="code_eval_")
     try:
-        result = result_queue.get_nowait()
-    except Exception:
-        result = False
-    finally:
-        p.close()
+        result_queue = _mp_ctx.Queue()
+        p = _mp_ctx.Process(target=target, args=(*args, work_dir, result_queue))
+        p.start()
+        p.join(timeout=global_timeout)
 
-    return result, is_timeout
+        is_timeout = False
+
+        if p.is_alive():
+            p.kill()
+            p.join(timeout=5)
+            is_timeout = True
+
+        try:
+            result = result_queue.get_nowait()
+        except Exception:
+            result = False
+        finally:
+            p.close()
+
+        return result, is_timeout
+    finally:
+        shutil.rmtree(work_dir, ignore_errors=True)
 
 
 def check_correctness_inputs(code: str, tests_dict: dict, timeout: int = 6) -> bool:
