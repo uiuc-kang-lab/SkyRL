@@ -444,10 +444,13 @@ def _run_in_subprocess(target, args, global_timeout: float) -> bool:
     p = _mp_ctx.Process(target=target, args=(*args, result_queue))
     p.start()
     p.join(timeout=global_timeout)
+    
+    is_timout = False
 
     if p.is_alive():
         p.kill()
         p.join(timeout=5)
+        is_timeout = True
 
     try:
         result = result_queue.get_nowait()
@@ -456,7 +459,7 @@ def _run_in_subprocess(target, args, global_timeout: float) -> bool:
     finally:
         p.close()
 
-    return result
+    return result, is_timeout
 
 
 def check_correctness_inputs(code: str, tests_dict: dict, timeout: int = 6) -> bool:
@@ -498,7 +501,7 @@ def compute_score(model_response: str, ground_truth: str, method: str, timeout: 
 
     if method == "inputs":
         tests_dict = json.loads(ground_truth) if isinstance(ground_truth, str) else ground_truth
-        is_correct = check_correctness_inputs(code, tests_dict, timeout=timeout)
+        is_correct, is_timeout = check_correctness_inputs(code, tests_dict, timeout=timeout)
     elif method == "assertions":
         # Route stdin/stdout dicts to the inputs path at the parent level so
         # the correct per-test-case global timeout is used.  The subprocess
@@ -506,15 +509,15 @@ def compute_score(model_response: str, ground_truth: str, method: str, timeout: 
         try:
             test_data = ast.literal_eval(ground_truth)
             if isinstance(test_data, dict) and "stdin" in test_data and "stdout" in test_data:
-                is_correct = check_correctness_inputs(
+                is_correct, is_timeout = check_correctness_inputs(
                     code, {"inputs": test_data["stdin"], "outputs": test_data["stdout"]},
                     timeout=timeout,
                 )
             else:
-                is_correct = check_correctness_assertions(code, ground_truth, timeout=timeout)
+                is_correct, is_timeout = check_correctness_assertions(code, ground_truth, timeout=timeout)
         except (ValueError, SyntaxError):
-            is_correct = check_correctness_assertions(code, ground_truth, timeout=timeout)
+            is_correct, is_timeout = check_correctness_assertions(code, ground_truth, timeout=timeout)
     else:
         raise ValueError(f"Unknown evaluation method: {method}")
 
-    return code, 1.0 if is_correct else 0.0
+    return code, 1.0 if is_correct else 0.0, 1.0 if is_timeout else 0.0
