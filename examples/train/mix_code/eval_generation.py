@@ -8,7 +8,7 @@ from loguru import logger
 
 from examples.train.mix_code.env import MixCodeEnv
 import glob
-import multiprocessing
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
 
 # ---------------------------------------------------------------------------
@@ -34,15 +34,24 @@ def run_eval(args: argparse.Namespace) -> dict:
             datum = list(zip(pids, responses, reward_specs))
             data.extend(datum)
     # run env over data and collect results in parallel
+    # Use threads (not processes) for the outer pool because code_eval's
+    # _run_in_subprocess already spawns isolated child processes for each
+    # evaluation.  multiprocessing.Pool workers are daemons, and daemons
+    # cannot spawn children — threads have no such restriction.
     results_by_problem = defaultdict(list)
-    with multiprocessing.Pool(processes=args.num_workers) as pool:
+    futures_to_pid = {}
+    with ThreadPoolExecutor(max_workers=args.num_workers) as executor:
         for pid, response, reward_spec in data:
-            result = pool.apply_async(run_one_problem, args=(response, reward_spec))
-            results_by_problem[pid].append(result)
+            future = executor.submit(run_one_problem, response, reward_spec)
+            futures_to_pid[future] = pid
+            results_by_problem[pid].append(future)
 
-        # Wait for all processes to finish and collect results
-        for pid, result_list in tqdm(results_by_problem.items()):
-            results_by_problem[pid] = [result.get() for result in result_list]
+        # Wait for all futures to finish and collect results
+        for future in tqdm(as_completed(futures_to_pid), total=len(futures_to_pid)):
+            future.result()  # raise any exception early
+
+        for pid, future_list in results_by_problem.items():
+            results_by_problem[pid] = [f.result() for f in future_list]
 
     # Metrics
     n_total = len(results_by_problem)
