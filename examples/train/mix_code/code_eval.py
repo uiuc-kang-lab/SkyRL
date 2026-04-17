@@ -510,7 +510,7 @@ def compute_score(model_response: str, ground_truth: str, method: str, timeout: 
     """
     code = extract_code_from_model(model_response)
     if code is None:
-        return None, 0.0
+        return None, 0.0, 0.0
 
     if method == "inputs":
         tests_dict = json.loads(ground_truth) if isinstance(ground_truth, str) else ground_truth
