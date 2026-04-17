@@ -510,7 +510,7 @@ def compute_score(model_response: str, ground_truth: str, method: str, timeout: 
     """
     code = extract_code_from_model(model_response)
     if code is None:
-        return None, 0.0, 0.0
+        return None, 0.0, False
 
     if method == "inputs":
         tests_dict = json.loads(ground_truth) if isinstance(ground_truth, str) else ground_truth
@@ -530,6 +530,9 @@ def compute_score(model_response: str, ground_truth: str, method: str, timeout: 
                 is_correct, is_timeout = check_correctness_assertions(code, ground_truth, timeout=timeout)
         except (ValueError, SyntaxError):
             is_correct, is_timeout = check_correctness_assertions(code, ground_truth, timeout=timeout)
+        except Exception:
+            print(f"Unexpected error during grading: {e}")
+            is_correct, is_timeout = False, False
     else:
         raise ValueError(f"Unknown evaluation method: {method}")
 
