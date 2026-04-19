@@ -47,6 +47,7 @@ from skyrl.utils.tok import get_tokenizer
 from skyrl_gym.envs.sql.env import SQLEnv, Text2SQLEnvConfig
 from skyrl_gym.envs.sql.utils import verify_format_and_extract
 from safetensors.torch import load_file
+from tqdm import tqdm
 
 import os
 import random
@@ -372,7 +373,7 @@ async def run_eval(args: argparse.Namespace, model_path) -> float:
         num_inference_engines=1,
         tensor_parallel_size=args.num_gpus,
         model_dtype=ie_cfg.model_dtype,
-        pretrain=args.base_model_path,
+        pretrain=model_path,
         seed=args.seed,
         vllm_v1_disable_multiproc=ie_cfg.vllm_v1_disable_multiproc,
         enable_prefix_caching=ie_cfg.enable_prefix_caching,
@@ -496,7 +497,7 @@ async def run_eval(args: argparse.Namespace, model_path) -> float:
         )
 
         # Process active samples in batches
-        for batch_start in range(0, len(active_indices), args.batch_size):
+        for batch_start in tqdm(range(0, len(active_indices), args.batch_size)):
             batch_indices = active_indices[batch_start : batch_start + args.batch_size]
 
             batch_token_ids = [all_states[si].input_ids for si in batch_indices]
@@ -523,12 +524,12 @@ async def run_eval(args: argparse.Namespace, model_path) -> float:
                     # Diagnostic: log details for the first few completed problems
                     if sum(len(v) for v in results_by_problem.values()) < 3:
                         is_valid, thoughts, pred_sql, _ = verify_format_and_extract(response)
-                        logger.info(
-                            f"[DIAG] pid={state.pid} reward={state.reward:.1f} "
-                            f"format_valid={is_valid} has_think={thoughts is not None and len(thoughts) > 0} "
-                            f"pred_sql={pred_sql!r:.200}"
-                        )
-                        logger.info(f"[DIAG] response (first 500 chars): {response[:500]!r}")
+                        # logger.info(
+                        #     f"[DIAG] pid={state.pid} reward={state.reward:.1f} "
+                        #     f"format_valid={is_valid} has_think={thoughts is not None and len(thoughts) > 0} "
+                        #     f"pred_sql={pred_sql!r:.200}"
+                        # )
+                        # logger.info(f"[DIAG] response (first 500 chars): {response[:500]!r}")
                 else:
                     # Build observation token IDs and extend input_ids for next turn
                     observations = step_out["observations"]
