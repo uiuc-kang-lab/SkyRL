@@ -261,7 +261,7 @@ def load_eurus_dataset(data_path: str | None) -> hf_datasets.Dataset:
         return hf_datasets.load_dataset("parquet", data_files=data_path, keep_in_memory=True)["train"]
 
     logger.info("Downloading EURUS dataset from HF hub (PRIME-RL/Eurus-2-RL-Data)...")
-    ds = hf_datasets.load_dataset("PRIME-RL/Eurus-2-RL-Data", "default", split="train")
+    ds = hf_datasets.load_dataset("uiuc-kang-lab/RLVR-Eurus-2-Math-Fixed", "default", split="train")
     ds = ds.filter(lambda x: x["ability"] == "math" and x["reward_model"]["style"] == "rule")
 
     def _to_parquet_schema(ex):
