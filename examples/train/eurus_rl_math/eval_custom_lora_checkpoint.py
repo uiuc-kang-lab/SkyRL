@@ -154,36 +154,51 @@ def resolve_model_path(
     logger.info(f"  Merged {n_merged} custom LoRA layers")
 
     # 6. Unwrap CustomLoraLinear -> nn.Linear
+    #
+    # Memory-critical step: the merged model holds ~16GB of float32 weights for
+    # a 4B model, plus per-layer SVD buffers.  Naively cloning weights into
+    # freshly-allocated nn.Linear modules would double the weight memory (~32GB)
+    # and OOM the host before save_pretrained even runs.  Instead we:
+    #   (a) locate parents in a single pass (avoid O(n²) dict rebuild)
+    #   (b) create target Linear on the "meta" device (no storage allocated)
+    #   (c) transfer the existing Parameter objects without copying
+    #   (d) drop the CustomLoraLinear refs so their SVD buffers can be freed
     logger.info("Unwrapping custom LoRA layers back to nn.Linear...")
-    replacements = []
+    to_replace = []
     for name, module in model.named_modules():
         if isinstance(module, CustomLoraLinear):
             parts = name.rsplit(".", 1)
             if len(parts) == 2:
-                parent = dict(model.named_modules())[parts[0]]
+                parent = model.get_submodule(parts[0])
                 attr_name = parts[1]
             else:
                 parent = model
                 attr_name = parts[0]
-            linear = torch.nn.Linear(
-                module.in_features, module.out_features,
-                bias=module.bias is not None,
-                dtype=module.weight.dtype,
-                device=module.weight.device,
-            )
-            linear.weight = torch.nn.Parameter(module.weight.data.clone(), requires_grad=False)
-            if module.bias is not None:
-                linear.bias = torch.nn.Parameter(module.bias.data.clone(), requires_grad=False)
-            replacements.append((parent, attr_name, linear))
+            to_replace.append((parent, attr_name, module))
 
-    for parent, attr_name, linear in replacements:
+    n_replaced = 0
+    for parent, attr_name, module in to_replace:
+        linear = torch.nn.Linear(
+            module.in_features, module.out_features,
+            bias=module.bias is not None,
+            device="meta",
+        )
+        # Transfer ownership — no copy.  The old CustomLoraLinear's weight
+        # storage now backs the new Linear; the old module will be GC'd once
+        # we clear `to_replace`, releasing its SVD buffers and v param.
+        linear.weight = module.weight
+        if module.bias is not None:
+            linear.bias = module.bias
         setattr(parent, attr_name, linear)
-    logger.info(f"  Unwrapped {len(replacements)} layers")
+        n_replaced += 1
+
+    to_replace.clear()
+    logger.info(f"  Unwrapped {n_replaced} layers")
 
     # 7. Save merged model
     merged_path = os.path.join(tmp_dir, "merged_model")
     logger.info(f"Saving merged model to {merged_path}")
-    model.save_pretrained(merged_path, safe_serialization=True)
+    model.save_pretrained(merged_path, safe_serialization=True, max_shard_size="2GB")
 
     # Copy tokenizer
     from transformers import AutoTokenizer
