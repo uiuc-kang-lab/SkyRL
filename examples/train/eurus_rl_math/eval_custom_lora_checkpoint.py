@@ -21,7 +21,9 @@ python -m examples.train.eurus_rl_math.eval_custom_lora_checkpoint \\
 """
 
 import argparse
+import gc
 import json
+import multiprocessing as mp
 import os
 import random
 import shutil
@@ -207,7 +209,13 @@ def resolve_model_path(
 
     _patch_qwen35_config_for_vllm(merged_path)
 
-    del model
+    # Explicit teardown: drop references + force GC so the ~16GB fp32 base
+    # weights and SVD buffers are returned to the OS before vLLM starts
+    # staging its own model (otherwise peak CPU RAM ~= base + vLLM staging).
+    del model, model_sd, v_params, to_replace
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
     return merged_path
 
 
@@ -341,6 +349,21 @@ def run_eval(args: argparse.Namespace, model_path: str) -> dict:
         else:
             n_skipped += 1
     logger.info(f"Valid: {len(all_valid)}, skipped (too long): {n_skipped}")
+    # HF datasets keep row caches + Arrow tables around; drop them now that
+    # we've materialized `all_valid`.
+    del ds, ds_full
+    gc.collect()
+
+    # Create grading pool BEFORE vLLM init, using "spawn" so workers don't
+    # inherit the soon-to-be-huge parent process via fork-COW.  spawn workers
+    # start fresh (~tens of MB each) instead of nominally ~16GB each with
+    # refcount-dirtied COW pages.  max_tasks_per_child recycles workers to
+    # bound sympy/math_verify cache growth.
+    grade_pool = ProcessPoolExecutor(
+        max_workers=min(8, os.cpu_count() or 4),
+        mp_context=mp.get_context("spawn"),
+        max_tasks_per_child=100,
+    )
 
     # Initialize vLLM directly — no Ray, no SkyRL wrapper, native n>1 support
     logger.info(f"Initializing vLLM engine (TP={args.num_gpus}, model={model_path})")
@@ -368,47 +391,52 @@ def run_eval(args: argparse.Namespace, model_path: str) -> dict:
     n_batches = (len(all_valid) + batch_size - 1) // batch_size
 
     results_by_problem: dict[int, list[bool]] = defaultdict(list)
-    grade_pool = ProcessPoolExecutor(max_workers=min(8, os.cpu_count() or 4))
 
-    for batch_idx, start in enumerate(range(0, len(all_valid), batch_size)):
-        batch = all_valid[start : start + batch_size]
-        pids = [b[0] for b in batch]
-        prompts = [{"prompt_token_ids": b[1]} for b in batch]
-        rs_list = [b[2] for b in batch]
+    try:
+        for batch_idx, start in enumerate(range(0, len(all_valid), batch_size)):
+            batch = all_valid[start : start + batch_size]
+            pids = [b[0] for b in batch]
+            prompts = [{"prompt_token_ids": b[1]} for b in batch]
+            rs_list = [b[2] for b in batch]
 
-        logger.info(f"Batch {batch_idx + 1}/{n_batches}: "
-                    f"{len(prompts)} problems × {args.n_samples} samples")
+            logger.info(f"Batch {batch_idx + 1}/{n_batches}: "
+                        f"{len(prompts)} problems × {args.n_samples} samples")
 
-        outputs = llm.generate(prompts, sampling_params=sampling_params)
+            outputs = llm.generate(prompts, sampling_params=sampling_params)
 
-        # Grade in parallel via process pool
-        grade_args = []
-        grade_pids = []
-        for output, pid, reward_spec in zip(outputs, pids, rs_list):
-            for completion in output.outputs:
-                grade_args.append((completion.text, reward_spec, 10))
-                grade_pids.append(pid)
+            # Grade in parallel via process pool
+            grade_args = []
+            grade_pids = []
+            for output, pid, reward_spec in zip(outputs, pids, rs_list):
+                for completion in output.outputs:
+                    grade_args.append((completion.text, reward_spec, 10))
+                    grade_pids.append(pid)
 
-        grade_results = list(grade_pool.map(_grade_one, grade_args))
+            grade_results = list(grade_pool.map(_grade_one, grade_args))
 
-        for pid, correct in zip(grade_pids, grade_results):
-            results_by_problem[pid].append(correct)
+            for pid, correct in zip(grade_pids, grade_results):
+                results_by_problem[pid].append(correct)
 
-        n_done = len(results_by_problem)
-        if n_done > 0:
-            p1 = sum(v[0] for v in results_by_problem.values()) / n_done
-            if args.n_samples > 1:
-                pk = sum(any(v) for v in results_by_problem.values()) / n_done
-                ma = sum(sum(v) / len(v) for v in results_by_problem.values()) / n_done
-                print(f"  [{n_done} problems] pass@1={p1:.4f}  pass@{args.n_samples}={pk:.4f}  mean_acc={ma:.4f}")
-            else:
-                print(f"  [{n_done} problems] pass@1={p1:.4f}")
+            # Drop per-batch references so they don't pile up across batches.
+            del outputs, grade_args, grade_pids, grade_results, batch, prompts
+
+            n_done = len(results_by_problem)
+            if n_done > 0:
+                p1 = sum(v[0] for v in results_by_problem.values()) / n_done
+                if args.n_samples > 1:
+                    pk = sum(any(v) for v in results_by_problem.values()) / n_done
+                    ma = sum(sum(v) / len(v) for v in results_by_problem.values()) / n_done
+                    print(f"  [{n_done} problems] pass@1={p1:.4f}  pass@{args.n_samples}={pk:.4f}  mean_acc={ma:.4f}")
+                else:
+                    print(f"  [{n_done} problems] pass@1={p1:.4f}")
+    finally:
+        grade_pool.shutdown(wait=True, cancel_futures=True)
 
     # Final metrics
     n_total = len(results_by_problem)
     pass_at_1 = sum(v[0] for v in results_by_problem.values()) / n_total
     metrics: dict = {
-        "adapter_path": args.adapter_path,
+        "adapter_path": args.lora_adapter,
         "checkpoint_dir": args.checkpoint_dir,
         "base_model_path": args.base_model_path,
         "svd_rank": args.svd_rank,
@@ -455,7 +483,7 @@ def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Evaluate a custom LoRA checkpoint on EURUS math")
     p.add_argument("--checkpoint_dir", default=None,
                    help="SkyRL checkpoint directory (searches for custom_lora/custom_lora_params.safetensors)")
-    p.add_argument("--adapter_path", default=None,
+    p.add_argument("--lora_adapter", default=None,
                    help="Direct path to any custom LoRA .safetensors file (takes precedence)")
     p.add_argument("--base_model_path", required=True,
                    help="Base HF model (same one used during training)")
@@ -492,8 +520,8 @@ def main() -> None:
     if args.n_samples > 1 and args.temperature == 0.0:
         logger.warning("n_samples > 1 with temperature=0 gives identical samples; consider --temperature 0.6")
 
-    if args.checkpoint_dir is None and args.adapter_path is None:
-        raise ValueError("Either --checkpoint_dir or --adapter_path must be provided")
+    if args.checkpoint_dir is None and args.lora_adapter is None:
+        raise ValueError("Either --checkpoint_dir or --lora_adapter must be provided")
 
     tmp_dir = tempfile.mkdtemp(prefix="eval_custom_lora_")
     try:
@@ -507,7 +535,7 @@ def main() -> None:
             exclude_modules=args.exclude_modules,
             tmp_dir=tmp_dir,
             checkpoint_dir=args.checkpoint_dir,
-            adapter_path=args.adapter_path,
+            adapter_path=args.lora_adapter,
         )
         metrics = run_eval(args, model_path)
         print(f"\npass@1: {metrics['pass_at_1']:.4f}  (n={metrics['n_problems']} problems)")
