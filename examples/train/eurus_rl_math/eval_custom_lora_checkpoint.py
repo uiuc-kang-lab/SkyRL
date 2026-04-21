@@ -391,7 +391,6 @@ def run_eval(args: argparse.Namespace, model_path: str) -> dict:
     n_batches = (len(all_valid) + batch_size - 1) // batch_size
 
     results_by_problem: dict[int, list[bool]] = defaultdict(list)
-
     try:
         for batch_idx, start in enumerate(range(0, len(all_valid), batch_size)):
             batch = all_valid[start : start + batch_size]
@@ -403,14 +402,27 @@ def run_eval(args: argparse.Namespace, model_path: str) -> dict:
                         f"{len(prompts)} problems × {args.n_samples} samples")
 
             outputs = llm.generate(prompts, sampling_params=sampling_params)
-
             # Grade in parallel via process pool
             grade_args = []
             grade_pids = []
+            results = []
             for output, pid, reward_spec in zip(outputs, pids, rs_list):
                 for completion in output.outputs:
+                    results.append({
+                        "pid": pid,
+                        "response": completion.text,
+                        "reward_spec": reward_spec,
+                    })
                     grade_args.append((completion.text, reward_spec, 10))
                     grade_pids.append(pid)
+
+            if args.skip_eval:
+                # create dump directory if it doesn't exist
+                if args.dump_gen_dir:
+                    os.makedirs(args.dump_gen_dir, exist_ok=True)
+                    with open(f"{args.dump_gen_dir}/batch_{batch_idx + 1}_outputs.json", "w") as f:
+                        json.dump(results, f, indent=2)
+                continue
 
             grade_results = list(grade_pool.map(_grade_one, grade_args))
 
@@ -431,6 +443,9 @@ def run_eval(args: argparse.Namespace, model_path: str) -> dict:
                     print(f"  [{n_done} problems] pass@1={p1:.4f}")
     finally:
         grade_pool.shutdown(wait=True, cancel_futures=True)
+        
+    if args.skip_eval:
+        return {}
 
     # Final metrics
     n_total = len(results_by_problem)
@@ -504,6 +519,9 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--enable_prefix_caching", type=lambda x: x.lower() != "false",
                    default=None, metavar="BOOL")
     p.add_argument("--output_path", default=None, help="Write JSON results to this path")
+    p.add_argument("--skip_eval", default=False, action="store_true", help="Skip evaluation and just dump the generation outputs (for debugging)")
+    p.add_argument("--dump_gen_dir", default=None, help="Path to write generation outputs if --skip_eval is set")
+    
 
     # Custom LoRA config
     p.add_argument("--svd_rank", type=int, default=16)
@@ -538,7 +556,8 @@ def main() -> None:
             adapter_path=args.lora_adapter,
         )
         metrics = run_eval(args, model_path)
-        print(f"\npass@1: {metrics['pass_at_1']:.4f}  (n={metrics['n_problems']} problems)")
+        if not args.skip_eval:
+            print(f"\npass@1: {metrics['pass_at_1']:.4f}  (n={metrics['n_problems']} problems)")
     finally:
         shutil.rmtree(tmp_dir, ignore_errors=True)
 
