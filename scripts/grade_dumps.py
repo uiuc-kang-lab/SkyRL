@@ -34,7 +34,7 @@ from the dump files themselves since none of them encode it today.
 
 Each record is graded in a fresh ``subprocess.run`` with a hard timeout.
 In-process SIGALRM and ``multiprocessing.Process`` kills are both unreliable
-for ``eurus_math``: math_verify arms its own SIGALRM and clears it on exit
+for ``math``: math_verify arms its own SIGALRM and clears it on exit
 (cancelling outer timers), sympy/LaTeX paths run in C code that ignores
 Python signals, and forking from a spawn-based pool worker inherits Python
 internal thread locks that can deadlock the child during import. A real
@@ -61,7 +61,7 @@ from loguru import logger
 from tqdm import tqdm
 
 
-TASK_CHOICES = ["eurus_math", "mix_general", "mix_code", "sql"]
+TASK_CHOICES = ["math", "general", "code", "sql"]
 
 # Subprocess helpers need the project root on sys.path so that
 # ``examples.train.*`` imports resolve.
@@ -181,19 +181,19 @@ def load_records(dump_dir: str) -> list[dict]:
 def _build_env_and_step(task: str, record: dict, timeout: int):
     response = record["response"]
 
-    if task == "eurus_math":
+    if task == "math":
         from examples.train.eurus_rl_math.env import MathEnv
         env = MathEnv(extras={"reward_spec": record["reward_spec"]},
                       math_verify_timeout=timeout)
         return env.step(response)
 
-    if task == "mix_general":
+    if task == "general":
         from examples.train.mix_general.env import GeneralEnv
         env = GeneralEnv(extras={"reward_spec": record["reward_spec"]},
                          math_verify_timeout=timeout)
         return env.step(response)
 
-    if task == "mix_code":
+    if task == "code":
         from examples.train.mix_code.env import MixCodeEnv
         env = MixCodeEnv(extras={"reward_spec": record["reward_spec"]},
                          env_config={"timeout": 20})
@@ -228,15 +228,18 @@ def _run_helper_mode() -> None:
     Invoked by the main driver via ``subprocess.run`` so that each grading
     call runs in a fresh Python interpreter the driver can SIGKILL on timeout.
     """
+    correct = False
+    reward = 0.0
     try:
         payload = json.loads(sys.stdin.read())
         step_out = _build_env_and_step(
             payload["task"], payload["record"], payload["timeout"],
         )
-        correct = float(step_out["reward"]) > 0.0
+        reward = float(step_out["reward"])
+        correct = reward > 0.0
     except BaseException:
-        correct = False
-    sys.stdout.write(json.dumps({"correct": bool(correct)}) + "\n")
+        pass
+    sys.stdout.write(json.dumps({"correct": bool(correct), "reward": reward}) + "\n")
     sys.stdout.flush()
 
 
@@ -253,6 +256,7 @@ def _grade_one(args_tuple):
     payload = json.dumps({"task": task, "record": record, "timeout": timeout})
 
     correct = False
+    reward = 0.0
     try:
         res = subprocess.run(
             [sys.executable, "-u", os.path.abspath(__file__), "--_helper"],
@@ -269,15 +273,14 @@ def _grade_one(args_tuple):
                 try:
                     obj = json.loads(line)
                     correct = bool(obj.get("correct", False))
+                    reward = float(obj.get("reward", 0.0))
                     break
                 except json.JSONDecodeError:
                     continue
-    except subprocess.TimeoutExpired:
-        correct = False
-    except BaseException:
-        correct = False
+    except (subprocess.TimeoutExpired, BaseException):
+        pass
 
-    return pid, sample_idx, correct
+    return pid, sample_idx, correct, reward
 
 
 # ---------------------------------------------------------------------------
@@ -331,8 +334,8 @@ def main():
             desc=f"Grade[{args.task}]",
             dynamic_ncols=True,
         ):
-            pid, sample_idx, correct = fut.result()
-            per_problem[pid].append((sample_idx, correct))
+            pid, sample_idx, correct, reward = fut.result()
+            per_problem[pid].append((sample_idx, correct, reward))
     except KeyboardInterrupt:
         for fut in futures:
             fut.cancel()
@@ -341,7 +344,11 @@ def main():
         pool.shutdown(wait=False, cancel_futures=True)
 
     results_by_problem = {
-        pid: [c for _, c in sorted(entries)] for pid, entries in per_problem.items()
+        pid: [c for _, c, _ in sorted(entries)] for pid, entries in per_problem.items()
+    }
+    
+    rewards_by_problem = {
+        pid: [r for _, _, r in sorted(entries)] for pid, entries in per_problem.items()
     }
 
     n_total = len(results_by_problem)
@@ -350,6 +357,9 @@ def main():
         return
 
     pass_at_1 = sum(v[0] for v in results_by_problem.values()) / n_total
+    avg_reward = sum(
+        sum(v) / len(v) for v in rewards_by_problem.values()
+    ) / n_total
     n_samples = max(len(v) for v in results_by_problem.values())
 
     metrics: dict = {
@@ -358,6 +368,7 @@ def main():
         "n_problems": n_total,
         "n_records": len(records),
         "pass_at_1": pass_at_1,
+        "avg_reward": avg_reward,
     }
 
     if n_samples > 1:
@@ -370,10 +381,10 @@ def main():
         })
         logger.info(
             f"pass@1={pass_at_1:.4f}  pass@{n_samples}={pass_at_k:.4f}  "
-            f"mean_acc={mean_acc:.4f}  (n={n_total})"
+            f"mean_acc={mean_acc:.4f}  avg_reward={avg_reward:.4f}  (n={n_total})"
         )
     else:
-        logger.info(f"pass@1={pass_at_1:.4f}  (n={n_total})")
+        logger.info(f"pass@1={pass_at_1:.4f}  avg_reward={avg_reward:.4f}  (n={n_total})")
 
     if args.output_path:
         Path(args.output_path).parent.mkdir(parents=True, exist_ok=True)
