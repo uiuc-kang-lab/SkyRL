@@ -327,6 +327,8 @@ def main():
     work = [(args.task, r, args.timeout) for r in records]
     pool = ThreadPoolExecutor(max_workers=n_workers)
     futures = [pool.submit(_grade_one, w) for w in work]
+    n_correct = 0
+    n_total = 0
     try:
         for fut in tqdm(
             as_completed(futures),
@@ -336,6 +338,11 @@ def main():
         ):
             pid, sample_idx, correct, reward = fut.result()
             per_problem[pid].append((sample_idx, correct, reward))
+            if correct:
+                n_correct += 1
+            n_total += 1
+            if n_total % 100 == 0:
+                logger.info(f"Running pass@1={n_correct/n_total:.4f} after {n_total} graded")
     except KeyboardInterrupt:
         for fut in futures:
             fut.cancel()
