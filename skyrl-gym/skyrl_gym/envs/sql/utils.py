@@ -31,16 +31,18 @@ def verify_format_and_extract(output: str):
     if re.search(r"</?(think|tool_call|observation)\b", solution_text, re.I):
         return False, None, None, None
 
-    thoughts = re.findall(r"<think>(.*?)</think>", output, re.S)
+    # NOTE: <think>/</observation> ordering check disabled — the prose-think
+    # traces this repo emits (e.g. plain-English reasoning without literal
+    # <think> wrappers) no longer fit the strict ordering invariant. If you
+    # need it back, re-enable the block below and return ``thoughts`` here.
+    # thoughts = re.findall(r"<think>(.*?)</think>", output, re.S)
+    # if thoughts:
+    #     for m in re.finditer(r"</observation>", pre_solution, re.I):
+    #         rest = pre_solution[m.end() :].lstrip()
+    #         if not rest.lower().startswith(THINK_START):
+    #             return False, None, None, None
 
-    # When <think> tags are present, verify observation→think ordering
-    if thoughts:
-        for m in re.finditer(r"</observation>", pre_solution, re.I):
-            rest = pre_solution[m.end() :].lstrip()
-            if not rest.lower().startswith(THINK_START):
-                return False, None, None, None
-
-    return True, thoughts, solution_text.strip(), None
+    return True, None, solution_text.strip(), None
 
 
 def execute_sql_wrapper_single(db_file, sql, timeout, output_str):
